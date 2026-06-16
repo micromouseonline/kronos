@@ -42,6 +42,8 @@ const uint64_t MIN_PLAUSIBLE_TSF = 300000000;
 
 static int consecutive_audit_failures = 0;
 
+volatile uint32_t networkq_overflow_count = 0;  ///< Incremented by ISR/timer on dropped networkQueue send
+
 // --- WATCHDOG STATE SHARING VARIABLES ---
 volatile bool global_is_stuck_in_syn = false;  // Shared flag to notify main loop
 
@@ -100,7 +102,10 @@ void IRAM_ATTR handleSensor1() {
     ev.type = TRIGGER_A;
     ev.tsf_observed = esp_wifi_get_tsf_time(WIFI_IF_STA);
     ev.processor_clock = current_time;
-    xQueueSendFromISR(networkQueue, &ev, &xHigherPriorityTaskWoken);
+    BaseType_t sent = xQueueSendFromISR(networkQueue, &ev, &xHigherPriorityTaskWoken);
+    if (sent != pdTRUE) {
+        networkq_overflow_count++;
+    }
     if (xHigherPriorityTaskWoken) {
         portYIELD_FROM_ISR();
     }
@@ -112,7 +117,9 @@ void heartbeatTimerCallback(TimerHandle_t xTimer) {
     hb.tsf_observed = esp_wifi_get_tsf_time(WIFI_IF_STA);
     hb.processor_clock = esp_timer_get_time();
 
-    xQueueSend(networkQueue, &hb, 0);
+    if (xQueueSend(networkQueue, &hb, 0) != pdTRUE) {
+        networkq_overflow_count++;
+    }
 }
 
 // --- CORE NETWORK WORKER TASK WITH DISCIPLINED OSCILLATOR MATH ---
@@ -123,9 +130,21 @@ void uploadWorkerTask(void *pvParameters) {
     while (1) {
         if (xQueueReceive(networkQueue, &current_ev, portMAX_DELAY) == pdPASS) {
 
+            // TODO: Serial logging is unavailable in field deployment. Future options:
+            //   - RGB LED pattern to signal overflow (extend LedPattern enum)
+            //   - Write overflow count to SPIFFS for post-session retrieval
+            //   - Append &overflow=N to next HTTP GET to notify server
+            uint32_t drops = networkq_overflow_count;
+            if (drops > 0) {
+                networkq_overflow_count = 0;
+                Serial.printf("[QUEUE OVERFLOW] %lu networkQueue event(s) dropped.\n", drops);
+            }
+
             LedPattern pattern = (current_ev.type == TRIGGER_A) ? FLASH_TRIGGER_1 : FLASH_TRIGGER_2;
             if (current_ev.type == HEARTBEAT) pattern = SHOW_HEARTBEAT;
-            xQueueSend(ledQueue, &pattern, 0);
+            if (xQueueSend(ledQueue, &pattern, 0) != pdTRUE) {
+                Serial.println("[QUEUE OVERFLOW] ledQueue full; LED feedback dropped.");
+            }
 
             uint64_t tsf_to_transmit = current_ev.tsf_observed;
             bool trust_observed_tsf = false;
