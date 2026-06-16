@@ -257,7 +257,7 @@ void setup() {
     pinMode(LED_PIN, OUTPUT);
 
     gate_id = identifyBoard();
-    pinMode(GATE_PIN, INPUT);
+    pinMode(GATE_PIN, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(GATE_PIN), handleSensor1, FALLING);
 
     networkQueue = xQueueCreate(10, sizeof(GateEvent));
