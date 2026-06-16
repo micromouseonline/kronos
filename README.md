@@ -47,4 +47,4 @@ An onboard LED provides real-time state confirmation without an attached serial 
 
 ## For More Information
 
-For detailed clock calibration formulas, circuit diagrams, power management deep-dives (Wi-Fi Modem Sleep configurations), and field-trial telemetry logs, please refer to our full **System Architecture Documentation Page**.
+For detailed clock calibration formulas, circuit diagrams, power management deep-dives (Wi-Fi Modem Sleep configurations), and field-trial telemetry logs, please refer to our full [**System Architecture Documentation Page**](docs/kronos-synchronized-timing-gates-architecture.md).
