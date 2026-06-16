@@ -253,7 +253,6 @@ void setup() {
     delay(2000);
     Serial.begin(115200);
 
-    led.begin();
     pinMode(LED_PIN, OUTPUT);
 
     gate_id = identifyBoard();
