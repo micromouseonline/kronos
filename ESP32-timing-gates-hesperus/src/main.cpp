@@ -13,6 +13,7 @@ char gate_id[16];
 
 const int LED_PIN = 2;
 const int GATE_PIN = 1;
+const int GATE_PIN_B = 3;
 
 int state = 1;
 
@@ -69,7 +70,7 @@ void ledDiagnosticTask(void *pvParameters) {
                 led.setPixelColor(0, led.Color(0, 0, 0));
                 led.show();
             } else if (requested_pattern == FLASH_TRIGGER_2) {
-                led.setPixelColor(0, led.Color(0, 0, 32));  // Bright Blue
+                led.setPixelColor(0, led.Color(32, 0, 0));  // Bright Red
                 led.show();
                 vTaskDelay(pdMS_TO_TICKS(50));
                 led.setPixelColor(0, led.Color(0, 0, 0));
@@ -100,6 +101,29 @@ void IRAM_ATTR handleSensor1() {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     GateEvent ev;
     ev.type = TRIGGER_A;
+    ev.tsf_observed = esp_wifi_get_tsf_time(WIFI_IF_STA);
+    ev.processor_clock = current_time;
+    BaseType_t sent = xQueueSendFromISR(networkQueue, &ev, &xHigherPriorityTaskWoken);
+    if (sent != pdTRUE) {
+        networkq_overflow_count++;
+    }
+    if (xHigherPriorityTaskWoken) {
+        portYIELD_FROM_ISR();
+    }
+}
+
+void IRAM_ATTR handleSensor2() {
+    static uint64_t last_interrupt_time = 0;
+    uint64_t current_time = esp_timer_get_time();
+
+    if (current_time - last_interrupt_time < 20000) {
+        return;
+    }
+    last_interrupt_time = current_time;
+
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    GateEvent ev;
+    ev.type = TRIGGER_B;
     ev.tsf_observed = esp_wifi_get_tsf_time(WIFI_IF_STA);
     ev.processor_clock = current_time;
     BaseType_t sent = xQueueSendFromISR(networkQueue, &ev, &xHigherPriorityTaskWoken);
@@ -282,6 +306,8 @@ void setup() {
     strlcpy(gate_id, identifyBoard(), sizeof(gate_id));
     pinMode(GATE_PIN, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(GATE_PIN), handleSensor1, FALLING);
+    pinMode(GATE_PIN_B, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(GATE_PIN_B), handleSensor2, FALLING);
 
     networkQueue = xQueueCreate(10, sizeof(GateEvent));
     ledQueue = xQueueCreate(5, sizeof(LedPattern));
