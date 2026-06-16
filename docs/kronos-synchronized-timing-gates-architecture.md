@@ -251,3 +251,16 @@ TSF Gap Statistics (µs)
  - The average gap is only ~2.6 µs,
  - 99.9% of all gaps are under ~22 µs,
  - The worst outlier is 55 µs, which is still excellent for Wi‑Fi‑synchronized TSF timing.
+
+ 
+---
+
+## Limitations
+
+ - Cheap consumer APs may not be able to look after more than 20-32 clients. Each gate is a client, as would be any remote displays or similar. Unlikely to be a real problem. by the time we have than many clients, we would be paying for more up-market APS that could handle 100 or more clients. For now, limit to 10 clients. Could be tested with a cluster of ESP32 nodes to see what happens.
+
+ - Busy WiFi environments. The gate firmware review has testing schemes to evaluate that.
+
+ - Multiple setups may be a problem because the credentials and identities are compiled in from a single source. Some kind of OTA configuration would be best. 
+
+ - In a fairly quiet environment we should be able to easily run 3-4 independent systems with two gates. We might want, for example, classic maze, half-size maze, line-followers, pursuit, and drag race. That is 5 systems so theexperiment needs to be done.
