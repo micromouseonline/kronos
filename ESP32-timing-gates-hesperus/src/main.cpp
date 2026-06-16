@@ -151,6 +151,7 @@ void uploadWorkerTask(void *pvParameters) {
                         double actual_tsf_delta = (double) (current_ev.tsf_observed - cal_prev_tsf);
                         double actual_proc_delta = (double) (current_ev.processor_clock - cal_prev_proc);
                         double instant_alpha = actual_tsf_delta / actual_proc_delta;
+                        instant_alpha = constrain(instant_alpha, 0.9990, 1.0010);
 
                         if (!alpha_calibrated) {
                             clock_alpha = instant_alpha;
