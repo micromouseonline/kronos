@@ -40,6 +40,8 @@ uint64_t cal_prev_proc = 0;
 const uint64_t DRIFT_MARGIN_US = 500;
 const uint64_t MIN_PLAUSIBLE_TSF = 300000000;
 
+static int consecutive_audit_failures = 0;
+
 // --- WATCHDOG STATE SHARING VARIABLES ---
 volatile bool global_is_stuck_in_syn = false;  // Shared flag to notify main loop
 
@@ -140,7 +142,6 @@ void uploadWorkerTask(void *pvParameters) {
                 uint64_t expected_tsf = last_good_state.tsf_observed + expected_tsf_delta;
 
                 uint64_t drift_variance = (current_ev.tsf_observed > expected_tsf) ? (current_ev.tsf_observed - expected_tsf) : (expected_tsf - current_ev.tsf_observed);
-                static int consecutive_audit_failures = 0;
 
                 if (drift_variance <= DRIFT_MARGIN_US) {
                     trust_observed_tsf = true;
@@ -237,6 +238,7 @@ void uploadWorkerTask(void *pvParameters) {
                             has_initial_baseline = false;
                             cal_prev_tsf = 0;
                             cal_prev_proc = 0;
+                            consecutive_audit_failures = 0;
                         }
                     }
                 } else {
