@@ -288,7 +288,9 @@ void loop() {
 
     uint32_t current_time = millis();
 
-    // --- PATCH 2: THE 16-HOUR REGISTER OVERFLOW WATCHDOG ---
+    // --- PATCH 2: EXTENDED SYN-MODE WATCHDOG ---
+    // If the gate is trapped in synthetic time for >10 s, the Wi-Fi
+    // recovery mechanism has stalled. Reboot to force a clean restart.
     if (global_is_stuck_in_syn) {
         if (syn_mode_start_time == 0) {
             syn_mode_start_time = current_time;  // Start the clock on the breakdown
