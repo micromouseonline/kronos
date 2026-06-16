@@ -235,6 +235,8 @@ void uploadWorkerTask(void *pvParameters) {
                             Serial.println("[ESCAPE HATCH] Server confirmed online. Attempting TSF re-entry.");
                             // Forcing audit engine reset
                             has_initial_baseline = false;
+                            cal_prev_tsf = 0;
+                            cal_prev_proc = 0;
                         }
                     }
                 } else {
