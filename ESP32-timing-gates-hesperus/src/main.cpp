@@ -52,6 +52,10 @@ volatile bool global_is_stuck_in_syn = false;  // Shared flag to notify main loo
 QueueHandle_t networkQueue;  // stores network activities - sending notifications
 QueueHandle_t ledQueue;      // stored neopixel commands
 
+// --- FreeRTOS Task Handles (for stack instrumentation) ---
+TaskHandle_t ledTaskHandle = NULL;
+TaskHandle_t uploadTaskHandle = NULL;
+
 enum LedPattern { FLASH_TRIGGER_1,
                   FLASH_TRIGGER_2,
                   SHOW_HEARTBEAT };
@@ -144,6 +148,10 @@ void heartbeatTimerCallback(TimerHandle_t xTimer) {
     if (xQueueSend(networkQueue, &hb, 0) != pdTRUE) {
         networkq_overflow_count++;
     }
+
+    Serial.printf("[STACK] LED min free: %u bytes | Upload min free: %u bytes\n",
+                  uxTaskGetStackHighWaterMark(ledTaskHandle) * 4,
+                  uxTaskGetStackHighWaterMark(uploadTaskHandle) * 4);
 }
 
 // --- CORE NETWORK WORKER TASK WITH DISCIPLINED OSCILLATOR MATH ---
@@ -321,8 +329,8 @@ void setup() {
         xTimerStart(hbTimer, 0);
     }
 
-    xTaskCreatePinnedToCore(ledDiagnosticTask, "LED_Task", 2048, NULL, 1, NULL, 1);
-    xTaskCreatePinnedToCore(uploadWorkerTask, "UploadWorker", 4096, NULL, 2, NULL, 1);
+    xTaskCreatePinnedToCore(ledDiagnosticTask, "LED_Task",     2048, NULL, 1, &ledTaskHandle,    1);
+    xTaskCreatePinnedToCore(uploadWorkerTask,  "UploadWorker", 8192, NULL, 2, &uploadTaskHandle, 1);
 }
 
 // --- MAIN LOOP EXECUTION TASK ---
