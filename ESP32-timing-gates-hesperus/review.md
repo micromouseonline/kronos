@@ -67,6 +67,41 @@ pairing over 60,000 events) validate the architecture.
 
 ---
 
+## Possible stress tests:
+
+  ### Layer 1 — Airtime saturation (your idea, refined)
+
+  20 ESP32s each running a tight loop of HTTP GETs to a local server (a Pi or laptop running a trivial HTTP responder). 
+  Set them all to the same SSID/BSSID as the timing gates. The goal is to pack the AP's transmit queue and force beacon 
+  deferral — consumer APs do not protect beacon TBTTs under heavy load, so this directly stresses TSF jitter. Metrics 
+  to watch: drift_variance in the audit log, and whether consecutive_audit_failures climbs.
+
+  ### Layer 2 — Bulk throughput (saturate the medium)
+
+  A Raspberry Pi (or any laptop) on the same AP running iperf3 -s, with another client doing iperf3 -c <ip> -t 300 
+  generates sustained throughput that competes with every other station for airtime. Much higher per-device impact 
+  than ESP32 GETs.
+
+  ### Layer 3 — Channel interference (harder to ignore than load)
+
+  A second cheap WiFi router (any old home router) configured to broadcast on an overlapping channel (e.g. your AP on ch 6, 
+  the stressor on ch 4 or 8). This generates RF contention the AP cannot back off from, causing collision-driven retries 
+  and beacon slippage. Very realistic simulation of a busy sports venue.
+
+  ### Layer 4 — 2.4 GHz broadband noise
+
+  A microwave oven running 30 cm from the AP is a surprisingly effective 2.4 GHz jammer — free if you have one, and 
+  recreates the kind of environment you'd find at a car park or sports field.
+
+  ### What to instrument
+
+  The timing gate serial log already shows you drift_variance per event and consecutive_audit_failures. Add a counter 
+  to the server side tracking how often mode=SYN appears in requests — that's your headline metric for how badly TSF sync 
+  degrades under load. If you get to 5+ consecutive audit failures triggering forced re-baseline, the AP is struggling 
+  to deliver beacons reliably.
+  
+---
+
 ## Future Development Path
 
 | Phase | Feature | Notes |
