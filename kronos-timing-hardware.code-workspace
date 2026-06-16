@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "ESP32-timing-gates-hesperus"
+		},
+		{
+			"path": "gate-controller-python-test-cerberus"
+		},
+		{
+			"path": "event-pulse-generator-arduino-nano"
+		},
+		{
+			"path": "docs"
+		},
+		{
+			"path": "."
+		}
+	]
+}

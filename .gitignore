@@ -1,0 +1,16 @@
+# PlatformIO build artefacts (all sub-projects)
+**/.pio/
+
+# VSCode workspace settings (keep .code-workspace, ignore local overrides)
+**/.vscode/settings.json
+**/.vscode/*.log
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Secrets - never commit
+**/secrets.h
+**/*.key
+**/*.pem
