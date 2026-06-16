@@ -9,7 +9,7 @@
 #define PIN_LED_RGB 21  // Built-in RGB LED on GPIO 21
 Adafruit_NeoPixel led(1, PIN_LED_RGB, NEO_RGB + NEO_KHZ800);
 
-String gate_id;
+char gate_id[16];
 
 const int LED_PIN = 2;
 const int GATE_PIN = 1;
@@ -279,7 +279,7 @@ void setup() {
 
     pinMode(LED_PIN, OUTPUT);
 
-    gate_id = identifyBoard();
+    strlcpy(gate_id, identifyBoard(), sizeof(gate_id));
     pinMode(GATE_PIN, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(GATE_PIN), handleSensor1, FALLING);
 

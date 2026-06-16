@@ -2,8 +2,6 @@
 
 #include <WiFi.h>
 
-String boardName = "UNKNOWN";
-
 struct BoardInfo {
     uint32_t id32;
     const char *name;
@@ -22,16 +20,14 @@ inline uint32_t getChipID32() {
 }
 
 
-inline String identifyBoard() {
+inline const char *identifyBoard() {
     uint32_t id32 = getChipID32();
 
     for (auto &b: boards) {
         if (id32 == b.id32) {
-            boardName = b.name;
             return b.name;
         }
     }
 
-    boardName = "UNKNOWN";
-    return boardName;
+    return "UNKNOWN";
 }
