@@ -16,10 +16,10 @@
 ## Naming Conventions & System Layers
 
 * **KRONOS:** The overall distributed wireless network topology and codebase.
-* **HADES:** The central PC software hosting the database and sliding-window event pairing algorithms.
-* **ATLAS:** The standalone Wi-Fi Access Point acting as the authoritative field master clock.
-* **CERBERUS:** The multi-threaded gate edge firmware handling interrupts and clock audits.
-* **HESPERUS:** The physical optical sensor modules (lasers or infrared beams).
+* **HADES:** The central PC software hosting the database, event management and scoring system.
+* **ATLAS:** The standalone Wi-Fi Access Point acting as the authoritative field master clock, and providing a private WiFi BSSID.
+* **CERBERUS:** The multi-threaded gate edge hardware/software handling gate messages and clock audits.
+* **HESPERUS:** The physical maze/track gate sensor modules.
 * **HERMES:** The concise HTTP application-layer packet payload protocol.
 
 ---
@@ -34,14 +34,15 @@
 
 ### 2. Network Provisioning
 
-The central `HADES` web server must be mapped to a fixed, unmoving network coordinate via a DHCP reservation or static IP mapping. Alternatively, the system natively supports multicast DNS (`mDNS`), allowing gates to dynamically connect via a hostname (e.g., `http://timing.local`).
+The central `HADES` web server must be mapped to a fixed, unmoving network coordinate via a DHCP reservation or static IP mapping. Alternatively, the system might use multicast DNS (`mDNS`), allowing gates to dynamically connect via a hostname (e.g., `http://timing.local`).
 
 ### 3. Visual Diagnostics on Track
 
-An onboard LED provides real-time state confirmation without an attached serial monitor:
-
+Onboard LEDs can provide real-time state confirmation without an attached serial monitor e.g.
 * **LED Off:** System operating normally; network clearing traffic flawlessly.
 * **LED Solid On:** Wi-Fi link down or server stalling; data packets are currently backing up safely inside the internal FreeRTOS memory queue.
+
+The gate hardware supports BLE - this could be used as an independent diagnostic channel.
 
 ---
 
