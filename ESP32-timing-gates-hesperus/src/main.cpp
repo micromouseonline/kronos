@@ -39,6 +39,8 @@ uint64_t cal_prev_tsf = 0;
 uint64_t cal_prev_proc = 0;
 
 const uint64_t DRIFT_MARGIN_US = 500;
+const int MAX_HTTP_RETRIES = 4;
+const int HTTP_TIMEOUT_MS  = 250;
 const uint64_t MIN_PLAUSIBLE_TSF = 300000000;
 
 static int consecutive_audit_failures = 0;
@@ -272,31 +274,44 @@ void uploadWorkerTask(void *pvParameters) {
                                       "&mode=" + clock_mode +
                                       "&type=" + type_str;
 
-                http.begin(request_path);
-                http.setTimeout(2500);
-                int httpCode = http.GET();
+                bool confirmed = false;
+                for (int attempt = 1; attempt <= MAX_HTTP_RETRIES && !confirmed; attempt++) {
+                    http.begin(request_path);
+                    http.setTimeout(HTTP_TIMEOUT_MS);
+                    int httpCode = http.GET();
 
-                if (httpCode > 0) {
-                    Serial.printf("[Async Worker] Sent (%s). Server Code: %d\n", clock_mode.c_str(), httpCode);
-
-                    // --- PATCH 1: THE NETWORK RECEIPT ESCAPE HATCH ---
-                    // If the server answered 200 OK and we are in SYN mode, force check
-                    // if the hardware TSF layer has recovered.
-                    if (httpCode == 200 && clock_mode == "SYN") {
-                        uint64_t raw_tsf_check = esp_wifi_get_tsf_time(WIFI_IF_STA);
-                        if (raw_tsf_check > MIN_PLAUSIBLE_TSF) {
-                            Serial.println("[ESCAPE HATCH] Server confirmed online. Attempting TSF re-entry.");
-                            // Forcing audit engine reset
-                            has_initial_baseline = false;
-                            cal_prev_tsf = 0;
-                            cal_prev_proc = 0;
-                            consecutive_audit_failures = 0;
+                    if (httpCode == 200) {
+                        if (http.getString() == tsf_buffer) {
+                            confirmed = true;
+                            Serial.printf("[Async Worker] Confirmed (%s) attempt %d.\n",
+                                          clock_mode.c_str(), attempt);
+                        } else {
+                            Serial.printf("[Async Worker] TSF echo mismatch attempt %d.\n", attempt);
                         }
+                    } else {
+                        Serial.printf("[Async Worker] HTTP error attempt %d: %s\n", attempt,
+                                      httpCode > 0 ? String(httpCode).c_str()
+                                                   : http.errorToString(httpCode).c_str());
                     }
-                } else {
-                    Serial.printf("[Async Worker] HTTP Error: %s\n", http.errorToString(httpCode).c_str());
+                    http.end();
                 }
-                http.end();
+
+                if (!confirmed) {
+                    Serial.println("[Async Worker] Event dropped after max retries.");
+                }
+
+                // --- PATCH 1: NETWORK RECEIPT ESCAPE HATCH ---
+                // Only trigger TSF re-entry on confirmed delivery in SYN mode.
+                if (confirmed && clock_mode == "SYN") {
+                    uint64_t raw_tsf_check = esp_wifi_get_tsf_time(WIFI_IF_STA);
+                    if (raw_tsf_check > MIN_PLAUSIBLE_TSF) {
+                        Serial.println("[ESCAPE HATCH] Server confirmed online. Attempting TSF re-entry.");
+                        has_initial_baseline = false;
+                        cal_prev_tsf = 0;
+                        cal_prev_proc = 0;
+                        consecutive_audit_failures = 0;
+                    }
+                }
             } else {
                 Serial.println("[Async Worker] Link down. Internal queue stacking.");
             }

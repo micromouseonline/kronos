@@ -20,6 +20,7 @@ HEARTBEAT_TIMEOUT_SEC = 15.0
 # --- Thread-Safe Memory Architecture ---
 ledger_lock = threading.Lock()
 event_ledger = []
+last_event_tsf = {}  # {(gate_id, packet_type): tsf_value} — deduplication for retried events
 system_registry = {
     'GATE_01': {'last_seen': datetime.datetime.now(), 'status': 'ONLINE', 'clock_mode': 'UNKNOWN', 'bssid': 'UNKNOWN'},
     'GATE_02': {'last_seen': datetime.datetime.now(), 'status': 'ONLINE', 'clock_mode': 'UNKNOWN', 'bssid': 'UNKNOWN'}
@@ -164,9 +165,13 @@ class TimingGateHandler(http.server.BaseHTTPRequestHandler):
             if packet_type == 'HB':
                 is_heartbeat = True
             else:
-                event_ledger.append({
-                    'id': gate_id, 'tsf': tsf_value, 'bssid': ap_bssid, 'mode': clock_mode, 'arrival_time': now
-                })
+                key = (gate_id, packet_type)
+                is_duplicate = last_event_tsf.get(key) == tsf_value
+                if not is_duplicate:
+                    last_event_tsf[key] = tsf_value
+                    event_ledger.append({
+                        'id': gate_id, 'tsf': tsf_value, 'bssid': ap_bssid, 'mode': clock_mode, 'arrival_time': now
+                    })
 
         # Log and respond outside the lock - avoids holding it during I/O
         if reconnect_msg:
@@ -176,11 +181,11 @@ class TimingGateHandler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
             return
 
-        # Instantly respond to the micro-controller before disk I/O ever happens
+        # Echo the TSF back so the gate can confirm this specific event was received.
         self.send_response(200)
         self.send_header('Content-type', 'text/plain')
         self.end_headers()
-        self.wfile.write(b"200 OK")
+        self.wfile.write(tsf_raw.encode())
 
     def log_message(self, format, *args):
         return
