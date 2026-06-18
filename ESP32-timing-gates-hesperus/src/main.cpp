@@ -1,6 +1,9 @@
+// #include "esp_wifi.h"
 #include <Adafruit_NeoPixel.h>
 #include <HTTPClient.h>
 #include <WiFi.h>
+
+#include "esp_wifi.h"
 
 #include "boards.h"   // contains the board MAC addresses to look up the identifiers
 #include "secrets.h"  // these are the network credentials neede to connect to the AP
@@ -40,7 +43,7 @@ uint64_t cal_prev_proc = 0;
 
 const uint64_t DRIFT_MARGIN_US = 500;
 const int MAX_HTTP_RETRIES = 4;
-const int HTTP_TIMEOUT_MS  = 250;
+const int HTTP_TIMEOUT_MS = 250;
 const uint64_t MIN_PLAUSIBLE_TSF = 300000000;
 
 static int consecutive_audit_failures = 0;
@@ -92,7 +95,6 @@ void ledDiagnosticTask(void *pvParameters) {
     }
 }
 
-extern "C" uint64_t esp_wifi_get_tsf_time(wifi_interface_t interface);
 
 // --- HARDWARE INTERRUPT SERVICE ROUTINES (ISRs) WITH DEBOUNCE ---
 void IRAM_ATTR handleSensor1() {
@@ -338,14 +340,15 @@ void setup() {
     WiFi.persistent(false);
     WiFi.disconnect(true);
     WiFi.begin(ssid, password, 0, bssid);
+    esp_wifi_set_ps(WIFI_PS_MAX_MODEM);
 
     TimerHandle_t hbTimer = xTimerCreate("HB_Timer", pdMS_TO_TICKS(5147), pdTRUE, (void *) 0, heartbeatTimerCallback);
     if (hbTimer != NULL) {
         xTimerStart(hbTimer, 0);
     }
 
-    xTaskCreatePinnedToCore(ledDiagnosticTask, "LED_Task",     2048, NULL, 1, &ledTaskHandle,    1);
-    xTaskCreatePinnedToCore(uploadWorkerTask,  "UploadWorker", 8192, NULL, 2, &uploadTaskHandle, 1);
+    xTaskCreatePinnedToCore(ledDiagnosticTask, "LED_Task", 2048, NULL, 1, &ledTaskHandle, 1);
+    xTaskCreatePinnedToCore(uploadWorkerTask, "UploadWorker", 8192, NULL, 2, &uploadTaskHandle, 1);
 }
 
 // --- MAIN LOOP EXECUTION TASK ---
