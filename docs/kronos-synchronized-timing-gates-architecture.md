@@ -263,4 +263,22 @@ TSF Gap Statistics (µs)
 
  - Multiple setups may be a problem because the credentials and identities are compiled in from a single source. Some kind of OTA configuration would be best. 
 
- - In a fairly quiet environment we should be able to easily run 3-4 independent systems with two gates. We might want, for example, classic maze, half-size maze, line-followers, pursuit, and drag race. That is 5 systems so theexperiment needs to be done.
+ - In a fairly quiet environment we should be able to easily run 3-4 independent systems with two gates. We might want, for example, classic maze, half-size maze, line-followers, pursuit, and drag race. That is 5 systems so the experiment needs to be done.
+
+## Power Management and Alternative Transport Methods
+
+Battery operated gates are clearly vulnerable to low-capacity batteries. Left fully operational, an ESP32-S3 might consume an average of 50mA while idde with very short bursts of 100mA or so while transmitting. We can, in our use-case, assume that the 50mA is about average during a session. Even with the processor in full modem-sleep with 
+```
+   esp_wifi_set_ps(WIFI_PS_MAX_MODEM);
+```
+the average current consumption is stlll quite high since the radio will keep waking up every three beacon frames or so to update the TSF clock. It must also wake up every time a broadcast frame arrives just in case it has to do something about it.
+
+On that last issue, There are a surprising number of broadcast frames on any network but we can keep tem to a minimum by using a dedicated AP with the minimum of devices attached.
+
+One abvious improvement might be to use a lower power device in the gate. An ESP32-C3 should be perfectly adequate for the task and might reduce the current draw by some tens of mA though it is hard to get a definite value without testing specific boards.
+
+For significant power savings, we must use more cunning. In the configuration described above, the gates are continuously connected to the AP and listen for beacon frames in order to keep the local TSF counter closely synchronised with the network. If we were to characterise the local drift of the TSF counter and the internal processor clock, it might be possible for the radio to remain completely off for longer periods. Suppose  the local clocks drifted by sme 10ppm. That would mean a possible drift of 50us over the course of five seconds. This is still not very much. We could disable the radio for 5 second periods andturn it on for just long enough to capture a beacon frame. that contains enough information to re-sync the clocks and calculate an interpolation factor to characterise the drift.
+
+When a physical event occurs during a radio blackout, it is instantly timestamped using the monotonic processor clock. The firmware then applies the drift compensation model to mathematically correct and re-time the event before queuing the notification packet.
+
+Implementing this 5-second polling interval means that telemetry, commands, and heartbeat diagnostic data are systematically batched, introducing a maximum transmission delay of up to 5 seconds without sacrificing sub-microsecond event capture precision.
