@@ -267,6 +267,8 @@ TSF Gap Statistics (µs)
 
 ## Power Management and Alternative Transport Methods
 
+### Power saving
+
 Battery operated gates are clearly vulnerable to low-capacity batteries. Left fully operational, an ESP32-S3 might consume an average of 50mA while idde with very short bursts of 100mA or so while transmitting. We can, in our use-case, assume that the 50mA is about average during a session. Even with the processor in full modem-sleep with 
 ```
    esp_wifi_set_ps(WIFI_PS_MAX_MODEM);
@@ -282,3 +284,20 @@ For significant power savings, we must use more cunning. In the configuration de
 When a physical event occurs during a radio blackout, it is instantly timestamped using the monotonic processor clock. The firmware then applies the drift compensation model to mathematically correct and re-time the event before queuing the notification packet.
 
 Implementing this 5-second polling interval means that telemetry, commands, and heartbeat diagnostic data are systematically batched, introducing a maximum transmission delay of up to 5 seconds without sacrificing sub-microsecond event capture precision.
+### Alternate Transport Methods: Connectionless OSI Layer-2 Messaging
+
+Standard Wi-Fi traffic - specifically over TCP - offers the immense advantage of structural reliability. TCP packet delivery is fully guaranteed within a functional network, and the plaintext nature of HTTP payloads makes them simple to observe, interpret, and test. 
+
+However, standard Wi-Fi introduces considerable power and processing overhead during connection creation and teardown. Maintaining an active Wi-Fi connection forces the edge node to participate in background subnet maintenance tasks, such as parsing multi-cast and broadcast frames. This processes unneeded data, places a continuous load on the CPU, and keeps the power-hungry RF circuitry operational.
+
+A significantly leaner transport protocol exists in the form of **ESP-NOW**. Native to the Espressif ecosystem, ESP-NOW sits between UDP and TCP in terms of reliability but bypasses connection complexities. ESP-NOW packets utilize modified IEEE 802.11 vendor-specific action frames. They are directed to an explicit receiver MAC address, carry a concise single-frame payload, and feature built-in hardware acknowledgments (ACKs). 
+
+Because link-layer retries are handled automatically at the silicon layer, an ESP-NOW frame is far more likely to reach its destination quickly than a standard UDP packet. To guarantee absolute transport resilience, a lightweight application-layer confirmation layer can easily be compiled on top. Under this paradigm, there is no network connection state to maintain and no handshake overhead - the firmware simply wakes the radio, fires a single layer-2 frame, verifies the hardware ACK, and instantly powers down.
+
+Crucially, this shift does not sacrifice master timeline synchronization. The edge firmware can still monitor the master BSSID clock by passively capturing standard AP beacon frames. Every 5 seconds, the firmware enables Wi-Fi promiscuous mode, listens on the designated channel for a maximum window of 100ms until a beacon frame arrives from **CHARON**, and extracts the authoritative TSF timestamp. 
+
+While ESP-NOW requires more manual development overhead to coordinate custom packet sequencing and acknowledgement tracking, its minimal airtime footprint makes it the optimal choice for communicating precision event data within crowded or high-attenuation RF environments.
+
+
+
+
