@@ -23,7 +23,8 @@ event_ledger = []
 last_event_tsf = {}  # {(gate_id, packet_type): tsf_value} — deduplication for retried events
 system_registry = {
     'GATE_01': {'last_seen': datetime.datetime.now(), 'status': 'ONLINE', 'clock_mode': 'UNKNOWN', 'bssid': 'UNKNOWN'},
-    'GATE_02': {'last_seen': datetime.datetime.now(), 'status': 'ONLINE', 'clock_mode': 'UNKNOWN', 'bssid': 'UNKNOWN'}
+    'GATE_02': {'last_seen': datetime.datetime.now(), 'status': 'ONLINE', 'clock_mode': 'UNKNOWN', 'bssid': 'UNKNOWN'},
+    'GATE_C3_03': {'last_seen': datetime.datetime.now(), 'status': 'ONLINE', 'clock_mode': 'UNKNOWN', 'bssid': 'UNKNOWN'}
 }
 
 # New Non-Blocking Async Logging Queue
