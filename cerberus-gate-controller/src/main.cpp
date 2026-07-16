@@ -58,6 +58,8 @@ void setup() {
   init_neokey_buttons();
   lcd.init();  // setting up the display takes 500ms
   lcd.setRotation(LCD_ROTATION);
+  lvgl_display_init(lcd);  // calls lv_init() -- must run before any lv_obj_* call
+  lvgl_touch_init(lcd);
 
   ui_init();  // defaults to loadScreen(SCREEN_ID_MENU)
 #if !HAS_TOUCH_INPUT
