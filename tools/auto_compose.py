@@ -3,9 +3,9 @@ import configparser
 
 def get_config():
     config = configparser.ConfigParser()
-    paths = ["platformio.ini", "../base-boards.ini"]
+    paths = ["platformio.ini", "../boards.ini"]
     if not os.path.exists("platformio.ini") and os.path.exists("src"):
-        paths = ["../platformio.ini", "../../base-boards.ini"]
+        paths = ["../platformio.ini", "../boards.ini"]
     config.read(paths)
     return config
 
@@ -37,7 +37,7 @@ def generate_markdown(config, output_path="ARDUINO_GUIDE.md"):
     """Generates the Markdown guide for Arduino IDE users by resolving inherited properties."""
     with open(output_path, "w") as f:
         f.write("# Arduino IDE Setup Reference Guide\n")
-        f.write("> **Note:** This file is auto-generated from `platformio.ini` and `base-boards.ini`.\n\n")
+        f.write("> **Note:** This file is auto-generated from `platformio.ini` and `boards.ini`.\n\n")
         
         for section in config.sections():
             if not section.startswith("env:"): 
