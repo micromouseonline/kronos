@@ -1,0 +1,22 @@
+{
+  "files": [
+    "actions.h",
+    "fonts.h",
+    "images.c",
+    "images.h",
+    "screens.c",
+    "screens.h",
+    "structs.h",
+    "styles.c",
+    "styles.h",
+    "ui.c",
+    "ui.h",
+    "ui_font_dseg_40.c",
+    "ui_font_freesans48.c",
+    "ui_font_mono16.c",
+    "ui_font_mono18.c",
+    "ui_font_mono24_numbers.c",
+    "ui_font_mono54_numbers.c",
+    "vars.h"
+  ]
+}

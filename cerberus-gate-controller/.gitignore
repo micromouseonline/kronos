@@ -1,0 +1,6 @@
+.pio
+.cache
+.dummy
+.vscode/
+compile_commands.json
+ARDUINO_GUIDE.md
