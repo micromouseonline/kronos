@@ -20,7 +20,16 @@ static LGFX *lcd_ptr = nullptr;
 static void disp_flush_cb(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_p) {
   const int32_t w = area->x2 - area->x1 + 1;
   const int32_t h = area->y2 - area->y1 + 1;
-  lcd_ptr->pushImageDMA(area->x1, area->y1, w, h, reinterpret_cast<const uint16_t *>(color_p));
+  // pushImageDMA<uint16_t> has no byte-swap control at all (checked
+  // LovyanGFX's LGFXBase.hpp directly). pushPixelsDMA's (data, len, swap)
+  // overload does, and swap=true is what a known-working reference
+  // implementation (timer-demo/main.cpp, same LV_COLOR_DEPTH=16 /
+  // LV_COLOR_16_SWAP=0 lv_conf.h) uses -- pushImageDMA was silently wrong
+  // on every board, just more visible on some panels than others.
+  lcd_ptr->startWrite();
+  lcd_ptr->setAddrWindow(area->x1, area->y1, w, h);
+  lcd_ptr->pushPixelsDMA(reinterpret_cast<const uint16_t *>(color_p), w * h, true);
+  lcd_ptr->endWrite();
   lv_disp_flush_ready(drv);
 }
 
