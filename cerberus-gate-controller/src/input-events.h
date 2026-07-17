@@ -1,6 +1,5 @@
 // ----------------------------------------------------------------------------
-//  input-events.h — Generic input-event queue shared by every input producer
-//  (touch via eez-actions.cpp, GPIO buttons, NeoKey, and eventually an I2C
+//  input-events.h — Generic input-event queue shared by every input producer:
 //  button device / WiFi messages). Producers call input_queue_post();
 //  loop() calls input_queue_drain() once per iteration.
 //
@@ -31,6 +30,11 @@ struct InputEvent {
   uint32_t timestamp;
   // No `type` field in v1 -- PRESSED is the only event type today. Add one
   // (PRESSED/RELEASED/HELD) if a producer ever needs to distinguish them.
+  void debug_print() {
+    char buf[32];
+    snprintf(buf, 32, "EVT: %2d, %2d, %lu ms\n", int(id), int(source), timestamp);
+    Serial.print(buf);
+  }
 };
 
 inline QueueHandle_t xInputQueue = nullptr;
@@ -57,5 +61,6 @@ inline void input_queue_drain() {
   }
   InputEvent evt;
   while (xQueueReceive(xInputQueue, &evt, 0) == pdTRUE) {
+    evt.debug_print();
   }
 }
