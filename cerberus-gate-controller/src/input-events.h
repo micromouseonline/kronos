@@ -16,7 +16,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
 
-#include "gui-button.h"  // ButtonID
+enum ButtonID { BTN_ARM, BTN_START, BTN_GOAL, BTN_RESET, NUM_BUTTONS };
 
 enum class InputSource {
   TOUCH,

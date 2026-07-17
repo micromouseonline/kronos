@@ -13,9 +13,8 @@
 #include "screens.h"
 #include "ui.h"
 
-#include "display.h"         // LGFX -- gui-button.h needs this already visible
-#include "gui-button.h"      // ButtonID
-#include "input-events.h"    // input_queue_post, InputSource
+#include "display.h"          // LGFX
+#include "input-events.h"     // input_queue_post, InputSource, ButtonID
 
 void action_on_timer_arm(lv_event_t *e) {
   input_queue_post(BTN_ARM, InputSource::TOUCH);

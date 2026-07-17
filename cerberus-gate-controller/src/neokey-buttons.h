@@ -7,7 +7,6 @@
 #pragma once
 
 #include "config.h"
-#include "gui-button.h"
 #include "input-events.h"
 
 #if HAS_NEOKEY_BUTTONS

@@ -11,7 +11,6 @@
 #pragma once
 
 #include "config.h"
-#include "gui-button.h"  // ButtonID
 #include "input-events.h"
 
 #if HAS_GPIO_BUTTONS
