@@ -98,14 +98,5 @@ void loop() {
   input_queue_drain();
   lvgl_task_handler();
   ui_tick();
-
-  static uint32_t last_neokey_cycle = millis();
-  static size_t neokey_palette_index = 0;
-  if (millis() - last_neokey_cycle >= NEOKEY_CYCLE_PERIOD_MS) {
-    neokey_set_all(NEOKEY_PALETTE[neokey_palette_index]);
-    neokey_palette_index = (neokey_palette_index + 1) % NEOKEY_PALETTE_LEN;
-    last_neokey_cycle = millis();
-  }
-
   delay(50);
 }
