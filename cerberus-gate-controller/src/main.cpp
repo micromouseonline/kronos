@@ -4,23 +4,22 @@
 
 // #include "board-config.h"
 
-#include "status-led.h"
+#include "status-led/status-led.h"
 
-#include "display.h"
+#include "display/display.h"
 
+#include "display/lvgl-bridge.h"
+#include "display/touch-calibration.h"
 #include "gpio-buttons.h"
 #include "input-events.h"
 #include "neokey-buttons.h"
-#include "neokey-pixels.h"
-#include "touch-calibration.h"
-
-#include "lvgl-bridge.h"
+#include "neokey/neokey-pixels.h"
 
 // lib/ui/ -- EEZ Studio generated. Every board gets the display now (see
 // boards.ini's feature_lvgl); screens.h is needed here for SCREEN_ID_MAIN,
 // used below to skip the touch-only MENU screen on boards with no touch.
-#include "screens.h"
-#include "ui.h"
+#include "ui/screens.h"
+#include "ui/ui.h"
 
 StatusLED statusIndicator;
 static LGFX lcd;
@@ -60,6 +59,16 @@ void setup() {
   lcd.setRotation(LCD_ROTATION);
   lvgl_display_init(lcd);  // calls lv_init() -- must run before any lv_obj_* call
   lvgl_touch_init(lcd);
+  // Put this in your setup/init function after LVGL initialization
+  // LVGL v8.4 Runtime Long-Press Modification
+  lv_indev_t *indev = lv_indev_get_next(NULL);
+  while (indev) {
+    // In V8, type is accessed via the driver structure attached to the indev
+    if (indev->driver->type == LV_INDEV_TYPE_POINTER) {
+      indev->driver->long_press_time = 1500;  // Time in milliseconds (e.g., 1 second)
+    }
+    indev = lv_indev_get_next(indev);
+  }
 
   ui_init();  // defaults to loadScreen(SCREEN_ID_MENU)
 #if !HAS_TOUCH_INPUT

@@ -11,7 +11,7 @@
 //  files there, not as another branch here.
 // ============================================================================
 
-#include "board-select.h"
+#include "boards/board-select.h"
 
 // ============================================================================
 //  2. APPLICATION SETTINGS & BEHAVIOR

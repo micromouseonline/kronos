@@ -6,7 +6,7 @@
 //    A short-press -> BTN_ARM
 //    B short-press -> BTN_START
 //    C short-press -> BTN_GOAL
-//    C long-press   -> BTN_RESET  (deliberately the harder-to-reach action)
+//    C long-press   -> BTN_TOUCH  (deliberately the harder-to-reach action)
 // ----------------------------------------------------------------------------
 #pragma once
 
@@ -47,7 +47,7 @@ inline void poll_gpio_buttons() {
     unsigned long held_ms = millis() - c_press_start_ms;
     c_was_down = false;
     if (held_ms >= BUTTON_C_LONG_PRESS_MS) {
-      input_queue_post(BTN_RESET, InputSource::GPIO_BUTTON);
+      input_queue_post(BTN_TOUCH, InputSource::GPIO_BUTTON);
     } else {
       input_queue_post(BTN_GOAL, InputSource::GPIO_BUTTON);
     }

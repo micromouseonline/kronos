@@ -216,6 +216,7 @@ void create_screen_menu() {
                     objects.obj10 = obj;
                     lv_obj_set_pos(obj, -17, 38);
                     lv_obj_set_size(obj, LV_PCT(46), LV_PCT(28));
+                    lv_obj_add_event_cb(obj, action_on_menu_calibrate, LV_EVENT_PRESSED, (void *)0);
                     add_style_menu_option_panel(obj);
                     lv_obj_set_style_bg_color(obj, lv_color_hex(0x1e1e22), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xa0a5b5), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -265,8 +266,7 @@ void create_screen_main() {
             objects.btn_arm = obj;
             lv_obj_set_pos(obj, 8, 214);
             lv_obj_set_size(obj, 60, 22);
-            lv_obj_add_event_cb(obj, action_on_timer_arm_long, LV_EVENT_PRESSED, (void *)0);
-            lv_obj_add_event_cb(obj, action_on_timer_arm, LV_EVENT_CLICKED, (void *)0);
+            lv_obj_add_event_cb(obj, action_on_timer_arm, LV_EVENT_PRESSED, (void *)0);
             lv_obj_set_style_bg_color(obj, lv_color_hex(0xffee0a), LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_shadow_width(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
             {
@@ -288,7 +288,7 @@ void create_screen_main() {
             objects.btn_start = obj;
             lv_obj_set_pos(obj, 89, 214);
             lv_obj_set_size(obj, 60, 22);
-            lv_obj_add_event_cb(obj, action_on_timer_start, LV_EVENT_CLICKED, (void *)0);
+            lv_obj_add_event_cb(obj, action_on_timer_start, LV_EVENT_PRESSED, (void *)0);
             lv_obj_set_style_bg_color(obj, lv_color_hex(0x34c759), LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_shadow_width(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
             {
@@ -310,7 +310,7 @@ void create_screen_main() {
             objects.btn_goal = obj;
             lv_obj_set_pos(obj, 170, 214);
             lv_obj_set_size(obj, 60, 22);
-            lv_obj_add_event_cb(obj, action_on_timer_goal, LV_EVENT_CLICKED, (void *)0);
+            lv_obj_add_event_cb(obj, action_on_timer_goal, LV_EVENT_PRESSED, (void *)0);
             lv_obj_set_style_bg_color(obj, lv_color_hex(0xff3b30), LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_shadow_width(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
             {

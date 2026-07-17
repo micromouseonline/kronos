@@ -15,13 +15,14 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
 
-enum ButtonID { BTN_ARM, BTN_START, BTN_GOAL, BTN_RESET, NUM_BUTTONS };
+enum ButtonID { BTN_ARM, BTN_START, BTN_GOAL, BTN_TOUCH, NUM_BUTTONS };
 
 enum class InputSource {
   TOUCH,
   GPIO_BUTTON,
   NEOKEY_BUTTON,  // 4-button Adafruit NeoKey 1x4 (seesaw, I2C)
   // WIFI_MESSAGE,  // future: events synthesized from lib/net/messages.h traffic
+  NUM_SOURCES
 };
 
 struct InputEvent {
@@ -31,8 +32,18 @@ struct InputEvent {
   // No `type` field in v1 -- PRESSED is the only event type today. Add one
   // (PRESSED/RELEASED/HELD) if a producer ever needs to distinguish them.
   void debug_print() {
-    char buf[32];
-    snprintf(buf, 32, "EVT: %2d, %2d, %lu ms\n", int(id), int(source), timestamp);
+    // Lookup tables for names matching enum ordering
+    static const char* button_names[] = {"ARM", "START", "GOAL", "RESET"};
+    static const char* source_names[] = {"TOUCH", "GPIO_BUTTON", "NEOKEY_BUTTON"};
+
+    // Bounds checking to prevent undefined behavior if an invalid enum is passed
+    const char* btn_str = (id >= 0 && id < NUM_BUTTONS) ? button_names[id] : "UNKNOWN_BTN";
+
+    int src_idx = int(source);
+    const char* src_str = (src_idx >= 0 && src_idx < int(InputSource::NUM_SOURCES)) ? source_names[src_idx] : "UNKNOWN_SRC";
+
+    char buf[64];  // Increased buffer size to prevent truncation
+    snprintf(buf, sizeof(buf), "EVT: %s, %s, %lu ms\n", btn_str, src_str, (unsigned long)timestamp);
     Serial.print(buf);
   }
 };

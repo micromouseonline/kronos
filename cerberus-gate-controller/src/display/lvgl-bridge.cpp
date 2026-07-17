@@ -5,13 +5,22 @@
 #include <esp_heap_caps.h>
 #include <esp_timer.h>
 
-#include "board-select.h"
+#include "boards/board-select.h"
 
 #ifdef BOARD_HAS_PSRAM
 static constexpr uint32_t BUF_LINES = DISPLAY_HEIGHT;  // full-frame double buffer, PSRAM
 #else
 static constexpr uint32_t BUF_LINES = 20;  // small partial buffer, internal SRAM is scarce
 #endif
+
+static bool touch_lockout_active = false;
+static uint32_t touch_unlock_time = 0;
+
+// Call this function inside the EEZ Studio custom action
+// right before initiating a screen change
+void trigger_touch_lockout() {
+  touch_lockout_active = true;
+}
 
 static lv_disp_draw_buf_t draw_buf;
 static lv_disp_drv_t disp_drv;
@@ -42,10 +51,8 @@ void lvgl_display_init(LGFX &lcd) {
   lv_init();
 
 #ifdef BOARD_HAS_PSRAM
-  static lv_color_t *buf1 = static_cast<lv_color_t *>(
-      heap_caps_malloc(DISPLAY_WIDTH * BUF_LINES * sizeof(lv_color_t), MALLOC_CAP_SPIRAM));
-  static lv_color_t *buf2 = static_cast<lv_color_t *>(
-      heap_caps_malloc(DISPLAY_WIDTH * BUF_LINES * sizeof(lv_color_t), MALLOC_CAP_SPIRAM));
+  static lv_color_t *buf1 = static_cast<lv_color_t *>(heap_caps_malloc(DISPLAY_WIDTH * BUF_LINES * sizeof(lv_color_t), MALLOC_CAP_SPIRAM));
+  static lv_color_t *buf2 = static_cast<lv_color_t *>(heap_caps_malloc(DISPLAY_WIDTH * BUF_LINES * sizeof(lv_color_t), MALLOC_CAP_SPIRAM));
   lv_disp_draw_buf_init(&draw_buf, buf1, buf2, DISPLAY_WIDTH * BUF_LINES);
 #else
   static lv_color_t buf1[DISPLAY_WIDTH * BUF_LINES];
@@ -80,7 +87,30 @@ static lv_indev_drv_t indev_drv;
 static void touch_read_cb(lv_indev_drv_t *drv, lv_indev_data_t *data) {
   int32_t x = 0;
   int32_t y = 0;
-  if (lcd_ptr->getTouch(&x, &y)) {
+
+  // 1. Get current hardware touch state
+  bool is_pressed = lcd_ptr->getTouch(&x, &y);
+
+  // 2. Evaluate screen switch lockout
+  if (touch_lockout_active) {
+    if (!is_pressed) {
+      // Finger finally lifted! Clear the hard lock and start the 250ms countdown
+      touch_lockout_active = false;
+      touch_unlock_time = millis() + 250;
+    }
+    // Force LVGL to see the touch as released while the user holds down the old button
+    data->state = LV_INDEV_STATE_RELEASED;
+    return;
+  }
+
+  // 3. Evaluate the 250ms quiet cooldown window
+  if (millis() < touch_unlock_time) {
+    data->state = LV_INDEV_STATE_RELEASED;
+    return;
+  }
+
+  // 4. Normal Operation: Pass clean data through to LVGL
+  if (is_pressed) {
     data->state = LV_INDEV_STATE_PRESSED;
     data->point.x = x;
     data->point.y = y;
@@ -99,6 +129,7 @@ void lvgl_touch_init(LGFX &lcd) {
 
 #else  // !HAS_TOUCH_INPUT
 
-void lvgl_touch_init(LGFX &) {}
+void lvgl_touch_init(LGFX &) {
+}
 
 #endif  // HAS_TOUCH_INPUT

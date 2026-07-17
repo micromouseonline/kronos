@@ -11,7 +11,7 @@
 // ----------------------------------------------------------------------------
 #pragma once
 
-#include "board-select.h"
+#include "boards/board-select.h"
 
 #if HAS_NEOKEY_BUTTONS
 

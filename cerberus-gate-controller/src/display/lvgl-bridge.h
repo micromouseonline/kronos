@@ -29,3 +29,7 @@ void lvgl_touch_init(LGFX &lcd);
 // Drives LVGL's timer/animation/rendering handler (lv_timer_handler()). Call
 // every loop() iteration. Always real, same as lvgl_display_init().
 void lvgl_task_handler();
+
+// starts a lockout period to make sure the user's finger is clear of the screen
+// before a second touch event can register.
+void trigger_touch_lockout();

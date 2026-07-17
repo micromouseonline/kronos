@@ -11,7 +11,7 @@
 
 #if HAS_NEOKEY_BUTTONS
 
-#include "neokey-driver.h"
+#include "neokey/neokey-driver.h"
 
 // Non-blocking: hands neokey_init_task() to a background FreeRTOS task
 // instead of calling init_neokey_device() directly, so a board with no
@@ -44,7 +44,9 @@ inline void poll_neokey_buttons() {
 
 #else
 
-inline void init_neokey_buttons() {}
-inline void poll_neokey_buttons() {}  // no NeoKey on this board
+inline void init_neokey_buttons() {
+}
+inline void poll_neokey_buttons() {
+}  // no NeoKey on this board
 
 #endif
