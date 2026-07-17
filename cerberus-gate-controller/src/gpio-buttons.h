@@ -55,10 +55,12 @@ inline void poll_gpio_buttons() {
 }
 
 #else
+// if there are no GPIO input buttons, we just have dummy calls.
 
 inline void gpio_buttons_init() {
 }
+
 inline void poll_gpio_buttons() {
-}  // no physical buttons on this board
+}
 
 #endif
