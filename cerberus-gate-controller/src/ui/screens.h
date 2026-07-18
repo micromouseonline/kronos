@@ -42,14 +42,20 @@ typedef struct _objects_t {
     lv_obj_t *obj14;
     lv_obj_t *btn_touch;
     lv_obj_t *obj15;
+    lv_obj_t *pnl_mouse_name;
+    lv_obj_t *lbl_mouse_name;
+    lv_obj_t *pnl_run_times;
     lv_obj_t *obj16;
+    lv_obj_t *lst_run_times;
+    lv_obj_t *lbl_run_time_list;
     lv_obj_t *obj17;
-    lv_obj_t *run_times;
-    lv_obj_t *obj18;
-    lv_obj_t *obj19;
-    lv_obj_t *main_title;
-    lv_obj_t *obj20;
-    lv_obj_t *main_title_1;
+    lv_obj_t *lbl_leaderboard_list;
+    lv_obj_t *panel_current_run_time;
+    lv_obj_t *lbl_current_run_time;
+    lv_obj_t *pnl_run_number;
+    lv_obj_t *lbl_run_number;
+    lv_obj_t *pnl_time_remaining;
+    lv_obj_t *lbl_time_remainig;
 } objects_t;
 
 extern objects_t objects;
