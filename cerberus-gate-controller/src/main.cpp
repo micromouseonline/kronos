@@ -16,6 +16,7 @@
 #include "input-events.h"
 #include "neokey-buttons.h"
 #include "neokey/neokey-pixels.h"
+#include "race/race-timer-display.h"
 #include "race/race-timer.h"
 
 #include "wifi-scan.h"
@@ -74,7 +75,19 @@ RaceEvent race_event_from_button(ButtonID id) {
 
 void input_event_handler(const InputEvent &evt) {
   race_timer_handle_event(race_event_from_button(evt.id));
+  // now send the server message
+  //        DEFERRED
+  // now update the button leds
   switch (race_state) {
+    case RaceState::CALIBRATE:
+      // Gate test lights button when gate activated
+      neokey_set_colour(0, NP_OFF);
+      neokey_set_colour(1, NP_OFF);
+      neokey_set_colour(2, NP_OFF);
+      neokey_set_colour(3, NP_OFF);
+      neokey_set_colour(evt.id, NP_YELLOW);
+      break;
+
     case RaceState::ARMED:
       neokey_set_colour(0, NP_RED);
       neokey_set_colour(1, NP_OFF);
@@ -142,7 +155,7 @@ void setup() {
   }
 
   ui_init();  // defaults to loadScreen(SCREEN_ID_MENU)
-  race_timer_init();
+  race_timer_display_init();
 #if !HAS_TOUCH_INPUT
   // No touch, and MENU's only way to reach MAIN is a touch-only nav
   // button -- skip straight to the timer screen. Can't edit ui.c itself,

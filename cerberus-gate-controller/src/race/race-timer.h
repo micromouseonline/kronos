@@ -1,10 +1,11 @@
 // ----------------------------------------------------------------------------
 //  race-timer.h — Race timing state machine (docs/maze-timer-state-machine.md,
-//  workspace root). Knows nothing about input hardware -- it only consumes
-//  RaceEvents (whatever produces them: local buttons today, Serial/HTTP
-//  later -- see main.cpp's input_event_handler() for the current
-//  ButtonID -> RaceEvent mapping), drives a Stopwatch-based Run Timer, and
-//  pushes results into the run-times / leaderboard labels on SCREEN_ID_MAIN.
+//  workspace root). This is the model: state machine + run/leaderboard data.
+//  It knows nothing about input hardware (only RaceEvents -- see main.cpp's
+//  input_event_handler() for the current ButtonID -> RaceEvent mapping) and
+//  nothing about display hardware (no lv_* calls, no ui/screens.h -- see
+//  race-timer-display.h, which reads this file's data/getters each render
+//  tick and owns SCREEN_ID_MAIN's labels).
 //
 //  States: CALIBRATE, NEW_MOUSE, WAITING, ARMED, RUNNING, GOAL. CALIBRATE
 //  here is this race state machine's boot state and is unrelated to
@@ -22,7 +23,6 @@
 #include <stdio.h>
 
 #include "stopwatch.h"
-#include "ui/screens.h"
 
 const char *mouse_names[] = {
     // Original list
@@ -72,9 +72,24 @@ constexpr size_t NUM_MICE = sizeof(mouse_names) / sizeof(mouse_names[0]);
 // (input-events.h), which is a raw button/touch press from a specific
 // source; something upstream (main.cpp today) decides what a given
 // InputEvent means as a RaceEvent.
-enum RaceEvent { EV_NONE, EV_NEW_MOUSE, EV_ARM, EV_START, EV_GOAL, EV_RESTART };
+enum RaceEvent {
+  EV_NONE,       //
+  EV_NEW_MOUSE,  //
+  EV_ARM,        //
+  EV_START,      //
+  EV_GOAL,       //
+  EV_RESTART     //
+};
 
-enum class RaceState : uint8_t { CALIBRATE, NEW_MOUSE, WAITING, ARMED, RUNNING, GOAL };
+enum class RaceState : uint8_t {
+  CALIBRATE,  //
+  NEW_MOUSE,  //
+  WAITING,    // waiting for new mouse
+  ARMED,      //
+  RUNNING,    //
+  GOAL,       //
+  TIMED_OUT   // mouse still running but timed out
+};
 
 struct RaceRun {
   uint16_t mouse_id;
@@ -98,9 +113,14 @@ inline size_t mouse_first_run_index = 0;
 // fresh id. The display name wraps: mouse_names[mouse_id % NUM_MICE].
 inline uint16_t mouse_id = 0;
 
-inline Stopwatch run_sw;
+inline Stopwatch run_sw;    // measures individual run time
+inline Stopwatch entry_sw;  // measures elapsed maze time
+
 inline RaceState race_state = RaceState::CALIBRATE;
 inline uint16_t mouse_run_count = 0;
+
+const uint32_t RACE_TIME_LIMIT = 5L * 60L * 1000L;
+inline uint32_t time_left = RACE_TIME_LIMIT;
 
 inline RaceState race_timer_get_state() {
   return race_state;
@@ -113,74 +133,32 @@ inline void race_timer_format_time(uint32_t ms, char *buf, size_t len) {
   snprintf(buf, len, "%02u:%02u.%03u", (unsigned)minutes, (unsigned)seconds, (unsigned)millis_part);
 }
 
-/**
- * For the run times and the leaderboard, we maintain/ simple text buffers
- * and add lines to them as needed.
- * The text is cleared and recreated whenever a new time is recorded because
- * that is the simplest way to keep them up to date.
- *
- * The default panel size can only hold 5 lines of 16 characters but we
- * set aside more than than to allow for some flexibility
- */
-struct LabelListBuffer {
-  char text[160];
-  size_t len = 0;
+inline void race_timer_format_time_seconds(uint32_t ms, char *buf, size_t len) {
+  uint32_t minutes = ms / 60000;
+  uint32_t seconds = (ms / 1000) % 60;
+  snprintf(buf, len, "%02u:%02u", (unsigned)minutes, (unsigned)seconds);
+}
+
+//============================================================================
+struct LeaderboardEntry {
+  uint16_t mouse_id;
+  uint32_t best_time_ms;
 };
 
-inline LabelListBuffer run_times_buf;
-inline LabelListBuffer leaderboard_buf;
-
-inline void label_list_clear(LabelListBuffer &buf, lv_obj_t *label) {
-  buf.text[0] = '\0';
-  buf.len = 0;
-  lv_label_set_text(label, buf.text);
-}
-
-inline void label_list_append(LabelListBuffer &buf, lv_obj_t *label, const char *line) {
-  int written = snprintf(buf.text + buf.len, sizeof(buf.text) - buf.len, "%s%s", buf.len ? "\n" : "", line);
-  if (written > 0 && (size_t)written < sizeof(buf.text) - buf.len) {
-    buf.len += (size_t)written;
-  }
-  lv_label_set_text(label, buf.text);
-}
-
-//============================================================================
-
-// Shows the current mouse's own runs -- race_runs[mouse_first_run_index,
-// race_run_count), which is at most MAX_RUNS_PER_MOUSE entries because runs
-// for a given mouse are always contiguous.
-inline void race_timer_update_run_times() {
-  label_list_clear(run_times_buf, objects.lbl_run_time_list);
-  for (size_t i = mouse_first_run_index; i < race_run_count; i++) {
-    char time_str[16];
-    race_timer_format_time(race_runs[i].time_ms, time_str, sizeof(time_str));
-    char line[32];
-    snprintf(line, sizeof(line), "%u: %s", (unsigned)race_runs[i].run_number, time_str);
-    label_list_append(run_times_buf, objects.lbl_run_time_list, line);
-  }
-}
-
-//============================================================================
 /**
- * Shows the fastest run for each mouse, best time first, top TOP_N mice.
+ * Computes the fastest run for each mouse seen this session, sorted fastest
+ * first, into out[0..return value). out must have room for at least
+ * race_run_count entries (MAX_RESULTS is always enough).
  *
  * Because each mouse's runs are one contiguous block in race_runs[], a
  * single forward pass finds every mouse's best time: walk the array and
- * close out the previous block's minimum each time mouse_id changes.
- * The resulting per-mouse candidate list is small (one entry per mouse
- * seen this session), so a plain insertion sort is fine.
+ * close out the previous block's minimum each time mouse_id changes. The
+ * resulting per-mouse list is small (one entry per mouse seen this
+ * session), so a plain insertion sort is fine.
  */
-inline void race_timer_update_leaderboard() {
-  static constexpr size_t TOP_N = 5;
-
-  struct Candidate {
-    uint16_t mouse_id;
-    uint32_t best_time_ms;
-  };
-  Candidate candidates[MAX_RESULTS];
+inline size_t race_timer_compute_leaderboard(LeaderboardEntry *out, size_t max_out) {
   size_t candidate_count = 0;
-
-  for (size_t i = 0; i < race_run_count;) {
+  for (size_t i = 0; i < race_run_count && candidate_count < max_out;) {
     uint16_t id = race_runs[i].mouse_id;
     uint32_t best = race_runs[i].time_ms;
     size_t j = i + 1;
@@ -190,30 +168,21 @@ inline void race_timer_update_leaderboard() {
       }
       j++;
     }
-    candidates[candidate_count++] = {id, best};
+    out[candidate_count++] = {id, best};
     i = j;
   }
 
   // insertion sort by best_time_ms ascending
   for (size_t i = 1; i < candidate_count; i++) {
-    Candidate key = candidates[i];
+    LeaderboardEntry key = out[i];
     size_t j = i;
-    while (j > 0 && candidates[j - 1].best_time_ms > key.best_time_ms) {
-      candidates[j] = candidates[j - 1];
+    while (j > 0 && out[j - 1].best_time_ms > key.best_time_ms) {
+      out[j] = out[j - 1];
       j--;
     }
-    candidates[j] = key;
+    out[j] = key;
   }
-
-  label_list_clear(leaderboard_buf, objects.lbl_leaderboard_list);
-  size_t shown = candidate_count < TOP_N ? candidate_count : TOP_N;
-  for (size_t i = 0; i < shown; i++) {
-    char time_str[16];
-    race_timer_format_time(candidates[i].best_time_ms, time_str, sizeof(time_str));
-    char line[40];
-    snprintf(line, sizeof(line), "%u: %s %s", (unsigned)(i + 1), mouse_names[candidates[i].mouse_id % NUM_MICE], time_str);
-    label_list_append(leaderboard_buf, objects.lbl_leaderboard_list, line);
-  }
+  return candidate_count;
 }
 
 //============================================================================
@@ -227,9 +196,6 @@ inline void race_timer_commit_run(uint32_t time_ms) {
     r.run_number = mouse_run_count;
     r.time_ms = time_ms;
   }
-
-  race_timer_update_run_times();
-  race_timer_update_leaderboard();
 }
 
 //============================================================================
@@ -241,8 +207,10 @@ inline void race_timer_enter_new_mouse() {
   mouse_id++;
   mouse_run_count = 0;
   mouse_first_run_index = race_run_count;
-  lv_label_set_text(objects.lbl_mouse_name, mouse_names[mouse_id % NUM_MICE]);
+  time_left = RACE_TIME_LIMIT;
   race_state = RaceState::WAITING;
+  run_sw.reset();
+  entry_sw.reset();
 }
 
 //============================================================================
@@ -265,6 +233,7 @@ inline void race_timer_handle_event(RaceEvent event) {
 
   switch (race_state) {
     case RaceState::CALIBRATE:
+
       if (event == EV_NEW_MOUSE || event == EV_RESTART) {
         race_timer_enter_new_mouse();
       }
@@ -276,13 +245,13 @@ inline void race_timer_handle_event(RaceEvent event) {
       } else if (event == EV_RESTART) {
         race_timer_enter_new_mouse();
       }
+      entry_sw.restart();
       break;
 
     case RaceState::ARMED:
       if (event == EV_START) {
         run_sw.restart();
         mouse_run_count++;
-        lv_label_set_text_fmt(objects.lbl_run_number, "%u", (unsigned)mouse_run_count);
         race_state = RaceState::RUNNING;
       } else if (event == EV_NEW_MOUSE || event == EV_RESTART) {
         race_timer_enter_new_mouse();
@@ -318,27 +287,7 @@ inline void race_timer_handle_event(RaceEvent event) {
 }
 
 inline void race_timer_init() {
-  label_list_clear(run_times_buf, objects.lbl_run_time_list);
-}
-
-// Called every loop() iteration regardless of events, so the Run Timer
-// redraws live while RUNNING.
-inline void race_timer_render() {
-  char buf[16];
-  switch (race_state) {
-    case RaceState::CALIBRATE:
-      lv_label_set_text(objects.lbl_current_run_time, ".........");
-      break;
-    case RaceState::WAITING:
-      lv_label_set_text(objects.lbl_current_run_time, "00:00:000");
-      break;
-    case RaceState::NEW_MOUSE:
-      break;
-    case RaceState::ARMED:
-    case RaceState::RUNNING:
-    case RaceState::GOAL:
-      race_timer_format_time(run_sw.time(), buf, sizeof(buf));
-      lv_label_set_text(objects.lbl_current_run_time, buf);
-      break;
-  }
+  race_run_count = 0;
+  mouse_run_count = 0;
+  mouse_id = 0;
 }

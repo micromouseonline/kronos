@@ -46,7 +46,6 @@ typedef struct _objects_t {
     lv_obj_t *lbl_mouse_name;
     lv_obj_t *pnl_run_times;
     lv_obj_t *obj16;
-    lv_obj_t *lst_run_times;
     lv_obj_t *lbl_run_time_list;
     lv_obj_t *obj17;
     lv_obj_t *lbl_leaderboard_list;
@@ -55,7 +54,7 @@ typedef struct _objects_t {
     lv_obj_t *pnl_run_number;
     lv_obj_t *lbl_run_number;
     lv_obj_t *pnl_time_remaining;
-    lv_obj_t *lbl_time_remainig;
+    lv_obj_t *lbl_time_remaining;
 } objects_t;
 
 extern objects_t objects;
