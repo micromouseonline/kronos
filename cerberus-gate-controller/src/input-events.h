@@ -64,14 +64,19 @@ inline void input_queue_post(ButtonID id, InputSource source) {
 }
 
 // Call once per loop() iteration. Drains all pending events (non-blocking).
-// TODO: dispatch to the Main Event Queue / race-timing state machine once
-// that exists (see this file's header comment) -- discarded for now.
-inline void input_queue_drain() {
+// If handler is non-null, each event is also passed to it after the debug
+// print -- e.g. race-timer.h's race_timer_handle_input_event(). Keeps this
+// file producer/consumer-agnostic; it doesn't need to know what a "race
+// timer" is.
+inline void input_queue_drain(void (*handler)(const InputEvent&) = nullptr) {
   if (xInputQueue == nullptr) {
     return;
   }
   InputEvent evt;
   while (xQueueReceive(xInputQueue, &evt, 0) == pdTRUE) {
     evt.debug_print();
+    if (handler != nullptr) {
+      handler(evt);
+    }
   }
 }
