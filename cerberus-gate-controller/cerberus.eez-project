@@ -335,7 +335,7 @@
                     "definition": {
                       "MAIN": {
                         "DEFAULT": {
-                          "bg_color": "#1E1E22",
+                          "bg_color": "#252540",
                           "text_color": "#A0A5B5",
                           "flex_flow": "COLUMN",
                           "flex_main_place": "CENTER",
@@ -348,7 +348,7 @@
                           "flex_track_place": "CENTER"
                         },
                         "PRESSED": {
-                          "bg_color": "#2D2D35",
+                          "bg_color": "#4C4C7F",
                           "text_color": "#A0A5B5"
                         }
                       }
@@ -447,7 +447,7 @@
                     "definition": {
                       "MAIN": {
                         "DEFAULT": {
-                          "bg_color": "#1E1E22",
+                          "bg_color": "#252540",
                           "text_color": "#A0A5B5",
                           "flex_flow": "COLUMN",
                           "flex_main_place": "CENTER",
@@ -458,7 +458,7 @@
                           "flex_track_place": "CENTER"
                         },
                         "PRESSED": {
-                          "bg_color": "#2D2D35",
+                          "bg_color": "#4C4C7F",
                           "text_color": "#A0A5B5"
                         }
                       }
@@ -557,7 +557,7 @@
                     "definition": {
                       "MAIN": {
                         "DEFAULT": {
-                          "bg_color": "#1E1E22",
+                          "bg_color": "#252540",
                           "text_color": "#A0A5B5",
                           "flex_flow": "COLUMN",
                           "flex_main_place": "CENTER",
@@ -568,7 +568,7 @@
                           "flex_track_place": "CENTER"
                         },
                         "PRESSED": {
-                          "bg_color": "#2D2D35",
+                          "bg_color": "#4C4C7F",
                           "text_color": "#A0A5B5"
                         }
                       }
@@ -667,7 +667,7 @@
                     "definition": {
                       "MAIN": {
                         "DEFAULT": {
-                          "bg_color": "#1E1E22",
+                          "bg_color": "#252540",
                           "text_color": "#A0A5B5",
                           "flex_flow": "COLUMN",
                           "flex_main_place": "CENTER",
@@ -678,7 +678,7 @@
                           "flex_track_place": "CENTER"
                         },
                         "PRESSED": {
-                          "bg_color": "#2D2D35",
+                          "bg_color": "#4C4C7F",
                           "text_color": "#A0A5B5"
                         }
                       }
@@ -778,7 +778,7 @@
                     "definition": {
                       "MAIN": {
                         "DEFAULT": {
-                          "bg_color": "#1E1E22",
+                          "bg_color": "#252540",
                           "text_color": "#A0A5B5",
                           "flex_flow": "COLUMN",
                           "flex_main_place": "CENTER",
@@ -791,7 +791,7 @@
                           "flex_track_place": "CENTER"
                         },
                         "PRESSED": {
-                          "bg_color": "#2D2D35",
+                          "bg_color": "#4C4C7F",
                           "text_color": "#A0A5B5"
                         }
                       }
@@ -898,7 +898,7 @@
                     "definition": {
                       "MAIN": {
                         "DEFAULT": {
-                          "bg_color": "#1E1E22",
+                          "bg_color": "#252540",
                           "text_color": "#A0A5B5",
                           "flex_flow": "COLUMN",
                           "flex_main_place": "CENTER",
@@ -909,7 +909,7 @@
                           "flex_track_place": "CENTER"
                         },
                         "PRESSED": {
-                          "bg_color": "#2D2D35",
+                          "bg_color": "#4C4C7F",
                           "text_color": "#A0A5B5"
                         }
                       }
@@ -1457,6 +1457,7 @@
               },
               "timeline": [],
               "eventHandlers": [],
+              "identifier": "pnl_mouse_name",
               "leftUnit": "px",
               "topUnit": "px",
               "widthUnit": "px",
@@ -1479,6 +1480,7 @@
                   },
                   "timeline": [],
                   "eventHandlers": [],
+                  "identifier": "lbl_mouse_name",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
@@ -1508,7 +1510,7 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "WITTY MICROMOUSE",
+                  "text": "CUNNING ODYSSEUS",
                   "textType": "literal",
                   "longMode": "WRAP",
                   "recolor": false
@@ -1549,6 +1551,7 @@
               },
               "timeline": [],
               "eventHandlers": [],
+              "identifier": "pnl_run_times",
               "leftUnit": "px",
               "topUnit": "px",
               "widthUnit": "px",
@@ -1607,9 +1610,9 @@
                 {
                   "objID": "ce4e9507-2283-485f-fd5a-c295145ea8ae",
                   "type": "LVGLListWidget",
-                  "left": -5,
+                  "left": -8,
                   "top": 3,
-                  "width": 130,
+                  "width": 136,
                   "height": 84,
                   "customInputs": [],
                   "customOutputs": [],
@@ -1621,7 +1624,7 @@
                   },
                   "timeline": [],
                   "eventHandlers": [],
-                  "identifier": "run_times",
+                  "identifier": "lst_run_times",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
@@ -1657,6 +1660,57 @@
                   },
                   "group": "",
                   "groupIndex": 0
+                },
+                {
+                  "objID": "501fef39-6efd-459e-bff2-cd296d6f60ba",
+                  "type": "LVGLLabelWidget",
+                  "left": -8,
+                  "top": 3,
+                  "width": 136,
+                  "height": 84,
+                  "customInputs": [],
+                  "customOutputs": [],
+                  "style": {
+                    "objID": "1cf6daf0-f9e1-487a-f734-a2dfbeaed698",
+                    "useStyle": "default",
+                    "conditionalStyles": [],
+                    "childStyles": []
+                  },
+                  "timeline": [],
+                  "eventHandlers": [],
+                  "identifier": "lbl_run_time_list",
+                  "leftUnit": "px",
+                  "topUnit": "px",
+                  "widthUnit": "px",
+                  "heightUnit": "px",
+                  "children": [],
+                  "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
+                  "hiddenFlagType": "literal",
+                  "clickableFlagType": "literal",
+                  "flagScrollbarMode": "",
+                  "flagScrollDirection": "",
+                  "scrollSnapX": "",
+                  "scrollSnapY": "",
+                  "checkedStateType": "literal",
+                  "disabledStateType": "literal",
+                  "states": "",
+                  "localStyles": {
+                    "objID": "861177e3-6e9c-4aaa-a95a-dd8caa8a5861",
+                    "definition": {
+                      "MAIN": {
+                        "DEFAULT": {
+                          "text_font": "mono18",
+                          "text_color": "aliceblue"
+                        }
+                      }
+                    }
+                  },
+                  "group": "",
+                  "groupIndex": 0,
+                  "text": "",
+                  "textType": "literal",
+                  "longMode": "WRAP",
+                  "recolor": false
                 }
               ],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -1752,9 +1806,9 @@
                 {
                   "objID": "d03fd211-2788-4344-9a17-d13967b07bac",
                   "type": "LVGLLabelWidget",
-                  "left": -5,
+                  "left": -8,
                   "top": 3,
-                  "width": 130,
+                  "width": 136,
                   "height": 84,
                   "customInputs": [],
                   "customOutputs": [],
@@ -1766,6 +1820,7 @@
                   },
                   "timeline": [],
                   "eventHandlers": [],
+                  "identifier": "lbl_leaderboard_list",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
@@ -1794,7 +1849,7 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "1: 0:09.329\n2: 0:12.694\n3: 0:22.581\n4: 0:22.653\n5: 0:56.829",
+                  "text": "",
                   "textType": "literal",
                   "longMode": "WRAP",
                   "recolor": false
@@ -1835,6 +1890,7 @@
               },
               "timeline": [],
               "eventHandlers": [],
+              "identifier": "panel_current_run_time",
               "leftUnit": "px",
               "topUnit": "px",
               "widthUnit": "px",
@@ -1857,7 +1913,7 @@
                   },
                   "timeline": [],
                   "eventHandlers": [],
-                  "identifier": "main_title",
+                  "identifier": "lbl_current_run_time",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
@@ -1930,6 +1986,7 @@
               },
               "timeline": [],
               "eventHandlers": [],
+              "identifier": "pnl_run_number",
               "leftUnit": "px",
               "topUnit": "px",
               "widthUnit": "px",
@@ -1952,6 +2009,7 @@
                   },
                   "timeline": [],
                   "eventHandlers": [],
+                  "identifier": "lbl_run_number",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
@@ -2029,6 +2087,7 @@
               },
               "timeline": [],
               "eventHandlers": [],
+              "identifier": "pnl_time_remaining",
               "leftUnit": "px",
               "topUnit": "px",
               "widthUnit": "px",
@@ -2051,7 +2110,7 @@
                   },
                   "timeline": [],
                   "eventHandlers": [],
-                  "identifier": "main_title_1",
+                  "identifier": "lbl_time_remainig",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
