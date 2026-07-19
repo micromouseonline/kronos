@@ -34,7 +34,7 @@ constexpr unsigned long BUTTON_C_LONG_PRESS_MS = 600;  // hold threshold for the
 // "M5Stack Core" board this profile targets (board_M5Stack /
 // m5stack-core-esp32-16M) drives its backlight via plain PWM on GPIO32
 // instead, so that probe releases the port before app_setup() reaches
-// init_neokey_buttons(). Expected to be safe based on reading LovyanGFX's
+// neokey_buttons_init(). Expected to be safe based on reading LovyanGFX's
 // autodetect source, but unlike the other 4 boards this one hasn't been
 // confirmed on real hardware yet -- watch for "[NEOKEY] not found" (fine,
 // just means the module isn't attached this session) vs. any regression in

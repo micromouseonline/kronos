@@ -97,7 +97,7 @@ class Neokey {
       // seesaw handshake still failed -- a real device is present at this
       // address but isn't behaving like a NeoKey (unlikely, but possible
       // with address collisions). Deliberately not a while(1) hang: this
-      // runs from a background task (init_neokey_buttons(),
+      // runs from a background task (neokey_buttons_init(),
       // neokey-buttons.h), but must still not wedge that task forever.
       Serial.println("[NEOKEY] not found, check wiring");
       return;
@@ -245,7 +245,7 @@ inline Neokey neokey_device;
 inline void init_neokey_device() {
   neokey_bus_mutex = xSemaphoreCreateMutex();
   // Locked (unlike the old synchronous-boot version of this code) --
-  // init_neokey_buttons() (neokey-buttons.h) now runs this from a one-shot
+  // neokey_buttons_init() (neokey-buttons.h) now runs this from a one-shot
   // background task (neokey_init_task below) instead of blocking
   // app_setup(), specifically so an absent module's worst-case ~10s
   // detection stall (ESP32-S3, see Neokey::setup()'s comment) never delays

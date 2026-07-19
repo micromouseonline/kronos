@@ -72,11 +72,8 @@ RaceEvent race_event_from_button(ButtonID id) {
 
 // As the input event queue is drained, all events pass through here
 // for dispatch.
-
 void input_event_handler(const InputEvent &evt) {
   race_timer_handle_event(race_event_from_button(evt.id));
-  // now send the server message
-  //        DEFERRED
   // now update the button leds
   switch (race_state) {
     case RaceState::CALIBRATE:
@@ -88,8 +85,23 @@ void input_event_handler(const InputEvent &evt) {
       neokey_set_colour(evt.id, NP_YELLOW);
       break;
 
+    case RaceState::NEW_MOUSE:
+      // Gate test lights button when gate activated
+      neokey_set_colour(0, NP_MAGENTA);
+      neokey_set_colour(1, NP_MAGENTA);
+      neokey_set_colour(2, NP_MAGENTA);
+      neokey_set_colour(3, NP_MAGENTA);
+      break;
+
+    case RaceState::WAITING:
+      neokey_set_colour(0, NP_GREEN);
+      neokey_set_colour(1, NP_GREEN);
+      neokey_set_colour(2, NP_GREEN);
+      neokey_set_colour(3, NP_GREEN);
+      break;
+
     case RaceState::ARMED:
-      neokey_set_colour(0, NP_RED);
+      neokey_set_colour(0, NP_YELLOW);
       neokey_set_colour(1, NP_OFF);
       neokey_set_colour(2, NP_OFF);
       neokey_set_colour(3, NP_OFF);
@@ -97,22 +109,18 @@ void input_event_handler(const InputEvent &evt) {
 
     case RaceState::RUNNING:
       neokey_set_colour(0, NP_OFF);
-      neokey_set_colour(1, NP_RED);
+      neokey_set_colour(1, NP_GREEN);
       neokey_set_colour(2, NP_OFF);
       neokey_set_colour(3, NP_OFF);
       break;
+
     case RaceState::GOAL:
       neokey_set_colour(0, NP_OFF);
       neokey_set_colour(1, NP_OFF);
-      neokey_set_colour(2, NP_GREEN);
+      neokey_set_colour(2, NP_RED);
       neokey_set_colour(3, NP_OFF);
       break;
-    case RaceState::WAITING:
-      neokey_set_colour(0, NP_MAGENTA);
-      neokey_set_colour(1, NP_MAGENTA);
-      neokey_set_colour(2, NP_MAGENTA);
-      neokey_set_colour(3, NP_MAGENTA);
-      break;
+
     default:
       neokey_set_colour(0, NP_BLUE);
       neokey_set_colour(1, NP_BLUE);
@@ -133,15 +141,10 @@ void setup() {
 
   input_queue_init();
   gpio_buttons_init();
-  // Non-blocking (see neokey-buttons.h/neokey-driver.h) -- kicks off a
-  // background task and returns immediately regardless of whether a
-  // physical NeoKey is attached, so it doesn't delay GPIO polling below
-  // even in the worst case (~10s detection stall on ESP32-S3 with no
-  // module attached).
-  init_neokey_buttons();
-  lcd.init();  // setting up the display takes 500ms
-  lcd.setRotation(LCD_ROTATION);
-  lvgl_display_init(lcd);  // calls lv_init() -- must run before any lv_obj_* call
+  neokey_buttons_init();
+  lcd.init();                     // setting up the display takes about 500ms
+  lcd.setRotation(LCD_ROTATION);  // USB port on left
+  lvgl_display_init(lcd);         // calls lv_init() -- must run before any lv_obj_* call
   lvgl_touch_init(lcd);
   // Put this in your setup/init function after LVGL initialization
   // LVGL v8.4 Runtime Long-Press Modification
@@ -162,7 +165,6 @@ void setup() {
   // it's regenerated wholesale on every EEZ Studio export.
   loadScreen(SCREEN_ID_MAIN);
 #endif
-  uint32_t start_time = millis();
   // it may take anything up to 2000ms altogether to get  a serial connection
   while (!Serial && (millis() < 2000)) {
     delay(10);
@@ -170,7 +172,7 @@ void setup() {
   uint32_t ready_time = millis();
   // just because the hardware is ready, does not mean the terminal is ready
   // so allow time for that as well
-  while (millis() < 2500) {
+  while (millis() - ready_time < 500) {
     yield();
   }
 #if HAS_TOUCH_INPUT && TOUCH_NEEDS_CALIBRATION
@@ -183,17 +185,20 @@ void setup() {
   calibrate(lcd);
 #endif
   Serial.println(F("CERBERUS: gate controller"));
-  Serial.printf("ready after %dms (display ready at:%dms)\n", ready_time, start_time);
+  Serial.printf("ready after %dms \n", ready_time);
+  // Now it is finally safe to fire off the button polling task and run the main loop
   xTaskCreatePinnedToCore(input_poll_task, "input_poll", 4096, nullptr, 1, nullptr, 1);
 }
 
 //////////////////////////////////////////////////////////////////////
-
+// In the main loop, all input events are collected by their various monitoring
+// tasks and the events added to the input queue.
+// The events are all timestamped so there is no particular urgency.
+// All we need to do is have an event handler process events from the queue
 void loop() {
-  yield();
   input_queue_drain(input_event_handler);
   race_timer_render();
   lvgl_task_handler();
   ui_tick();
-  delay(50);
+  delay(50);  // calls freeRTOS yield so it is safe to use
 }

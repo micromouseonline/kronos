@@ -16,7 +16,7 @@
 // Non-blocking: hands neokey_init_task() to a background FreeRTOS task
 // instead of calling init_neokey_device() directly, so a board with no
 // physical NeoKey attached never delays app_setup() (see neokey-driver.h).
-inline void init_neokey_buttons() {
+inline void neokey_buttons_init() {
   xTaskCreate(neokey_init_task, "neokey_init", 4096, nullptr, 1, nullptr);
 }
 
@@ -44,7 +44,7 @@ inline void poll_neokey_buttons() {
 
 #else
 
-inline void init_neokey_buttons() {
+inline void neokey_buttons_init() {
 }
 inline void poll_neokey_buttons() {
 }  // no NeoKey on this board

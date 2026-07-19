@@ -6,7 +6,7 @@
 //  button debounce internals and vice versa. Both facades read/write the
 //  same shared `neokey_device` instance (neokey-driver.h) -- there's only
 //  one physical seesaw chip on one I2C address, so there's exactly one
-//  owner of its init (neokey-buttons.h's init_neokey_buttons(), which hands
+//  owner of its init (neokey-buttons.h's neokey_buttons_init(), which hands
 //  it to a background task rather than running it synchronously -- see
 //  neokey-driver.h). Calling the setters below before that background init
 //  has finished is a normal, expected runtime state, not a caller error --
