@@ -1608,60 +1608,6 @@
                   "recolor": false
                 },
                 {
-                  "objID": "ce4e9507-2283-485f-fd5a-c295145ea8ae",
-                  "type": "LVGLListWidget",
-                  "left": -8,
-                  "top": 3,
-                  "width": 136,
-                  "height": 84,
-                  "customInputs": [],
-                  "customOutputs": [],
-                  "style": {
-                    "objID": "12aa3029-b456-4b75-a0f1-b6637b50c6b6",
-                    "useStyle": "default",
-                    "conditionalStyles": [],
-                    "childStyles": []
-                  },
-                  "timeline": [],
-                  "eventHandlers": [],
-                  "identifier": "lst_run_times",
-                  "leftUnit": "px",
-                  "topUnit": "px",
-                  "widthUnit": "px",
-                  "heightUnit": "px",
-                  "children": [],
-                  "widgetFlags": "",
-                  "hiddenFlagType": "literal",
-                  "clickableFlag": false,
-                  "clickableFlagType": "literal",
-                  "flagScrollbarMode": "",
-                  "flagScrollDirection": "",
-                  "scrollSnapX": "",
-                  "scrollSnapY": "",
-                  "checkedStateType": "literal",
-                  "disabledStateType": "literal",
-                  "states": "",
-                  "localStyles": {
-                    "objID": "a2805b13-9182-4b91-b313-59c658c3a55a",
-                    "definition": {
-                      "MAIN": {
-                        "DEFAULT": {
-                          "bg_opa": 0,
-                          "text_color": "cornsilk",
-                          "outline_width": 0,
-                          "border_width": 0,
-                          "text_font": "mono18",
-                          "text_align": "LEFT",
-                          "pad_left": 0,
-                          "pad_right": 0
-                        }
-                      }
-                    }
-                  },
-                  "group": "",
-                  "groupIndex": 0
-                },
-                {
                   "objID": "501fef39-6efd-459e-bff2-cd296d6f60ba",
                   "type": "LVGLLabelWidget",
                   "left": -8,
@@ -2096,9 +2042,9 @@
                 {
                   "objID": "cb300a76-eeda-4a9b-bb63-e345d5a32e13",
                   "type": "LVGLLabelWidget",
-                  "left": -11,
+                  "left": -12,
                   "top": -8,
-                  "width": 72,
+                  "width": 76,
                   "height": 18,
                   "customInputs": [],
                   "customOutputs": [],
@@ -2110,7 +2056,7 @@
                   },
                   "timeline": [],
                   "eventHandlers": [],
-                  "identifier": "lbl_time_remainig",
+                  "identifier": "lbl_time_remaining",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
