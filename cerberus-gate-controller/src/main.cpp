@@ -72,9 +72,10 @@ RaceEvent race_event_from_button(ButtonID id) {
 
 // As the input event queue is drained, all events pass through here
 // for dispatch.
+// The events have been copied from the queue so they are valid through
+// the lifetime of this function
 void input_event_handler(const InputEvent &evt) {
   race_timer_handle_event(race_event_from_button(evt.id));
-  // now update the button leds
   switch (race_state) {
     case RaceState::CALIBRATE:
       // Gate test lights button when gate activated
