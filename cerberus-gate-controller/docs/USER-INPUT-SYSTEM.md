@@ -42,7 +42,7 @@ is present:
 
 ## Button identity and styling
 
-- `ButtonID` (`BTN_ARM` / `BTN_START` / `BTN_GOAL` / `BTN_RESET`) is the
+- `ButtonID` (`BTN_ARM` / `BTN_START` / `BTN_GOAL` / `BTN_TOUCH`) is the
   single ID space all three producers post into.
 - `BUTTON_MENU` (`gui-button.h`) is the canonical PREV/NEXT/ACTION/--
   labelling, shared by the touch bar and the dispatcher.

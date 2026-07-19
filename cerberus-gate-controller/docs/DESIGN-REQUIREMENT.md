@@ -12,7 +12,7 @@ controller is the definitive record for all run and session timing.
 *   **MCU:** ESP32 or ESP32-S3 (Dual-core execution mode).
 *   **Display & Touch:** Cheap Yellow Display (CYD) board featuring an SPI-driven TFT screen and an SPI-driven XPT2046 touch controller.
 *   **Storage:** Onboard SD card slot sharing the SPI bus with the display and touch controller.
-*   **Local inputs:** Four physical buttons (GPIO, touch, or Adafruit NeoKey I2C expander, depending on board -- see `USER-INPUT-SYSTEM.md`), mapped to `EV_ARM`, `EV_START`, `EV_GOAL`, `EV_NEW_MOUSE`.
+*   **Local inputs:** Four physical buttons (GPIO, touch, or Adafruit NeoKey I2C expander, depending on board -- see `USER-INPUT-SYSTEM.md`), mapped to `RaceCommand::ARM`, `RaceCommand::START`, `RaceCommand::GOAL`, `RaceCommand::NEW_MOUSE`.
 
 ---
 
@@ -36,26 +36,17 @@ graph LR
 The host UART is a single shared link doing double duty as the RACING-mode data protocol (event mirror, run-time reports, host override commands). Once the Serial Driver Task owns it, ad-hoc debug/diagnostic prints (`Serial.print`) must not also write to it -- an interleaved debug line would corrupt the host's parser. Route debug/status output to the display instead (e.g. a small on-screen debug line/panel) whenever the Serial Driver Task is active.
 
 ### Safe Memory & Data Structures
-1.  **`SystemEvent` Struct:** A fixed-size struct passed strictly **by value** into the Main Event Queue. No dynamic allocation (`malloc`/`free`) is permitted, to completely eliminate heap fragmentation.
+1.  **`SystemEvent` Struct:** A fixed-size struct passed strictly **by value** into the Main Event Queue. No dynamic allocation (`malloc`/`free`) is permitted, to completely eliminate heap fragmentation. Reuses the race state machine's own `RaceCommand` enum (`race-timer.h`) as its `type` field rather than a separate doc-only vocabulary.
 
     ```c++
-    enum EventType {
-        EV_NONE,
-        EV_NEW_MOUSE,
-        EV_ARM,
-        EV_START,
-        EV_GOAL,
-        EV_RESTART
-    };
-
     struct SystemEvent {
-        EventType type;
+        RaceCommand type;
         uint64_t timestamp_us;  // TSF time if remote, local esp_timer_get_time() if local
-        char payload[32];       // Mouse name (EV_NEW_MOUSE) or gate_id, depending on source
+        char payload[32];       // Mouse name (RaceCommand::NEW_MOUSE) or gate_id, depending on source
     };
     ```
 
-    `EV_RESTART` has no dedicated physical button -- it is only ever raised via serial or HTTP command.
+    `RaceCommand::RESTART` has no dedicated physical button -- it is only ever raised via serial or HTTP command.
 
 2.  **`LogMessage` Struct:** A fixed-size struct passed **by value** into the Logging Queue for sequential serialization. Its formatted CSV line is the single canonical representation of an event -- written to the SD file and mirrored to the host over serial without divergence (see Logging Infrastructure).
 
@@ -64,14 +55,14 @@ The host UART is a single shared link doing double duty as the RACING-mode data 
 ## Task Breakdown & Functional Specifications
 
 ### 1. Input Layer & Event Generation
-*   **Local Input Polling Task (Core 1):** Polls the hardware GPIO buttons, the I2C NeoKey expander, and the SPI touch screen sequentially every 15ms (see `USER-INPUT-SYSTEM.md` for the producer-agnostic `ButtonID` dispatch already built). It handles debouncing entirely in software. Valid inputs map `BTN_ARM/BTN_START/BTN_GOAL/BTN_RESET` to `EV_ARM/EV_START/EV_GOAL/EV_NEW_MOUSE`, timestamped with the local `esp_timer_get_time()`, and pushed to the Main Event Queue as a `SystemEvent`.
+*   **Local Input Polling Task (Core 1):** Polls the hardware GPIO buttons, the I2C NeoKey expander, and the SPI touch screen sequentially every 15ms (see `USER-INPUT-SYSTEM.md` for the producer-agnostic `ButtonID` dispatch already built). It handles debouncing entirely in software. Valid inputs map `BTN_ARM/BTN_START/BTN_GOAL/BTN_TOUCH` to `RaceCommand::ARM/START/GOAL/NEW_MOUSE`, timestamped with the local `esp_timer_get_time()`, and pushed to the Main Event Queue as a `SystemEvent`.
 *   **Asynchronous HTTP Listener (Core 0):** Connects to the shared WiFi network as a station and runs an async web server on that connection. Remote intelligent gates, also stations on the same network, send timing events to it as `POST /api/event` with a JSON body:
 
     ```json
     POST /api/event
     {
       "gate_id": "START_GATE",
-      "event": "EV_START",
+      "event": "START",
       "tsf_us": 4321098765,
       "gate_us": 1098765634
     }
@@ -89,12 +80,12 @@ Since events can arrive from any of the three sources above, each producer is re
     *   `READY`: System is idle. Local inputs and remote HTTP triggers are actively monitored.
     *   `RACING`: System is capturing precise timing events, calculating laps, updating the UI, and streaming data to the log queue. Two timers run concurrently and are both displayed on screen:
         *   **Session Countdown Timer** -- counts down from a configurable duration (typically 5 or 7 minutes) for the whole `RACING` session. What happens when it reaches zero is deferred (open TODO).
-        *   **Run Timer** -- zeroed on `EV_START`, stopped on `EV_GOAL`. While the state machine is waiting for the run-terminating event (`EV_GOAL`, `EV_ARM`, or `EV_RESTART`), this timer must redraw as fast as possible -- this is what the bounded-timeout receive loop above exists to support, since there is no guarantee an event arrives on every tick.
+        *   **Run Timer** -- zeroed on `RaceCommand::START`, stopped on `RaceCommand::GOAL`. While the state machine is waiting for the run-terminating command (`RaceCommand::GOAL`, `RaceCommand::ARM`, or `RaceCommand::RESTART`), this timer must redraw as fast as possible -- this is what the bounded-timeout receive loop above exists to support, since there is no guarantee an event arrives on every tick.
     *   `MAINTENANCE`: Triggered by a specific system command (e.g., log retrieval request). In this state, the task completely ignores all incoming race/lap timing triggers. It commands the Logging Task to close active file handles, releases file-system locks, and paints a "File Transfer Active" screen on the display.
 
-    This is a separate, race-domain state machine from the UI-navigation `AppState` (`SUPERVISOR/RECALIBRATE_TOUCH/PLACEHOLDER`) already implemented in `app-modes.h`. `AppState` governs the on-screen menu system used to reach and configure sub-applications; `RACING` will be one such sub-application, added as a new `MODE_TABLE` entry. Once entered, it takes over the physical buttons -- `BTN_ARM/BTN_START/BTN_GOAL/BTN_RESET` stop meaning menu PREV/NEXT/ACTION and instead dispatch straight to `EV_ARM/EV_START/EV_GOAL/EV_NEW_MOUSE` in the race state machine, per the mapping in section 1.
+    This is a separate, race-domain state machine from the UI-navigation `AppState` (`SUPERVISOR/RECALIBRATE_TOUCH/PLACEHOLDER`) already implemented in `app-modes.h`. `AppState` governs the on-screen menu system used to reach and configure sub-applications; `RACING` will be one such sub-application, added as a new `MODE_TABLE` entry. Once entered, it takes over the physical buttons -- `BTN_ARM/BTN_START/BTN_GOAL/BTN_TOUCH` stop meaning menu PREV/NEXT/ACTION and instead dispatch straight to `RaceCommand::ARM/START/GOAL/NEW_MOUSE` in the race state machine, per the mapping in section 1.
 
-    **Open TODO:** exact behavior when `EV_ARM` or `EV_RESTART` interrupts a Run Timer already in progress (freeze-and-record as an aborted run vs. discard) is not yet decided.
+    **Open TODO:** exact behavior when `RaceCommand::ARM` or `RaceCommand::RESTART` interrupts a Run Timer already in progress (freeze-and-record as an aborted run vs. discard) is not yet decided.
 
 ### 3. Logging Infrastructure (Core 1 - Low Priority)
 *   **Operation:** Blocks on a 64-item FIFO Logging Queue.

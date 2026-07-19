@@ -15,7 +15,7 @@
 
 #if HAS_GPIO_BUTTONS
 
-#include "button.h"
+#include "button/button.h"
 
 inline DebouncedButton button_a(PIN_BUTTON_A);
 inline DebouncedButton button_b(PIN_BUTTON_B);

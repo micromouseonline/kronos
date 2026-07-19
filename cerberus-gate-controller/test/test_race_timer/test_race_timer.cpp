@@ -144,41 +144,41 @@ void test_leaderboard_max_out_truncates_by_mouse_order(void) {
 
 void test_calibrate_new_mouse_enters_waiting(void) {
   ASSERT_STATE_EQ(RaceState::CALIBRATE);
-  race_timer_handle_event(EV_NEW_MOUSE);
+  race_timer_handle_command(RaceCommand::NEW_MOUSE);
   ASSERT_STATE_EQ(RaceState::WAITING);
   TEST_ASSERT_EQUAL_UINT16(1, mouse_id);
   TEST_ASSERT_EQUAL_UINT16(0, mouse_run_count);
 }
 
 void test_waiting_arm_enters_armed(void) {
-  race_timer_handle_event(EV_NEW_MOUSE);  // -> WAITING
-  race_timer_handle_event(EV_ARM);
+  race_timer_handle_command(RaceCommand::NEW_MOUSE);  // -> WAITING
+  race_timer_handle_command(RaceCommand::ARM);
   ASSERT_STATE_EQ(RaceState::ARMED);
 }
 
 void test_waiting_restart_reenters_new_mouse(void) {
-  race_timer_handle_event(EV_NEW_MOUSE);  // -> WAITING, mouse_id == 1
-  race_timer_handle_event(EV_RESTART);
+  race_timer_handle_command(RaceCommand::NEW_MOUSE);  // -> WAITING, mouse_id == 1
+  race_timer_handle_command(RaceCommand::RESTART);
   ASSERT_STATE_EQ(RaceState::WAITING);
   TEST_ASSERT_EQUAL_UINT16(2, mouse_id);
 }
 
 void test_armed_start_enters_running(void) {
-  race_timer_handle_event(EV_NEW_MOUSE);
-  race_timer_handle_event(EV_ARM);
+  race_timer_handle_command(RaceCommand::NEW_MOUSE);
+  race_timer_handle_command(RaceCommand::ARM);
   g_mock_millis = 100;
-  race_timer_handle_event(EV_START);
+  race_timer_handle_command(RaceCommand::START);
   ASSERT_STATE_EQ(RaceState::RUNNING);
   TEST_ASSERT_EQUAL_UINT16(1, mouse_run_count);
 }
 
 void test_running_goal_commits_run_and_enters_goal(void) {
-  race_timer_handle_event(EV_NEW_MOUSE);
-  race_timer_handle_event(EV_ARM);
+  race_timer_handle_command(RaceCommand::NEW_MOUSE);
+  race_timer_handle_command(RaceCommand::ARM);
   g_mock_millis = 100;
-  race_timer_handle_event(EV_START);
+  race_timer_handle_command(RaceCommand::START);
   g_mock_millis = 1600;
-  race_timer_handle_event(EV_GOAL);
+  race_timer_handle_command(RaceCommand::GOAL);
 
   ASSERT_STATE_EQ(RaceState::GOAL);
   TEST_ASSERT_EQUAL_UINT32(1, (uint32_t)race_run_count);
@@ -188,21 +188,21 @@ void test_running_goal_commits_run_and_enters_goal(void) {
 }
 
 void test_running_arm_abandons_without_commit(void) {
-  race_timer_handle_event(EV_NEW_MOUSE);
-  race_timer_handle_event(EV_ARM);
+  race_timer_handle_command(RaceCommand::NEW_MOUSE);
+  race_timer_handle_command(RaceCommand::ARM);
   g_mock_millis = 100;
-  race_timer_handle_event(EV_START);
-  race_timer_handle_event(EV_ARM);  // manual recovery, abandons the run
+  race_timer_handle_command(RaceCommand::START);
+  race_timer_handle_command(RaceCommand::ARM);  // manual recovery, abandons the run
 
   ASSERT_STATE_EQ(RaceState::ARMED);
   TEST_ASSERT_EQUAL_UINT32(0, (uint32_t)race_run_count);
 }
 
 void test_running_restart_abandons_and_reenters_new_mouse(void) {
-  race_timer_handle_event(EV_NEW_MOUSE);
-  race_timer_handle_event(EV_ARM);
-  race_timer_handle_event(EV_START);
-  race_timer_handle_event(EV_RESTART);
+  race_timer_handle_command(RaceCommand::NEW_MOUSE);
+  race_timer_handle_command(RaceCommand::ARM);
+  race_timer_handle_command(RaceCommand::START);
+  race_timer_handle_command(RaceCommand::RESTART);
 
   ASSERT_STATE_EQ(RaceState::WAITING);
   TEST_ASSERT_EQUAL_UINT32(0, (uint32_t)race_run_count);
@@ -210,39 +210,39 @@ void test_running_restart_abandons_and_reenters_new_mouse(void) {
 }
 
 void test_goal_restart_reenters_new_mouse(void) {
-  race_timer_handle_event(EV_NEW_MOUSE);
-  race_timer_handle_event(EV_ARM);
-  race_timer_handle_event(EV_START);
-  race_timer_handle_event(EV_GOAL);
-  race_timer_handle_event(EV_RESTART);
+  race_timer_handle_command(RaceCommand::NEW_MOUSE);
+  race_timer_handle_command(RaceCommand::ARM);
+  race_timer_handle_command(RaceCommand::START);
+  race_timer_handle_command(RaceCommand::GOAL);
+  race_timer_handle_command(RaceCommand::RESTART);
 
   ASSERT_STATE_EQ(RaceState::WAITING);
   TEST_ASSERT_EQUAL_UINT16(2, mouse_id);
 }
 
 void test_ev_none_is_always_a_noop(void) {
-  race_timer_handle_event(EV_NEW_MOUSE);  // -> WAITING
+  race_timer_handle_command(RaceCommand::NEW_MOUSE);  // -> WAITING
   RaceState before = race_timer_get_state();
-  race_timer_handle_event(EV_NONE);
+  race_timer_handle_command(RaceCommand::NONE);
   ASSERT_STATE_EQ(before);
 }
 
 void test_mouse_exhausted_after_max_runs_drops_to_waiting(void) {
-  race_timer_handle_event(EV_NEW_MOUSE);  // -> WAITING
+  race_timer_handle_command(RaceCommand::NEW_MOUSE);  // -> WAITING
 
   for (size_t i = 0; i < MAX_RUNS_PER_MOUSE; i++) {
-    race_timer_handle_event(EV_ARM);
+    race_timer_handle_command(RaceCommand::ARM);
     ASSERT_STATE_EQ(RaceState::ARMED);
-    race_timer_handle_event(EV_START);
+    race_timer_handle_command(RaceCommand::START);
     g_mock_millis += 100;
-    race_timer_handle_event(EV_GOAL);
+    race_timer_handle_command(RaceCommand::GOAL);
     ASSERT_STATE_EQ(RaceState::GOAL);
   }
 
   TEST_ASSERT_TRUE(race_timer_mouse_exhausted());
 
   // One more ARM must not arm -- an exhausted mouse drops back to WAITING.
-  race_timer_handle_event(EV_ARM);
+  race_timer_handle_command(RaceCommand::ARM);
   ASSERT_STATE_EQ(RaceState::WAITING);
   TEST_ASSERT_EQUAL_UINT32((uint32_t)MAX_RUNS_PER_MOUSE, (uint32_t)race_run_count);
 }

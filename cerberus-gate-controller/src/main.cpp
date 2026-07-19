@@ -16,6 +16,7 @@
 #include "input-events.h"
 #include "neokey-buttons.h"
 #include "neokey/neokey-pixels.h"
+#include "race/race-command-source.h"
 #include "race/race-timer-display.h"
 #include "race/race-timer.h"
 
@@ -49,81 +50,41 @@ static void input_poll_task(void *) {
   }
 }
 
-//////////////////////////////////////////////////////////////////////
-// a future Serial/HTTP input source would get its own RaceEvent producer
-// here rather than faking an InputEvent.
-RaceEvent race_event_from_button(ButtonID id) {
-  switch (id) {
-    case BTN_ARM:
-      return EV_ARM;
-    case BTN_START:
-      return EV_START;
-    case BTN_GOAL:
-      return EV_GOAL;
-    case BTN_TOUCH:
-      return EV_NEW_MOUSE;
-    default:
-      return EV_NONE;
-  }
-}
-
 // As the input event queue is drained, all events pass through here
 // for dispatch.
 // The events have been copied from the queue so they are valid through
 // the lifetime of this function
 void input_event_handler(const InputEvent &evt) {
-  race_timer_handle_event(race_event_from_button(evt.id));
+  race_timer_handle_command(race_command_from_button(evt.id));
   switch (race_state) {
     case RaceState::CALIBRATE:
-      // Gate test lights button when gate activated
-      neokey_set_colour(0, NP_OFF);
-      neokey_set_colour(1, NP_OFF);
-      neokey_set_colour(2, NP_OFF);
-      neokey_set_colour(3, NP_OFF);
+      neokey_set_colours({NP_OFF, NP_OFF, NP_OFF, NP_OFF});
+      // Gate test lights up button when gate activated
       neokey_set_colour(evt.id, NP_YELLOW);
       break;
 
     case RaceState::NEW_MOUSE:
-      // Gate test lights button when gate activated
-      neokey_set_colour(0, NP_MAGENTA);
-      neokey_set_colour(1, NP_MAGENTA);
-      neokey_set_colour(2, NP_MAGENTA);
-      neokey_set_colour(3, NP_MAGENTA);
+      neokey_set_colours({NP_MAGENTA, NP_MAGENTA, NP_MAGENTA, NP_MAGENTA});
       break;
 
     case RaceState::WAITING:
-      neokey_set_colour(0, NP_GREEN);
-      neokey_set_colour(1, NP_GREEN);
-      neokey_set_colour(2, NP_GREEN);
-      neokey_set_colour(3, NP_GREEN);
+      neokey_set_colours({NP_GREEN, NP_GREEN, NP_GREEN, NP_GREEN});
       break;
 
     case RaceState::ARMED:
-      neokey_set_colour(0, NP_YELLOW);
-      neokey_set_colour(1, NP_OFF);
-      neokey_set_colour(2, NP_OFF);
-      neokey_set_colour(3, NP_OFF);
+      neokey_set_colours({NP_GREEN, NP_OFF, NP_OFF, NP_OFF});
       break;
 
     case RaceState::RUNNING:
-      neokey_set_colour(0, NP_OFF);
-      neokey_set_colour(1, NP_GREEN);
-      neokey_set_colour(2, NP_OFF);
-      neokey_set_colour(3, NP_OFF);
+      neokey_set_colours({NP_OFF, NP_GREEN, NP_OFF, NP_OFF});
       break;
 
     case RaceState::GOAL:
-      neokey_set_colour(0, NP_OFF);
-      neokey_set_colour(1, NP_OFF);
-      neokey_set_colour(2, NP_RED);
-      neokey_set_colour(3, NP_OFF);
+      neokey_set_colours({NP_OFF, NP_OFF, NP_GREEN, NP_OFF});
       break;
 
     default:
-      neokey_set_colour(0, NP_BLUE);
-      neokey_set_colour(1, NP_BLUE);
-      neokey_set_colour(2, NP_BLUE);
-      neokey_set_colour(3, NP_BLUE);
+      neokey_set_colours({NP_BLUE, NP_BLUE, NP_BLUE, NP_BLUE});
       break;
   }
 }

@@ -33,7 +33,7 @@ struct InputEvent {
   // (PRESSED/RELEASED/HELD) if a producer ever needs to distinguish them.
   void debug_print() {
     // Lookup tables for names matching enum ordering
-    static const char* button_names[] = {"ARM", "START", "GOAL", "RESET"};
+    static const char* button_names[] = {"ARM", "START", "GOAL", "TOUCH"};
     static const char* source_names[] = {"TOUCH", "GPIO_BUTTON", "NEOKEY_BUTTON"};
 
     // Bounds checking to prevent undefined behavior if an invalid enum is passed

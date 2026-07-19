@@ -1,9 +1,9 @@
 // ----------------------------------------------------------------------------
 //  race-timer.h — Race timing state machine (docs/maze-timer-state-machine.md,
 //  workspace root). This is the model: state machine + run/leaderboard data.
-//  It knows nothing about input hardware (only RaceEvents -- see main.cpp's
-//  input_event_handler() for the current ButtonID -> RaceEvent mapping) and
-//  nothing about display hardware (no lv_* calls, no ui/screens.h -- see
+//  It knows nothing about input hardware (only RaceCommands -- see
+//  race-command-source.h for the current ButtonID -> RaceCommand mapping)
+//  and nothing about display hardware (no lv_* calls, no ui/screens.h -- see
 //  race-timer-display.h, which reads this file's data/getters each render
 //  tick and owns SCREEN_ID_MAIN's labels).
 //
@@ -11,8 +11,8 @@
 //  here is this race state machine's boot state and is unrelated to
 //  display/touch-calibration.h's screen-touch calibration wizard.
 //
-//  Scope: EV_RESTART (the doc's global "any state" override) has no
-//  producer yet -- included for forward compatibility with the future
+//  Scope: RaceCommand::RESTART (the doc's global "any state" override) has
+//  no producer yet -- included for forward compatibility with the future
 //  Serial/HTTP phase, currently a dead path. Session Countdown Timer,
 //  MAINTENANCE, and persistent mouse names are out of scope; see
 //  IMPLEMENTATION-PLAN.md for those phases.
@@ -67,18 +67,18 @@ const char *mouse_names[] = {
 };
 constexpr size_t NUM_MICE = sizeof(mouse_names) / sizeof(mouse_names[0]);
 
-// RaceEvent is this state machine's only vocabulary -- it has no idea what
+// RaceCommand is this state machine's only vocabulary -- it has no idea what
 // produced one (button, Serial, HTTP). Don't confuse it with InputEvent
 // (input-events.h), which is a raw button/touch press from a specific
-// source; something upstream (main.cpp today) decides what a given
-// InputEvent means as a RaceEvent.
-enum RaceEvent {
-  EV_NONE,       //
-  EV_NEW_MOUSE,  //
-  EV_ARM,        //
-  EV_START,      //
-  EV_GOAL,       //
-  EV_RESTART     //
+// source; something upstream (race-command-source.h today) decides what a
+// given InputEvent means as a RaceCommand.
+enum class RaceCommand {
+  NONE,       //
+  NEW_MOUSE,  //
+  ARM,        //
+  START,      //
+  GOAL,       //
+  RESTART     //
 };
 
 enum class RaceState : uint8_t {
@@ -220,61 +220,61 @@ inline bool race_timer_mouse_exhausted() {
 
 // Arms for another run unless this mouse has used up its MAX_RUNS_PER_MOUSE
 // attempts, in which case it drops back to WAITING -- the operator must send
-// EV_NEW_MOUSE to continue.
+// RaceCommand::NEW_MOUSE to continue.
 inline void race_timer_try_arm() {
   race_state = race_timer_mouse_exhausted() ? RaceState::WAITING : RaceState::ARMED;
 }
 
 //============================================================================
-inline void race_timer_handle_event(RaceEvent event) {
-  if (event == EV_NONE) {
+inline void race_timer_handle_command(RaceCommand command) {
+  if (command == RaceCommand::NONE) {
     return;
   }
 
   switch (race_state) {
     case RaceState::CALIBRATE:
 
-      if (event == EV_NEW_MOUSE || event == EV_RESTART) {
+      if (command == RaceCommand::NEW_MOUSE || command == RaceCommand::RESTART) {
         race_timer_enter_new_mouse();
       }
       break;
 
     case RaceState::WAITING:
-      if (event == EV_ARM) {
+      if (command == RaceCommand::ARM) {
         race_timer_try_arm();
-      } else if (event == EV_RESTART) {
+      } else if (command == RaceCommand::RESTART) {
         race_timer_enter_new_mouse();
       }
       entry_sw.restart();
       break;
 
     case RaceState::ARMED:
-      if (event == EV_START) {
+      if (command == RaceCommand::START) {
         run_sw.restart();
         mouse_run_count++;
         race_state = RaceState::RUNNING;
-      } else if (event == EV_NEW_MOUSE || event == EV_RESTART) {
+      } else if (command == RaceCommand::NEW_MOUSE || command == RaceCommand::RESTART) {
         race_timer_enter_new_mouse();
       }
       break;
 
     case RaceState::RUNNING:
-      if (event == EV_GOAL) {
+      if (command == RaceCommand::GOAL) {
         run_sw.stop();
         race_timer_commit_run(run_sw.time());
         race_state = RaceState::GOAL;
-      } else if (event == EV_ARM) {
+      } else if (command == RaceCommand::ARM) {
         // Manual recovery. Abandon run
         race_timer_try_arm();
-      } else if (event == EV_RESTART) {
+      } else if (command == RaceCommand::RESTART) {
         race_timer_enter_new_mouse();
       }
       break;
 
     case RaceState::GOAL:
-      if (event == EV_ARM) {
+      if (command == RaceCommand::ARM) {
         race_timer_try_arm();
-      } else if (event == EV_RESTART) {
+      } else if (command == RaceCommand::RESTART) {
         race_timer_enter_new_mouse();
       }
       break;

@@ -19,6 +19,13 @@
 
 #include "boards/board-select.h"
 
+struct KeyColours {
+  uint32_t colour_0;
+  uint32_t colour_1;
+  uint32_t colour_2;
+  uint32_t colour_3;
+};
+
 #if HAS_NEOKEY_BUTTONS
 
 #include "neokey-driver.h"
@@ -29,6 +36,19 @@ inline bool neokey_set_colour(uint8_t key, uint32_t colour) {
   }
   neokey_bus_lock();
   bool ok = neokey_device.setColour(key, colour);
+  neokey_bus_unlock();
+  return ok;
+}
+
+inline bool neokey_set_colours(const KeyColours &colours) {
+  if (!neokey_device.isAvailable()) {
+    return false;
+  }
+  neokey_bus_lock();
+  bool ok = neokey_device.setColour(0, colours.colour_0);
+  ok = neokey_device.setColour(1, colours.colour_1) && ok;
+  ok = neokey_device.setColour(2, colours.colour_2) && ok;
+  ok = neokey_device.setColour(3, colours.colour_3) && ok;
   neokey_bus_unlock();
   return ok;
 }
@@ -46,6 +66,9 @@ inline bool neokey_set_all(uint32_t colour) {
 #else
 
 inline bool neokey_set_colour(uint8_t, uint32_t) {
+  return false;
+}
+inline bool neokey_set_colours(const KeyColours &) {
   return false;
 }
 inline bool neokey_set_all(uint32_t) {
