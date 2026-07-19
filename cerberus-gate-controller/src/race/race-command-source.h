@@ -16,10 +16,13 @@
 
 inline RaceCommand race_command_from_button(ButtonID id, InputEventType type = InputEventType::PRESSED) {
   if (type == InputEventType::HELD) {
-    // Only ARM's hold does anything to the race state machine (-> new
-    // mouse); TOUCH's hold is a UI-only "return to menu" action handled in
-    // main.cpp's input_event_handler, not a RaceCommand.
-    return (id == BTN_ARM) ? RaceCommand::NEW_MOUSE : RaceCommand::NONE;
+    // ARM's hold is a force-new-mouse override regardless of current race
+    // state (e.g. escaping a mouse_exhausted WAITING state without needing
+    // RESTART's future Serial/HTTP producer) -- RESTART, not NEW_MOUSE,
+    // since race_timer_handle_command's WAITING/GOAL branches only act on
+    // RESTART, not NEW_MOUSE. TOUCH's hold is a UI-only "return to menu"
+    // action handled in main.cpp's input_event_handler, not a RaceCommand.
+    return (id == BTN_ARM) ? RaceCommand::RESTART : RaceCommand::NONE;
   }
   switch (id) {
     case BTN_ARM:
