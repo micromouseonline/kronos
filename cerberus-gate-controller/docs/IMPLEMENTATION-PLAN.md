@@ -21,7 +21,7 @@ The goal of this phase is to establish the thread-safe foundation of the applica
 The goal of this phase is to bring asynchronous and synchronous input sources online, directing them all into the Core 1 queue.
 
 ### Step 2.1: Local Input Polling Task (Core 1)
-* **Action:** Already built -- see `USER-INPUT-SYSTEM.md`. The Local Input Polling Task on Core 1 polls touch/GPIO/NeoKey every `INPUT_POLL_PERIOD_MS`, debounces in software, and posts a `ButtonID` (`BTN_ARM/BTN_START/BTN_GOAL/BTN_RESET`). For RACING mode, `on_button_event()` maps these to `EV_ARM/EV_START/EV_GOAL/EV_NEW_MOUSE`, wraps them in a `SystemEvent` timestamped with `esp_timer_get_time()`, and pushes to the main queue with `xQueueSend()`.
+* **Action:** Already built -- see `USER-INPUT-SYSTEM.md`. The Local Input Polling Task on Core 1 polls touch/GPIO/NeoKey every `INPUT_POLL_PERIOD_MS`, debounces in software, and posts a `ButtonID` (`BTN_ARM/BTN_START/BTN_GOAL/BTN_TOUCH`). For RACING mode, `on_button_event()` maps these to `EV_ARM/EV_START/EV_GOAL/EV_NEW_MOUSE`, wraps them in a `SystemEvent` timestamped with `esp_timer_get_time()`, and pushes to the main queue with `xQueueSend()`.
 * **Verification Test:** Press the physical buttons and the NeoKey buttons. Watch the Serial Monitor to ensure the Main App Task intercepts the events instantly, showing the correct button IDs with zero bounce or double-triggering.
 
 ### Step 2.2: Asynchronous HTTP Input Handler (Core 0)

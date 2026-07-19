@@ -50,9 +50,6 @@ static void input_poll_task(void *) {
 }
 
 //////////////////////////////////////////////////////////////////////
-// BTN_TOUCH is called BTN_RESET in the design docs -- not renaming ButtonID,
-// this mapping is the only place that distinction matters. Local buttons
-// only for now (BTN_ARM/START/GOAL/TOUCH -> EV_ARM/START/GOAL/NEW_MOUSE);
 // a future Serial/HTTP input source would get its own RaceEvent producer
 // here rather than faking an InputEvent.
 RaceEvent race_event_from_button(ButtonID id) {
