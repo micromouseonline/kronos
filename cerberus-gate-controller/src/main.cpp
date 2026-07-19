@@ -1,41 +1,31 @@
 #include <Arduino.h>
-#include <WiFi.h>
-
 #include <Preferences.h>
+#include <WiFi.h>
 #include <freertos/task.h>
-
-// #include "board-config.h"
 
 #include "status-led/status-led.h"
 
 #include "display/display.h"
-
 #include "display/lvgl-bridge.h"
 #include "display/touch-calibration.h"
+
 #include "gpio-buttons.h"
 #include "input-events.h"
 #include "neokey-buttons.h"
 #include "neokey/neokey-pixels.h"
+
 #include "race/race-command-source.h"
 #include "race/race-timer-display.h"
 #include "race/race-timer.h"
 
 #include "wifi-scan.h"
 
-// lib/ui/ -- EEZ Studio generated. Every board gets the display now (see
-// boards.ini's feature_lvgl); screens.h is needed here for SCREEN_ID_MAIN,
-// used below to skip the touch-only MENU screen on boards with no touch.
+// lib/ui/ -- EEZ Studio generated.
 #include "ui/screens.h"
 #include "ui/ui.h"
 
 StatusLED statusIndicator;
 static LGFX lcd;
-
-// Basic palette the NeoKey 1x4 pixels cycle through, once per second, from
-// loop() (see neokey-driver.h for the NP_* colour constants).
-static constexpr uint32_t NEOKEY_PALETTE[] = {NP_RED, NP_GREEN, NP_BLUE, NP_YELLOW, NP_MAGENTA, NP_CYAN, NP_WHITE, NP_OFF};
-static constexpr size_t NEOKEY_PALETTE_LEN = sizeof(NEOKEY_PALETTE) / sizeof(NEOKEY_PALETTE[0]);
-static constexpr uint32_t NEOKEY_CYCLE_PERIOD_MS = 1000;
 
 // Local Input Polling Task (Core 1, per DESIGN-REQUIREMENT.md). Owns all
 // input-device reads (GPIO + NeoKey; touch is polled internally by LVGL's
