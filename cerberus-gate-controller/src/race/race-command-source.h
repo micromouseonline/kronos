@@ -14,7 +14,13 @@
 #include "input-events.h"
 #include "race-timer.h"
 
-inline RaceCommand race_command_from_button(ButtonID id) {
+inline RaceCommand race_command_from_button(ButtonID id, InputEventType type = InputEventType::PRESSED) {
+  if (type == InputEventType::HELD) {
+    // Only ARM's hold does anything to the race state machine (-> new
+    // mouse); TOUCH's hold is a UI-only "return to menu" action handled in
+    // main.cpp's input_event_handler, not a RaceCommand.
+    return (id == BTN_ARM) ? RaceCommand::NEW_MOUSE : RaceCommand::NONE;
+  }
   switch (id) {
     case BTN_ARM:
       return RaceCommand::ARM;

@@ -45,7 +45,13 @@ static void input_poll_task(void *) {
 // The events have been copied from the queue so they are valid through
 // the lifetime of this function
 void input_event_handler(const InputEvent &evt) {
-  race_timer_handle_command(race_command_from_button(evt.id));
+  // NeoKey TOUCH held -- mirrors the touch panel's LVGL long-press
+  // (action_on_timer_touch_long): return to the main menu. UI navigation
+  // only, not a RaceCommand.
+  if (evt.id == BTN_TOUCH && evt.type == InputEventType::HELD) {
+    loadScreen(SCREEN_ID_MENU);
+  }
+  race_timer_handle_command(race_command_from_button(evt.id, evt.type));
   switch (race_state) {
     case RaceState::CALIBRATE:
       neokey_set_colours({NP_OFF, NP_OFF, NP_OFF, NP_OFF});

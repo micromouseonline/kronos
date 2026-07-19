@@ -155,7 +155,25 @@ class Neokey {
 
   bool wasReleasedAfter(uint8_t i, uint32_t hold_time_ms) { return wasReleased(i) && (millis() - press_start_time[i] >= hold_time_ms); }
 
-  bool isLongPress(uint8_t i, uint32_t durationMs) { return isPressed(i) && getHoldTime(i) >= durationMs; }
+  bool isLongPress(uint8_t i, uint32_t durationMs) {
+    return isPressed(i) && getHoldTime(i) >= durationMs;  //
+  }
+
+  // Edge-triggered: true exactly once per hold, the poll tick where the hold
+  // first reaches durationMs (not every tick for as long as it's held).
+  // Resets when the key is released, so the next press/hold cycle can fire
+  // again.
+  bool wasLongPressed(uint8_t i, uint32_t durationMs) {
+    if (!isPressed(i)) {
+      long_reported[i] = false;
+      return false;
+    }
+    if (!long_reported[i] && getHoldTime(i) >= durationMs) {
+      long_reported[i] = true;
+      return true;
+    }
+    return false;
+  }
 
   bool wasLongReleased(uint8_t i, uint32_t durationMs) { return wasReleased(i) && (release_time[i] - press_start_time[i] >= durationMs); }
 
@@ -236,6 +254,7 @@ class Neokey {
   uint32_t last_change_time[NUM_KEYS] = {0};
   uint32_t press_start_time[NUM_KEYS] = {0};
   uint32_t release_time[NUM_KEYS] = {0};
+  bool long_reported[NUM_KEYS] = {false};  // wasLongPressed() edge-fire latch per key
 
   const uint32_t DEBOUNCE_INTERVAL = 20;  // ms
 };

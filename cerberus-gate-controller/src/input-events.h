@@ -25,16 +25,21 @@ enum class InputSource {
   NUM_SOURCES
 };
 
+// PRESSED: a normal short press edge (existing behaviour). HELD: the button
+// has been down continuously for at least a producer-defined hold threshold
+// (e.g. NEOKEY_LONG_PRESS_MS) -- fired once per hold, not repeated per poll.
+enum class InputEventType { PRESSED, HELD };
+
 struct InputEvent {
   ButtonID id;
   InputSource source;
+  InputEventType type;
   uint32_t timestamp;
-  // No `type` field in v1 -- PRESSED is the only event type today. Add one
-  // (PRESSED/RELEASED/HELD) if a producer ever needs to distinguish them.
   void debug_print() {
     // Lookup tables for names matching enum ordering
     static const char* button_names[] = {"ARM", "START", "GOAL", "TOUCH"};
     static const char* source_names[] = {"TOUCH", "GPIO_BUTTON", "NEOKEY_BUTTON"};
+    static const char* type_names[] = {"PRESSED", "HELD"};
 
     // Bounds checking to prevent undefined behavior if an invalid enum is passed
     const char* btn_str = (id >= 0 && id < NUM_BUTTONS) ? button_names[id] : "UNKNOWN_BTN";
@@ -42,8 +47,10 @@ struct InputEvent {
     int src_idx = int(source);
     const char* src_str = (src_idx >= 0 && src_idx < int(InputSource::NUM_SOURCES)) ? source_names[src_idx] : "UNKNOWN_SRC";
 
+    const char* type_str = type_names[int(type)];
+
     char buf[64];  // Increased buffer size to prevent truncation
-    snprintf(buf, sizeof(buf), "EVT: %s, %s, %lu ms\n", btn_str, src_str, (unsigned long)timestamp);
+    snprintf(buf, sizeof(buf), "EVT: %s, %s, %s, %lu ms\n", btn_str, src_str, type_str, (unsigned long)timestamp);
     Serial.print(buf);
   }
 };
@@ -56,8 +63,8 @@ inline void input_queue_init() {
 
 // Thread-safe: usable from a plain polling loop, a FreeRTOS task, or an ISR
 // context in the future (via xQueueSendFromISR) without changing consumers.
-inline void input_queue_post(ButtonID id, InputSource source) {
-  InputEvent evt{id, source, millis()};
+inline void input_queue_post(ButtonID id, InputSource source, InputEventType type = InputEventType::PRESSED) {
+  InputEvent evt{id, source, type, millis()};
   if (xInputQueue != nullptr) {
     xQueueSend(xInputQueue, &evt, 0);
   }

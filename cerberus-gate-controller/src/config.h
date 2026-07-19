@@ -20,3 +20,7 @@
 // Local Input Polling Task period (Core 1) -- DESIGN-REQUIREMENT.md specifies
 // GPIO/NeoKey/touch are all polled sequentially every 15ms from one task.
 constexpr int INPUT_POLL_PERIOD_MS = 15;
+
+// Hold threshold for NeoKey long-press gestures (TOUCH -> menu, ARM -> new
+// mouse). See neokey-buttons.h / neokey/neokey-driver.h.
+constexpr uint32_t NEOKEY_LONG_PRESS_MS = 2000;

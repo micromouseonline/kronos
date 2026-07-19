@@ -39,6 +39,12 @@ inline void poll_neokey_buttons() {
     if (neokey_device.wasPressed(i)) {
       input_queue_post(static_cast<ButtonID>(i), InputSource::NEOKEY_BUTTON);
     }
+    // Long-press gesture (TOUCH -> menu, ARM -> new mouse; see main.cpp's
+    // input_event_handler and race-command-source.h). Checked for all 4
+    // keys generically; START/GOAL held is currently a no-op downstream.
+    if (neokey_device.wasLongPressed(i, NEOKEY_LONG_PRESS_MS)) {
+      input_queue_post(static_cast<ButtonID>(i), InputSource::NEOKEY_BUTTON, InputEventType::HELD);
+    }
   }
 }
 
