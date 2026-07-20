@@ -22,7 +22,7 @@ stage starts.
 | A | `net/messages.h` protocol constants + `SystemEvent` queue | PASS (all 5 envs) | PASS | **done** |
 | B | Serial RX parsing, `MSG_NewMouse` → `RaceCommand::RESTART` | PASS (all 5 envs) | PASS | **done** |
 | C | Debug Output Policy migration | PASS (all 5 envs) | PASS | **done** |
-| D | Serial TX telemetry | — | — | not started |
+| D | Serial TX telemetry | PASS (all 5 envs) | PASS | **done** |
 | E | WiFi connect (non-blocking) | — | — | not started |
 | F | `boards.ini` HTTP feature block | — | — | not started |
 | G | HTTP server + `POST /api/event` | — | — | not started |

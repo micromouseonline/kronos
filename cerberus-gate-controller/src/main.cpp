@@ -17,6 +17,7 @@
 #include "neokey/neokey-pixels.h"
 
 #include "race/race-command-source.h"
+#include "race/race-serial-telemetry.h"
 #include "race/race-timer-display.h"
 #include "race/race-timer.h"
 #include "race/system-event-queue.h"
@@ -190,6 +191,7 @@ void loop() {
   input_queue_drain(input_event_handler);
   system_event_queue_drain(system_event_handler);
   race_timer_render();
+  race_serial_telemetry_tick();
   lvgl_task_handler();
   ui_tick();
   delay(50);  // calls freeRTOS yield so it is safe to use
