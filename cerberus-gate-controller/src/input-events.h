@@ -12,6 +12,7 @@
 #pragma once
 
 #include <Arduino.h>
+#include <esp_timer.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
 
@@ -34,7 +35,16 @@ struct InputEvent {
   ButtonID id;
   InputSource source;
   InputEventType type;
-  uint32_t timestamp;
+  // Microsecond-resolution, matching the eventual Serial/HTTP producers'
+  // gate-hardware clocks (a local free-running counter and a
+  // WiFi-TSF-synced counter -- millisecond accuracy is all the race timer
+  // needs, but the full range is kept here so nothing is lost before it's
+  // divided down). For every current (local) producer these are
+  // identical, both read from esp_timer_get_time(): there's no TSF/local
+  // distinction to make until a remote producer exists that can actually
+  // supply divergent values.
+  uint64_t tsf_time;
+  uint64_t local_time;
   void debug_print() {
     // Lookup tables for names matching enum ordering
     static const char* button_names[] = {"ARM", "START", "GOAL", "TOUCH"};
@@ -49,8 +59,9 @@ struct InputEvent {
 
     const char* type_str = type_names[int(type)];
 
-    char buf[64];  // Increased buffer size to prevent truncation
-    snprintf(buf, sizeof(buf), "EVT: %s, %s, %s, %lu ms\n", btn_str, src_str, type_str, (unsigned long)timestamp);
+    char buf[96];  // Increased buffer size to prevent truncation
+    snprintf(buf, sizeof(buf), "EVT: %s, %s, %s, tsf=%llu local=%llu us\n", btn_str, src_str, type_str,
+             (unsigned long long)tsf_time, (unsigned long long)local_time);
     Serial.print(buf);
   }
 };
@@ -64,7 +75,8 @@ inline void input_queue_init() {
 // Thread-safe: usable from a plain polling loop, a FreeRTOS task, or an ISR
 // context in the future (via xQueueSendFromISR) without changing consumers.
 inline void input_queue_post(ButtonID id, InputSource source, InputEventType type = InputEventType::PRESSED) {
-  InputEvent evt{id, source, type, millis()};
+  uint64_t now = static_cast<uint64_t>(esp_timer_get_time());
+  InputEvent evt{id, source, type, now, now};
   if (xInputQueue != nullptr) {
     xQueueSend(xInputQueue, &evt, 0);
   }
