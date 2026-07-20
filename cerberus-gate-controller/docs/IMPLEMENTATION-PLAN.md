@@ -17,7 +17,7 @@ report and wait.
 | Stage | Work | Build | Manual verify | Status |
 |---|---|---|---|---|
 | A | `net/messages.h` protocol constants + `SystemEvent` queue | PASS (all 5 envs) | PASS | **done** |
-| B | Serial RX parsing, `MSG_NewMouse` → `RaceCommand::RESTART` | PASS (all 5 envs) | pending | **awaiting hardware confirmation** |
+| B | Serial RX parsing, `MSG_NewMouse` → `RaceCommand::RESTART` | PASS (all 5 envs) | PASS | **done** |
 | C | Debug Output Policy migration | — | — | not started |
 | D | Serial TX telemetry | — | — | not started |
 | E | WiFi connect (non-blocking) | — | — | not started |
@@ -110,9 +110,20 @@ queue a real producer.
 **B. `src/net/serial-protocol.h`** (new) — `SerialLine{int type; long
 value;}`, line parser, Core-1 RX task (64-byte buffer, split on `\n`). Add
 `race_command_from_serial(const SerialLine&)` to `race-command-source.h`
-(replaces its TODO stub): `MSG_NEW_MOUSE → RaceCommand::RESTART`, else
-`NONE`. *Verify:* type `<98,0>\r\n` in a serial terminal from any race
-state; confirm new-mouse transition happens regardless of state.
+(replaces its TODO stub): `MSG_NEW_MOUSE` with `value == 0` (per the
+protocol doc's "value argument will always be passed as 0") →
+`RaceCommand::RESTART`, else `NONE`. *Verify:* type `<98,0>\r\n` in a serial
+terminal from any race state; confirm new-mouse transition happens
+regardless of state. **Findings from hardware testing, fixed in this
+stage:** (1) line terminator accepts CR, LF, or CRLF, not just `\n` — some
+terminals send CR-only; (2) added a `[serial-protocol] rx: "..."` receipt
+echo so it's visible what bytes actually arrived; (3) the NeoKey LED update
+only ran from `input_event_handler` (local buttons), so a serial-driven
+state change left the LEDs stale — factored into a shared
+`neokey_reflect_race_state()` called from both `input_event_handler` and
+`system_event_handler`; (4) `src/messages.h` (legacy, dead, unused) renamed
+to `src/messages-legacy-reference.h` to stop colliding with the active
+`src/net/messages.h`.
 
 **C. Debug Output Policy migration** — new `src/debug-log.h` with
 `debug_print/println/printf` gated on a `g_uart_owned_by_protocol` flag (set
