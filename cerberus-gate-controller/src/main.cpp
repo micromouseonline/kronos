@@ -5,6 +5,8 @@
 
 #include "status-led/status-led.h"
 
+#include "debug-log.h"
+
 #include "display/display.h"
 #include "display/lvgl-bridge.h"
 #include "display/touch-calibration.h"
@@ -169,8 +171,8 @@ void setup() {
   // lcd.getTouch() to race against.
   calibrate(lcd);
 #endif
-  Serial.println(F("CERBERUS: gate controller"));
-  Serial.printf("ready after %dms \n", ready_time);
+  debug_println(F("CERBERUS: gate controller"));
+  debug_printf("ready after %dms \n", ready_time);
   // Now it is finally safe to fire off the button polling task and run the main loop
   xTaskCreatePinnedToCore(input_poll_task, "input_poll", 4096, nullptr, 1, nullptr, 1);
   // Starts owning the UART for the legacy <type,value> host protocol -- see

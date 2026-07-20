@@ -6,9 +6,12 @@ page. Supersedes ad-hoc planning notes elsewhere — this file is the one to
 read for current status and next steps.
 
 Execute stages sequentially, one at a time. After each stage: build (`pio run`
-for every board env touched), report the result, and get manual confirmation
-before starting the next stage. Do not speculatively fix build errors —
-report and wait.
+for every board env touched) and report the result. Do not speculatively fix
+build errors — report and wait. Four-step handoff per stage, in order: (1)
+manual hardware verification confirms the stage is correct, (2) this doc's
+Status table is updated to mark it done, (3) the user makes the git commit
+(never done by the assistant), (4) the user says to proceed before the next
+stage starts.
 
 ---
 
@@ -18,7 +21,7 @@ report and wait.
 |---|---|---|---|---|
 | A | `net/messages.h` protocol constants + `SystemEvent` queue | PASS (all 5 envs) | PASS | **done** |
 | B | Serial RX parsing, `MSG_NewMouse` → `RaceCommand::RESTART` | PASS (all 5 envs) | PASS | **done** |
-| C | Debug Output Policy migration | — | — | not started |
+| C | Debug Output Policy migration | PASS (all 5 envs) | PASS | **done** |
 | D | Serial TX telemetry | — | — | not started |
 | E | WiFi connect (non-blocking) | — | — | not started |
 | F | `boards.ini` HTTP feature block | — | — | not started |

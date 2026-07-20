@@ -13,13 +13,18 @@
 #include <freertos/task.h>
 #include <stdio.h>
 
+#include "debug-log.h"
 #include "race/race-command-source.h"
 #include "race/system-event-queue.h"
 
-// Set true once this task starts owning the UART -- gates ad-hoc
-// Serial.print debug output elsewhere (see debug-log.h) so it doesn't
-// corrupt the host's <type,value> parser.
-inline bool g_uart_owned_by_protocol = false;
+// Manual-testing aid only, NOT part of the wire protocol -- independent of
+// debug-log.h's g_uart_owned_by_protocol (which gates OFF once this task
+// starts owning the UART; this flag gates the opposite thing, an
+// interactive echo that only makes sense while this task IS running). Must
+// be set false before connecting real host software: this text lands on
+// the same UART the host parses as <type,value> lines and would corrupt
+// its parser exactly like any other ad-hoc debug output.
+inline bool g_serial_protocol_rx_echo = true;
 
 inline bool serial_protocol_parse_line(const char *line, SerialLine *out) {
   if (line == nullptr || out == nullptr) {
@@ -51,9 +56,11 @@ inline void serial_protocol_rx_task(void *) {
       if (c == '\n' || c == '\r') {
         if (len > 0) {
           buf[len] = '\0';
-          // Receipt echo -- confirms to whoever's typing exactly what
-          // bytes were seen, independent of terminal echo settings.
-          Serial.printf("[serial-protocol] rx: \"%s\"\n", buf);
+          if (g_serial_protocol_rx_echo) {
+            // Confirms to whoever's typing exactly what bytes were seen,
+            // independent of terminal echo settings.
+            Serial.printf("[serial-protocol] rx: \"%s\"\n", buf);
+          }
           SerialLine line;
           if (serial_protocol_parse_line(buf, &line)) {
             RaceCommand cmd = race_command_from_serial(line);

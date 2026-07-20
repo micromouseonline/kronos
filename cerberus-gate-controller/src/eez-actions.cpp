@@ -13,6 +13,7 @@
 #include "ui/screens.h"
 #include "ui/ui.h"
 
+#include "debug-log.h"
 #include "display/display.h"  // LGFX
 #include "input-events.h"     // input_queue_post, InputSource, ButtonID
 
@@ -60,5 +61,5 @@ void action_on_menu_maze_timer(lv_event_t *e) {
 }
 
 void action_on_menu_calibrate(lv_event_t *e) {
-  Serial.println("CALIBRATE!");
+  debug_println("CALIBRATE!");
 }

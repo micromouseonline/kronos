@@ -2,6 +2,7 @@
 
 #include <Arduino.h>
 #include <Preferences.h>
+#include "debug-log.h"
 #include "display.h"
 
 // Gated per-board by TOUCH_NEEDS_CALIBRATION (lib/boards/*.h). Originally
@@ -30,7 +31,7 @@ inline void re_calibrate(LGFX& lcd) {
   prefs.begin(PREFS_NAMESPACE, false);
   prefs.clear();
 
-  Serial.println("Starting native LovyanGFX calibration wizard...");
+  debug_println("Starting native LovyanGFX calibration wizard...");
 
   // 2. Clear screen and display basic instructions
   lcd.fillScreen(TFT_BLACK);
@@ -70,10 +71,10 @@ inline void calibrate(LGFX& lcd) {
 
     // Apply it to the display instance
     lcd.setTouchCalibrate(touchCalData);
-    Serial.println("Native touch calibration loaded successfully.");
+    debug_println("Native touch calibration loaded successfully.");
   } else {
     prefs.end();
-    Serial.println("No calibration data found. Launching wizard...");
+    debug_println("No calibration data found. Launching wizard...");
     re_calibrate(lcd);
   }
 }
