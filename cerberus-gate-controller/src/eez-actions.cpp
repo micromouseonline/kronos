@@ -14,9 +14,9 @@
 #include "ui/ui.h"
 
 #include "display/display.h"  // LGFX
-#include "display/lvgl-bridge.h"
-#include "input-events.h"  // input_queue_post, InputSource, ButtonID
+#include "input-events.h"     // input_queue_post, InputSource, ButtonID
 
+// EventType defaults to InputEventType::PRESSED if not provided
 void action_on_timer_arm(lv_event_t *e) {
   input_queue_post(BTN_ARM, InputSource::TOUCH);
 }
@@ -33,9 +33,24 @@ void action_on_timer_touch(lv_event_t *e) {
   input_queue_post(BTN_TOUCH, InputSource::TOUCH);
 }
 
+// Long-press callbacks (registered on btn_arm/btn_start/btn_goal's
+// LV_EVENT_LONG_PRESSED in screens.c): post into the shared queue like
+// every other producer's hold gesture. BUTTON_COMMAND_MAP
+// (race/race-command-source.h) decides what each HELD event means
+void action_on_timer_arm_long(lv_event_t *e) {
+  input_queue_post(BTN_ARM, InputSource::TOUCH, InputEventType::HELD);
+}
+
+void action_on_timer_start_long(lv_event_t *e) {
+  input_queue_post(BTN_START, InputSource::TOUCH, InputEventType::HELD);
+}
+
+void action_on_timer_goal_long(lv_event_t *e) {
+  input_queue_post(BTN_GOAL, InputSource::TOUCH, InputEventType::HELD);
+}
+
 void action_on_timer_touch_long(lv_event_t *e) {
-  trigger_touch_lockout();
-  loadScreen(SCREEN_ID_MENU);
+  input_queue_post(BTN_TOUCH, InputSource::TOUCH, InputEventType::HELD);
 }
 
 // Menu -> maze timer screen navigation. UI navigation only, not a

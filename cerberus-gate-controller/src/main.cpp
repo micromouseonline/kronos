@@ -45,10 +45,14 @@ static void input_poll_task(void *) {
 // The events have been copied from the queue so they are valid through
 // the lifetime of this function
 void input_event_handler(const InputEvent &evt) {
-  // NeoKey TOUCH held -- mirrors the touch panel's LVGL long-press
-  // (action_on_timer_touch_long): return to the main menu. UI navigation
-  // only, not a RaceCommand.
+  // TOUCH held -- from NeoKey, or the touch panel's own LVGL long-press
+  // (action_on_timer_touch_long posts here too, same as every other
+  // producer): return to the main menu. UI navigation only, not a
+  // RaceCommand, so it's handled here rather than through
+  // BUTTON_COMMAND_MAP. trigger_touch_lockout() debounces the touch panel
+  // for 250ms after the switch regardless of which producer triggered it.
   if (evt.id == BTN_TOUCH && evt.type == InputEventType::HELD) {
+    trigger_touch_lockout();
     loadScreen(SCREEN_ID_MENU);
   }
   race_timer_handle_command(race_command_from_button(evt.id, evt.type));

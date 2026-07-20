@@ -187,6 +187,24 @@
       "componentGroups": [],
       "userProperties": [],
       "name": "on_menu_calibrate"
+    },
+    {
+      "objID": "92f795c5-c49a-42cb-e81a-b6a74d8c533c",
+      "components": [],
+      "connectionLines": [],
+      "localVariables": [],
+      "componentGroups": [],
+      "userProperties": [],
+      "name": "on_timer_start_long"
+    },
+    {
+      "objID": "93e826a4-5f36-4a21-cefa-54cbe3aa5c43",
+      "components": [],
+      "connectionLines": [],
+      "localVariables": [],
+      "componentGroups": [],
+      "userProperties": [],
+      "name": "on_timer_goal_long"
     }
   ],
   "userPages": [
@@ -1028,6 +1046,13 @@
                   "handlerType": "action",
                   "action": "on_timer_arm",
                   "userData": 0
+                },
+                {
+                  "objID": "87a1efd0-9d35-4b7d-80a6-de71d893972c",
+                  "eventName": "LONG_PRESSED",
+                  "handlerType": "action",
+                  "action": "on_timer_arm_long",
+                  "userData": 0
                 }
               ],
               "identifier": "btn_arm",
@@ -1135,6 +1160,13 @@
                   "handlerType": "action",
                   "action": "on_timer_start",
                   "userData": 0
+                },
+                {
+                  "objID": "84e8f735-6e98-4623-a546-dcbd20900533",
+                  "eventName": "LONG_PRESSED",
+                  "handlerType": "action",
+                  "action": "on_timer_start_long",
+                  "userData": 0
                 }
               ],
               "identifier": "btn_start",
@@ -1241,6 +1273,13 @@
                   "eventName": "PRESSED",
                   "handlerType": "action",
                   "action": "on_timer_goal",
+                  "userData": 0
+                },
+                {
+                  "objID": "6de42fd0-b7ea-49e7-e9cb-32e4aa270d1d",
+                  "eventName": "LONG_PRESSED",
+                  "handlerType": "action",
+                  "action": "on_timer_goal_long",
                   "userData": 0
                 }
               ],

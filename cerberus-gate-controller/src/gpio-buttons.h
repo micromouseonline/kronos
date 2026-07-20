@@ -2,11 +2,19 @@
 //  gpio-buttons.h — Physical-button input producer for boards with no
 //  touchscreen (M5Stack Core: buttons A/B/C, active-LOW).
 //
-//  Mapping (3 buttons -> 4 logical actions):
-//    A short-press -> BTN_ARM
-//    B short-press -> BTN_START
-//    C short-press -> BTN_GOAL
-//    C long-press   -> BTN_TOUCH  (deliberately the harder-to-reach action)
+//  Mapping (3 buttons -> BTN_ARM/BTN_START/BTN_GOAL, no BTN_TOUCH -- this
+//  board has no touchscreen):
+//    A short-press -> BTN_ARM,   A long-press -> BTN_ARM   + HELD
+//    B short-press -> BTN_START, B long-press -> BTN_START + HELD
+//    C short-press -> BTN_GOAL,  C long-press -> BTN_GOAL  + HELD
+//
+//  Same dual-post pattern as neokey-buttons.h: PRESSED fires on the press
+//  edge, HELD fires once mid-hold if still down past
+//  GPIO_BUTTON_LONG_PRESS_MS (see button/button.h's wasLongPressed()).
+//  Downstream mapping of HELD to a RaceCommand is race-command-source.h's
+//  job, shared with every other producer -- currently only ARM-held does
+//  anything (RaceCommand::RESTART, matching NeoKey's ARM-held); START/GOAL
+//  held are no-ops, also matching NeoKey.
 // ----------------------------------------------------------------------------
 #pragma once
 
@@ -19,38 +27,38 @@
 
 inline DebouncedButton button_a(PIN_BUTTON_A);
 inline DebouncedButton button_b(PIN_BUTTON_B);
-
-inline bool c_was_down = false;
-inline unsigned long c_press_start_ms = 0;
+inline DebouncedButton button_c(PIN_BUTTON_C);
 
 inline void gpio_buttons_init() {
   button_a.begin();
   button_b.begin();
-  pinMode(PIN_BUTTON_C, INPUT_PULLUP);
+  button_c.begin();
 }
 
 inline void poll_gpio_buttons() {
+  // EventType defaults to InputEventType::PRESSED if not provided
   if (button_a.wasPressed()) {
     input_queue_post(BTN_ARM, InputSource::GPIO_BUTTON);
   }
+
+  if (button_a.wasLongPressed(GPIO_BUTTON_LONG_PRESS_MS)) {
+    input_queue_post(BTN_ARM, InputSource::GPIO_BUTTON, InputEventType::HELD);
+  }
+
   if (button_b.wasPressed()) {
     input_queue_post(BTN_START, InputSource::GPIO_BUTTON);
   }
 
-  // Button C is manually tracked (not via DebouncedButton) so we can time
-  // the hold duration and distinguish short-press (GOAL) from long-press (RESET).
-  bool c_down = (digitalRead(PIN_BUTTON_C) == LOW);
-  if (c_down && !c_was_down) {
-    c_press_start_ms = millis();
-    c_was_down = true;
-  } else if (!c_down && c_was_down) {
-    unsigned long held_ms = millis() - c_press_start_ms;
-    c_was_down = false;
-    if (held_ms >= BUTTON_C_LONG_PRESS_MS) {
-      input_queue_post(BTN_TOUCH, InputSource::GPIO_BUTTON);
-    } else {
-      input_queue_post(BTN_GOAL, InputSource::GPIO_BUTTON);
-    }
+  if (button_b.wasLongPressed(GPIO_BUTTON_LONG_PRESS_MS)) {
+    input_queue_post(BTN_START, InputSource::GPIO_BUTTON, InputEventType::HELD);
+  }
+
+  if (button_c.wasPressed()) {
+    input_queue_post(BTN_GOAL, InputSource::GPIO_BUTTON);
+  }
+
+  if (button_c.wasLongPressed(GPIO_BUTTON_LONG_PRESS_MS)) {
+    input_queue_post(BTN_GOAL, InputSource::GPIO_BUTTON, InputEventType::HELD);
   }
 }
 

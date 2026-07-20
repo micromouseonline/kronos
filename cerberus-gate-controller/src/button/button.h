@@ -9,6 +9,7 @@ class DebouncedButton {
   unsigned long _lastDebounceTime;
   bool _lastState;
   bool _activeLow;
+  bool _longReported = false;
 
  public:
   // Constructor: activeLow defaults to true if not specified
@@ -56,5 +57,29 @@ class DebouncedButton {
       }
     }
     return pressedTriggered;
+  }
+
+  // Current debounced state (not edge-triggered).
+  bool isPressed() const {
+    return _activeLow ? (_lastState == LOW) : (_lastState == HIGH);
+  }
+
+  // Edge-triggered: true exactly once per hold, on the poll where the hold
+  // first reaches durationMs (not every poll for as long as it's held).
+  // Resets on release so the next press/hold cycle can fire again. Relies
+  // on wasPressed() having been called this same poll to refresh
+  // _lastDebounceTime/_lastState -- mirrors Neokey::wasLongPressed()'s
+  // contract so every input producer posts InputEventType::HELD the same
+  // way (input-events.h).
+  bool wasLongPressed(unsigned long durationMs) {
+    if (!isPressed()) {
+      _longReported = false;
+      return false;
+    }
+    if (!_longReported && (millis() - _lastDebounceTime) >= durationMs) {
+      _longReported = true;
+      return true;
+    }
+    return false;
   }
 };

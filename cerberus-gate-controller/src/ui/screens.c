@@ -267,6 +267,7 @@ void create_screen_main() {
             lv_obj_set_pos(obj, 8, 214);
             lv_obj_set_size(obj, 60, 22);
             lv_obj_add_event_cb(obj, action_on_timer_arm, LV_EVENT_PRESSED, (void *)0);
+            lv_obj_add_event_cb(obj, action_on_timer_arm_long, LV_EVENT_LONG_PRESSED, (void *)0);
             lv_obj_set_style_bg_color(obj, lv_color_hex(0xffee0a), LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_shadow_width(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
             {
@@ -289,6 +290,7 @@ void create_screen_main() {
             lv_obj_set_pos(obj, 89, 214);
             lv_obj_set_size(obj, 60, 22);
             lv_obj_add_event_cb(obj, action_on_timer_start, LV_EVENT_PRESSED, (void *)0);
+            lv_obj_add_event_cb(obj, action_on_timer_start_long, LV_EVENT_LONG_PRESSED, (void *)0);
             lv_obj_set_style_bg_color(obj, lv_color_hex(0x34c759), LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_shadow_width(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
             {
@@ -311,6 +313,7 @@ void create_screen_main() {
             lv_obj_set_pos(obj, 170, 214);
             lv_obj_set_size(obj, 60, 22);
             lv_obj_add_event_cb(obj, action_on_timer_goal, LV_EVENT_PRESSED, (void *)0);
+            lv_obj_add_event_cb(obj, action_on_timer_goal_long, LV_EVENT_LONG_PRESSED, (void *)0);
             lv_obj_set_style_bg_color(obj, lv_color_hex(0xff3b30), LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_shadow_width(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
             {

@@ -24,7 +24,7 @@ constexpr int PANEL_Y_OFFSET = 0;
 constexpr int PIN_BUTTON_A = 39;
 constexpr int PIN_BUTTON_B = 38;
 constexpr int PIN_BUTTON_C = 37;
-constexpr unsigned long BUTTON_C_LONG_PRESS_MS = 600;  // hold threshold for the double-duty button
+constexpr unsigned long GPIO_BUTTON_LONG_PRESS_MS = 1600;  // hold threshold, shared by all 3 buttons
 
 // ----- NeoKey 1x4 Configuration (optional attachment, I2C port 1) -----
 // Confirmed against the physical board's external I2C connector:
