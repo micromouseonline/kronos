@@ -17,7 +17,9 @@
 #include "race/race-command-source.h"
 #include "race/race-timer-display.h"
 #include "race/race-timer.h"
+#include "race/system-event-queue.h"
 
+#include "net/serial-protocol.h"
 #include "wifi-scan.h"
 
 // lib/ui/ -- EEZ Studio generated.
@@ -40,27 +42,16 @@ static void input_poll_task(void *) {
   }
 }
 
-// As the input event queue is drained, all events pass through here
-// for dispatch.
-// The events have been copied from the queue so they are valid through
-// the lifetime of this function
-void input_event_handler(const InputEvent &evt) {
-  // TOUCH held -- from NeoKey, or the touch panel's own LVGL long-press
-  // (action_on_timer_touch_long posts here too, same as every other
-  // producer): return to the main menu. UI navigation only, not a
-  // RaceCommand, so it's handled here rather than through
-  // BUTTON_COMMAND_MAP. trigger_touch_lockout() debounces the touch panel
-  // for 250ms after the switch regardless of which producer triggered it.
-  if (evt.id == BTN_TOUCH && evt.type == InputEventType::HELD) {
-    trigger_touch_lockout();
-    loadScreen(SCREEN_ID_MENU);
-  }
-  race_timer_handle_command(race_command_from_button(evt.id, evt.type));
+// Reflects race_state onto the NeoKey LEDs. Called after every
+// race_timer_handle_command() dispatch, regardless of source, so
+// Serial/HTTP-driven transitions stay visible on the physical LEDs exactly
+// like local button transitions do -- previously this only ran from
+// input_event_handler, so a remote command left the LEDs showing whatever
+// state a button had last set, even though race_state itself had moved on.
+void neokey_reflect_race_state() {
   switch (race_state) {
     case RaceState::CALIBRATE:
       neokey_set_colours({NP_OFF, NP_OFF, NP_OFF, NP_OFF});
-      // Gate test lights up button when gate activated
-      neokey_set_colour(evt.id, NP_YELLOW);
       break;
 
     case RaceState::NEW_MOUSE:
@@ -89,6 +80,40 @@ void input_event_handler(const InputEvent &evt) {
   }
 }
 
+// As the input event queue is drained, all events pass through here
+// for dispatch.
+// The events have been copied from the queue so they are valid through
+// the lifetime of this function
+void input_event_handler(const InputEvent &evt) {
+  // TOUCH held -- from NeoKey, or the touch panel's own LVGL long-press
+  // (action_on_timer_touch_long posts here too, same as every other
+  // producer): return to the main menu. UI navigation only, not a
+  // RaceCommand, so it's handled here rather than through
+  // BUTTON_COMMAND_MAP. trigger_touch_lockout() debounces the touch panel
+  // for 250ms after the switch regardless of which producer triggered it.
+  if (evt.id == BTN_TOUCH && evt.type == InputEventType::HELD) {
+    trigger_touch_lockout();
+    loadScreen(SCREEN_ID_MENU);
+  }
+  race_timer_handle_command(race_command_from_button(evt.id, evt.type));
+  neokey_reflect_race_state();
+  if (race_state == RaceState::CALIBRATE) {
+    // Gate test lights up the button when its gate is activated --
+    // physical-input-specific (needs evt.id), so it stays here rather than
+    // in the shared reflector above.
+    neokey_set_colour(evt.id, NP_YELLOW);
+  }
+}
+
+// SystemEvent handler for the Main Event Queue (Serial/HTTP producers --
+// see race/system-event-queue.h). Local buttons don't go through here, they
+// call race_timer_handle_command() directly in input_event_handler above;
+// both converge on the same state machine entry point.
+void system_event_handler(const SystemEvent &evt) {
+  race_timer_handle_command(evt.type);
+  neokey_reflect_race_state();
+}
+
 //////////////////////////////////////////////////////////////////////
 
 void setup() {
@@ -99,6 +124,7 @@ void setup() {
   WiFi.disconnect();
 
   input_queue_init();
+  system_event_queue_init();
   gpio_buttons_init();
   neokey_buttons_init();
   lcd.init();                     // setting up the display takes about 500ms
@@ -147,6 +173,10 @@ void setup() {
   Serial.printf("ready after %dms \n", ready_time);
   // Now it is finally safe to fire off the button polling task and run the main loop
   xTaskCreatePinnedToCore(input_poll_task, "input_poll", 4096, nullptr, 1, nullptr, 1);
+  // Starts owning the UART for the legacy <type,value> host protocol -- see
+  // net/serial-protocol.h. Last, so nothing above needed to worry about
+  // sharing Serial with it yet.
+  serial_protocol_init();
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -156,6 +186,7 @@ void setup() {
 // All we need to do is have an event handler process events from the queue
 void loop() {
   input_queue_drain(input_event_handler);
+  system_event_queue_drain(system_event_handler);
   race_timer_render();
   lvgl_task_handler();
   ui_tick();

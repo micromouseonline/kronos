@@ -13,6 +13,7 @@
 #pragma once
 
 #include "input-events.h"
+#include "net/messages.h"
 #include "race-timer.h"
 
 struct ButtonCommandMap {
@@ -49,8 +50,33 @@ inline RaceCommand race_command_from_button(ButtonID id, InputEventType type = I
   return (type == InputEventType::HELD) ? map.on_hold : map.on_press;
 }
 
-// race_command_from_serial(const SerialLine&) -- TODO once the Serial
-// Monitor Task (DESIGN-REQUIREMENT.md) has a payload type to parse.
+// Parsed by net/serial-protocol.h's line parser from a `<type,value>` wire
+// message (see net/messages.h). Defined here, not in serial-protocol.h, so
+// this file doesn't need serial-protocol.h to know its own payload type --
+// HttpGateEvent will follow the same reasoning once the HTTP producer
+// exists.
+struct SerialLine {
+  int type;
+  long value;
+};
+
+inline RaceCommand race_command_from_serial(const SerialLine &line) {
+  // TODO(mouse-name): the legacy <98,value> message carries no mouse name
+  // (value is always 0 per the protocol's own doc); once the wire format
+  // can carry one, thread it through SerialLine -> SystemEvent.payload ->
+  // an optional-name parameter on race_timer_enter_new_mouse().
+  // The protocol doc for MSG_NewMouse: "value argument will always be
+  // passed as 0" -- treated as a strict precondition, not just a comment:
+  // a non-zero value means this isn't the message it looks like, reject it.
+  if (line.type == MSG_NEW_MOUSE && line.value == 0) {
+    // RESTART, not NEW_MOUSE -- race_timer_handle_command's WAITING/
+    // RUNNING/GOAL branches only act on RESTART, same reasoning as
+    // BUTTON_COMMAND_MAP's ARM-hold above. This way the host's new-mouse
+    // command always takes effect regardless of current race state.
+    return RaceCommand::RESTART;
+  }
+  return RaceCommand::NONE;  // MSG_SetMode and everything else: out of scope this round
+}
 
 // race_command_from_http(const HttpGateEvent&) -- TODO once the
 // Asynchronous HTTP Listener (DESIGN-REQUIREMENT.md) has a payload type to

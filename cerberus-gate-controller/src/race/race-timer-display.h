@@ -83,7 +83,7 @@ inline void race_timer_render_leaderboard() {
     char time_str[16];
     race_timer_format_time(entries[i].best_time_ms, time_str, sizeof(time_str));
     char line[40];
-    snprintf(line, sizeof(line), "%u: %s %s", (unsigned)(i + 1), mouse_names[entries[i].mouse_id % NUM_MICE], time_str);
+    snprintf(line, sizeof(line), "%u: %s", (unsigned)(i + 1), time_str);
     label_list_append(leaderboard_buf, objects.lbl_leaderboard_list, line);
   }
 }
