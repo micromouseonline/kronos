@@ -24,7 +24,7 @@ stage starts.
 | C | Debug Output Policy migration | PASS (all 5 envs) | PASS | **done** |
 | D | Serial TX telemetry | PASS (all 5 envs) | PASS | **done** |
 | E | WiFi connect (non-blocking) | PASS (all 5 envs) | PASS | **done** |
-| F | `boards.ini` HTTP feature block | — | — | not started |
+| F | `boards.ini` HTTP feature block + partition-table fix | PASS (all 5 envs) | pending | in progress |
 | G | HTTP server + `POST /api/event` | — | — | not started |
 | H | Leaderboard page (`GET /`) | — | — | not started |
 | I | `race_runs[]` concurrency guard (optional) | — | — | deferred until after G/H |
@@ -181,11 +181,35 @@ independently of this task, and a real handshake+DHCP completing in well
 under a second once the AP was reachable.
 
 **F. `boards.ini` / `platformio.ini`** — new `[feature_http]` block
-(`AsyncTCP`, `ESPAsyncWebServer` — verify exact maintained-fork package
-names via `pio pkg search` at implementation time, `ArduinoJson @ ^7`),
-wired into all 5 board envs via the existing `extends`/`${parent.key}`
-convention. *Verify:* `python3 tools/check_ini_composition.py`, then `pio
-run` all 5 envs.
+(`esp32async/AsyncTCP`, `esp32async/ESPAsyncWebServer` — confirmed via `pio
+pkg search` to be the actively-maintained fork; the original `me-no-dev`
+packages and the `mathieucarbou` mirror haven't published since Jan 2025,
+`bblanchon/ArduinoJson @ ^7`), wired into all 5 board envs via the existing
+`extends`/`${parent.key}` convention. *Verify:* `python3
+tools/check_ini_composition.py`, then `pio run` all 5 envs; boards
+previously flashed need a full erase + reflash (see partition-table finding
+below), not just `pio run -t upload`, then confirm normal boot/racing.
+**Findings during implementation, fixed in this stage:** wiring in
+`feature_http` (still unused by any code at this point) highlighted that
+the 3 four-flash-MB boards (`cyd2usb-ili9341`, `cyd2usb-st7789`,
+`jc2432w328c`) were already at ~89% of their 1.25MB app partition before
+Stage G/H write a single line of HTTP code. Investigated via the linker map
+(`firmware.map`, filtering `--gc-sections`-discarded input sections):
+usage is dominated by the ESP-IDF Wi-Fi stack (~456K: libnet80211, liblwip,
+libpp, libphy, libwpa_supplicant, libmbedcrypto, ...) and the LVGL +
+LovyanGFX display stack (~322K, including built-in Montserrat 10/14/16/28
+font glyph data — confirmed genuinely used by `screens.c`'s labels across
+several EEZ Studio screens, not dead theme bloat as first suspected) plus
+standard libc/framework overhead — no significant removable bloat found in
+our own `src/*` code. `default.csv`'s dual-OTA-slot scheme (two 1.25MB app
+partitions + 1.375MB SPIFFS) reserves space this project doesn't use (no
+OTA code anywhere, confirmed by grep). Switched those 3 boards'
+`board_build.partitions` to `no_ota.csv` (one 2MB app partition + 1.875MB
+SPIFFS) — doubles app headroom (~89% → ~56% used) while preserving most of
+the SPIFFS partition, since SD-card + possible SPIFFS logging is a planned
+future feature. `feature_oled`'s U8g2 dependency was also confirmed to cost
+0 bytes (never referenced anywhere in this codebase, fully stripped) — left
+in place as harmless dead config, not worth touching this stage.
 
 **G. `src/net/http-server.h`** (new) — `AsyncWebServer` on port 80. `GET /`
 stub first (`"CERBERUS OK"`), then `POST /api/event` (JSON body
