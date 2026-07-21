@@ -1,22 +1,12 @@
 // ----------------------------------------------------------------------------
-//  http-server.h — Asynchronous HTTP Listener (DESIGN-REQUIREMENT.md): an
-//  AsyncWebServer on port 80, running on the Wi-Fi/AsyncTCP stack's own
-//  background task (Core 0). `GET /` is a plain liveness stub; `GET
-//  /leaderboard` is the spectator leaderboard page, server-rendered from
-//  the same race-timer.h data the on-screen panel uses. `POST /api/event`
-//  is the wire contract remote intelligent gates use to report timing
-//  events -- JSON body `{gate_id, event, tsf_us, gate_us}`, parsed via
-//  AsyncCallbackJsonWebHandler, mapped through race-command-source.h's
-//  HTTP_EVENT_COMMAND_MAP, and pushed onto the Main Event Queue
-//  (system_event_post()) the same way Serial/local-button producers do.
-//  Not gate-controller-python-test-cerberus/server.py, an unrelated
-//  GET-based prototype that predates this JSON POST contract.
+//  http-server.h — Asynchronous HTTP Listener
 // ----------------------------------------------------------------------------
 #pragma once
 
 #include <ArduinoJson.h>
 #include <AsyncJson.h>
 #include <ESPAsyncWebServer.h>
+#include <time.h>
 
 #include "debug-log.h"
 #include "net/wifi-manager.h"
@@ -26,42 +16,92 @@
 
 inline AsyncWebServer http_server(80);
 
-// Pushes one SSE message per new result -- see race_timer_on_run_committed's
-// wiring in http_server_init() below. No per-message payload needed: the
-// page's own script just reloads on any message, so an empty body is fine.
+// Pushes one SSE message per new result
 inline AsyncEventSource http_events("/events");
 
 inline void http_notify_leaderboard_changed() {
   http_events.send("update");
 }
 
-// Wired to wifi-manager.h's wifi_on_connected hook in http_server_init()
-// below -- fires on every Wi-Fi (re)connect, including the first one at
-// boot. AsyncServer::begin() (AsyncTCP/src/AsyncTCP.cpp) silently no-ops
-// while its internal listening PCB is still non-null, so without this, a
-// Wi-Fi drop/reconnect leaves the server's original listening socket
-// orphaned against the old network interface state and it simply stops
-// responding, even once Wi-Fi itself is back and the device has the same
-// IP. end() explicitly tears down that PCB so begin() creates and binds a
-// fresh one; routes/handlers registered via on()/addHandler() live in a
-// separate list untouched by end(), so nothing needs re-registering.
 inline void http_server_restart() {
   http_server.end();
   http_server.begin();
   debug_println("[SYSTEM] HTTP server restarted after Wi-Fi (re)connect");
 }
 
-inline void http_handle_root(AsyncWebServerRequest *request) {
-  request->send(200, "text/plain", "CERBERUS OK");
+// Time / NTP Configuration (Europe/London)
+const char *ntpServer = "pool.ntp.org";
+const char *timeZone = "GMT0BST,M3.5.0/1,M10.5.0/2";
+
+inline String formatTimeNow() {
+  struct tm timeinfo;
+  // Pass 0 timeout so it never blocks the AsyncWebServer background thread
+  if (!getLocalTime(&timeinfo, 0)) {
+    return String("Time not available (NTP not synced yet)");
+  }
+
+  char buf[32];
+  // YYYY-MM-DD HH:MM:SS
+  strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", &timeinfo);
+  return String(buf);
 }
 
-// Full standings (not just race-timer-display.h's on-screen top 5 -- that
-// cap exists purely for physical screen space, which doesn't apply here),
-// sorted fastest-first same as the on-screen panel, so the on-screen top 5
-// is always a prefix of this page. Pushed live via Server-Sent Events
-// (http_events above) instead of polling/meta-refresh -- reloads the
-// instant a new run is committed, not on a fixed timer -- while still
-// staying plain server-rendered HTML, no client-side templating/framework.
+inline void handleTime(AsyncWebServerRequest *request) {
+  request->send(200, "text/plain", formatTimeNow());
+}
+
+const char COMMON_STYLE[] PROGMEM = R"rawliteral(
+body { font-family: Arial, sans-serif; margin: 24px; }
+.card { padding: 16px; border: 1px solid #ddd; border-radius: 12px; max-width: 420px; }
+#t { font-size: 1.6rem; font-weight: 700; }
+.small { color: #666; margin-top: 8px; }
+)rawliteral";
+
+inline void http_handle_css(AsyncWebServerRequest *request) {
+  // Cast to uint8_t* and provide exact length to safely serve PROGMEM data
+  AsyncWebServerResponse *response = request->beginResponse(200, "text/css", (const uint8_t *)COMMON_STYLE, sizeof(COMMON_STYLE) - 1);
+  response->addHeader("Cache-Control", "max-age=86400");  // Cache in browser for 1 day
+  request->send(response);
+}
+
+inline void http_handle_root(AsyncWebServerRequest *request) {
+  // Simple HTML page that fetches /time every second
+  String html = R"rawliteral(
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ESP32 Time</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="card">
+    <div>Current time:</div>
+    <div id="t">Loading...</div>
+    <div class="small">Updates every second</div>
+  </div>
+
+  <script>
+    async function updateTime(){
+      try{
+        const r = await fetch('/time', { cache: 'no-store' });
+        const text = await r.text();
+        document.getElementById('t').textContent = text;
+      } catch(e){
+        document.getElementById('t').textContent = 'Error';
+      }
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+  </script>
+</body>
+</html>
+)rawliteral";
+
+  request->send(200, "text/html", html);
+}
+
 inline void http_handle_leaderboard(AsyncWebServerRequest *request) {
   LeaderboardEntry entries[MAX_RESULTS];
   size_t count = race_timer_compute_leaderboard(entries, MAX_RESULTS);
@@ -69,16 +109,9 @@ inline void http_handle_leaderboard(AsyncWebServerRequest *request) {
   String html;
   html.reserve(384 + count * 64);
   html +=
-      // onerror fires when the connection drops (e.g. a Wi-Fi dropout);
-      // the browser's EventSource then auto-retries on its own, and onopen
-      // fires again once that succeeds. A reload here specifically on
-      // *recovery from an error* (not the initial connect) catches up on
-      // whatever changed during the outage -- there's no guarantee the
-      // "update" push for a run that happened mid-outage ever reaches a
-      // reconnected client, so waiting on onmessage alone left the page
-      // stale until manually reloaded.
       F("<!DOCTYPE html><html><head><meta charset=\"utf-8\">"
         "<title>CERBERUS Leaderboard</title>"
+        "<link rel=\"stylesheet\" href=\"/style.css\">"
         "<script>"
         "var hadError=false;"
         "var es=new EventSource('/events');"
@@ -92,14 +125,15 @@ inline void http_handle_leaderboard(AsyncWebServerRequest *request) {
     html += F("<p>No runs recorded yet.</p>");
   } else {
     html +=
-        F("<table border=\"1\" cellpadding=\"4\" cellspacing=\"0\">"
+        F("<div class=\"card\">"
+          "<table border=\"1\" cellpadding=\"4\" cellspacing=\"0\">"
           "<tr><th>#</th><th>Mouse</th><th>Best Time</th></tr>");
     for (size_t i = 0; i < count; i++) {
       char time_str[16];
       race_timer_format_time(entries[i].best_time_ms, time_str, sizeof(time_str));
       html += "<tr><td>" + String(i + 1) + "</td><td>" + mouse_names[entries[i].mouse_id % NUM_MICE] + "</td><td>" + time_str + "</td></tr>";
     }
-    html += F("</table>");
+    html += F("</table></div>");
   }
   html += F("</body></html>");
   request->send(200, "text/html", html);
@@ -121,17 +155,16 @@ inline void http_handle_event(AsyncWebServerRequest *request, JsonVariant &json)
     return;
   }
 
-  // tsf_us is the gate's own TSF reading, not this device's clock -- see
-  // DESIGN-REQUIREMENT.md's dual-clock cross-referencing. gate_us rides
-  // along in the JSON body for that same drift-compensation purpose but
-  // SystemEvent has no field for it yet (not needed until that
-  // cross-referencing is actually implemented).
   system_event_post(cmd, evt.tsf_us, evt.gate_id);
   request->send(200, "application/json", "{\"status\":\"ok\"}");
 }
 
 inline void http_server_init() {
+  configTzTime(timeZone, ntpServer);
+
+  http_server.on("/style.css", HTTP_GET, http_handle_css);
   http_server.on("/", HTTP_GET, http_handle_root);
+  http_server.on("/time", HTTP_GET, handleTime);
   http_server.on("/leaderboard", HTTP_GET, http_handle_leaderboard);
 
   auto *event_handler = new AsyncCallbackJsonWebHandler("/api/event", http_handle_event);
