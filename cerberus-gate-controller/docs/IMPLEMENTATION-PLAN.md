@@ -27,8 +27,8 @@ stage starts.
 | F | `boards.ini` HTTP feature block + partition-table fix | PASS (all 5 envs) | PASS | **done** |
 | G | HTTP server + `POST /api/event` | PASS (all 5 envs) | PASS | **done** |
 | H | Leaderboard page (`GET /`) | PASS (all 5 envs) | PASS | **done** |
-| I | `race_runs[]` concurrency guard (optional) | — | — | deferred until after G/H |
-| J | Docs sync (this file + header comments) | — | — | not started |
+| I | `race_runs[]` concurrency guard (optional) | — | — | deferred, revisit only if a stale/garbled leaderboard read is actually observed |
+| J | Docs sync (this file + header comments) | PASS (all 5 envs) | n/a (docs-only) | **done** |
 
 ---
 

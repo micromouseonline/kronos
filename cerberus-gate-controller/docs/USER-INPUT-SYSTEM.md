@@ -4,12 +4,21 @@ The input layer lets the user interact directly with the system via touch
 screen and/or physical buttons. If present, these must provide at least
 three inputs: ARM, START and GOAL.
 
-All input sources place event notifications into a shared queue, drained
-by one common handler (see Architecture below).
+All local input sources (touch, GPIO buttons, NeoKey) place event
+notifications into a shared queue, drained by one common handler (see
+Architecture below).
 
-Remote operation by serial messages or HTTP POST requests is planned but
-not yet implemented -- see `docs/DESIGN-REQUIREMENT.md`'s Serial Monitor
-Task / Asynchronous HTTP Listener (both TODO, no code exists yet).
+Remote operation by serial messages or HTTP POST requests is implemented
+-- see `docs/DESIGN-REQUIREMENT.md`'s Serial Monitor Task / Asynchronous
+HTTP Listener and `docs/IMPLEMENTATION-PLAN.md`'s Stages B-D (serial) and
+F-H (HTTP). It does **not** share the local-input queue below: Serial
+(`net/serial-protocol.h`) and HTTP (`net/http-server.h`) both post into a
+separate Main Event Queue (`SystemEvent`, `race/system-event-queue.h`),
+since they carry payload types (mouse name, `gate_id`, remote timestamp)
+the local queue's `ButtonID`/`InputSource` pair can't hold. Both queues
+converge on the same `race_timer_handle_command()` entry point -- the
+state machine never needs to know which queue, or which producer, an
+event came from.
 
 ## Architecture
 
@@ -105,9 +114,11 @@ of whether a physical module is present.
   `neokey_set_colours()` (plural, takes a `KeyColours` struct) is what
   drives the per-`RaceState` LED feedback in `main.cpp`.
 
-A commented-out `InputSource::WIFI_MESSAGE` already exists in
-`input-events.h` as a placeholder for the eventual serial/HTTP remote
-input.
+Serial/HTTP were originally sketched as a future `InputSource::WIFI_MESSAGE`
+value on this same queue; the actual implementation (Stages B-D, F-H) went
+a different route instead -- see the intro above and "Remote producers"
+note there. `input-events.h`'s `InputSource` enum has no such placeholder
+any more.
 
 ## App state
 

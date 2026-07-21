@@ -1,13 +1,20 @@
 // ----------------------------------------------------------------------------
-//  input-events.h — Generic input-event queue shared by every input producer:
-//  button device / WiFi messages). Producers call input_queue_post();
-//  loop() calls input_queue_drain() once per iteration.
+//  input-events.h — Event queue for *local hardware* input producers only
+//  (touch, GPIO buttons, NeoKey -- see InputSource below). Producers call
+//  input_queue_post(); main.cpp's loop() calls input_queue_drain
+//  (input_event_handler) once per iteration, which maps ButtonID/
+//  InputEventType to a RaceCommand via race_command_from_button()
+//  (race/race-command-source.h) and calls race_timer_handle_command()
+//  (race/race-timer.h) directly.
 //
-//  Drained but not yet dispatched anywhere: this queue used to feed the old
-//  Supervisor UI (app-modes.h, removed now that EEZ Studio/LVGL screens own
-//  the UI directly). The real consumer will be DESIGN-REQUIREMENT.md's Main
-//  Event Queue / race-timing state machine (IMPLEMENTATION-PLAN.md Phase 1),
-//  not yet built -- until then, events are posted and discarded.
+//  Remote producers (the legacy serial protocol, HTTP) do NOT go through
+//  this queue or InputSource -- they carry payload types (mouse name,
+//  gate_id, remote timestamp) this file's ButtonID/InputSource pair can't
+//  hold, and post through a separate Main Event Queue instead (SystemEvent,
+//  race/system-event-queue.h; see net/serial-protocol.h and
+//  net/http-server.h for the two producers). Both queues converge on the
+//  same race_timer_handle_command() entry point; the state machine itself
+//  never needs to know which queue an event came from.
 // ----------------------------------------------------------------------------
 #pragma once
 
@@ -24,7 +31,6 @@ enum class InputSource {
   TOUCH,
   GPIO_BUTTON,
   NEOKEY_BUTTON,  // 4-button Adafruit NeoKey 1x4 (seesaw, I2C)
-  // WIFI_MESSAGE,  // future: events synthesized from lib/net/messages.h traffic
   NUM_SOURCES
 };
 

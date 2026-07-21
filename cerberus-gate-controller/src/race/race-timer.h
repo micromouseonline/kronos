@@ -11,11 +11,13 @@
 //  here is this race state machine's boot state and is unrelated to
 //  display/touch-calibration.h's screen-touch calibration wizard.
 //
-//  Scope: RaceCommand::RESTART (the doc's global "any state" override) has
-//  no producer yet -- included for forward compatibility with the future
-//  Serial/HTTP phase, currently a dead path. Session Countdown Timer,
-//  MAINTENANCE, and persistent mouse names are out of scope; see
-//  IMPLEMENTATION-PLAN.md for those phases.
+//  Scope: RaceCommand::RESTART (the doc's global "any state" override) now
+//  has three producers, none of them a plain button press -- ARM-held
+//  (BUTTON_COMMAND_MAP, race-command-source.h), the legacy serial
+//  protocol's MSG_NEW_MOUSE (race_command_from_serial(), same file), and
+//  HTTP's `"event": "RESTART"` (race_command_from_http(), same file).
+//  Session Countdown Timer, MAINTENANCE, and persistent mouse names are
+//  out of scope; see IMPLEMENTATION-PLAN.md for those phases.
 // ----------------------------------------------------------------------------
 #pragma once
 
