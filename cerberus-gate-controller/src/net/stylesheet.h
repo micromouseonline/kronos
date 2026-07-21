@@ -1,7 +1,7 @@
 #pragma once
 
 const char COMMON_STYLE[] PROGMEM = R"rawliteral(
-  :root {
+ :root {
     --bg-color: #0f172a;
     --card-bg: #1e293b;
     --text-main: #f8fafc;
@@ -38,7 +38,7 @@ const char COMMON_STYLE[] PROGMEM = R"rawliteral(
     border-radius: 16px;
     padding: 20px;
     width: 100%;
-    max-width: 480px;
+    max-width: 720px;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
   }
 
@@ -46,12 +46,12 @@ const char COMMON_STYLE[] PROGMEM = R"rawliteral(
   table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.95rem;
+    font-size: 1.95rem;
   }
 
   th {
     text-transform: uppercase;
-    font-size: 0.75rem;
+    font-size: 1.75rem;
     letter-spacing: 0.08em;
     color: var(--text-muted);
     padding: 12px 16px;
@@ -60,7 +60,7 @@ const char COMMON_STYLE[] PROGMEM = R"rawliteral(
   }
 
   td {
-    padding: 14px 16px;
+    padding: 8px 16px;
     border-bottom: 1px solid var(--border-color);
   }
 
@@ -70,21 +70,11 @@ const char COMMON_STYLE[] PROGMEM = R"rawliteral(
 
   /* Column Alignments */
   th:first-child, td:first-child { width: 48px; text-align: center; font-weight: 700; }
-  th:last-child, td:last-child { text-align: right; font-family: monospace; font-size: 1.05rem; font-weight: 600; }
-
-  /* First Place Highlight */
-  tr.leader {
-    background-color: var(--accent-gold-bg);
-  }
-  tr.leader td:first-child,
-  tr.leader td:last-child {
-    color: var(--accent-gold);
-    font-weight: 800;
-  }
+  th:last-child, td:last-child { text-align: right; font-family: monospace; font-size: 2.05rem; font-weight: 600; }
 
   /* Clock Specific */
   #clock {
-    font-size: 1.8rem;
+    font-size: 2.8rem;
     font-weight: 700;
     font-family: monospace;
     letter-spacing: -0.02em;
@@ -94,6 +84,6 @@ const char COMMON_STYLE[] PROGMEM = R"rawliteral(
 
   .small {
     color: var(--text-muted);
-    font-size: 0.85rem;
+    font-size: 1.85rem;
   }
 )rawliteral";
