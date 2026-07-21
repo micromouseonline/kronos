@@ -23,7 +23,7 @@ stage starts.
 | B | Serial RX parsing, `MSG_NewMouse` → `RaceCommand::RESTART` | PASS (all 5 envs) | PASS | **done** |
 | C | Debug Output Policy migration | PASS (all 5 envs) | PASS | **done** |
 | D | Serial TX telemetry | PASS (all 5 envs) | PASS | **done** |
-| E | WiFi connect (non-blocking) | — | — | not started |
+| E | WiFi connect (non-blocking) | PASS (all 5 envs) | PASS | **done** |
 | F | `boards.ini` HTTP feature block | — | — | not started |
 | G | HTTP server + `POST /api/event` | — | — | not started |
 | H | Leaderboard page (`GET /`) | — | — | not started |
@@ -147,11 +147,38 @@ transitions, `MSG_WATCHDOG` every 1000ms. *Verify:* ARM→START→GOAL via
 physical buttons with a serial terminal open; clean `<type,value>` lines, no
 interleaved debug text.
 
-**E. WiFi connect** — `wifi_connect_start_async(StatusLED&)` in
-`wifi-manager.h`: background Core-0 retry task, called from `setup()`
-instead of a blocking call. *Verify:* boots and races locally with router
-off; connects within a normal DHCP window once router is on, no reboot
-needed.
+**E. WiFi connect** — `wifi_connect_start_async()` in `wifi-manager.h`:
+background Core-0 task, called from `setup()` (after the serial-ready wait)
+instead of a blocking call. Polls `WiFi.status()` on a 250ms tick and reacts
+to edges (was-connected vs connected) rather than a monitor-then-check-once
+structure, so a connect is logged whether it happens instantly (cached NVS
+association) or mid-retry. Initial `WiFi.begin()`, then `WiFi.reconnect()`
+on drop/retry (lighter than re-issuing `begin()`, since credentials are
+already applied). *Verify:* boots and races locally with router off;
+connects within a normal DHCP window once router is on, no reboot needed;
+survives a live router radio toggle and reconnects without a device reboot.
+**Findings from hardware testing, fixed in this stage:** (1) none of the 5
+target boards has a working onboard status LED (`STATUS_LED=-1` on three,
+`HAS_LED` missing on `jc2432w328c`, and the nominal `HAS_NEOPIXEL` board's
+pin doesn't light in practice) — Wi-Fi status moved off `StatusLED` onto
+NeoKey key 3 (`WIFI_STATUS_KEY`, the `BTN_TOUCH` position), which
+`neokey_reflect_race_state()` (Stage B) no longer touches, so it's owned
+exclusively by Wi-Fi status; (2) Stage C's Debug Output Policy (gate ad-hoc
+output off entirely once the serial protocol owns the UART) made
+`wifi_connect_task`'s own connect/reconnect messages invisible — revised so
+`debug-log.h` always prints, prefixed with `#` per-line (the host
+supervisor treats `#` lines as comments to skip, confirmed safe at any
+time); added `serial_write_mutex` (`debug-log.h`) guarding every UART write
+across producers (ad-hoc debug output and `messages.h`'s
+`serial_send_message()`), since unsynchronized Core-0/Core-1 writes could
+interleave and silently corrupt or drop a line; (3) an earlier
+monitor-then-check-once structure silently missed real connects (already
+connected at task start from NVS cache, or connecting slightly after a 10s
+window gave up) — replaced with the edge-detection loop described above,
+confirmed against a captured `CORE_DEBUG_LEVEL=5` log (temporary, reverted)
+showing Arduino-ESP32's own auto-reconnect already retrying every ~2.5s
+independently of this task, and a real handshake+DHCP completing in well
+under a second once the AP was reachable.
 
 **F. `boards.ini` / `platformio.ini`** — new `[feature_http]` block
 (`AsyncTCP`, `ESPAsyncWebServer` — verify exact maintained-fork package
