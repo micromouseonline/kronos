@@ -25,6 +25,18 @@ inline bool is_wifi_active() {
 // exclusively.
 constexpr uint8_t WIFI_STATUS_KEY = 3;
 
+// Optional hook, invoked every time Wi-Fi transitions into the connected
+// state -- including the very first connect at boot, not just reconnects.
+// Lets other layers react without this file needing to know what they are.
+// Currently used by net/http-server.h to force-restart the AsyncWebServer:
+// AsyncServer::begin() (AsyncTCP/src/AsyncTCP.cpp) silently no-ops while its
+// internal listening PCB is still non-null, so a Wi-Fi drop/reconnect can
+// leave the HTTP server's original listening socket orphaned against the
+// old network interface state -- observed as the server simply not
+// responding after the link came back, same IP or not. Only an explicit
+// end() + begin() forces a fresh bind/listen.
+inline void (*wifi_on_connected)() = nullptr;
+
 // Core-0 background task: connects, then keeps monitoring and reconnects if
 // the link drops, so a race in progress never blocks on Wi-Fi and never
 // needs a reboot to rejoin. Runs forever -- created once from setup() by
@@ -77,6 +89,9 @@ inline void wifi_connect_task(void*) {
       neokey_set_colour(WIFI_STATUS_KEY, NP_OFF);
       debug_println("[SYSTEM] Wi-Fi Connected!");
       debug_printf("[SYSTEM] IP: %s  RSSI: %d dBm\n", WiFi.localIP().toString().c_str(), WiFi.RSSI());
+      if (wifi_on_connected != nullptr) {
+        wifi_on_connected();
+      }
     } else if (!connected && was_connected) {
       debug_println("[SYSTEM] Wi-Fi connection lost, reconnecting...");
       WiFi.reconnect();

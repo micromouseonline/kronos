@@ -19,6 +19,7 @@
 #include <ESPAsyncWebServer.h>
 
 #include "debug-log.h"
+#include "net/wifi-manager.h"
 #include "race/race-command-source.h"
 #include "race/race-timer.h"
 #include "race/system-event-queue.h"
@@ -32,6 +33,22 @@ inline AsyncEventSource http_events("/events");
 
 inline void http_notify_leaderboard_changed() {
   http_events.send("update");
+}
+
+// Wired to wifi-manager.h's wifi_on_connected hook in http_server_init()
+// below -- fires on every Wi-Fi (re)connect, including the first one at
+// boot. AsyncServer::begin() (AsyncTCP/src/AsyncTCP.cpp) silently no-ops
+// while its internal listening PCB is still non-null, so without this, a
+// Wi-Fi drop/reconnect leaves the server's original listening socket
+// orphaned against the old network interface state and it simply stops
+// responding, even once Wi-Fi itself is back and the device has the same
+// IP. end() explicitly tears down that PCB so begin() creates and binds a
+// fresh one; routes/handlers registered via on()/addHandler() live in a
+// separate list untouched by end(), so nothing needs re-registering.
+inline void http_server_restart() {
+  http_server.end();
+  http_server.begin();
+  debug_println("[SYSTEM] HTTP server restarted after Wi-Fi (re)connect");
 }
 
 inline void http_handle_root(AsyncWebServerRequest *request) {
@@ -52,9 +69,23 @@ inline void http_handle_leaderboard(AsyncWebServerRequest *request) {
   String html;
   html.reserve(384 + count * 64);
   html +=
+      // onerror fires when the connection drops (e.g. a Wi-Fi dropout);
+      // the browser's EventSource then auto-retries on its own, and onopen
+      // fires again once that succeeds. A reload here specifically on
+      // *recovery from an error* (not the initial connect) catches up on
+      // whatever changed during the outage -- there's no guarantee the
+      // "update" push for a run that happened mid-outage ever reaches a
+      // reconnected client, so waiting on onmessage alone left the page
+      // stale until manually reloaded.
       F("<!DOCTYPE html><html><head><meta charset=\"utf-8\">"
         "<title>CERBERUS Leaderboard</title>"
-        "<script>new EventSource('/events').onmessage=function(){location.reload();};</script>"
+        "<script>"
+        "var hadError=false;"
+        "var es=new EventSource('/events');"
+        "es.onmessage=function(){location.reload();};"
+        "es.onerror=function(){hadError=true;};"
+        "es.onopen=function(){if(hadError){location.reload();}};"
+        "</script>"
         "</head><body>"
         "<h1>CERBERUS Leaderboard</h1>");
   if (count == 0) {
@@ -109,6 +140,7 @@ inline void http_server_init() {
 
   http_server.addHandler(&http_events);
   race_timer_on_run_committed = http_notify_leaderboard_changed;
+  wifi_on_connected = http_server_restart;
 
   http_server.begin();
   debug_println("[SYSTEM] HTTP server listening on port 80");

@@ -242,6 +242,24 @@ second of a run finishing instead of on a fixed timer.
 (`"CERBERUS OK"`) it had before this stage. `http_handle_root` is the stub
 again; the leaderboard handler is now `http_handle_leaderboard`.
 
+**Third follow-up, found via a real Wi-Fi dropout on hardware:** the HTTP
+server stopped responding entirely after the link reconnected (same IP or
+not). Root cause: `AsyncServer::begin()` (AsyncTCP) silently no-ops while
+its internal listening PCB is still non-null, so a drop/reconnect left the
+original listening socket orphaned against the old network interface
+state. Fixed with a new `wifi_on_connected` hook in `wifi-manager.h`
+(fires on every Wi-Fi connect transition, including the first one at
+boot), wired to a new `http_server_restart()` (`end()` + `begin()`;
+routes/handlers live in a separate list untouched by `end()`, so nothing
+needs re-registering). Separately, the leaderboard page itself needed one
+manual reload after a reconnect before live updates resumed -- the
+browser's `EventSource` auto-reconnects on its own, but the page's script
+only reloaded on an `onmessage` push, and there's no guarantee a run that
+finished mid-outage gets re-delivered to a freshly reconnected client.
+Fixed by tracking the error→reopen transition client-side and reloading
+once specifically on recovery from an error, not on every open. Confirmed
+fixed against a real dropout on 192.168.0.73.
+
 **I. (optional, not blocking)** — `portMUX`/mutex guard around `race_runs[]`
 append + leaderboard read, since Core 0 (HTTP) now reads what Core 1 (state
 machine) writes. Worst case today is a benign stale read, not corruption.
