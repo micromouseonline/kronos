@@ -22,6 +22,7 @@
 #include "race/race-timer.h"
 #include "race/system-event-queue.h"
 
+#include "net/http-server.h"
 #include "net/serial-protocol.h"
 #include "net/wifi-manager.h"
 #include "wifi-scan.h"
@@ -184,6 +185,10 @@ void setup() {
     yield();
   }
   wifi_connect_start_async();
+  // Binds/listens immediately -- doesn't need an active Wi-Fi connection to
+  // start, only to actually be reachable, same reasoning as wifi_connect_
+  // start_async() itself not blocking setup().
+  http_server_init();
 #if HAS_TOUCH_INPUT && TOUCH_NEEDS_CALIBRATION
   // Only resistive touch (XPT2046, both CYD2USB boards) needs this --
   // capacitive touch (FT6336U, CST820) already reports screen-pixel

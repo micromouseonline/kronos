@@ -78,6 +78,41 @@ inline RaceCommand race_command_from_serial(const SerialLine &line) {
   return RaceCommand::NONE;  // MSG_SetMode and everything else: out of scope this round
 }
 
-// race_command_from_http(const HttpGateEvent&) -- TODO once the
-// Asynchronous HTTP Listener (DESIGN-REQUIREMENT.md) has a payload type to
-// parse.
+// Parsed by net/http-server.h's POST /api/event JSON handler (DESIGN-
+// REQUIREMENT.md's Asynchronous HTTP Listener). gate_id is carried through
+// unchanged into SystemEvent::payload (the same field NEW_MOUSE's mouse
+// name would use); event is looked up in HTTP_EVENT_COMMAND_MAP below.
+struct HttpGateEvent {
+  char gate_id[32];
+  char event[16];
+  uint64_t tsf_us;
+  uint64_t gate_us;
+};
+
+struct HttpEventCommandMap {
+  const char *name;
+  RaceCommand command;
+};
+
+// One row per accepted `event` string -- mirrors BUTTON_COMMAND_MAP's "one
+// place to change what a source produces" role, just keyed by name instead
+// of ButtonID since a remote gate has no button to press. RESTART is
+// reachable here (unlike from a physical button, see BUTTON_COMMAND_MAP's
+// comment) since DESIGN-REQUIREMENT.md notes it "has no dedicated physical
+// button -- it is only ever raised via serial or HTTP command."
+constexpr HttpEventCommandMap HTTP_EVENT_COMMAND_MAP[] = {
+    {"ARM", RaceCommand::ARM},
+    {"START", RaceCommand::START},
+    {"GOAL", RaceCommand::GOAL},
+    {"RESTART", RaceCommand::RESTART},
+    {"NEW_MOUSE", RaceCommand::NEW_MOUSE},
+};
+
+inline RaceCommand race_command_from_http(const HttpGateEvent &evt) {
+  for (const auto &row : HTTP_EVENT_COMMAND_MAP) {
+    if (strcmp(evt.event, row.name) == 0) {
+      return row.command;
+    }
+  }
+  return RaceCommand::NONE;  // unrecognised `event` value
+}

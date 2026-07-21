@@ -25,7 +25,7 @@ stage starts.
 | D | Serial TX telemetry | PASS (all 5 envs) | PASS | **done** |
 | E | WiFi connect (non-blocking) | PASS (all 5 envs) | PASS | **done** |
 | F | `boards.ini` HTTP feature block + partition-table fix | PASS (all 5 envs) | PASS | **done** |
-| G | HTTP server + `POST /api/event` | — | — | not started |
+| G | HTTP server + `POST /api/event` | PASS (all 5 envs) | PASS | **done** |
 | H | Leaderboard page (`GET /`) | — | — | not started |
 | I | `race_runs[]` concurrency guard (optional) | — | — | deferred until after G/H |
 | J | Docs sync (this file + header comments) | — | — | not started |
