@@ -24,7 +24,7 @@ stage starts.
 | C | Debug Output Policy migration | PASS (all 5 envs) | PASS | **done** |
 | D | Serial TX telemetry | PASS (all 5 envs) | PASS | **done** |
 | E | WiFi connect (non-blocking) | PASS (all 5 envs) | PASS | **done** |
-| F | `boards.ini` HTTP feature block + partition-table fix | PASS (all 5 envs) | pending | in progress |
+| F | `boards.ini` HTTP feature block + partition-table fix | PASS (all 5 envs) | PASS | **done** |
 | G | HTTP server + `POST /api/event` | — | — | not started |
 | H | Leaderboard page (`GET /`) | — | — | not started |
 | I | `race_runs[]` concurrency guard (optional) | — | — | deferred until after G/H |
