@@ -71,24 +71,9 @@ inline void handleTime(AsyncWebServerRequest *request) {
   request->send(200, "text/plain", formatTimeNow());
 }
 
-// const char COMMON_STYLE[] PROGMEM = R"rawliteral(
-// body { font-family: Arial, sans-serif; margin: 24px; }
-// .card { padding: 16px; border: 1px solid #ddd; border-radius: 12px; max-width: 420px; }
-// #clock { font-size: 1.6rem; font-weight: 700; font-family: monospace; }
-// .small { color: #666; margin-top: 8px; }
-// )rawliteral";
-
-inline void http_handle_css(AsyncWebServerRequest *request) {
-  // Cast to uint8_t* and provide exact length to safely serve PROGMEM data
-  AsyncWebServerResponse *response = request->beginResponse(200, "text/css", (const uint8_t *)COMMON_STYLE, sizeof(COMMON_STYLE) - 1);
-  response->addHeader("Cache-Control", "max-age=86400");  // Cache in browser for 1 day
-  request->send(response);
-}
-
-// Generates standard <head> section with shared styles and optional custom tags/scripts
 inline String generate_html_head(const char *title, const char *extra_head = "") {
   String head;
-  head.reserve(512 + strlen(extra_head));
+  head.reserve(1024 + (extra_head ? strlen(extra_head) : 0));
   head +=
       F("<!DOCTYPE html><html><head><meta charset=\"utf-8\">"
         "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
@@ -112,21 +97,6 @@ inline void http_handle_root(AsyncWebServerRequest *request) {
   html.reserve(1500);  // to prevent fragmentation
   html += generate_html_head("ESP32 TIME");
   html += R"rawliteral(
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ESP32 Time</title>
-  
-  <style>
-    body { font-family: Arial, sans-serif; margin: 24px; }
-    .card { padding: 16px; border: 1px solid #ddd; border-radius: 12px; max-width: 420px; }
-    #clock { font-size: 1.6rem; font-weight: 700; font-family: monospace; }
-    .small { color: #666; margin-top: 8px; }
-  </style>
-</head>
-<body>
   <div class="card">
     <div>Current time:</div>
     <div id="clock">Loading...</div>
@@ -202,13 +172,15 @@ inline void http_handle_leaderboard(AsyncWebServerRequest *request) {
       "var es=new EventSource('/events');"
       "es.onmessage=function(){location.reload();};"
       "es.onerror=function(){hadError=true;};"
-      "es.onopen=function(){if(hadError)location.reload();};"
+      "es.onopen=function(){if(hadError){location.reload();}};"
       "</script>";
 
   String html;
   html.reserve(800 + count * 64);
+
   html += generate_html_head("CERBERUS Leaderboard", SSE_RELOAD_SCRIPT);
   html += F("<h1>Leaderboard</h1>");
+
   if (count == 0) {
     html += F("<div class=\"card\"><p class=\"small\">No runs recorded yet.</p></div>");
   } else {
@@ -225,10 +197,12 @@ inline void http_handle_leaderboard(AsyncWebServerRequest *request) {
       } else {
         html += "<tr>";
       }
+
       html += "<td>" + String(i + 1) + "</td><td>" + mouse_names[entries[i].mouse_id % NUM_MICE] + "</td><td>" + time_str + "</td></tr>";
     }
     html += F("</tbody></table></div>");
   }
+
   html += F("</body></html>");
   request->send(200, "text/html", html);
 }
@@ -253,18 +227,25 @@ inline void http_handle_event(AsyncWebServerRequest *request, JsonVariant &json)
   request->send(200, "application/json", "{\"status\":\"ok\"}");
 }
 
+// Global static handler prevents heap re-allocation
+inline AsyncCallbackJsonWebHandler api_event_handler("/api/event", http_handle_event);
+
 inline void http_server_init() {
-  http_server.on("/style.css", HTTP_GET, http_handle_css);
-  http_server.on("/", HTTP_GET, http_handle_root);
-  http_server.on("/time", HTTP_GET, handleTime);
-  http_server.on("/leaderboard", HTTP_GET, http_handle_leaderboard);
+  static bool initialized = false;
+  configTzTime(timeZone, ntpServer);
+  if (!initialized) {
+    http_server.on("/", HTTP_GET, http_handle_root);
+    http_server.on("/time", HTTP_GET, handleTime);
+    http_server.on("/leaderboard", HTTP_GET, http_handle_leaderboard);
 
-  auto *event_handler = new AsyncCallbackJsonWebHandler("/api/event", http_handle_event);
-  event_handler->setMethod(HTTP_POST);
-  http_server.addHandler(event_handler);
+    api_event_handler.setMethod(HTTP_POST);
+    http_server.addHandler(&api_event_handler);
 
-  http_server.addHandler(&http_events);
-  race_timer_on_run_committed = http_notify_leaderboard_changed;
+    http_server.addHandler(&http_events);
+    race_timer_on_run_committed = http_notify_leaderboard_changed;
+
+    initialized = true;
+  }
 
   http_server.begin();
   debug_println("[SYSTEM] HTTP server listening on port 80");
