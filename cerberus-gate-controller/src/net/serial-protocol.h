@@ -17,13 +17,10 @@
 #include "race/race-command-source.h"
 #include "race/system-event-queue.h"
 
-// Manual-testing aid only, NOT part of the wire protocol -- independent of
-// debug-log.h's g_uart_owned_by_protocol (which gates OFF once this task
-// starts owning the UART; this flag gates the opposite thing, an
-// interactive echo that only makes sense while this task IS running). Must
-// be set false before connecting real host software: this text lands on
-// the same UART the host parses as <type,value> lines and would corrupt
-// its parser exactly like any other ad-hoc debug output.
+// Manual-testing aid only, NOT part of the wire protocol -- toggle off if
+// the echo itself gets noisy. Safe to leave on with real host software
+// connected: prefixed with '#' like every other debug-log.h line, so the
+// host's supervisor treats it as a comment and skips it (see debug-log.h).
 inline bool g_serial_protocol_rx_echo = true;
 
 inline bool serial_protocol_parse_line(const char *line, SerialLine *out) {
@@ -59,7 +56,7 @@ inline void serial_protocol_rx_task(void *) {
           if (g_serial_protocol_rx_echo) {
             // Confirms to whoever's typing exactly what bytes were seen,
             // independent of terminal echo settings.
-            Serial.printf("[serial-protocol] rx: \"%s\"\n", buf);
+            debug_printf("[serial-protocol] rx: \"%s\"\n", buf);
           }
           SerialLine line;
           if (serial_protocol_parse_line(buf, &line)) {
@@ -79,6 +76,5 @@ inline void serial_protocol_rx_task(void *) {
 }
 
 inline void serial_protocol_init() {
-  g_uart_owned_by_protocol = true;
   xTaskCreatePinnedToCore(serial_protocol_rx_task, "serial_rx", 4096, nullptr, 1, nullptr, 1);
 }

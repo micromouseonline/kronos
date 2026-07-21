@@ -2,6 +2,8 @@
 
 #include <Arduino.h>
 
+#include "debug-log.h"
+
 /// @file messages.h
 /// @brief Legacy CERBERUS <-> host-PC wire protocol: `<type,value>\r\n`.
 ///
@@ -33,6 +35,10 @@ enum MessageType : int {
 inline char last_char = '#';
 
 inline void serial_send_message(int type, unsigned long value) {
+  // Locked for the whole line -- shares the UART with debug-log.h's ad-hoc
+  // output (Core 0's Wi-Fi task, in particular) and an unguarded interleave
+  // between the two would corrupt this line for the host's parser.
+  serial_write_lock();
   Serial.print('<');
   Serial.print(type);
   Serial.print(',');
@@ -44,6 +50,7 @@ inline void serial_send_message(int type, unsigned long value) {
     last_char = '#';
   }
   Serial.println();
+  serial_write_unlock();
 }
 
 inline void serial_send_run_time(unsigned long time_ms) {

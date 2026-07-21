@@ -23,6 +23,7 @@
 #include "race/system-event-queue.h"
 
 #include "net/serial-protocol.h"
+#include "net/wifi-manager.h"
 #include "wifi-scan.h"
 
 // lib/ui/ -- EEZ Studio generated.
@@ -51,34 +52,53 @@ static void input_poll_task(void *) {
 // like local button transitions do -- previously this only ran from
 // input_event_handler, so a remote command left the LEDs showing whatever
 // state a button had last set, even though race_state itself had moved on.
+//
+// Key 3 (BTN_TOUCH) is deliberately never touched here -- it's owned
+// exclusively by the Wi-Fi status indicator (net/wifi-manager.h's
+// WIFI_STATUS_KEY), since none of the target boards has a working onboard
+// status LED.
 void neokey_reflect_race_state() {
   switch (race_state) {
     case RaceState::CALIBRATE:
-      neokey_set_colours({NP_OFF, NP_OFF, NP_OFF, NP_OFF});
+      neokey_set_colour(0, NP_OFF);
+      neokey_set_colour(1, NP_OFF);
+      neokey_set_colour(2, NP_OFF);
       break;
 
     case RaceState::NEW_MOUSE:
-      neokey_set_colours({NP_MAGENTA, NP_MAGENTA, NP_MAGENTA, NP_MAGENTA});
+      neokey_set_colour(0, NP_MAGENTA);
+      neokey_set_colour(1, NP_MAGENTA);
+      neokey_set_colour(2, NP_MAGENTA);
       break;
 
     case RaceState::WAITING:
-      neokey_set_colours({NP_GREEN, NP_GREEN, NP_GREEN, NP_GREEN});
+      neokey_set_colour(0, NP_GREEN);
+      neokey_set_colour(1, NP_GREEN);
+      neokey_set_colour(2, NP_GREEN);
       break;
 
     case RaceState::ARMED:
-      neokey_set_colours({NP_GREEN, NP_OFF, NP_OFF, NP_OFF});
+      neokey_set_colour(0, NP_GREEN);
+      neokey_set_colour(1, NP_OFF);
+      neokey_set_colour(2, NP_OFF);
       break;
 
     case RaceState::RUNNING:
-      neokey_set_colours({NP_OFF, NP_GREEN, NP_OFF, NP_OFF});
+      neokey_set_colour(0, NP_OFF);
+      neokey_set_colour(1, NP_GREEN);
+      neokey_set_colour(2, NP_OFF);
       break;
 
     case RaceState::GOAL:
-      neokey_set_colours({NP_OFF, NP_OFF, NP_GREEN, NP_OFF});
+      neokey_set_colour(0, NP_OFF);
+      neokey_set_colour(1, NP_OFF);
+      neokey_set_colour(2, NP_GREEN);
       break;
 
     default:
-      neokey_set_colours({NP_BLUE, NP_BLUE, NP_BLUE, NP_BLUE});
+      neokey_set_colour(0, NP_BLUE);
+      neokey_set_colour(1, NP_BLUE);
+      neokey_set_colour(2, NP_BLUE);
       break;
   }
 }
@@ -163,6 +183,7 @@ void setup() {
   while (millis() - ready_time < 500) {
     yield();
   }
+  wifi_connect_start_async();
 #if HAS_TOUCH_INPUT && TOUCH_NEEDS_CALIBRATION
   // Only resistive touch (XPT2046, both CYD2USB boards) needs this --
   // capacitive touch (FT6336U, CST820) already reports screen-pixel
