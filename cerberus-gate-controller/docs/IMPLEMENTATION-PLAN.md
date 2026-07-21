@@ -26,7 +26,7 @@ stage starts.
 | E | WiFi connect (non-blocking) | PASS (all 5 envs) | PASS | **done** |
 | F | `boards.ini` HTTP feature block + partition-table fix | PASS (all 5 envs) | PASS | **done** |
 | G | HTTP server + `POST /api/event` | PASS (all 5 envs) | PASS | **done** |
-| H | Leaderboard page (`GET /`) | PASS (all 5 envs) | PASS | **done** |
+| H | Leaderboard page (`GET /leaderboard`) | PASS (all 5 envs) | PASS | **done** |
 | I | `race_runs[]` concurrency guard (optional) | — | — | deferred, revisit only if a stale/garbled leaderboard read is actually observed |
 | J | Docs sync (this file + header comments) | PASS (all 5 envs) | n/a (docs-only) | **done** |
 
@@ -237,6 +237,10 @@ to an `AsyncEventSource` on `/events`. The page's only script is a one-line
 `EventSource('/events').onmessage = () => location.reload()` -- still
 plain server-rendered HTML, no framework, but now reloads within about a
 second of a run finishing instead of on a fixed timer.
+**Second follow-up:** moved the leaderboard page off `GET /` onto its own
+`GET /leaderboard` route, and restored `GET /` to the plain liveness stub
+(`"CERBERUS OK"`) it had before this stage. `http_handle_root` is the stub
+again; the leaderboard handler is now `http_handle_leaderboard`.
 
 **I. (optional, not blocking)** — `portMUX`/mutex guard around `race_runs[]`
 append + leaderboard read, since Core 0 (HTTP) now reads what Core 1 (state
