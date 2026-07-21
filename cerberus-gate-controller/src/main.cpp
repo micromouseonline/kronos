@@ -146,6 +146,7 @@ void system_event_handler(const SystemEvent &evt) {
 // second one silently overwrite the first.
 void on_wifi_connected() {
   mdns_start();
+  ntp_start();
   http_server_restart();
 }
 
