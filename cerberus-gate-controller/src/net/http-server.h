@@ -173,7 +173,10 @@ inline void http_server_init() {
 
   http_server.addHandler(&http_events);
   race_timer_on_run_committed = http_notify_leaderboard_changed;
-  wifi_on_connected = http_server_restart;
+  // wifi_on_connected is wired in main.cpp, not here -- it's a single
+  // function pointer (not a list), and net/mdns.h's mdns_start() also needs
+  // it, so whichever module combines them has to own the one assignment or
+  // they'd silently overwrite each other.
 
   http_server.begin();
   debug_println("[SYSTEM] HTTP server listening on port 80");

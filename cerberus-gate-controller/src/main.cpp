@@ -23,6 +23,7 @@
 #include "race/system-event-queue.h"
 
 #include "net/http-server.h"
+#include "net/mdns.h"
 #include "net/serial-protocol.h"
 #include "net/wifi-manager.h"
 #include "wifi-scan.h"
@@ -138,6 +139,16 @@ void system_event_handler(const SystemEvent &evt) {
   neokey_reflect_race_state();
 }
 
+// Wired to wifi-manager.h's wifi_on_connected hook in setup() below --
+// combines every module that needs to react to a Wi-Fi (re)connect, since
+// wifi_on_connected is a single function pointer, not a list: assigning it
+// separately in both net/http-server.h and net/mdns.h would just have the
+// second one silently overwrite the first.
+void on_wifi_connected() {
+  mdns_start();
+  http_server_restart();
+}
+
 //////////////////////////////////////////////////////////////////////
 
 void setup() {
@@ -185,10 +196,16 @@ void setup() {
     yield();
   }
   wifi_connect_start_async();
+
   // Binds/listens immediately -- doesn't need an active Wi-Fi connection to
   // start, only to actually be reachable, same reasoning as wifi_connect_
   // start_async() itself not blocking setup().
   http_server_init();
+  // mdns_start() (net/mdns.h) needs Wi-Fi to actually have an IP, so it
+  // isn't called here inline -- on_wifi_connected() above runs it (and
+  // restarts the HTTP server) every time wifi-manager.h's connect loop
+  // detects a connect/reconnect, never blocking setup() itself.
+  wifi_on_connected = on_wifi_connected;
 #if HAS_TOUCH_INPUT && TOUCH_NEEDS_CALIBRATION
   // Only resistive touch (XPT2046, both CYD2USB boards) needs this --
   // capacitive touch (FT6336U, CST820) already reports screen-pixel
@@ -198,6 +215,7 @@ void setup() {
   // lcd.getTouch() to race against.
   calibrate(lcd);
 #endif
+
   debug_println(F("CERBERUS: gate controller"));
   debug_printf("ready after %dms \n", ready_time);
   // Now it is finally safe to fire off the button polling task and run the main loop
