@@ -26,7 +26,7 @@ stage starts.
 | E | WiFi connect (non-blocking) | PASS (all 5 envs) | PASS | **done** |
 | F | `boards.ini` HTTP feature block + partition-table fix | PASS (all 5 envs) | PASS | **done** |
 | G | HTTP server + `POST /api/event` | PASS (all 5 envs) | PASS | **done** |
-| H | Leaderboard page (`GET /`) | — | — | not started |
+| H | Leaderboard page (`GET /`) | PASS (all 5 envs) | PASS | **done** |
 | I | `race_runs[]` concurrency guard (optional) | — | — | deferred until after G/H |
 | J | Docs sync (this file + header comments) | — | — | not started |
 
@@ -222,9 +222,21 @@ prototype — not this JSON POST contract. *Verify:* `curl` GET/POST both
 work; 5 POSTs 20ms apart don't drop/crash.
 
 **H. Leaderboard page** — replace the `GET /` stub with server-rendered HTML
-from `race_timer_compute_leaderboard()` + `race_timer_format_time()`. No JS
-framework; optional meta-refresh. *Verify:* run laps via buttons, confirm
-browser leaderboard matches on-screen panel.
+from `race_timer_compute_leaderboard()` + `race_timer_format_time()`. Shows
+full standings (on-screen panel's top-5 cap is purely a physical-screen-
+space limit, doesn't apply to a browser page), so the on-screen top 5 is
+always a prefix of this page. *Verify:* run laps via buttons, confirm
+browser leaderboard matches on-screen panel; confirmed live against
+192.168.0.73 for both the empty-leaderboard and post-run states.
+**Follow-up, requested after initial verification:** replaced the planned
+meta-refresh with push-based live update — `race-timer.h` gained an
+optional `race_timer_on_run_committed` callback hook (invoked from
+`race_timer_commit_run()`, the one place a result is appended, keeping
+`race-timer.h` itself unaware of HTTP/SSE), wired in `http_server_init()`
+to an `AsyncEventSource` on `/events`. The page's only script is a one-line
+`EventSource('/events').onmessage = () => location.reload()` -- still
+plain server-rendered HTML, no framework, but now reloads within about a
+second of a run finishing instead of on a fixed timer.
 
 **I. (optional, not blocking)** — `portMUX`/mutex guard around `race_runs[]`
 append + leaderboard read, since Core 0 (HTTP) now reads what Core 1 (state

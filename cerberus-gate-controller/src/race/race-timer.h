@@ -185,6 +185,12 @@ inline size_t race_timer_compute_leaderboard(LeaderboardEntry *out, size_t max_o
   return candidate_count;
 }
 
+// Optional hook, invoked after every race_timer_commit_run() -- lets other
+// layers react the instant a new result lands (e.g. net/http-server.h's SSE
+// push to the leaderboard page) without this file needing to know what
+// HTTP/SSE even are.
+inline void (*race_timer_on_run_committed)() = nullptr;
+
 //============================================================================
 /***
  * This is the main interface where a new run time is recorded
@@ -195,6 +201,9 @@ inline void race_timer_commit_run(uint32_t time_ms) {
     r.mouse_id = mouse_id;
     r.run_number = mouse_run_count;
     r.time_ms = time_ms;
+    if (race_timer_on_run_committed != nullptr) {
+      race_timer_on_run_committed();
+    }
   }
 }
 
