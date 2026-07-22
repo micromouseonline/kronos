@@ -154,7 +154,7 @@ void on_wifi_connected() {
 
 void setup() {
   // get the serial connection kicked off.
-  Serial.begin(115200);
+  Serial.begin(9600);
   statusIndicator.begin();
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
