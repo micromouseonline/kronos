@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CERBERUS Leaderboard</title>
+  <link rel="stylesheet" href="style.css">
+  <script>var hadError = false; var es = new EventSource('/events'); es.onmessage = function () { location.reload(); }; es.onerror = function () { hadError = true; }; es.onopen = function () { if (hadError) { location.reload(); } };</script>
+
+</head>
+
+<body>
+  <div class="card">
+    <div>Current time:</div>
+    <div id="clock">Loading...</div>
+    <div class="small">Smooth client clock • Synced with ESP32</div>
+  </div>
+
+  <script>
+    let serverOffsetMs = 0;
+    let isSynced = false;
+
+    async function syncTime() {
+      try {
+        const start = performance.now();
+        const r = await fetch('/time', { cache: 'no-store' });
+        const text = await r.text();
+
+        if (text.includes("not available")) return;
+
+        const roundTripLatency = (performance.now() - start) / 2;
+        // Normalize ISO string space separator for JS Date parsing
+        const parsedServerTime = new Date(text.replace(' ', 'T')).getTime();
+
+        if (!isNaN(parsedServerTime)) {
+          serverOffsetMs = (parsedServerTime + roundTripLatency) - Date.now();
+          isSynced = true;
+        }
+      } catch (e) {
+        // Silently keep using local offset if a periodic resync fails
+      }
+    }
+
+    function renderClock() {
+      const clockEl = document.getElementById('clock');
+      if (!isSynced) {
+        clockEl.textContent = 'Syncing...';
+      } else {
+        const now = new Date(Date.now() + serverOffsetMs);
+        const pad = (n, len = 2) => String(n).padStart(len, '0');
+
+        const yyyy = now.getFullYear();
+        const mm = pad(now.getMonth() + 1);
+        const dd = pad(now.getDate());
+        const hh = pad(now.getHours());
+        const min = pad(now.getMinutes());
+        const ss = pad(now.getSeconds());
+        const ms = pad(now.getMilliseconds(), 3);
+
+        clockEl.textContent = `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}.${ms}`;
+      }
+      requestAnimationFrame(renderClock);
+    }
+
+    // Initial sync and start render loop
+    syncTime();
+    renderClock();
+
+    // Re-sync with ESP32 every 10 seconds to compensate for clock drift
+    setInterval(syncTime, 10000);
+  </script>
+</body>
+
+</html>

@@ -162,6 +162,7 @@ inline void http_handle_root(AsyncWebServerRequest *request) {
 
   request->send(200, "text/html", html);
 }
+
 inline void http_handle_leaderboard(AsyncWebServerRequest *request) {
   LeaderboardEntry entries[MAX_RESULTS];
   size_t count = race_timer_compute_leaderboard(entries, MAX_RESULTS);
@@ -179,14 +180,15 @@ inline void http_handle_leaderboard(AsyncWebServerRequest *request) {
   html.reserve(800 + count * 64);
 
   html += generate_html_head("CERBERUS Leaderboard", SSE_RELOAD_SCRIPT);
-  html += F("<h1>Leaderboard</h1>");
+  html +=
+      F("<div class=\"leaderboard\">"
+        "<h1>Leaderboard</h1>");
 
   if (count == 0) {
-    html += F("<div class=\"card\"><p class=\"small\">No runs recorded yet.</p></div>");
+    html += F("<p class=\"small\">No runs recorded yet.</p>");
   } else {
     html +=
-        F("<div class=\"card\">"
-          "<table>"
+        F("<table>"
           "<thead><tr><th>#</th><th>Mouse</th><th>Best Time</th></tr></thead><tbody>");
     for (size_t i = 0; i < count; i++) {
       char time_str[16];

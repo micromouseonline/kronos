@@ -1,89 +1,363 @@
 #pragma once
 
 const char COMMON_STYLE[] PROGMEM = R"rawliteral(
- :root {
-    --bg-color: #0f172a;
-    --card-bg: #1e293b;
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --border-color: #334155;
-    --accent-gold: #f59e0b;
-    --accent-gold-bg: rgba(245, 158, 11, 0.1);
-  }
+ 
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+      --bg-color: #202b38;
+      --fg-color: #f8fafc;
+      --leaderboard-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+      --accent-gold: #f59e0b;
+      --accent-gold-bg: rgba(245, 158, 11, 0.1);
+    }
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-main);
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  h1 {
-    font-size: 1.5rem;
-    font-weight: 800;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--text-main);
-    margin-bottom: 20px;
-  }
 
-  .card {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 20px;
-    width: 100%;
-    max-width: 720px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-  }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+      line-height: 1.4;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 0 10px;
+      color: var(--text-main);
+      background-color: var(--bg-color);
+      text-rendering: optimizeLegibility;
+    }
 
-  /* Leaderboard Table */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 1.95rem;
-  }
+    button,
+    input,
+    textarea {
+      transition: background-color 0.1s linear, border-color 0.1s linear, color 0.1s linear, box-shadow 0.1s linear, transform 0.1s ease;
+    }
 
-  th {
-    text-transform: uppercase;
-    font-size: 1.75rem;
-    letter-spacing: 0.08em;
-    color: var(--text-muted);
-    padding: 12px 16px;
-    text-align: left;
-    border-bottom: 2px solid var(--border-color);
-  }
+    h1 {
+      font-size: 2.2em;
+      margin-top: 0;
+    }
 
-  td {
-    padding: 8px 16px;
-    border-bottom: 1px solid var(--border-color);
-  }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      margin-bottom: 12px;
+    }
 
-  tr:last-child td {
-    border-bottom: none;
-  }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong {
+      color: #ffffff;
+    }
 
-  /* Column Alignments */
-  th:first-child, td:first-child { width: 48px; text-align: center; font-weight: 700; }
-  th:last-child, td:last-child { text-align: right; font-family: monospace; font-size: 2.05rem; font-weight: 600; }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    b,
+    strong,
+    th {
+      font-weight: 600;
+    }
 
-  /* Clock Specific */
-  #clock {
-    font-size: 2.8rem;
-    font-weight: 700;
-    font-family: monospace;
-    letter-spacing: -0.02em;
-    color: #38bdf8;
-    margin: 8px 0;
-  }
+    blockquote {
+      border-left: 4px solid #0096bfab;
+      margin: 1.5em 0em;
+      padding: 0.5em 1em;
+      font-style: italic;
+    }
 
-  .small {
-    color: var(--text-muted);
-    font-size: 1.85rem;
-  }
+    blockquote>footer {
+      margin-top: 10px;
+      font-style: normal;
+    }
+
+    blockquote cite {
+      font-style: normal;
+    }
+
+    address {
+      font-style: normal;
+    }
+
+    a[href^='mailto']::before {
+      content: '📧 ';
+    }
+
+    a[href^='tel']::before {
+      content: '📞 ';
+    }
+
+    a[href^='sms']::before {
+      content: '💬 ';
+    }
+
+    button,
+    input[type='submit'],
+    input[type='button'],
+    input[type='checkbox'] {
+      cursor: pointer;
+    }
+
+    input:not([type='checkbox']):not([type='radio']),
+    select {
+      display: block;
+    }
+
+    input,
+    select,
+    button,
+    textarea {
+      color: #ffffff;
+      background-color: #161f27;
+      font-family: inherit;
+      font-size: inherit;
+      margin-right: 6px;
+      margin-bottom: 6px;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      outline: none;
+    }
+
+    input:not([type='checkbox']):not([type='radio']),
+    select,
+    button,
+    textarea {
+      -webkit-appearance: none;
+    }
+
+    textarea {
+      margin-right: 0;
+      width: 100%;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+
+    button,
+    input[type='submit'],
+    input[type='button'] {
+      padding-right: 30px;
+      padding-left: 30px;
+    }
+
+    button:hover,
+    input[type='submit']:hover,
+    input[type='button']:hover {
+      background: #324759;
+    }
+
+    input:focus,
+    select:focus,
+    button:focus,
+    textarea:focus {
+      box-shadow: 0 0 0 2px #0096bfab;
+    }
+
+    input[type='checkbox']:active,
+    input[type='radio']:active,
+    input[type='submit']:active,
+    input[type='button']:active,
+    button:active {
+      transform: translateY(2px);
+    }
+
+    input:disabled,
+    select:disabled,
+    button:disabled,
+    textarea:disabled {
+      cursor: not-allowed;
+      opacity: .5;
+    }
+
+    ::-webkit-input-placeholder {
+      color: #a9a9a9;
+    }
+
+    :-ms-input-placeholder {
+      color: #a9a9a9;
+    }
+
+    ::-ms-input-placeholder {
+      color: #a9a9a9;
+    }
+
+    ::placeholder {
+      color: #a9a9a9;
+    }
+
+    a {
+      text-decoration: none;
+      color: #41adff;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    code,
+    kbd {
+      background: #161f27;
+      color: #ffbe85;
+      padding: 5px;
+      border-radius: 6px;
+    }
+
+    pre>code {
+      padding: 10px;
+      display: block;
+      overflow-x: auto;
+    }
+
+    img {
+      max-width: 100%;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #dbdbdb;
+    }
+
+    /* -- TABLES --------------------------------------------------------------*/
+
+    table {
+      border-collapse: collapse;
+      margin-bottom: 10px;
+      width: 100%;
+    }
+
+    td,
+    th {
+      padding: 6px;
+      text-align: left;
+    }
+
+    th {
+      border-bottom: 1px solid #dbdbdb;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #161f27;
+    }
+
+
+
+
+    /* -- SCROLLBARS---------------------------------------------------------*/
+
+    ::-webkit-scrollbar {
+      height: 10px;
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #161f27;
+      border-radius: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #324759;
+      border-radius: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #415c73;
+    }
+
+    /* -- LEADERBOARD ---------------------------------------------------------*/
+
+    .leaderboard {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .leaderboard h1 {
+      text-align: center;
+      text-transform: uppercase;
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: var(--text-main);
+      background-color: var(--leaderboard-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      margin-bottom: 2px;
+      padding: 0px;
+      width: 100%;
+      max-width: 720px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+
+    /* Leaderboard Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1.5rem;
+    }
+
+    th {
+      text-transform: uppercase;
+      /* font-size: 1.75rem; */
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    td {
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Column Alignments */
+    th:first-child,
+    td:first-child {
+      width: 48px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    th:last-child,
+    td:last-child {
+      text-align: right;
+      font-family: monospace;
+      font-weight: 600;
+    }
+
+    /* -- CLOCK --------------------------------------------------------------*/
+
+    #clock {
+      font-size: 2.8rem;
+      font-weight: 700;
+      font-family: monospace;
+      letter-spacing: -0.02em;
+      color: #38bdf8;
+      margin: 8px 0;
+    }
+
+    .small {
+      color: var(--text-muted);
+      font-size: 1.85rem;
+    }
 )rawliteral";
