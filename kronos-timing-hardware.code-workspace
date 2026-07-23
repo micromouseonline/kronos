@@ -7,9 +7,6 @@
 			"path": "ESP32-timing-gates-hesperus"
 		},
 		{
-			"path": "ESP32-timing-gates-hesperus-C3"
-		},
-		{
 			"path": "gate-controller-python-test-cerberus"
 		},
 		{
