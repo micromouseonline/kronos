@@ -7,13 +7,13 @@
 			"path": "ESP32-timing-gates-hesperus"
 		},
 		{
+			"path": "ESP32-timing-gates-hesperus-C3"
+		},
+		{
 			"path": "gate-controller-python-test-cerberus"
 		},
 		{
 			"path": "event-pulse-generator-arduino-nano"
-		},
-		{
-			"path": "ESP32-timing-gates-hesperus-C3"
 		},
 		{
 			"path": "cerberus-gate-controller"
