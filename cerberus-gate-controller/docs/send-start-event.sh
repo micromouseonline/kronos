@@ -3,7 +3,7 @@
 # Usage: ./send-start-event.sh [gate_id]
 set -euo pipefail
 
-HOST="${CERBERUS_HOST:-cerberus.local}"
+HOST="${CERBERUS_HOST:-192.168.0.73}"
 GATE_ID="${1:-START_GATE}"
 
 curl -i -X POST "http://${HOST}/api/event" \
