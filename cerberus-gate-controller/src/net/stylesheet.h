@@ -308,7 +308,8 @@ const char COMMON_STYLE[] PROGMEM = R"rawliteral(
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 1.5rem;
+      /* Scales dynamically between 0.75rem (mobile) and 1.5rem (desktop) */
+      font-size: clamp(0.75rem, 3.5vw, 1.5rem);
     }
 
     th {
