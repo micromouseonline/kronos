@@ -1,4 +1,4 @@
-# ESP32-timing-gates-hesperus
+# hesperus-timing-gate
 
 PlatformIO firmware for the ESP32-S3 timing gates (project codename: Hesperus).
 

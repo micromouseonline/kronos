@@ -4,7 +4,7 @@
 			"path": "."
 		},
 		{
-			"path": "ESP32-timing-gates-hesperus"
+			"path": "hesperus-timing-gate"
 		},
 		{
 			"path": "gate-controller-python-test-cerberus"

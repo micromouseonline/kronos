@@ -2,7 +2,7 @@
 
 How PlatformIO environments are structured across this workspace, using
 `cerberus-gate-controller/` as the reference implementation. The other
-firmware projects (`ESP32-timing-gates-hesperus/`,
+firmware projects (`hesperus-timing-gate/`,
 `event-pulse-generator-arduino-nano/`) are simple, single-environment
 `platformio.ini` files and have not been migrated to this pattern.
 
@@ -128,7 +128,7 @@ pio run                     # builds ALL environments - avoid unless you mean to
 
 ## Other sub-projects
 
-`ESP32-timing-gates-hesperus/` and `event-pulse-generator-arduino-nano/`
+`hesperus-timing-gate/` and `event-pulse-generator-arduino-nano/`
 each use a single flat `[env:*]` block with no `extends`/feature
 composition - there is nothing to cross-reference against this document
 for them.

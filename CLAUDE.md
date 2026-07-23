@@ -6,7 +6,7 @@ Multi-project workspace for a two-gate infrared timing system.
 
 | Folder | Platform | Purpose |
 |--------|----------|---------|
-| `ESP32-timing-gates-hesperus/` | ESP32-S3, PlatformIO | Gate firmware (WiFi TSF clock sync, HTTP event reporting) |
+| `hesperus-timing-gate/` | ESP32-S3, PlatformIO | Gate firmware (WiFi TSF clock sync, HTTP event reporting) |
 | `event-pulse-generator-arduino-nano/` | Arduino Nano, PlatformIO | 1 Hz reference pulse generator for calibration |
 | `gate-controller-python-test-cerberus/` | Python 3 | HTTP server: receives gate events, matches pairs, logs forensics |
 

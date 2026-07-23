@@ -1,6 +1,6 @@
 # Technical Review: KRONOS/CERBERUS Gate Firmware
 
-`ESP32-timing-gates-hesperus/src/main.cpp`
+`hesperus-timing-gate/src/main.cpp`
 
 Reviewed by Claude
 
