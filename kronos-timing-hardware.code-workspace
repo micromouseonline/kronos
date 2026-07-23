@@ -7,13 +7,13 @@
 			"path": "hesperus-timing-gate"
 		},
 		{
+			"path": "cerberus-gate-controller"
+		},
+		{
+			"path": "ares-pulse-generator"
+		},
+		{
 			"path": "gate-controller-python-test-cerberus"
 		},
-		{
-			"path": "event-pulse-generator-arduino-nano"
-		},
-		{
-			"path": "cerberus-gate-controller"
-		}
 	]
 }

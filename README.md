@@ -21,6 +21,8 @@
 * **CERBERUS:** The multi-threaded gate edge hardware/software handling gate messages and clock audits.
 * **HESPERUS:** The physical maze/track gate sensor modules.
 * **HERMES:** The concise HTTP application-layer packet payload protocol.
+* **ARES:** The pulse generator that stimulates the gates during testing.
+* **ARGUS:** The hundred-eyed giant that collects and analyses gate data.
 
 ---
 
