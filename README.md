@@ -49,3 +49,5 @@ The gate hardware supports BLE - this could be used as an independent diagnostic
 ## For More Information
 
 For detailed clock calibration formulas, circuit diagrams, power management deep-dives (Wi-Fi Modem Sleep configurations), and field-trial telemetry logs, please refer to our full [**System Architecture Documentation Page**](docs/kronos-synchronized-timing-gates-architecture.md).
+
+For how the PlatformIO build environments are structured and composed (board/feature configuration, adding a new board, converting to Arduino IDE), see [**platformio.md**](platformio.md).
