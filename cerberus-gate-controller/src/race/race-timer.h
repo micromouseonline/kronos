@@ -30,10 +30,7 @@ const char *mouse_names[] = {
     // Original list
     "CUNNING ODYSSEUS",  // 16 chars
     "CUMBERSOME OTIS",   // 16 chars
-    "MOUSE BRET OSMIC",  // 16 chars
-    "MOUSE BOT CRIMES",  // 16 chars
-    "MOUSE TOM SCRIBE",  // 16 chars
-    "MOUSE ROMEO RICH",  // 16 chars
+    "BRET OSMIC MOUSE",  // 16 chars
     "BRONZE NUMERATOR",  // 16 chars
     "TITAN MECHANOIDX",  // 16 chars
     "CHRONOS ROBOTICS",  // 16 chars
@@ -46,6 +43,7 @@ const char *mouse_names[] = {
     "SPECTER MECH 77B",  // 16 chars
     "SIGMA LOGIC CORE",  // 16 chars
     "AURA STRIKER 440",  // 16 chars
+    "MOUSE TOM SCRIBE",  // 16 chars
     "OMEGA DRONE MKIV",  // 16 chars
     "CYPHER SYNTH 99X",  // 16 chars
     "NEBULA SEEKER X1",  // 16 chars
@@ -56,6 +54,7 @@ const char *mouse_names[] = {
     "ORION ENGINE 500",  // 16 chars
     "SUPERNOVA ROVERX",  // 16 chars
     "GALACTIC WALKER8",  // 16 chars
+    "MOUSE BOT CRIMES",  // 16 chars
     "ECLIPSE RUNNER V",  // 16 chars
     "NEXUS SIX RUNNER",  // 16 chars
     "SKYNET ASSASSINS",  // 16 chars
@@ -216,6 +215,7 @@ inline void race_timer_commit_run(uint32_t time_ms) {
 // entry -- same observable behaviour, simpler state.
 inline void race_timer_enter_new_mouse() {
   mouse_id++;
+  mouse_id %= NUM_MICE;
   mouse_run_count = 0;
   mouse_first_run_index = race_run_count;
   time_left = RACE_TIME_LIMIT;
