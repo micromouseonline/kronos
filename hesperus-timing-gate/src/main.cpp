@@ -9,8 +9,11 @@
 #include "secrets.h"  // these are the network credentials neede to connect to the AP
 
 // --- Hardware Pin Configuration ---
-#define PIN_LED_RGB 21  // Built-in RGB LED on GPIO 21
-Adafruit_NeoPixel led(1, PIN_LED_RGB, NEO_RGB + NEO_KHZ800);
+// STATUS_LED and NEOPIXEL_COLOR_ORDER come from the per-board build_flags in
+// platformio.ini/boards.ini - do not hardcode a pin/order here, it varies
+// per target (e.g. GPIO21/NEO_RGB on ESP32-S3-Zero, GPIO48/NEO_GRB on the
+// S3 Super Mini).
+Adafruit_NeoPixel led(1, STATUS_LED, NEOPIXEL_COLOR_ORDER + NEO_KHZ800);
 
 char gate_id[16];
 
