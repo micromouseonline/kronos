@@ -73,17 +73,19 @@ void action_on_menu_reset(lv_event_t *e) {
 // Just navigation -- the actual decision is the wifi_setup screen's two
 // buttons below, so a stray tap here is a total no-op.
 void action_on_menu_setup(lv_event_t *e) {
-  if (WiFi.status() == WL_CONNECTED) {
-    lv_label_set_text(objects.lbl_wifi_ssid, WiFi.SSID().c_str());
-  } else {
-    lv_label_set_text(objects.lbl_wifi_ssid, "Not connected");
-  }
-  loadScreen(SCREEN_ID_WIFI_SETUP);
+  String ssid_text = "SSID: ";
+  ssid_text += (WiFi.status() == WL_CONNECTED) ? WiFi.SSID() : "Not connected";
+  lv_label_set_text(objects.lbl_wifi_ssid, ssid_text.c_str());
+  // LV_SIZE_CONTENT means the label's width just changed to match the new
+  // text above -- re-centre now that it's known, since SSIDs vary in length
+  // (up to 32 chars) and a fixed x position would run long ones off-screen.
+  lv_obj_align(objects.lbl_wifi_ssid, LV_ALIGN_TOP_MID, 0, 37);
+  lv_scr_load(objects.wifi_setup);
 }
 
 // "Return" button: leave Wi-Fi untouched, back to the menu.
 void action_on_wifi_setup_return(lv_event_t *e) {
-  loadScreen(SCREEN_ID_MENU);
+  lv_scr_load(objects.menu);
 }
 
 // "New network" button: wipes saved credentials and forces the config

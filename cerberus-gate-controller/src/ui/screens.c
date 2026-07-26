@@ -606,13 +606,6 @@ void create_screen_wifi_setup() {
             }
         }
         {
-            lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 66, 37);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_obj_set_style_text_font(obj, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text_static(obj, "SSID:");
-        }
-        {
             // lbl_wifi_ssid
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.lbl_wifi_ssid = obj;
