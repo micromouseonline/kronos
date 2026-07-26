@@ -571,18 +571,31 @@ void create_screen_wifi_setup() {
     objects.wifi_setup = obj;
     lv_obj_set_pos(obj, 0, 0);
     lv_obj_set_size(obj, 320, 240);
+    lv_obj_set_style_bg_color(obj, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
     {
         lv_obj_t *parent_obj = obj;
         {
-            lv_obj_t *obj = lv_btn_create(parent_obj);
-            lv_obj_set_pos(obj, 60, 70);
-            lv_obj_set_size(obj, 200, 50);
+            // lbl_wifi_ssid
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.lbl_wifi_ssid = obj;
+            lv_obj_set_pos(obj, 126, 37);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_opa(obj, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_static(obj, "**********");
+        }
+        {
+            lv_obj_t *obj = lv_obj_create(parent_obj);
+            lv_obj_set_pos(obj, 61, 58);
+            lv_obj_set_size(obj, 200, 48);
             lv_obj_add_event_cb(obj, action_on_wifi_setup_return, LV_EVENT_PRESSED, (void *)0);
+            add_style_menu_option_panel(obj);
             {
                 lv_obj_t *parent_obj = obj;
                 {
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    lv_obj_set_pos(obj, -5, 0);
+                    lv_obj_set_pos(obj, 0, 0);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_set_style_align(obj, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_label_set_text_static(obj, "RETURN");
@@ -590,10 +603,11 @@ void create_screen_wifi_setup() {
             }
         }
         {
-            lv_obj_t *obj = lv_btn_create(parent_obj);
-            lv_obj_set_pos(obj, 60, 151);
-            lv_obj_set_size(obj, 200, 50);
+            lv_obj_t *obj = lv_obj_create(parent_obj);
+            lv_obj_set_pos(obj, 60, 147);
+            lv_obj_set_size(obj, 200, 48);
             lv_obj_add_event_cb(obj, action_on_wifi_setup_confirm, LV_EVENT_PRESSED, (void *)0);
+            add_style_menu_option_panel(obj);
             {
                 lv_obj_t *parent_obj = obj;
                 {
@@ -604,15 +618,6 @@ void create_screen_wifi_setup() {
                     lv_label_set_text_static(obj, "JOIN NEW NETWORK");
                 }
             }
-        }
-        {
-            // lbl_wifi_ssid
-            lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.lbl_wifi_ssid = obj;
-            lv_obj_set_pos(obj, 110, 37);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_obj_set_style_text_font(obj, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text_static(obj, "**********");
         }
     }
     

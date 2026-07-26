@@ -40,9 +40,11 @@ void remove_style_timer_panel_blue(lv_obj_t *obj) {
 //
 
 void init_style_menu_option_panel_MAIN_DEFAULT(lv_style_t *style) {
-    lv_style_set_bg_color(style, lv_color_hex(0x1e1e22));
+    lv_style_set_bg_color(style, lv_color_hex(0x252540));
     lv_style_set_border_width(style, 1);
     lv_style_set_border_color(style, lv_color_hex(0x1e1e22));
+    lv_style_set_text_color(style, lv_color_hex(0xffffff));
+    lv_style_set_text_opa(style, 255);
 };
 
 lv_style_t *get_style_menu_option_panel_MAIN_DEFAULT() {
