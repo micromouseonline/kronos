@@ -2214,7 +2214,7 @@
               "objID": "aa4c8190-c560-4fa9-c5ec-fabb8b4d1485",
               "type": "LVGLQRCodeWidget",
               "left": 96,
-              "top": 56,
+              "top": 45,
               "width": 128,
               "height": 128,
               "customInputs": [],
@@ -2305,7 +2305,7 @@
               "objID": "60d2d975-648c-4a2c-c6ec-f374adcd7e92",
               "type": "LVGLLabelWidget",
               "left": 68,
-              "top": 200,
+              "top": 175,
               "width": 184,
               "height": 30,
               "customInputs": [],
@@ -2346,6 +2346,56 @@
               "group": "",
               "groupIndex": 0,
               "text": "MAZE TIMER",
+              "textType": "literal",
+              "longMode": "WRAP",
+              "recolor": false
+            },
+            {
+              "objID": "0f18fd7e-e652-4db4-89bf-eac0b403fc2a",
+              "type": "LVGLLabelWidget",
+              "left": 100,
+              "top": 210,
+              "width": 120,
+              "height": 14,
+              "customInputs": [],
+              "customOutputs": [],
+              "style": {
+                "objID": "80b213e2-636f-47fb-ba20-c526f7e4c660",
+                "useStyle": "default",
+                "conditionalStyles": [],
+                "childStyles": []
+              },
+              "timeline": [],
+              "eventHandlers": [],
+              "identifier": "lbl_version",
+              "leftUnit": "px",
+              "topUnit": "px",
+              "widthUnit": "content",
+              "heightUnit": "content",
+              "children": [],
+              "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
+              "hiddenFlagType": "literal",
+              "clickableFlagType": "literal",
+              "flagScrollbarMode": "",
+              "flagScrollDirection": "",
+              "scrollSnapX": "",
+              "scrollSnapY": "",
+              "checkedStateType": "literal",
+              "disabledStateType": "literal",
+              "states": "",
+              "localStyles": {
+                "objID": "0e24e066-5648-43ab-b15c-a884660e42c8",
+                "definition": {
+                  "MAIN": {
+                    "DEFAULT": {
+                      "text_font": "mono16"
+                    }
+                  }
+                }
+              },
+              "group": "",
+              "groupIndex": 0,
+              "text": "0.0.0-000000",
               "textType": "literal",
               "longMode": "WRAP",
               "recolor": false
