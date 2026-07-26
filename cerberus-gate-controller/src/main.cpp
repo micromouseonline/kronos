@@ -25,7 +25,9 @@
 #include "net/http-server.h"
 #include "net/mdns.h"
 #include "net/serial-protocol.h"
+#include "net/wifi-credentials.h"
 #include "net/wifi-manager.h"
+#include "net/wifi-provisioning.h"
 #include "version-generated.h"
 #include "wifi-scan.h"
 
@@ -34,7 +36,10 @@
 #include "ui/ui.h"
 
 StatusLED statusIndicator;
-static LGFX lcd;
+// Non-static: display/display.h declares it extern so
+// net/wifi-provisioning.h (and action_on_menu_setup in eez-actions.cpp) can
+// draw setup instructions directly to the panel without owning the instance.
+LGFX lcd;
 
 // Local Input Polling Task (Core 1, per DESIGN-REQUIREMENT.md). Owns all
 // input-device reads (GPIO + NeoKey; touch is polled internally by LVGL's
@@ -151,6 +156,20 @@ void on_wifi_connected() {
   http_server_restart();
 }
 
+// Only handler wired up while wifi_provisioning_active (see loop() below):
+// a held TOUCH button reboots back to normal operation, same "back out of
+// whatever you're doing" meaning BTN_TOUCH HELD already carries in
+// input_event_handler above. Needed because loop() otherwise stops draining
+// the input queue entirely once provisioning takes the LCD over directly,
+// so without this there'd be no way off the setup screen short of a power
+// cycle.
+void wifi_provisioning_check_cancel(const InputEvent &evt) {
+  if (evt.id == BTN_TOUCH && evt.type == InputEventType::HELD) {
+    debug_println("[SYSTEM] Wi-Fi provisioning cancelled, rebooting");
+    ESP.restart();
+  }
+}
+
 //////////////////////////////////////////////////////////////////////
 
 void setup() {
@@ -198,6 +217,7 @@ void setup() {
   // start, only to actually be reachable
   http_server_init();
   wifi_on_connected = on_wifi_connected;
+  wifi_on_provisioning_needed = []() { wifi_provisioning_start(lcd); };
 
 #if HAS_TOUCH_INPUT && TOUCH_NEEDS_CALIBRATION
   // Only resistive touch (XPT2046, both CYD2USB boards) needs this --
@@ -215,7 +235,7 @@ void setup() {
   // net/serial-protocol.h. Last, so nothing above needed to worry about
   // sharing Serial with it yet.
   serial_protocol_init();
-  lv_scr_load(objects.main);  // instant, no animation, no wrapper needed
+  lv_scr_load(objects.menu);
   debug_println(F("CERBERUS: gate controller"));
   debug_printf("version: %s\n", FIRMWARE_VERSION_STRING);
 }
@@ -226,6 +246,22 @@ void setup() {
 // The events are all timestamped so there is no particular urgency.
 // All we need to do is have an event handler process events from the queue
 void loop() {
+  // Once Wi-Fi provisioning has taken over the LCD directly (raw LovyanGFX
+  // draws, bypassing LVGL -- see net/wifi-provisioning.h), stop pumping
+  // LVGL entirely: its next flush of whatever screen was still active would
+  // otherwise repaint straight over the setup instructions, since both
+  // write to the same panel. Nothing below matters anymore either -- the
+  // config portal's AsyncWebServer runs independently of loop().
+  if (wifi_provisioning_active) {
+    // input_poll_task (Core 1) keeps posting into the queue regardless of
+    // what loop() does, so draining it here for just this one handler is
+    // enough to offer a way out without resurrecting the rest of LVGL/race
+    // handling.
+    input_queue_drain(wifi_provisioning_check_cancel);
+    delay(100);
+    return;
+  }
+
   input_queue_drain(input_event_handler);
   system_event_queue_drain(system_event_handler);
   race_timer_render();

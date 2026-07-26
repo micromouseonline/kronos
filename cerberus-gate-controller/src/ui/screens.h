@@ -14,13 +14,15 @@ enum ScreensEnum {
     SCREEN_ID_MENU = 1,
     SCREEN_ID_MAIN = 2,
     SCREEN_ID_SPLASH = 3,
-    _SCREEN_ID_LAST = 3
+    SCREEN_ID_WIFI_SETUP = 4,
+    _SCREEN_ID_LAST = 4
 };
 
 typedef struct _objects_t {
     lv_obj_t *menu;
     lv_obj_t *main;
     lv_obj_t *splash;
+    lv_obj_t *wifi_setup;
     lv_obj_t *obj0;
     lv_obj_t *obj1;
     lv_obj_t *obj2;
@@ -56,6 +58,7 @@ typedef struct _objects_t {
     lv_obj_t *pnl_time_remaining;
     lv_obj_t *lbl_time_remaining;
     lv_obj_t *lbl_version;
+    lv_obj_t *lbl_wifi_ssid;
 } objects_t;
 
 extern objects_t objects;
@@ -68,6 +71,9 @@ void tick_screen_main();
 
 void create_screen_splash();
 void tick_screen_splash();
+
+void create_screen_wifi_setup();
+void tick_screen_wifi_setup();
 
 void tick_screen_by_id(enum ScreensEnum screenId);
 void tick_screen(int screen_index);

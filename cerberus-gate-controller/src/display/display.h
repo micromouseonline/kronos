@@ -343,3 +343,10 @@ class LGFX : public lgfx::LGFX_Device {
 #else
 #error "display.h: no known display configuration for this board"
 #endif
+
+// Defined (non-static) in main.cpp. Exposed here so modules that don't own
+// it -- net/wifi-provisioning.h, eez-actions.cpp's action_on_menu_setup --
+// can draw directly to the panel (bypassing LVGL) for the Wi-Fi setup
+// portal, the same way display/touch-calibration.h's re_calibrate() does
+// with the LGFX& main.cpp passes it.
+extern LGFX lcd;

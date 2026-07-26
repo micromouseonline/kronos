@@ -16,6 +16,8 @@
 #include "debug-log.h"
 #include "display/display.h"  // LGFX
 #include "input-events.h"     // input_queue_post, InputSource, ButtonID
+#include "net/wifi-credentials.h"
+#include "net/wifi-manager.h"  // wifi_request_provisioning
 
 // EventType defaults to InputEventType::PRESSED if not provided
 void action_on_timer_arm(lv_event_t *e) {
@@ -62,4 +64,36 @@ void action_on_menu_maze_timer(lv_event_t *e) {
 
 void action_on_menu_calibrate(lv_event_t *e) {
   debug_println("CALIBRATE!");
+}
+
+void action_on_menu_reset(lv_event_t *e) {
+  ESP.restart();
+}
+
+// Just navigation -- the actual decision is the wifi_setup screen's two
+// buttons below, so a stray tap here is a total no-op.
+void action_on_menu_setup(lv_event_t *e) {
+  if (WiFi.status() == WL_CONNECTED) {
+    lv_label_set_text(objects.lbl_wifi_ssid, WiFi.SSID().c_str());
+  } else {
+    lv_label_set_text(objects.lbl_wifi_ssid, "Not connected");
+  }
+  loadScreen(SCREEN_ID_WIFI_SETUP);
+}
+
+// "Return" button: leave Wi-Fi untouched, back to the menu.
+void action_on_wifi_setup_return(lv_event_t *e) {
+  loadScreen(SCREEN_ID_MENU);
+}
+
+// "New network" button: wipes saved credentials and forces the config
+// portal open on wifi_connect_task's next poll tick (net/wifi-manager.h's
+// wifi_request_provisioning()), regardless of whether the current network
+// is still connected. wifi_provisioning_start() (net/wifi-provisioning.h)
+// takes over the LCD directly once that fires, so no further screen
+// navigation is needed here.
+void action_on_wifi_setup_confirm(lv_event_t *e) {
+  debug_println("[SYSTEM] Wi-Fi reconfigure requested: clearing saved credentials");
+  wifi_credentials_clear();
+  wifi_request_provisioning();
 }

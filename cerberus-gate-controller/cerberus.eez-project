@@ -205,6 +205,42 @@
       "componentGroups": [],
       "userProperties": [],
       "name": "on_timer_goal_long"
+    },
+    {
+      "objID": "7871dba5-0dc8-4a05-a613-c6c3a701785c",
+      "components": [],
+      "connectionLines": [],
+      "localVariables": [],
+      "componentGroups": [],
+      "userProperties": [],
+      "name": "on_menu_setup"
+    },
+    {
+      "objID": "0818bbc1-a3e9-4304-8a0b-5682615f5030",
+      "components": [],
+      "connectionLines": [],
+      "localVariables": [],
+      "componentGroups": [],
+      "userProperties": [],
+      "name": "on_wifi_setup_return"
+    },
+    {
+      "objID": "d48a84b9-ba3e-48f5-ff50-3d29a9ac8f0a",
+      "components": [],
+      "connectionLines": [],
+      "localVariables": [],
+      "componentGroups": [],
+      "userProperties": [],
+      "name": "on_wifi_setup_confirm"
+    },
+    {
+      "objID": "7a28fd80-9c58-426b-fa98-80b37a06f143",
+      "components": [],
+      "connectionLines": [],
+      "localVariables": [],
+      "componentGroups": [],
+      "userProperties": [],
+      "name": "on_menu_reset"
     }
   ],
   "userPages": [
@@ -391,7 +427,15 @@
                     "childStyles": []
                   },
                   "timeline": [],
-                  "eventHandlers": [],
+                  "eventHandlers": [
+                    {
+                      "objID": "4c8aa653-27bd-473a-905a-6e25e3cf61f7",
+                      "eventName": "PRESSED",
+                      "handlerType": "action",
+                      "action": "on_menu_setup",
+                      "userData": 0
+                    }
+                  ],
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "%",
@@ -400,9 +444,9 @@
                     {
                       "objID": "a8b0b45c-a978-4ae6-8d57-6b68c405bd16",
                       "type": "LVGLLabelWidget",
-                      "left": 28,
+                      "left": 29,
                       "top": 8,
-                      "width": 55,
+                      "width": 95,
                       "height": 18,
                       "customInputs": [],
                       "customOutputs": [],
@@ -442,7 +486,7 @@
                       },
                       "group": "",
                       "groupIndex": 0,
-                      "text": "SETUP",
+                      "text": "WiFi SETUP",
                       "textType": "literal",
                       "longMode": "WRAP",
                       "recolor": false
@@ -611,7 +655,15 @@
                     "childStyles": []
                   },
                   "timeline": [],
-                  "eventHandlers": [],
+                  "eventHandlers": [
+                    {
+                      "objID": "73895ec4-7286-4c10-d108-4092cb3a7008",
+                      "eventName": "PRESSED",
+                      "handlerType": "action",
+                      "action": "on_menu_reset",
+                      "userData": 0
+                    }
+                  ],
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "%",
@@ -2427,6 +2479,351 @@
       "componentGroups": [],
       "userProperties": [],
       "name": "splash",
+      "left": 0,
+      "top": 0,
+      "width": 320,
+      "height": 240,
+      "isUsedAsUserWidget": false,
+      "createAtStart": true,
+      "deleteOnScreenUnload": false
+    },
+    {
+      "objID": "8b04a73c-5bad-4e36-9254-e34a931b9986",
+      "components": [
+        {
+          "objID": "902d0508-26f6-4ce7-90a2-828c4f8ef6c8",
+          "type": "LVGLScreenWidget",
+          "left": 0,
+          "top": 0,
+          "width": 320,
+          "height": 240,
+          "customInputs": [],
+          "customOutputs": [],
+          "style": {
+            "objID": "4e7be558-556d-415c-87bf-96291174640b",
+            "useStyle": "default",
+            "conditionalStyles": [],
+            "childStyles": []
+          },
+          "timeline": [],
+          "eventHandlers": [],
+          "leftUnit": "px",
+          "topUnit": "px",
+          "widthUnit": "px",
+          "heightUnit": "px",
+          "children": [
+            {
+              "objID": "3d93c309-ce16-4352-db52-756e9294cba6",
+              "type": "LVGLButtonWidget",
+              "left": 60,
+              "top": 70,
+              "width": 200,
+              "height": 50,
+              "customInputs": [],
+              "customOutputs": [],
+              "style": {
+                "objID": "52256c5d-b7a2-47eb-f279-58af052752c2",
+                "useStyle": "default",
+                "conditionalStyles": [],
+                "childStyles": []
+              },
+              "timeline": [],
+              "eventHandlers": [
+                {
+                  "objID": "c7ec5458-fbec-49be-d26f-e577db92768e",
+                  "eventName": "PRESSED",
+                  "handlerType": "action",
+                  "action": "on_wifi_setup_return",
+                  "userData": 0
+                }
+              ],
+              "leftUnit": "px",
+              "topUnit": "px",
+              "widthUnit": "px",
+              "heightUnit": "px",
+              "children": [
+                {
+                  "objID": "f61f9c5d-570c-493f-c5bf-e81037d9c012",
+                  "type": "LVGLLabelWidget",
+                  "left": -5,
+                  "top": 0,
+                  "width": 59,
+                  "height": 16,
+                  "customInputs": [],
+                  "customOutputs": [],
+                  "style": {
+                    "objID": "d114d938-9ba7-43ca-a968-7e79cd04aeb2",
+                    "useStyle": "default",
+                    "conditionalStyles": [],
+                    "childStyles": []
+                  },
+                  "timeline": [],
+                  "eventHandlers": [],
+                  "leftUnit": "px",
+                  "topUnit": "px",
+                  "widthUnit": "content",
+                  "heightUnit": "content",
+                  "children": [],
+                  "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
+                  "hiddenFlagType": "literal",
+                  "clickableFlagType": "literal",
+                  "flagScrollbarMode": "",
+                  "flagScrollDirection": "",
+                  "scrollSnapX": "",
+                  "scrollSnapY": "",
+                  "checkedStateType": "literal",
+                  "disabledStateType": "literal",
+                  "states": "",
+                  "localStyles": {
+                    "objID": "7764c71f-5af0-4e9c-d769-34c777cb2445",
+                    "definition": {
+                      "MAIN": {
+                        "DEFAULT": {
+                          "align": "CENTER"
+                        }
+                      }
+                    }
+                  },
+                  "group": "",
+                  "groupIndex": 0,
+                  "text": "RETURN",
+                  "textType": "literal",
+                  "longMode": "WRAP",
+                  "recolor": false
+                }
+              ],
+              "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_ON_FOCUS|SCROLL_WITH_ARROW|SNAPPABLE",
+              "hiddenFlagType": "literal",
+              "clickableFlag": true,
+              "clickableFlagType": "literal",
+              "flagScrollbarMode": "",
+              "flagScrollDirection": "",
+              "scrollSnapX": "",
+              "scrollSnapY": "",
+              "checkedStateType": "literal",
+              "disabledStateType": "literal",
+              "states": "",
+              "localStyles": {
+                "objID": "0af90de7-4927-43dc-80a9-cb355fd91f30"
+              },
+              "group": "",
+              "groupIndex": 0
+            },
+            {
+              "objID": "155bd28a-48f3-4946-d803-b76bad1cf26a",
+              "type": "LVGLButtonWidget",
+              "left": 60,
+              "top": 151,
+              "width": 200,
+              "height": 50,
+              "customInputs": [],
+              "customOutputs": [],
+              "style": {
+                "objID": "95939ef7-318f-41e2-fe30-671678dabc7a",
+                "useStyle": "default",
+                "conditionalStyles": [],
+                "childStyles": []
+              },
+              "timeline": [],
+              "eventHandlers": [
+                {
+                  "objID": "1b355563-4e17-4f0c-bf77-e8459e2c2a5d",
+                  "eventName": "PRESSED",
+                  "handlerType": "action",
+                  "action": "on_wifi_setup_confirm",
+                  "userData": 0
+                }
+              ],
+              "leftUnit": "px",
+              "topUnit": "px",
+              "widthUnit": "px",
+              "heightUnit": "px",
+              "children": [
+                {
+                  "objID": "58f36d70-bcfe-47d9-b73e-811b5df732ce",
+                  "type": "LVGLLabelWidget",
+                  "left": 0,
+                  "top": 0,
+                  "width": 153,
+                  "height": 16,
+                  "customInputs": [],
+                  "customOutputs": [],
+                  "style": {
+                    "objID": "39414089-fa66-49e9-cbea-7ed1f198fecf",
+                    "useStyle": "default",
+                    "conditionalStyles": [],
+                    "childStyles": []
+                  },
+                  "timeline": [],
+                  "eventHandlers": [],
+                  "leftUnit": "px",
+                  "topUnit": "px",
+                  "widthUnit": "content",
+                  "heightUnit": "content",
+                  "children": [],
+                  "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
+                  "hiddenFlagType": "literal",
+                  "clickableFlagType": "literal",
+                  "flagScrollbarMode": "",
+                  "flagScrollDirection": "",
+                  "scrollSnapX": "",
+                  "scrollSnapY": "",
+                  "checkedStateType": "literal",
+                  "disabledStateType": "literal",
+                  "states": "",
+                  "localStyles": {
+                    "objID": "5b6ec244-2e62-4c5c-fa5f-a856b5bef879",
+                    "definition": {
+                      "MAIN": {
+                        "DEFAULT": {
+                          "align": "CENTER"
+                        }
+                      }
+                    }
+                  },
+                  "group": "",
+                  "groupIndex": 0,
+                  "text": "JOIN NEW NETWORK",
+                  "textType": "literal",
+                  "longMode": "WRAP",
+                  "recolor": false
+                }
+              ],
+              "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_ON_FOCUS|SCROLL_WITH_ARROW|SNAPPABLE",
+              "hiddenFlagType": "literal",
+              "clickableFlag": true,
+              "clickableFlagType": "literal",
+              "flagScrollbarMode": "",
+              "flagScrollDirection": "",
+              "scrollSnapX": "",
+              "scrollSnapY": "",
+              "checkedStateType": "literal",
+              "disabledStateType": "literal",
+              "states": "",
+              "localStyles": {
+                "objID": "175f49d6-ad6d-439d-dd94-b5acfd71529c"
+              },
+              "group": "",
+              "groupIndex": 0
+            },
+            {
+              "objID": "eae01ffe-e232-4162-bb40-abde00999f4f",
+              "type": "LVGLLabelWidget",
+              "left": 66,
+              "top": 37,
+              "width": 42,
+              "height": 18,
+              "customInputs": [],
+              "customOutputs": [],
+              "style": {
+                "objID": "762e4f5a-20e3-4816-a1e5-b4ab8efd0686",
+                "useStyle": "default",
+                "conditionalStyles": [],
+                "childStyles": []
+              },
+              "timeline": [],
+              "eventHandlers": [],
+              "leftUnit": "px",
+              "topUnit": "px",
+              "widthUnit": "content",
+              "heightUnit": "content",
+              "children": [],
+              "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
+              "hiddenFlagType": "literal",
+              "clickableFlagType": "literal",
+              "flagScrollbarMode": "",
+              "flagScrollDirection": "",
+              "scrollSnapX": "",
+              "scrollSnapY": "",
+              "checkedStateType": "literal",
+              "disabledStateType": "literal",
+              "states": "",
+              "localStyles": {
+                "objID": "e987ec48-7d52-4aea-8e70-90a6f1cb3e64",
+                "definition": {
+                  "MAIN": {
+                    "DEFAULT": {
+                      "text_font": "MONTSERRAT_16"
+                    }
+                  }
+                }
+              },
+              "group": "",
+              "groupIndex": 0,
+              "text": "SSID:",
+              "textType": "literal",
+              "longMode": "WRAP",
+              "recolor": false
+            },
+            {
+              "objID": "c6885a83-fb4d-4b1a-eee3-fc691475c1fa",
+              "type": "LVGLLabelWidget",
+              "left": 110,
+              "top": 37,
+              "width": 69,
+              "height": 18,
+              "customInputs": [],
+              "customOutputs": [],
+              "style": {
+                "objID": "346f6ad0-8134-4a8e-f054-111163735f48",
+                "useStyle": "default",
+                "conditionalStyles": [],
+                "childStyles": []
+              },
+              "timeline": [],
+              "eventHandlers": [],
+              "identifier": "lbl_wifi_ssid",
+              "leftUnit": "px",
+              "topUnit": "px",
+              "widthUnit": "content",
+              "heightUnit": "content",
+              "children": [],
+              "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
+              "hiddenFlagType": "literal",
+              "clickableFlagType": "literal",
+              "flagScrollbarMode": "",
+              "flagScrollDirection": "",
+              "scrollSnapX": "",
+              "scrollSnapY": "",
+              "checkedStateType": "literal",
+              "disabledStateType": "literal",
+              "states": "",
+              "localStyles": {
+                "objID": "90526955-e7be-4e5d-9132-6ae0d14a5877",
+                "definition": {
+                  "MAIN": {
+                    "DEFAULT": {
+                      "text_font": "MONTSERRAT_16"
+                    }
+                  }
+                }
+              },
+              "group": "",
+              "groupIndex": 0,
+              "text": "**********",
+              "textType": "literal",
+              "longMode": "WRAP",
+              "recolor": false
+            }
+          ],
+          "widgetFlags": "CLICKABLE|PRESS_LOCK|CLICK_FOCUSABLE|GESTURE_BUBBLE|SNAPPABLE|SCROLLABLE|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER",
+          "hiddenFlagType": "literal",
+          "clickableFlag": true,
+          "clickableFlagType": "literal",
+          "checkedStateType": "literal",
+          "disabledStateType": "literal",
+          "states": "",
+          "localStyles": {
+            "objID": "2eaeffe7-5dd8-47e5-848e-bf97d679639e"
+          },
+          "groupIndex": 0
+        }
+      ],
+      "connectionLines": [],
+      "localVariables": [],
+      "componentGroups": [],
+      "userProperties": [],
+      "name": "wifi_setup",
       "left": 0,
       "top": 0,
       "width": 320,

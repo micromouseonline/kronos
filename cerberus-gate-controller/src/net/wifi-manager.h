@@ -6,6 +6,7 @@
 #include <esp_wifi.h>
 #include "debug-log.h"
 #include "neokey/neokey-pixels.h"
+#include "net/wifi-credentials.h"
 #include "secrets.h"
 
 inline bool is_wifi_active() {
@@ -36,6 +37,35 @@ constexpr uint8_t WIFI_STATUS_KEY = 3;
 // responding after the link came back, same IP or not. Only an explicit
 // end() + begin() forces a fresh bind/listen.
 inline void (*wifi_on_connected)() = nullptr;
+
+// Fired once per boot if the link hasn't connected within
+// WIFI_PROVISIONING_TIMEOUT_MS -- wired up in main.cpp to
+// wifi_provisioning_start() (net/wifi-provisioning.h), which owns the lcd
+// instance this file doesn't have access to. Same "hook set by main.cpp"
+// shape as wifi_on_connected above.
+inline void (*wifi_on_provisioning_needed)() = nullptr;
+
+// Set by wifi_request_provisioning() (called from eez-actions.cpp's
+// action_on_menu_setup) to force provisioning open immediately, regardless
+// of whether the current network is connected -- the 60s timeout below only
+// covers "can't connect at all", which never fires if the compiled-in
+// secrets.h network is still in range (e.g. on a dev bench), so a manual
+// request needs its own unconditional path into the same hand-off.
+inline volatile bool wifi_provisioning_requested = false;
+
+/// @brief Forces Wi-Fi provisioning mode open on wifi_connect_task's next
+/// poll tick (within WIFI_POLL_PERIOD_MS below), whether or not Wi-Fi is
+/// currently connected.
+inline void wifi_request_provisioning() {
+  wifi_provisioning_requested = true;
+}
+
+// How long to keep retrying the stored/secrets.h network before giving up
+// and dropping into the config portal. Generous enough to ride out a router
+// reboot or the venue AP taking a while to come up, short enough that a
+// genuinely wrong/absent network doesn't leave the device stuck blinking
+// indefinitely with no recovery path other than the physical Setup button.
+constexpr uint32_t WIFI_PROVISIONING_TIMEOUT_MS = 60000;
 
 // Core-0 background task: connects, then keeps monitoring and reconnects if
 // the link drops, so a race in progress never blocks on Wi-Fi and never
@@ -73,16 +103,48 @@ inline void (*wifi_on_connected)() = nullptr;
 // extra reconnect() while the AP is genuinely absent, on top of the
 // library's own faster retry.
 inline void wifi_connect_task(void*) {
+  // Saved credentials (net/wifi-credentials.h) take priority over
+  // secrets.h's compiled-in default -- once a config-portal submission has
+  // stored a real venue network, that's the one to use, not "juno".
+  static char stored_ssid[33];
+  static char stored_pass[65];
+  const char* connect_ssid = ssid;
+  const char* connect_pass = password;
+  if (wifi_credentials_load(stored_ssid, sizeof(stored_ssid), stored_pass, sizeof(stored_pass))) {
+    connect_ssid = stored_ssid;
+    connect_pass = stored_pass;
+    debug_println("[SYSTEM] Using saved Wi-Fi credentials from NVS");
+  }
+
   debug_printf("[SYSTEM] My MAC Address %s\n", WiFi.macAddress().c_str());
-  debug_printf("[SYSTEM] Connecting to %s\n", ssid);
-  WiFi.begin(ssid, password);
+  debug_printf("[SYSTEM] Connecting to %s\n", connect_ssid);
+  WiFi.begin(connect_ssid, connect_pass);
 
   bool was_connected = false;
   bool blink_state = false;
   uint32_t attempt_start = millis();
+  uint32_t disconnected_since = millis();
+  uint32_t last_ip_report = 0;
 
   for (;;) {
     bool connected = (WiFi.status() == WL_CONNECTED);
+
+    // Single hand-off point into the config portal (net/wifi-provisioning.h),
+    // reached either by the disconnected-too-long timeout below or by a
+    // manual wifi_request_provisioning() call -- the latter fires
+    // unconditionally, even while currently connected, since
+    // action_on_menu_setup's whole point is switching to a *different*
+    // network on demand, not waiting for this one to fail first. That call
+    // switches WiFi.mode() to AP-only, so this task has nothing further to
+    // do; deleting it rather than looping avoids it fighting the portal with
+    // pointless reconnect() calls against a now-AP-mode radio.
+    if (wifi_provisioning_requested || (!connected && millis() - disconnected_since > WIFI_PROVISIONING_TIMEOUT_MS)) {
+      debug_println("[SYSTEM] Entering Wi-Fi provisioning mode");
+      if (wifi_on_provisioning_needed != nullptr) {
+        wifi_on_provisioning_needed();
+      }
+      vTaskDelete(nullptr);
+    }
 
     if (connected && !was_connected) {
       esp_wifi_set_ps(WIFI_PS_NONE);
@@ -96,6 +158,7 @@ inline void wifi_connect_task(void*) {
       debug_println("[SYSTEM] Wi-Fi connection lost, reconnecting...");
       WiFi.reconnect();
       attempt_start = millis();
+      disconnected_since = millis();
     } else if (!connected) {
       blink_state = !blink_state;
       neokey_set_colour(WIFI_STATUS_KEY, blink_state ? NP_CYAN : NP_OFF);
@@ -103,6 +166,18 @@ inline void wifi_connect_task(void*) {
         debug_println("[SYSTEM] Wi-Fi connect attempt timed out, retrying...");
         WiFi.reconnect();
         attempt_start = millis();
+      }
+    }
+
+    // Repeats every 5s for as long as the link stays up -- a one-shot print
+    // on the connect edge above is easy to miss if a serial monitor
+    // reattaches a moment late after a reboot (e.g. ESP32-S3 native USB CDC
+    // re-enumerating), which is exactly when confirming "did it actually
+    // join the new network" matters most.
+    if (connected) {
+      if (millis() - last_ip_report > 5000) {
+        debug_printf("[SYSTEM] IP: %s  RSSI: %d dBm\n", WiFi.localIP().toString().c_str(), WiFi.RSSI());
+        last_ip_report = millis();
       }
     }
 
