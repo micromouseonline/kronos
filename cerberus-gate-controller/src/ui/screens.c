@@ -528,7 +528,7 @@ void create_screen_splash() {
         lv_obj_t *parent_obj = obj;
         {
             lv_obj_t *obj = lv_qrcode_create(parent_obj, 128, lv_color_hex(0x20429f), lv_color_hex(0xe2f5fe));
-            lv_obj_set_pos(obj, 96, 56);
+            lv_obj_set_pos(obj, 96, 45);
             lv_obj_set_size(obj, 128, 128);
             lv_qrcode_update(obj, "UKMARS.ORG", 10);
             lv_obj_add_flag(obj, LV_OBJ_FLAG_CLICKABLE);
@@ -542,10 +542,19 @@ void create_screen_splash() {
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 68, 200);
+            lv_obj_set_pos(obj, 68, 175);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_28, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text_static(obj, "MAZE TIMER");
+        }
+        {
+            // lbl_version
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.lbl_version = obj;
+            lv_obj_set_pos(obj, 100, 210);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_style_text_font(obj, &ui_font_mono16, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_static(obj, "0.0.0-000000");
         }
     }
     

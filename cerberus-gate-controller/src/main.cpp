@@ -26,6 +26,7 @@
 #include "net/mdns.h"
 #include "net/serial-protocol.h"
 #include "net/wifi-manager.h"
+#include "version-generated.h"
 #include "wifi-scan.h"
 
 // lib/ui/ -- EEZ Studio generated.
@@ -179,34 +180,25 @@ void setup() {
   }
 
   ui_init();  // defaults to loadScreen(SCREEN_ID_MENU)
+  lv_label_set_text(objects.lbl_version, FIRMWARE_VERSION_STRING);
   race_timer_display_init();
-#if !HAS_TOUCH_INPUT
-  // No touch, and MENU's only way to reach MAIN is a touch-only nav
-  // button -- skip straight to the timer screen. Can't edit ui.c itself,
-  // it's regenerated wholesale on every EEZ Studio export.
-  loadScreen(SCREEN_ID_MAIN);
-#endif
-  // it may take anything up to 2000ms altogether to get  a serial connection
-  while (!Serial && (millis() < 2000)) {
+  lv_scr_load(objects.splash);  // instant, no animation, no wrapper needed
+  // loadScreen() only marks the screen dirty -- nothing reaches the panel
+  // until lv_timer_handler() actually flushes it. A blind delay() here
+  // never calls that, so the splash never gets drawn before
+  // loadScreen(SCREEN_ID_MAIN) below replaces it; pump the handler through
+  // the hold time instead.
+  for (uint32_t start = millis(); millis() - start < 2000;) {
+    lvgl_task_handler();
     delay(10);
-  }
-  uint32_t ready_time = millis();
-  // just because the hardware is ready, does not mean the terminal is ready
-  // so allow time for that as well
-  while (millis() - ready_time < 500) {
-    yield();
   }
   wifi_connect_start_async();
 
   // Binds/listens immediately -- doesn't need an active Wi-Fi connection to
-  // start, only to actually be reachable, same reasoning as wifi_connect_
-  // start_async() itself not blocking setup().
+  // start, only to actually be reachable
   http_server_init();
-  // mdns_start() (net/mdns.h) needs Wi-Fi to actually have an IP, so it
-  // isn't called here inline -- on_wifi_connected() above runs it (and
-  // restarts the HTTP server) every time wifi-manager.h's connect loop
-  // detects a connect/reconnect, never blocking setup() itself.
   wifi_on_connected = on_wifi_connected;
+
 #if HAS_TOUCH_INPUT && TOUCH_NEEDS_CALIBRATION
   // Only resistive touch (XPT2046, both CYD2USB boards) needs this --
   // capacitive touch (FT6336U, CST820) already reports screen-pixel
@@ -217,14 +209,15 @@ void setup() {
   calibrate(lcd);
 #endif
 
-  debug_println(F("CERBERUS: gate controller"));
-  debug_printf("ready after %dms \n", ready_time);
   // Now it is finally safe to fire off the button polling task and run the main loop
   xTaskCreatePinnedToCore(input_poll_task, "input_poll", 4096, nullptr, 1, nullptr, 1);
   // Starts owning the UART for the legacy <type,value> host protocol -- see
   // net/serial-protocol.h. Last, so nothing above needed to worry about
   // sharing Serial with it yet.
   serial_protocol_init();
+  lv_scr_load(objects.main);  // instant, no animation, no wrapper needed
+  debug_println(F("CERBERUS: gate controller"));
+  debug_printf("version: %s\n", FIRMWARE_VERSION_STRING);
 }
 
 //////////////////////////////////////////////////////////////////////

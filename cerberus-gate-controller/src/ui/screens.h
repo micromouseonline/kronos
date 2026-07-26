@@ -55,6 +55,7 @@ typedef struct _objects_t {
     lv_obj_t *lbl_run_number;
     lv_obj_t *pnl_time_remaining;
     lv_obj_t *lbl_time_remaining;
+    lv_obj_t *lbl_version;
 } objects_t;
 
 extern objects_t objects;
