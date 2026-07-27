@@ -68,6 +68,68 @@ void remove_style_menu_option_panel(lv_obj_t *obj) {
 };
 
 //
+// Style: custom_switch
+//
+
+void init_style_custom_switch_MAIN_DEFAULT(lv_style_t *style) {
+    lv_style_set_bg_color(style, lv_color_hex(0x18182a));
+    lv_style_set_border_color(style, lv_color_hex(0x353558));
+};
+
+lv_style_t *get_style_custom_switch_MAIN_DEFAULT() {
+    static lv_style_t *style;
+    if (!style) {
+        style = (lv_style_t *)lv_mem_alloc(sizeof(lv_style_t));
+        lv_style_init(style);
+        init_style_custom_switch_MAIN_DEFAULT(style);
+    }
+    return style;
+};
+
+void init_style_custom_switch_KNOB_DEFAULT(lv_style_t *style) {
+    lv_style_set_bg_opa(style, 200);
+    lv_style_set_bg_color(style, lv_color_hex(0xffffff));
+};
+
+lv_style_t *get_style_custom_switch_KNOB_DEFAULT() {
+    static lv_style_t *style;
+    if (!style) {
+        style = (lv_style_t *)lv_mem_alloc(sizeof(lv_style_t));
+        lv_style_init(style);
+        init_style_custom_switch_KNOB_DEFAULT(style);
+    }
+    return style;
+};
+
+void init_style_custom_switch_INDICATOR_CHECKED(lv_style_t *style) {
+    lv_style_set_bg_color(style, lv_color_hex(0x2196f3));
+};
+
+lv_style_t *get_style_custom_switch_INDICATOR_CHECKED() {
+    static lv_style_t *style;
+    if (!style) {
+        style = (lv_style_t *)lv_mem_alloc(sizeof(lv_style_t));
+        lv_style_init(style);
+        init_style_custom_switch_INDICATOR_CHECKED(style);
+    }
+    return style;
+};
+
+void add_style_custom_switch(lv_obj_t *obj) {
+    (void)obj;
+    lv_obj_add_style(obj, get_style_custom_switch_MAIN_DEFAULT(), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_add_style(obj, get_style_custom_switch_KNOB_DEFAULT(), LV_PART_KNOB | LV_STATE_DEFAULT);
+    lv_obj_add_style(obj, get_style_custom_switch_INDICATOR_CHECKED(), LV_PART_INDICATOR | LV_STATE_CHECKED);
+};
+
+void remove_style_custom_switch(lv_obj_t *obj) {
+    (void)obj;
+    lv_obj_remove_style(obj, get_style_custom_switch_MAIN_DEFAULT(), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_remove_style(obj, get_style_custom_switch_KNOB_DEFAULT(), LV_PART_KNOB | LV_STATE_DEFAULT);
+    lv_obj_remove_style(obj, get_style_custom_switch_INDICATOR_CHECKED(), LV_PART_INDICATOR | LV_STATE_CHECKED);
+};
+
+//
 //
 //
 
@@ -76,6 +138,7 @@ void add_style(lv_obj_t *obj, int32_t styleIndex) {
     static const AddStyleFunc add_style_funcs[] = {
         add_style_timer_panel_blue,
         add_style_menu_option_panel,
+        add_style_custom_switch,
     };
     add_style_funcs[styleIndex](obj);
 }
@@ -85,6 +148,7 @@ void remove_style(lv_obj_t *obj, int32_t styleIndex) {
     static const RemoveStyleFunc remove_style_funcs[] = {
         remove_style_timer_panel_blue,
         remove_style_menu_option_panel,
+        remove_style_custom_switch,
     };
     remove_style_funcs[styleIndex](obj);
 }

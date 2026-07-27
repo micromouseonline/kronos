@@ -61,8 +61,13 @@ typedef struct _objects_t {
     lv_obj_t *lbl_time_remaining;
     lv_obj_t *lbl_version;
     lv_obj_t *lbl_wifi_ssid;
+    lv_obj_t *obj18;
+    lv_obj_t *obj19;
+    lv_obj_t *obj20;
     lv_obj_t *sw_watchdog;
+    lv_obj_t *obj21;
     lv_obj_t *sw_wifi_stats;
+    lv_obj_t *obj22;
 } objects_t;
 
 extern objects_t objects;

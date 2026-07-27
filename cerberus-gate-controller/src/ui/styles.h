@@ -17,6 +17,13 @@ lv_style_t *get_style_menu_option_panel_MAIN_DEFAULT();
 void add_style_menu_option_panel(lv_obj_t *obj);
 void remove_style_menu_option_panel(lv_obj_t *obj);
 
+// Style: custom_switch
+lv_style_t *get_style_custom_switch_MAIN_DEFAULT();
+lv_style_t *get_style_custom_switch_KNOB_DEFAULT();
+lv_style_t *get_style_custom_switch_INDICATOR_CHECKED();
+void add_style_custom_switch(lv_obj_t *obj);
+void remove_style_custom_switch(lv_obj_t *obj);
+
 #ifdef __cplusplus
 }
 #endif
