@@ -12,6 +12,7 @@
 #pragma once
 
 #include <Arduino.h>
+#include <WiFi.h>
 #include <stdio.h>
 
 #include "race-timer.h"
@@ -89,6 +90,51 @@ inline void race_timer_render_leaderboard() {
 }
 
 //============================================================================
+// No default: case on purpose (same convention as race-serial-telemetry.h's
+// race_state_to_legacy_code()), so -Wswitch warns if a new RaceState is
+// ever added without updating this. TIMED_OUT is declared in race-timer.h
+// but nothing currently sets race_state to it -- handled here only for
+// switch-exhaustiveness.
+inline const char *race_state_abbrev(RaceState state) {
+  switch (state) {
+    case RaceState::CALIBRATE:
+      return "CAL";
+    case RaceState::NEW_MOUSE:
+      return "NEW";
+    case RaceState::WAITING:
+      return "WAIT";
+    case RaceState::ARMED:
+      return "ARMD";
+    case RaceState::RUNNING:
+      return "RUN";
+    case RaceState::GOAL:
+      return "GOAL";
+    case RaceState::TIMED_OUT:
+      return "TOUT";
+  }
+  return "";
+}
+
+// Status strip along the bottom of SCREEN_ID_MAIN, where the four touch
+// buttons used to be. Three zones: race state, WiFi link, and a reserved
+// (currently unused) gate-status placeholder -- see lbl_status_gates below.
+inline void race_timer_render_status_bar() {
+  lv_label_set_text(objects.lbl_status_state, race_state_abbrev(race_timer_get_state()));
+
+  if (WiFi.status() == WL_CONNECTED) {
+    lv_label_set_text_fmt(objects.lbl_status_wifi, LV_SYMBOL_WIFI " %ddBm", (int)WiFi.RSSI());
+    lv_obj_set_style_text_color(objects.lbl_status_wifi, lv_color_hex(0xadff2f), LV_PART_MAIN | LV_STATE_DEFAULT);
+  } else {
+    lv_label_set_text(objects.lbl_status_wifi, LV_SYMBOL_CLOSE " --");
+    lv_obj_set_style_text_color(objects.lbl_status_wifi, lv_color_hex(0x808080), LV_PART_MAIN | LV_STATE_DEFAULT);
+  }
+
+  // Reserved for future gate-liveness indicators (two remote gates) --
+  // placeholder text only, no tracking behind it yet.
+  lv_label_set_text_static(objects.lbl_status_gates, "ASGG");
+}
+
+//============================================================================
 inline void race_timer_display_init() {
   race_timer_init();
   label_list_clear(run_times_buf, objects.lbl_run_time_list);
@@ -103,6 +149,7 @@ inline void race_timer_display_init() {
 // redraws live while RUNNING.
 inline void race_timer_render() {
   race_timer_render_mouse_name();
+  race_timer_render_status_bar();
   // "current/max" -- e.g. "1/8" -- max is the host's AllowedRuns override
   // when set, else the default MAX_RUNS_PER_MOUSE (race_timer_allowed_runs()
   // in race-timer.h). Redrawn every tick like every other label here, so it

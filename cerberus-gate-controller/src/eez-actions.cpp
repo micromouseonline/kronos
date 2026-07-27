@@ -15,7 +15,6 @@
 
 #include "debug-log.h"
 #include "display/display.h"  // LGFX
-#include "input-events.h"     // input_queue_post, InputSource, ButtonID
 #include "net/wifi-credentials.h"
 #include "net/wifi-manager.h"          // wifi_request_provisioning, g_wifi_rssi_report_enabled
 #include "race/race-serial-telemetry.h"  // g_watchdog_tx_enabled
@@ -66,43 +65,6 @@ void show_confirm_dialog(const char *title, const char *msg, confirm_cb_t callba
 
   // Attach handler to VALUE_CHANGED event emitted by button matrix
   lv_obj_add_event_cb(mbox, msgbox_event_cb, LV_EVENT_VALUE_CHANGED, ctx);
-}
-
-// EventType defaults to InputEventType::PRESSED if not provided
-void action_on_timer_arm(lv_event_t *e) {
-  input_queue_post(BTN_ARM, InputSource::TOUCH);
-}
-
-void action_on_timer_start(lv_event_t *e) {
-  input_queue_post(BTN_START, InputSource::TOUCH);
-}
-
-void action_on_timer_goal(lv_event_t *e) {
-  input_queue_post(BTN_GOAL, InputSource::TOUCH);
-}
-
-void action_on_timer_touch(lv_event_t *e) {
-  input_queue_post(BTN_TOUCH, InputSource::TOUCH);
-}
-
-// Long-press callbacks (registered on btn_arm/btn_start/btn_goal's
-// LV_EVENT_LONG_PRESSED in screens.c): post into the shared queue like
-// every other producer's hold gesture. BUTTON_COMMAND_MAP
-// (race/race-command-source.h) decides what each HELD event means
-void action_on_timer_arm_long(lv_event_t *e) {
-  input_queue_post(BTN_ARM, InputSource::TOUCH, InputEventType::HELD);
-}
-
-void action_on_timer_start_long(lv_event_t *e) {
-  input_queue_post(BTN_START, InputSource::TOUCH, InputEventType::HELD);
-}
-
-void action_on_timer_goal_long(lv_event_t *e) {
-  input_queue_post(BTN_GOAL, InputSource::TOUCH, InputEventType::HELD);
-}
-
-void action_on_timer_touch_long(lv_event_t *e) {
-  input_queue_post(BTN_TOUCH, InputSource::TOUCH, InputEventType::HELD);
 }
 
 // Menu -> maze timer screen navigation. Also the one-shot activation
