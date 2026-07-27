@@ -103,9 +103,14 @@ void action_on_timer_touch_long(lv_event_t *e) {
   input_queue_post(BTN_TOUCH, InputSource::TOUCH, InputEventType::HELD);
 }
 
-// Menu -> maze timer screen navigation. UI navigation only, not a
-// ButtonID/input_queue_post event.
+// Menu -> maze timer screen navigation. Also the one-shot activation
+// trigger for the race state machine (race_timer_active, race-timer.h):
+// button/serial/HTTP traffic is ignored until this fires, so the timer
+// can't start advancing while the operator is still sitting on the main
+// menu. race_timer_active is never cleared again, so later trips back to
+// the menu screen (BTN_TOUCH HELD) leave an in-progress race running.
 void action_on_menu_maze_timer(lv_event_t *e) {
+  race_timer_active = true;
   loadScreen(SCREEN_ID_MAIN);
 }
 
@@ -122,6 +127,24 @@ static void on_reset_confirmed(bool confirmed, void *user_data) {
 void action_on_menu_reset(lv_event_t *e) {
   show_confirm_dialog("System Restart", "Are you sure?", on_reset_confirmed, NULL);
 }
+
+// Defined in main.cpp -- refreshes the NeoKey LEDs from race_state
+// immediately, rather than waiting for the next physical button press to
+// trigger neokey_reflect_race_state() via input_event_handler.
+extern void neokey_reflect_race_state();
+
+// Menu -> re-enter CALIBRATE from any race state, abandoning whatever
+// mouse was in progress (race_timer_handle_command's ENTER_CALIBRATION
+// applies regardless of current race_state). Sets race_timer_active like
+// action_on_menu_maze_timer above -- GATE TEST is an equally explicit
+// entry into the timer subsystem, so it must also unlock command
+// processing if it's the first screen visited after boot.
+void action_on_menu_gate_test(lv_event_t *e) {
+  race_timer_active = true;
+  debug_println("GATE TEST!");
+  race_timer_handle_command(RaceCommand::ENTER_CALIBRATION);
+  neokey_reflect_race_state();
+  loadScreen(SCREEN_ID_MAIN);
 }
 
 // Just navigation -- the actual decision is the wifi_setup screen's two

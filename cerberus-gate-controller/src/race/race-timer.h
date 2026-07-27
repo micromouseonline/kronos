@@ -124,6 +124,14 @@ inline Stopwatch entry_sw;  // measures elapsed maze time
 inline RaceState race_state = RaceState::CALIBRATE;
 inline uint16_t mouse_run_count = 0;
 
+// False from boot until the operator picks the maze timer off the main
+// menu (action_on_menu_maze_timer, eez-actions.cpp) -- race_timer_handle_
+// command() is a no-op until then, so button/serial/HTTP traffic arriving
+// while the menu is showing can't advance race_state. Never cleared once
+// set, so navigating back to the menu screen afterwards (BTN_TOUCH HELD,
+// main.cpp's input_event_handler) leaves an in-progress race running.
+inline bool race_timer_active = false;
+
 const uint32_t RACE_TIME_LIMIT = 5L * 60L * 1000L;
 inline uint32_t time_left = RACE_TIME_LIMIT;
 
@@ -358,6 +366,12 @@ inline void race_timer_handle_command(RaceCommand command, const char *mouse_nam
   if (command == RaceCommand::NONE) {
     return;
   }
+  // Inactive until the maze timer's been selected off the main menu (see
+  // race_timer_active's comment above) -- ignore every command, including
+  // the "any state" host overrides below, until then.
+  if (!race_timer_active) {
+    return;
+  }
 
   // Host overrides that apply regardless of race_state, same reasoning as
   // RESTART below. Mutating race_state/mouse_run_count here (rather than
@@ -376,6 +390,14 @@ inline void race_timer_handle_command(RaceCommand command, const char *mouse_nam
     mouse_run_count = 0;
     g_allowed_runs = -1;
     current_mouse_name[0] = '\0';
+    // Abandons whatever attempt was in progress -- stop/reset the current
+    // entry's timers too, same fields race_timer_enter_new_mouse() resets
+    // for a genuinely new mouse, minus mouse_id/mouse_first_run_index
+    // (those stay put so the leaderboard/run history survive the detour).
+    entry_timer_started = false;
+    run_sw.reset();
+    entry_sw.reset();
+    time_left = RACE_TIME_LIMIT;
     return;
   }
   if (command == RaceCommand::RESUME_TIMER) {

@@ -131,7 +131,13 @@ void input_event_handler(const InputEvent &evt) {
   if (race_state == RaceState::CALIBRATE) {
     // Gate test lights up the button when its gate is activated --
     // physical-input-specific (needs evt.id), so it stays here rather than
-    // in the shared reflector above.
+    // in the shared reflector above. Key 3 (BTN_TOUCH) needs an explicit
+    // reset first: neokey_reflect_race_state()'s CALIBRATE case only clears
+    // keys 0-2 (key 3 is normally WIFI_STATUS_KEY's, see that function's
+    // comment), so without this, once T lights up here it never gets
+    // cleared by a later press of a different button the way ARM/START/GOAL
+    // already do via that reset-then-set path.
+    neokey_set_colour(BTN_TOUCH, NP_OFF);
     neokey_set_colour(evt.id, NP_YELLOW);
   }
 }
