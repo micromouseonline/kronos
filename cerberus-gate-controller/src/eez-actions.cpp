@@ -16,10 +16,13 @@
 #include "debug-log.h"
 #include "display/display.h"  // LGFX
 #include "net/wifi-credentials.h"
-#include "net/wifi-manager.h"          // wifi_request_provisioning, g_wifi_rssi_report_enabled
+#include "net/wifi-manager.h"            // wifi_request_provisioning, g_wifi_rssi_report_enabled
 #include "race/race-serial-telemetry.h"  // g_watchdog_tx_enabled
-#include "race/race-timer.h"           // race_timer_active
-#include "settings-store.h"            // settings_save_watchdog, settings_save_wifi_stats
+#include "race/race-timer.h"             // race_timer_active
+#include "settings-store.h"              // settings_save_watchdog, settings_save_wifi_stats
+
+// Variable to hold the caller screen object/ID
+static lv_obj_t *g_previous_screen = NULL;
 
 // Define callback type for confirmation result
 typedef void (*confirm_cb_t)(bool confirmed, void *user_data);
@@ -167,12 +170,18 @@ void action_on_menu_setup(lv_event_t *e) {
   // in length (up to 32 chars) and a fixed x position would run long ones
   // off-screen.
   lv_obj_align(objects.lbl_wifi_ssid, LV_ALIGN_TOP_MID, 0, 37);
+  // Get currently active screen object directly from LVGL engine
+  g_previous_screen = lv_scr_act();
   lv_scr_load(objects.wifi_setup);
 }
 
 // "Return" button: leave Wi-Fi untouched, back to the menu.
 void action_on_wifi_setup_return(lv_event_t *e) {
-  lv_scr_load(objects.menu);
+  if (g_previous_screen != NULL) {
+    // lv_scr_load_anim(g_previous_screen, LV_SCR_LOAD_ANIM_FADE_ON, 200, 0, false);
+    // lv_scr_load(objects.menu);
+    lv_scr_load(g_previous_screen);
+  }
 }
 
 // "New network" button: wipes saved credentials and forces the config

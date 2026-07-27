@@ -1901,7 +1901,15 @@
                 "childStyles": []
               },
               "timeline": [],
-              "eventHandlers": [],
+              "eventHandlers": [
+                {
+                  "objID": "6e559ffb-e115-474d-c81f-64aeafe49a7d",
+                  "eventName": "PRESSED",
+                  "handlerType": "action",
+                  "action": "on_menu_setup",
+                  "userData": 0
+                }
+              ],
               "identifier": "pnl_status_wifi",
               "leftUnit": "px",
               "topUnit": "px",
@@ -2042,7 +2050,8 @@
                         "DEFAULT": {
                           "text_font": "MONTSERRAT_14",
                           "text_color": "aliceblue",
-                          "text_align": "CENTER"
+                          "text_align": "CENTER",
+                          "text_opa": 128
                         }
                       }
                     }

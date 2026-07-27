@@ -131,6 +131,13 @@ inline void wifi_connect_task(void*) {
   uint32_t attempt_start = millis();
   uint32_t disconnected_since = millis();
   uint32_t last_ip_report = 0;
+  // Set on the first successful connect this boot -- the 60s timeout below
+  // is only meant to cover "can't join at all" (a bad/absent network at
+  // boot), not a drop mid-session. Without this, disconnected_since resets
+  // on every drop (below) and a race in progress would get yanked into the
+  // provisioning portal 60s after any brief AP hiccup, defeating the whole
+  // point of this task retrying forever once it's actually joined once.
+  bool ever_connected = false;
 
   for (;;) {
     bool connected = (WiFi.status() == WL_CONNECTED);
@@ -144,7 +151,8 @@ inline void wifi_connect_task(void*) {
     // switches WiFi.mode() to AP-only, so this task has nothing further to
     // do; deleting it rather than looping avoids it fighting the portal with
     // pointless reconnect() calls against a now-AP-mode radio.
-    if (wifi_provisioning_requested || (!connected && millis() - disconnected_since > WIFI_PROVISIONING_TIMEOUT_MS)) {
+    if (wifi_provisioning_requested ||
+        (!ever_connected && !connected && millis() - disconnected_since > WIFI_PROVISIONING_TIMEOUT_MS)) {
       debug_println("[SYSTEM] Entering Wi-Fi provisioning mode");
       if (wifi_on_provisioning_needed != nullptr) {
         wifi_on_provisioning_needed();
@@ -153,6 +161,7 @@ inline void wifi_connect_task(void*) {
     }
 
     if (connected && !was_connected) {
+      ever_connected = true;
       esp_wifi_set_ps(WIFI_PS_NONE);
       neokey_set_colour(WIFI_STATUS_KEY, NP_OFF);
       debug_println("[SYSTEM] Wi-Fi Connected!");

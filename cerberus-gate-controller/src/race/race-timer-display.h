@@ -104,7 +104,7 @@ inline const char *race_state_abbrev(RaceState state) {
     case RaceState::WAITING:
       return "WAIT";
     case RaceState::ARMED:
-      return "ARMD";
+      return "ARMED";
     case RaceState::RUNNING:
       return "RUN";
     case RaceState::GOAL:
@@ -125,8 +125,8 @@ inline void race_timer_render_status_bar() {
     lv_label_set_text_fmt(objects.lbl_status_wifi, LV_SYMBOL_WIFI " %ddBm", (int)WiFi.RSSI());
     lv_obj_set_style_text_color(objects.lbl_status_wifi, lv_color_hex(0xadff2f), LV_PART_MAIN | LV_STATE_DEFAULT);
   } else {
-    lv_label_set_text(objects.lbl_status_wifi, LV_SYMBOL_CLOSE " --");
-    lv_obj_set_style_text_color(objects.lbl_status_wifi, lv_color_hex(0x808080), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_label_set_text(objects.lbl_status_wifi, LV_SYMBOL_CLOSE " connecting");
+    lv_obj_set_style_text_color(objects.lbl_status_wifi, lv_color_hex(0xff3b30), LV_PART_MAIN | LV_STATE_DEFAULT);
   }
 
   // Reserved for future gate-liveness indicators (two remote gates) --
@@ -154,8 +154,7 @@ inline void race_timer_render() {
   // when set, else the default MAX_RUNS_PER_MOUSE (race_timer_allowed_runs()
   // in race-timer.h). Redrawn every tick like every other label here, so it
   // updates the instant either number changes.
-  lv_label_set_text_fmt(objects.lbl_run_number, "%u/%u", (unsigned)mouse_run_count,
-                         (unsigned)race_timer_allowed_runs());
+  lv_label_set_text_fmt(objects.lbl_run_number, "%u/%u", (unsigned)mouse_run_count, (unsigned)race_timer_allowed_runs());
 
   char buf[16];
   switch (race_timer_get_state()) {
@@ -205,8 +204,7 @@ inline void race_timer_render() {
       race_timer_format_time_seconds(remaining_ms, buf, sizeof(buf));
       lv_label_set_text(objects.lbl_time_remaining, buf);
       bool expired = (remaining_ms == 0);
-      lv_obj_set_style_text_color(objects.lbl_time_remaining, expired ? lv_color_hex(0xff0000) : lv_color_hex(0xadff2f),
-                                   LV_PART_MAIN | LV_STATE_DEFAULT);
+      lv_obj_set_style_text_color(objects.lbl_time_remaining, expired ? lv_color_hex(0xff0000) : lv_color_hex(0xadff2f), LV_PART_MAIN | LV_STATE_DEFAULT);
     } else {
       // No limit set -- make sure the label isn't left red from a
       // previous mouse's expired countdown (screens.c's original colour).

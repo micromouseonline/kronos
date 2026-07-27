@@ -449,6 +449,7 @@ void create_screen_main() {
             objects.pnl_status_wifi = obj;
             lv_obj_set_pos(obj, 84, 212);
             lv_obj_set_size(obj, 152, 24);
+            lv_obj_add_event_cb(obj, action_on_menu_setup, LV_EVENT_PRESSED, (void *)0);
             lv_obj_clear_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
             add_style_timer_panel_blue(obj);
             {
@@ -485,6 +486,7 @@ void create_screen_main() {
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xf0f8ff), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_opa(obj, 128, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_label_set_text_static(obj, "ASGG");
                 }
             }
