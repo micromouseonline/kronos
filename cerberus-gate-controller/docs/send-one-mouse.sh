@@ -4,7 +4,7 @@
 # Usage: ./send-one-mouse.sh [gate_id]
 set -euo pipefail
 
-HOST="${CERBERUS_HOST:-192.168.0.73}"
+HOST="${CERBERUS_HOST:-192.168.0.208}"
 GATE_ID="${1:-RACE_SEQUENCE_GATE}"
 
 FAILED_EVENTS=0
