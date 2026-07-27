@@ -359,7 +359,7 @@ void create_screen_main() {
             lv_obj_t *obj = lv_obj_create(parent_obj);
             objects.pnl_mouse_name = obj;
             lv_obj_set_pos(obj, 8, 8);
-            lv_obj_set_size(obj, 184, 28);
+            lv_obj_set_size(obj, 172, 28);
             lv_obj_clear_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
             add_style_timer_panel_blue(obj);
             {
@@ -369,7 +369,7 @@ void create_screen_main() {
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.lbl_mouse_name = obj;
                     lv_obj_set_pos(obj, -5, -8);
-                    lv_obj_set_size(obj, 176, LV_SIZE_CONTENT);
+                    lv_obj_set_size(obj, 163, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xf0f8ff), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -466,8 +466,8 @@ void create_screen_main() {
             // pnl_run_number
             lv_obj_t *obj = lv_obj_create(parent_obj);
             objects.pnl_run_number = obj;
-            lv_obj_set_pos(obj, 200, 8);
-            lv_obj_set_size(obj, 30, 28);
+            lv_obj_set_pos(obj, 185, 8);
+            lv_obj_set_size(obj, 41, 28);
             lv_obj_clear_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
             add_style_timer_panel_blue(obj);
             lv_obj_set_style_text_font(obj, &ui_font_mono24_numbers, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -477,12 +477,12 @@ void create_screen_main() {
                     // lbl_run_number
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.lbl_run_number = obj;
-                    lv_obj_set_pos(obj, -8, -8);
-                    lv_obj_set_size(obj, 18, 18);
+                    lv_obj_set_pos(obj, -8, -9);
+                    lv_obj_set_size(obj, 26, 18);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0x7fff00), LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_obj_set_style_text_font(obj, &ui_font_mono24_numbers, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_font(obj, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_label_set_text_static(obj, "1");
+                    lv_label_set_text_static(obj, "0/5");
                 }
             }
         }

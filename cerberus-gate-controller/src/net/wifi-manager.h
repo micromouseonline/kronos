@@ -26,6 +26,12 @@ inline bool is_wifi_active() {
 // exclusively.
 constexpr uint8_t WIFI_STATUS_KEY = 3;
 
+// Manual-testing aid only -- toggle off to silence the repeating 5s "IP:
+// ... RSSI: ..." line while eyeballing a serial terminal by hand (see
+// docs/TESTING-SERIAL.md). Doesn't affect the one-shot connect/disconnect
+// messages, only the periodic re-report further down in wifi_connect_task.
+inline bool g_wifi_rssi_report_enabled = true;
+
 // Optional hook, invoked every time Wi-Fi transitions into the connected
 // state -- including the very first connect at boot, not just reconnects.
 // Lets other layers react without this file needing to know what they are.
@@ -174,7 +180,7 @@ inline void wifi_connect_task(void*) {
     // reattaches a moment late after a reboot (e.g. ESP32-S3 native USB CDC
     // re-enumerating), which is exactly when confirming "did it actually
     // join the new network" matters most.
-    if (connected) {
+    if (connected && g_wifi_rssi_report_enabled) {
       if (millis() - last_ip_report > 5000) {
         debug_printf("[SYSTEM] IP: %s  RSSI: %d dBm\n", WiFi.localIP().toString().c_str(), WiFi.RSSI());
         last_ip_report = millis();

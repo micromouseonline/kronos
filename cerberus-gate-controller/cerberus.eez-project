@@ -1536,7 +1536,7 @@
               "type": "LVGLPanelWidget",
               "left": 8,
               "top": 8,
-              "width": 184,
+              "width": 172,
               "height": 28,
               "customInputs": [],
               "customOutputs": [],
@@ -1559,7 +1559,7 @@
                   "type": "LVGLLabelWidget",
                   "left": -5,
                   "top": -8,
-                  "width": 176,
+                  "width": 163,
                   "height": 16,
                   "customInputs": [],
                   "customOutputs": [],
@@ -2009,9 +2009,9 @@
             {
               "objID": "af9a7c1e-8263-4dcc-fd88-7f26a58352d9",
               "type": "LVGLPanelWidget",
-              "left": 200,
+              "left": 185,
               "top": 8,
-              "width": 30,
+              "width": 41,
               "height": 28,
               "customInputs": [],
               "customOutputs": [],
@@ -2033,8 +2033,8 @@
                   "objID": "264f6960-0b69-4844-9be0-2b1ef76b5ab4",
                   "type": "LVGLLabelWidget",
                   "left": -8,
-                  "top": -8,
-                  "width": 18,
+                  "top": -9,
+                  "width": 26,
                   "height": 18,
                   "customInputs": [],
                   "customOutputs": [],
@@ -2068,7 +2068,7 @@
                       "MAIN": {
                         "DEFAULT": {
                           "text_color": "chartreuse",
-                          "text_font": "mono24_numbers",
+                          "text_font": "MONTSERRAT_16",
                           "text_align": "CENTER"
                         }
                       }
@@ -2076,7 +2076,7 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "1",
+                  "text": "0/5",
                   "textType": "literal",
                   "longMode": "WRAP",
                   "recolor": false

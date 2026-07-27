@@ -29,6 +29,7 @@ stage starts.
 | H | Leaderboard page (`GET /leaderboard`) | PASS (all 5 envs) | PASS | **done** |
 | I | `race_runs[]` concurrency guard (optional) | — | — | deferred, revisit only if a stale/garbled leaderboard read is actually observed |
 | J | Docs sync (this file + header comments) | PASS (all 5 envs) | n/a (docs-only) | **done** |
+| K | RATS V2 inbound serial messages (`docs/preferredMessageSequencesV2.pdf`) + RX robustness fixes | PASS (`cerberus-m5-core`) | PASS (`docs/TESTING-SERIAL.md`, Section 6 not yet run) | **done** |
 
 ---
 
@@ -269,6 +270,66 @@ Only do this if it becomes a real problem.
 (RESTART now has producers; Main Event Queue now exists),
 `USER-INPUT-SYSTEM.md`, and this file's Status table.
 
+**K. RATS V2 inbound serial messages** — `docs/preferredMessageSequencesV2.pdf`
+(dated 24 July 2026) defines the current preferred RATS protocol and
+changes what Stage B built: `MSG_NEW_MOUSE`'s value is now the mouse's
+*name* (text), not always `0`, and seven more inbound messages exist.
+`net/messages.h` gained `MSG_CONTEST_NAME=96`, `MSG_EVENT_NAME=95`,
+`MSG_ALLOWED_RUNS=94`, `MSG_ENTRY_TIME_S=93`, `MSG_EXTRA_RUN=92`,
+`MSG_REQUEST_TYPE=97`, and outbound `MSG_TIMER_TYPE=96` (deliberately the
+same numeric code as `MSG_CONTEST_NAME` -- the spec's own Annex A reuses
+96 for both; confirmed a naming quirk in the source document, not a
+runtime conflict, since RX/TX are independent directions on the same
+wire) + `serial_send_message_str()` for text-valued replies.
+`net/serial-protocol.h`'s `SerialLine.value` changed from a bare `long`
+to a 32-byte text field (`sscanf("<%d,%31[^>]>")`) since several messages
+carry names/keywords, not numbers; `race-command-source.h` gained
+`serial_line_value_as_long()` for the ones still numeric, plus
+`serial_protocol_handle_info_message()` covering the 7 new types --
+`MSG_NEW_MOUSE`'s name is still routed through `RaceCommand::RESTART` +
+`system_event_post()` (unchanged path), the other 7 are host/session
+metadata, not race-state transitions, so they're captured/replied to
+directly rather than going through the Main Event Queue: ContestName/
+EventName/AllowedRuns/EntryTimeS are stored into new globals
+(`g_contest_name`, `g_event_name`, `g_allowed_runs`,
+`g_entry_time_s_limit` -- read nowhere yet), ExtraRun/SetMode are logged
+only (no enforcement/mode-switch behaviour built yet -- see open
+questions below), RequestType gets an immediate `<96,1CH>` reply
+(CERBERUS's telemetry is C1-only, no C2 messages anywhere in this
+codebase). *Verify:* `docs/TESTING-SERIAL.md`, a full manual test plan
+covering all 8 message types plus edge cases -- passed in full except
+Section 6 (line-ending tolerance variants), not yet run.
+**Findings from hardware testing, fixed in this stage:** (1) an
+unterminated line with no closing `>` at all (e.g. `<98,0` typed by
+mistake) was silently accepted as valid -- `sscanf`'s return count only
+reflects `%d`/`%s`-style conversions, so a literal `>` that never matched
+didn't affect it; fixed by requiring `strchr(line, '>') != nullptr`.
+(2) Several short lines sent back-to-back with no gap (a scripted
+multi-line send) produced no response at all -- the RX task's original
+64-byte buffer reset after every single line, which was timing-sensitive
+against a fast burst; reworked to drain into a 256-byte backing buffer
+and extract every complete line out of it per pass, keeping any trailing
+partial line for the next pass. (3) A line with leading whitespace (e.g.
+pasted straight out of this doc's indented code-block examples) was
+silently dropped -- `sscanf`'s leading `<` is a literal in the format
+string, which (unlike `%d`) doesn't skip leading whitespace on its own;
+fixed by skipping leading spaces/tabs before matching.
+**Also added, testing aids:** `g_watchdog_tx_enabled`
+(`race-serial-telemetry.h`) and `g_wifi_rssi_report_enabled`
+(`wifi-manager.h`), both defaulting to `true` -- flip either to `false`
+temporarily to silence that line while eyeballing a serial terminal by
+hand, per `docs/TESTING-SERIAL.md`'s Setup section.
+**Open questions, not yet resolved:** `MSG_SET_MODE`'s `CALIBRATION`
+value has no defined CERBERUS-side behaviour (the legacy doc's
+"calibration data" is phototransistor/pot readings from local gate
+hardware CERBERUS doesn't have -- gates are separate WiFi-connected
+devices); `MSG_EXTRA_RUN`/`MSG_ALLOWED_RUNS` aren't wired into any actual
+run-count enforcement (`MAX_RUNS_PER_MOUSE` is still a fixed local
+constant); the `MSG_NEW_MOUSE` name reaches `SystemEvent.payload` but
+isn't threaded into `race_timer_enter_new_mouse()`/`RaceRun`/the
+leaderboard display, which still pick from the canned `mouse_names[]`
+list. All three are follow-up work, not regressions.
+
 ---
 
 ## Mapping to the original phase/step plan
@@ -279,7 +340,7 @@ Only do this if it becomes a real problem.
 | 1.2 Supervisor (READY/RACING/MAINTENANCE) | DEFERRED | Out of scope this round |
 | 2.1 Local Input Polling | DONE | Unchanged |
 | 2.2 HTTP Input Handler | IN PROGRESS | `POST /api/event` (Stage G); leaderboard `GET /` added as new scope (Stage H) |
-| 2.3 Serial Monitor Task | IN PROGRESS | Legacy bracket-CSV protocol (Stages B-D), not the ASCII-line example originally sketched; only `MSG_NewMouse` parsed inbound |
+| 2.3 Serial Monitor Task | IN PROGRESS | Legacy bracket-CSV protocol (Stages B-D), not the ASCII-line example originally sketched; all 8 RATS V2 inbound message types now parsed (Stage K), but `SetMode`/`ExtraRun`/`AllowedRuns` behaviour is still a stub -- see Stage K's open questions |
 | 3.1 NVS/Storage | DEFERRED | |
 | 3.2 Logging Queue | DEFERRED | |
 | 4.1 Exclusive Display Updates | DONE | Retroactively — `race-timer-display.h` already does this |

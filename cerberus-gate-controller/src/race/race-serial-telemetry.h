@@ -15,6 +15,13 @@
 #include "net/messages.h"
 #include "race-timer.h"
 
+// Manual-testing aid only, NOT part of the wire protocol -- toggle off to
+// silence the once-a-second MSG_WATCHDOG line while eyeballing a serial
+// terminal by hand (see docs/TESTING-SERIAL.md). Leave on (the default)
+// whenever real RATS host software is attached: it expects a watchdog at
+// least every 2s and reports a timing-system fault if it stops.
+inline bool g_watchdog_tx_enabled = true;
+
 // Explicit remap, not a cast -- the legacy MSG_CURRENT_STATE numbering (see
 // net/messages.h's doc comment) predates and doesn't match today's
 // RaceState enum order. No default: case inside the switch on purpose, so
@@ -72,7 +79,7 @@ inline void race_serial_telemetry_tick() {
   }
 
   uint32_t now = millis();
-  if (now - last_watchdog_ms >= 1000) {
+  if (g_watchdog_tx_enabled && now - last_watchdog_ms >= 1000) {
     last_watchdog_ms = now;
     serial_send_message(MSG_WATCHDOG, watchdog_counter++);
   }

@@ -54,28 +54,84 @@ inline RaceCommand race_command_from_button(ButtonID id, InputEventType type = I
 // message (see net/messages.h). Defined here, not in serial-protocol.h, so
 // this file doesn't need serial-protocol.h to know its own payload type --
 // HttpGateEvent will follow the same reasoning once the HTTP producer
-// exists.
+// exists. `value` holds the raw text between the comma and '>' -- RATS V2
+// (docs/preferredMessageSequencesV2.pdf) carries names/keywords on several
+// message types, not just numbers, so the field can't be a plain long
+// anymore; see serial_line_value_as_long() below for the numeric ones.
 struct SerialLine {
   int type;
-  long value;
+  char value[32];
 };
 
+inline long serial_line_value_as_long(const SerialLine &line) {
+  return strtol(line.value, nullptr, 10);
+}
+
+// Host session metadata captured from ContestName/EventName/AllowedRuns/
+// EntryTimeS -- informational only this round (not read anywhere yet, not
+// enforced against mouse_run_count/entry_sw). Kept here rather than in
+// race-timer.h since these describe the host's session, not race state.
+inline char g_contest_name[32] = "";
+inline char g_event_name[32] = "";
+inline long g_allowed_runs = -1;      // -1 = not set by host
+inline long g_entry_time_s_limit = -1;
+
 inline RaceCommand race_command_from_serial(const SerialLine &line) {
-  // TODO(mouse-name): the legacy <98,value> message carries no mouse name
-  // (value is always 0 per the protocol's own doc); once the wire format
-  // can carry one, thread it through SerialLine -> SystemEvent.payload ->
-  // an optional-name parameter on race_timer_enter_new_mouse().
-  // The protocol doc for MSG_NewMouse: "value argument will always be
-  // passed as 0" -- treated as a strict precondition, not just a comment:
-  // a non-zero value means this isn't the message it looks like, reject it.
-  if (line.type == MSG_NEW_MOUSE && line.value == 0) {
+  if (line.type == MSG_NEW_MOUSE) {
     // RESTART, not NEW_MOUSE -- race_timer_handle_command's WAITING/
     // RUNNING/GOAL branches only act on RESTART, same reasoning as
     // BUTTON_COMMAND_MAP's ARM-hold above. This way the host's new-mouse
     // command always takes effect regardless of current race state.
     return RaceCommand::RESTART;
   }
-  return RaceCommand::NONE;  // MSG_SetMode and everything else: out of scope this round
+  return RaceCommand::NONE;
+}
+
+// Handles every RATS V2 inbound message that ISN'T a race-state transition
+// (see race_command_from_serial() above for MSG_NEW_MOUSE, which is).
+// These are host/session metadata and device-identification requests --
+// routing them through SystemEvent/RaceCommand would force them into a
+// vocabulary that's specifically the race state machine's (see
+// race-timer.h's header comment), so they're captured/replied to directly
+// here instead, in the same RX task, alongside the queue post.
+inline void serial_protocol_handle_info_message(const SerialLine &line) {
+  switch (line.type) {
+    case MSG_CONTEST_NAME:
+      strncpy(g_contest_name, line.value, sizeof(g_contest_name) - 1);
+      g_contest_name[sizeof(g_contest_name) - 1] = '\0';
+      break;
+    case MSG_EVENT_NAME:
+      strncpy(g_event_name, line.value, sizeof(g_event_name) - 1);
+      g_event_name[sizeof(g_event_name) - 1] = '\0';
+      break;
+    case MSG_ALLOWED_RUNS:
+      g_allowed_runs = serial_line_value_as_long(line);
+      break;
+    case MSG_ENTRY_TIME_S:
+      g_entry_time_s_limit = serial_line_value_as_long(line);
+      break;
+    case MSG_EXTRA_RUN:
+      // Not wired into mouse_run_count this round -- no AllowedRuns
+      // enforcement exists yet for this to meaningfully extend (see
+      // IMPLEMENTATION-PLAN.md/plan notes). Logged so it's not silently
+      // dropped.
+      debug_printf("[serial-protocol] ExtraRun received (not enforced this round)\n");
+      break;
+    case MSG_SET_MODE:
+      // TIMER/CALIBRATION: CERBERUS has no local gate hardware to
+      // calibrate (gates are separate WiFi-connected devices, see
+      // DESIGN-REQUIREMENT.md), so there's no established behaviour for
+      // CALIBRATION here yet -- logged only, pending clarification.
+      debug_printf("[serial-protocol] SetMode(%s) received (no action taken this round)\n", line.value);
+      break;
+    case MSG_REQUEST_TYPE:
+      // CERBERUS's telemetry is C1-only (race-serial-telemetry.h has no
+      // C2 messages anywhere), so it always identifies as a 1-channel timer.
+      serial_send_message_str(MSG_TIMER_TYPE, "1CH");
+      break;
+    default:
+      break;
+  }
 }
 
 // Parsed by net/http-server.h's POST /api/event JSON handler (DESIGN-
