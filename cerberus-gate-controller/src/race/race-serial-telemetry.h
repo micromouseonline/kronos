@@ -1,12 +1,12 @@
 // ----------------------------------------------------------------------------
 //  race-serial-telemetry.h — TX side of the legacy <type,value> host
 //  protocol (net/messages.h): mirrors race_state and run/course timing to
-//  the host. Driven by comparing race_state/mouse_id against their
-//  last-seen values each loop() tick -- the same edge-detection trick works
-//  uniformly regardless of whether a transition came from a button, Serial,
-//  or HTTP, since all three funnel through race_timer_handle_command()
-//  earlier in the same loop() iteration, before this runs. RX side is
-//  net/serial-protocol.h.
+//  the host. Driven by comparing race_state/entry_timer_started against
+//  their last-seen values each loop() tick -- the same edge-detection
+//  trick works uniformly regardless of whether a transition came from a
+//  button, Serial, or HTTP, since all three funnel through
+//  race_timer_handle_command() earlier in the same loop() iteration,
+//  before this runs. RX side is net/serial-protocol.h.
 // ----------------------------------------------------------------------------
 #pragma once
 
@@ -20,7 +20,7 @@
 // terminal by hand (see docs/TESTING-SERIAL.md). Leave on (the default)
 // whenever real RATS host software is attached: it expects a watchdog at
 // least every 2s and reports a timing-system fault if it stops.
-inline bool g_watchdog_tx_enabled = true;
+inline bool g_watchdog_tx_enabled = false;
 
 // Explicit remap, not a cast -- the legacy MSG_CURRENT_STATE numbering (see
 // net/messages.h's doc comment) predates and doesn't match today's
@@ -49,20 +49,23 @@ inline int race_state_to_legacy_code(RaceState state) {
 
 inline void race_serial_telemetry_tick() {
   static RaceState last_state = race_state;  // matches boot value: no spurious first-tick fire
-  static uint16_t last_mouse_id = mouse_id;
+  static bool last_entry_timer_started = entry_timer_started;
   static uint32_t last_watchdog_ms = 0;
   static unsigned long watchdog_counter = 0;
 
   RaceState previous_state = last_state;
 
-  // mouse_id only changes inside race_timer_enter_new_mouse() -- an
-  // unambiguous "genuinely new mouse" signal, unlike "race_state became
-  // WAITING", which is also reached when an exhausted mouse's ARM bounces
-  // back to WAITING (race_timer_try_arm()) without any new mouse involved.
-  if (mouse_id != last_mouse_id) {
-    last_mouse_id = mouse_id;
+  // entry_timer_started's false->true edge is the mouse's first
+  // successful WAITING->ARMED transition for this entry (see
+  // race_timer_try_arm(), race-timer.h) -- docs/updated-state-table.md
+  // ties CourseTimeMs to first start-cell arrival (State 2), not to
+  // NewMouse/mouse_id changing (State 9), which is what this used to key
+  // off. FirstRun-guarded: fires exactly once per entry, same as the
+  // model-layer guard already ensures for entry_sw itself.
+  if (entry_timer_started && !last_entry_timer_started) {
     serial_send_message(MSG_COURSE_TIME_MS, 0);
   }
+  last_entry_timer_started = entry_timer_started;
 
   if (race_state != last_state) {
     last_state = race_state;

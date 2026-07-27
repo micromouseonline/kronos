@@ -72,21 +72,21 @@ inline void serial_protocol_process_line(const char *line_str) {
   }
   SerialLine line;
   if (serial_protocol_parse_line(line_str, &line)) {
+    uint64_t timestamp_us = static_cast<uint64_t>(esp_timer_get_time());
     RaceCommand cmd = race_command_from_serial(line);
     if (cmd != RaceCommand::NONE) {
       // line.value carries the mouse name for MSG_NEW_MOUSE (RATS V2) --
-      // forwarded into SystemEvent.payload, the field already reserved
-      // for exactly this (see system-event-queue.h). Not yet threaded
-      // further into race_timer_enter_new_mouse()/the leaderboard
-      // display -- see the plan's open questions.
-      system_event_post(cmd, static_cast<uint64_t>(esp_timer_get_time()), line.value);
+      // forwarded into SystemEvent.payload with payload_is_mouse_name set,
+      // so main.cpp's system_event_handler() can tell it apart from
+      // HTTP's gate_id (same field, different meaning) and thread it into
+      // race_timer_enter_new_mouse().
+      system_event_post(cmd, timestamp_us, line.value, /*payload_is_mouse_name=*/true);
     } else {
       // Every other RATS V2 inbound message (ContestName, EventName,
       // AllowedRuns, EntryTimeS, ExtraRun, SetMode, RequestType) --
-      // host/session metadata, not a race-state transition, so it's
-      // captured/replied to directly rather than going through the Main
-      // Event Queue.
-      serial_protocol_handle_info_message(line);
+      // handled directly (see serial_protocol_handle_info_message()'s own
+      // comment on which of these still mutate race state via the queue).
+      serial_protocol_handle_info_message(line, timestamp_us);
     }
   }
 }

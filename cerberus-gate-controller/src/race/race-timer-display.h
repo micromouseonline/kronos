@@ -50,7 +50,7 @@ inline void label_list_append(LabelListBuffer &buf, lv_obj_t *label, const char 
 
 //============================================================================
 inline void race_timer_render_mouse_name() {
-  lv_label_set_text(objects.lbl_mouse_name, mouse_names[mouse_id % NUM_MICE]);
+  lv_label_set_text(objects.lbl_mouse_name, current_mouse_name);
 }
 
 //============================================================================
@@ -92,18 +92,35 @@ inline void race_timer_render_leaderboard() {
 inline void race_timer_display_init() {
   race_timer_init();
   label_list_clear(run_times_buf, objects.lbl_run_time_list);
+  // The EEZ Studio layout doesn't center this label within pnl_run_number
+  // on its own (screens.c only sets its text alignment, not its object
+  // position) -- set at runtime rather than hand-editing the generated
+  // screens.c, which would be overwritten on the next EEZ Studio export.
+  lv_obj_align(objects.lbl_run_number, LV_ALIGN_CENTER, 0, 0);
 }
 
 // Called every loop() iteration regardless of events, so the Run Timer
 // redraws live while RUNNING.
 inline void race_timer_render() {
   race_timer_render_mouse_name();
-  lv_label_set_text_fmt(objects.lbl_run_number, "%u", (unsigned)mouse_run_count);
+  // "current/max" -- e.g. "1/8" -- max is the host's AllowedRuns override
+  // when set, else the default MAX_RUNS_PER_MOUSE (race_timer_allowed_runs()
+  // in race-timer.h). Redrawn every tick like every other label here, so it
+  // updates the instant either number changes.
+  lv_label_set_text_fmt(objects.lbl_run_number, "%u/%u", (unsigned)mouse_run_count,
+                         (unsigned)race_timer_allowed_runs());
 
   char buf[16];
   switch (race_timer_get_state()) {
     case RaceState::CALIBRATE:
       lv_label_set_text(objects.lbl_current_run_time, ".........");
+      // docs/updated-state-table.md: "Entry Time shows 00:00" while
+      // Calibrating -- a fixed idle value, not whatever EntryTimeS
+      // countdown persisted from the last mouse. Overrides the
+      // unconditional countdown block below, which explicitly skips
+      // CALIBRATE for this reason.
+      lv_label_set_text(objects.lbl_time_remaining, "00:00");
+      lv_obj_set_style_text_color(objects.lbl_time_remaining, lv_color_hex(0xadff2f), LV_PART_MAIN | LV_STATE_DEFAULT);
       break;
     case RaceState::WAITING:
       lv_label_set_text(objects.lbl_current_run_time, "00:00:000");
@@ -113,13 +130,53 @@ inline void race_timer_render() {
     case RaceState::ARMED:
     case RaceState::RUNNING:
     case RaceState::GOAL:
-      race_timer_format_time_seconds(entry_sw.time(), buf, sizeof(buf));
-      lv_label_set_text(objects.lbl_time_remaining, buf);
+      if (g_entry_time_s_limit < 0) {
+        // No host-supplied EntryTimeS -- original raw-elapsed display.
+        // (When a limit IS set, the countdown below runs unconditionally
+        // regardless of race_state, so it's intentionally not duplicated
+        // here.)
+        race_timer_format_time_seconds(entry_sw.time(), buf, sizeof(buf));
+        lv_label_set_text(objects.lbl_time_remaining, buf);
+      }
       race_timer_format_time(run_sw.time(), buf, sizeof(buf));
       lv_label_set_text(objects.lbl_current_run_time, buf);
       break;
   }
 
-  race_timer_render_run_times();
+  // EntryTimeS countdown: shown whenever the host has set a limit, in
+  // every state EXCEPT CALIBRATE (which forces a fixed "00:00" above --
+  // docs/updated-state-table.md). It reads as the full starting duration,
+  // unchanging, until entry_sw actually starts on the mouse's first ARM
+  // (race_timer_try_arm()) -- not at NewMouse itself -- then counts down
+  // live, and turns red once it hits zero (track-and-display only:
+  // nothing forces a state change at zero, see race-timer.h's comment on
+  // g_entry_time_s_limit and DESIGN-REQUIREMENT.md's own open TODO on
+  // countdown-expiry behaviour).
+  if (race_timer_get_state() != RaceState::CALIBRATE) {
+    if (g_entry_time_s_limit >= 0) {
+      uint32_t remaining_ms = race_timer_entry_time_remaining_ms();
+      race_timer_format_time_seconds(remaining_ms, buf, sizeof(buf));
+      lv_label_set_text(objects.lbl_time_remaining, buf);
+      bool expired = (remaining_ms == 0);
+      lv_obj_set_style_text_color(objects.lbl_time_remaining, expired ? lv_color_hex(0xff0000) : lv_color_hex(0xadff2f),
+                                   LV_PART_MAIN | LV_STATE_DEFAULT);
+    } else {
+      // No limit set -- make sure the label isn't left red from a
+      // previous mouse's expired countdown (screens.c's original colour).
+      lv_obj_set_style_text_color(objects.lbl_time_remaining, lv_color_hex(0xadff2f), LV_PART_MAIN | LV_STATE_DEFAULT);
+    }
+  }
+
+  // docs/updated-state-table.md: "Mouse Name, Run Times blank" while
+  // Calibrating -- current_mouse_name is already cleared by
+  // ENTER_CALIBRATION (race-timer.h), but the run-times list is display
+  // state only, so it's blanked here rather than mutating
+  // mouse_first_run_index at the model layer (which would lose track of
+  // this mouse's earlier runs for a later RESUME_TIMER).
+  if (race_timer_get_state() == RaceState::CALIBRATE) {
+    label_list_clear(run_times_buf, objects.lbl_run_time_list);
+  } else {
+    race_timer_render_run_times();
+  }
   race_timer_render_leaderboard();
 }

@@ -85,8 +85,15 @@ inline void serial_send_message_str(int type, const char *value) {
 }
 
 inline void serial_send_run_time(unsigned long time_ms) {
-  // Sent twice, 20ms apart -- matches the legacy protocol's definitive
-  // score-time report (see original src/messages.h comment).
+  // Sent three times, 20ms apart -- RATS V2's definitive score-time
+  // report (docs/preferredMessageSequencesV2.pdf Annex A: "repeated for a
+  // total of 3 transmissions to mitigate any line errors... RATS will
+  // only record the run time once and discards additional messages for
+  // the same run time", matched in docs/updated-state-table.md's GOAL
+  // section). The old legacy protocol only sent this twice; RATS V2
+  // supersedes that.
+  serial_send_message(MSG_C1_RUN_TIME, time_ms);
+  delay(20);
   serial_send_message(MSG_C1_RUN_TIME, time_ms);
   delay(20);
   serial_send_message(MSG_C1_RUN_TIME, time_ms);

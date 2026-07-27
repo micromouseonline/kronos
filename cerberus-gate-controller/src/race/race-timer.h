@@ -74,12 +74,15 @@ constexpr size_t NUM_MICE = sizeof(mouse_names) / sizeof(mouse_names[0]);
 // source; something upstream (race-command-source.h today) decides what a
 // given InputEvent means as a RaceCommand.
 enum class RaceCommand {
-  NONE,       //
-  NEW_MOUSE,  //
-  ARM,        //
-  START,      //
-  GOAL,       //
-  RESTART     //
+  NONE,               //
+  NEW_MOUSE,          //
+  ARM,                //
+  START,              //
+  GOAL,               //
+  RESTART,            //
+  ENTER_CALIBRATION,  // host SetMode(CALIBRATION) -- serial-only, see race-command-source.h
+  RESUME_TIMER,       // host SetMode(TIMER) -- serial-only
+  EXTRA_RUN           // host ExtraRun -- serial-only
 };
 
 enum class RaceState : uint8_t {
@@ -96,6 +99,7 @@ struct RaceRun {
   uint16_t mouse_id;
   uint16_t run_number;  // 1..MAX_RUNS_PER_MOUSE, from mouse_run_count
   uint32_t time_ms;
+  char name[32];  // copied from current_mouse_name at commit time
 };
 
 constexpr size_t MAX_RESULTS = 120;
@@ -123,6 +127,47 @@ inline uint16_t mouse_run_count = 0;
 const uint32_t RACE_TIME_LIMIT = 5L * 60L * 1000L;
 inline uint32_t time_left = RACE_TIME_LIMIT;
 
+// Host-configurable overrides from the RATS V2 serial messages AllowedRuns/
+// EntryTimeS (net/serial-protocol.h, race-command-source.h). -1 = not set
+// by the host -- race_timer_mouse_exhausted() falls back to
+// MAX_RUNS_PER_MOUSE, and the display (race-timer-display.h) falls back to
+// its original raw-elapsed behaviour. Plain globals, not routed through the
+// Main Event Queue -- benign stale reads only (same tolerance already
+// accepted elsewhere in this codebase, e.g. mouse_id in
+// race-serial-telemetry.h), unlike ENTER_CALIBRATION/RESUME_TIMER/
+// EXTRA_RUN below which actually mutate race_state/mouse_run_count and so
+// must go through the queue.
+//
+// g_allowed_runs resets to -1 on every race_timer_enter_new_mouse() --
+// the host resends it after each NewMouse (per
+// docs/preferredMessageSequencesV2.pdf's state-9 sequence), and a stale
+// limit from the previous mouse must not carry over if it doesn't.
+//
+// g_entry_time_s_limit does NOT reset -- once set via <93,xxx>, it
+// persists as the starting entry time for every subsequent NewMouse until
+// the host sends a new value. Defaults to 600s (docs/updated-state-table.md:
+// "Default Entry time set to 600 seconds"), not "unset" -- a real countdown
+// is always active, even with no host ever connected, rather than falling
+// back to the old raw-elapsed display. Still negative-settable (e.g.
+// <93,-1>) as an emergent way for a host to explicitly request "unset"
+// behaviour, since race_timer_entry_time_remaining_ms() only requires >= 0.
+inline long g_allowed_runs = -1;
+inline long g_entry_time_s_limit = 600;
+
+// True once entry_sw has actually started counting down for the current
+// mouse's entry -- see race_timer_try_arm(): the entry-time countdown
+// only starts on the mouse's first WAITING->ARMED transition, not at
+// NewMouse itself (entry_sw stays at 0 -- i.e. the full starting
+// duration remains displayed, unchanging -- until then). Reset on every
+// race_timer_enter_new_mouse().
+inline bool entry_timer_started = false;
+
+// Current mouse's display name -- host-supplied (RATS V2 NewMouse) or the
+// canned mouse_names[] pick, decided once in race_timer_enter_new_mouse()
+// so every reader (on-screen label, RaceRun.name, leaderboard) just uses
+// this unconditionally with no per-site fallback logic.
+inline char current_mouse_name[32] = "";
+
 inline RaceState race_timer_get_state() {
   return race_state;
 }
@@ -144,6 +189,7 @@ inline void race_timer_format_time_seconds(uint32_t ms, char *buf, size_t len) {
 struct LeaderboardEntry {
   uint16_t mouse_id;
   uint32_t best_time_ms;
+  char name[32];
 };
 
 /**
@@ -169,7 +215,14 @@ inline size_t race_timer_compute_leaderboard(LeaderboardEntry *out, size_t max_o
       }
       j++;
     }
-    out[candidate_count++] = {id, best};
+    LeaderboardEntry &entry = out[candidate_count++];
+    entry.mouse_id = id;
+    entry.best_time_ms = best;
+    // Name doesn't change within a mouse's block -- the first run's name
+    // (set from current_mouse_name at commit time) applies to the whole
+    // mouse.
+    strncpy(entry.name, race_runs[i].name, sizeof(entry.name) - 1);
+    entry.name[sizeof(entry.name) - 1] = '\0';
     i = j;
   }
 
@@ -202,6 +255,8 @@ inline void race_timer_commit_run(uint32_t time_ms) {
     r.mouse_id = mouse_id;
     r.run_number = mouse_run_count;
     r.time_ms = time_ms;
+    strncpy(r.name, current_mouse_name, sizeof(r.name) - 1);
+    r.name[sizeof(r.name) - 1] = '\0';
     if (race_timer_on_run_committed != nullptr) {
       race_timer_on_run_committed();
     }
@@ -213,7 +268,11 @@ inline void race_timer_commit_run(uint32_t time_ms) {
 // consolidated here (NEW_MOUSE unconditionally resets mouse_run_count before
 // WAITING/ARMED is ever reached) rather than re-checked again on every ARMED
 // entry -- same observable behaviour, simpler state.
-inline void race_timer_enter_new_mouse() {
+// name is the RATS V2 NewMouse-supplied name (see race-command-source.h/
+// system-event-queue.h's payload_is_mouse_name) -- nullptr or empty for
+// every other producer (local button, HTTP, or a bare legacy <98,0>),
+// which falls back to the canned mouse_names[] pick as before.
+inline void race_timer_enter_new_mouse(const char *name = nullptr) {
   mouse_id++;
   mouse_id %= NUM_MICE;
   mouse_run_count = 0;
@@ -222,41 +281,139 @@ inline void race_timer_enter_new_mouse() {
   race_state = RaceState::WAITING;
   run_sw.reset();
   entry_sw.reset();
+  if (name != nullptr && name[0] != '\0') {
+    strncpy(current_mouse_name, name, sizeof(current_mouse_name) - 1);
+    current_mouse_name[sizeof(current_mouse_name) - 1] = '\0';
+  } else {
+    strncpy(current_mouse_name, mouse_names[mouse_id % NUM_MICE], sizeof(current_mouse_name) - 1);
+    current_mouse_name[sizeof(current_mouse_name) - 1] = '\0';
+  }
+  // The host resends AllowedRuns after every NewMouse (per
+  // docs/preferredMessageSequencesV2.pdf) -- a limit from the previous
+  // mouse must not silently carry over if it doesn't. EntryTimeS is NOT
+  // reset here -- it persists as the starting entry time for every
+  // subsequent mouse until the host sends a new value (see
+  // g_entry_time_s_limit's comment above).
+  g_allowed_runs = -1;
+  entry_timer_started = false;
 }
 
 //============================================================================
+// Host-configured AllowedRuns overrides the fixed cap when set (see
+// g_allowed_runs above); exposed separately from race_timer_mouse_exhausted()
+// so the display (race-timer-display.h's "current/max" run-number label)
+// can show the same effective limit without duplicating the fallback logic.
+inline long race_timer_allowed_runs() {
+  return (g_allowed_runs >= 0) ? g_allowed_runs : (long)MAX_RUNS_PER_MOUSE;
+}
+
 inline bool race_timer_mouse_exhausted() {
-  return mouse_run_count >= MAX_RUNS_PER_MOUSE;
+  return (long)mouse_run_count >= race_timer_allowed_runs();
+}
+
+// Remaining entry time in ms for the host-supplied EntryTimeS countdown,
+// clamped to 0. Caller must check g_entry_time_s_limit >= 0 first (this
+// doesn't handle "unset" itself). Before entry_timer_started, entry_sw
+// reads 0 (RESET state -- see race_timer_enter_new_mouse()/
+// race_timer_try_arm()), so this naturally returns the full starting
+// duration, unchanging, until the first ARM. Once the countdown reaches
+// zero, entry_sw is explicitly stopped (mirrors run_sw.stop() on GOAL) so
+// elapsed time freezes there instead of drifting past the limit --
+// "will stop when it gets to zero" per the design.
+inline uint32_t race_timer_entry_time_remaining_ms() {
+  long limit_ms = g_entry_time_s_limit * 1000L;
+  long elapsed_ms = (long)entry_sw.time();
+  long remaining_ms = limit_ms - elapsed_ms;
+  if (remaining_ms <= 0) {
+    entry_sw.stop();
+    return 0;
+  }
+  return (uint32_t)remaining_ms;
 }
 
 // Arms for another run unless this mouse has used up its MAX_RUNS_PER_MOUSE
 // attempts, in which case it drops back to WAITING -- the operator must send
 // RaceCommand::NEW_MOUSE to continue.
+//
+// The entry-time countdown (g_entry_time_s_limit) starts here, once --
+// the mouse's first successful WAITING->ARMED transition -- not at
+// NewMouse itself, and is never restarted again for this mouse's
+// subsequent runs (ARMED reached again from GOAL/RUNNING keeps
+// entry_timer_started true, so entry_sw just keeps counting through the
+// whole entry, same as before this round's changes).
 inline void race_timer_try_arm() {
-  race_state = race_timer_mouse_exhausted() ? RaceState::WAITING : RaceState::ARMED;
+  bool exhausted = race_timer_mouse_exhausted();
+  race_state = exhausted ? RaceState::WAITING : RaceState::ARMED;
+  if (!exhausted && !entry_timer_started) {
+    entry_timer_started = true;
+    entry_sw.restart();
+  }
 }
 
 //============================================================================
-inline void race_timer_handle_command(RaceCommand command) {
+// mouse_name is only ever non-null for a RATS V2 NewMouse carrying a real
+// name (see system_event_handler(), main.cpp) -- passed straight through
+// to race_timer_enter_new_mouse() at every call site below.
+inline void race_timer_handle_command(RaceCommand command, const char *mouse_name = nullptr) {
   if (command == RaceCommand::NONE) {
+    return;
+  }
+
+  // Host overrides that apply regardless of race_state, same reasoning as
+  // RESTART below. Mutating race_state/mouse_run_count here (rather than
+  // directly from serial-protocol.h's RX task) is what keeps this safe --
+  // see race-command-source.h's serial_protocol_handle_info_message() for
+  // why these are routed through the Main Event Queue as RaceCommands
+  // instead of being applied as a direct write from another task.
+  if (command == RaceCommand::ENTER_CALIBRATION) {
+    race_state = RaceState::CALIBRATE;
+    // docs/updated-state-table.md: Calibrating shows a blank mouse name
+    // and "0/5" run count, not whatever the previous mouse left behind.
+    // Run Times list is blanked in the display layer instead (see
+    // race-timer-display.h) -- mouse_first_run_index is deliberately left
+    // alone here so a later RESUME_TIMER doesn't lose track of this
+    // mouse's earlier runs for leaderboard/history purposes.
+    mouse_run_count = 0;
+    g_allowed_runs = -1;
+    current_mouse_name[0] = '\0';
+    return;
+  }
+  if (command == RaceCommand::RESUME_TIMER) {
+    race_state = RaceState::WAITING;
+    return;
+  }
+  if (command == RaceCommand::EXTRA_RUN) {
+    if (mouse_run_count > 0) {
+      mouse_run_count--;
+    }
     return;
   }
 
   switch (race_state) {
     case RaceState::CALIBRATE:
-
-      if (command == RaceCommand::NEW_MOUSE || command == RaceCommand::RESTART) {
-        race_timer_enter_new_mouse();
+      // RESTART only, not bare NEW_MOUSE -- docs/updated-state-table.md:
+      // "Only a NewMouse event drops the controller out of CALIBRATING --
+      // either receiving the <98,xxxx> message, or a long press on the A
+      // key... T gets no response here." Both of those already normalize
+      // to RESTART (race_command_from_serial(), BUTTON_COMMAND_MAP's
+      // ARM-hold); a bare NEW_MOUSE only ever comes from BTN_TOUCH's short
+      // press ("T"), which this state must now ignore.
+      if (command == RaceCommand::RESTART) {
+        race_timer_enter_new_mouse(mouse_name);
       }
       break;
 
     case RaceState::WAITING:
       if (command == RaceCommand::ARM) {
+        // entry_sw itself only actually starts on a successful ARM here
+        // (race_timer_try_arm(), first time only) -- no longer
+        // unconditionally restarted on every WAITING-state command, so
+        // the entry-time countdown genuinely begins at first ARM, not at
+        // NewMouse or at every WAITING command in between.
         race_timer_try_arm();
       } else if (command == RaceCommand::RESTART) {
-        race_timer_enter_new_mouse();
+        race_timer_enter_new_mouse(mouse_name);
       }
-      entry_sw.restart();
       break;
 
     case RaceState::ARMED:
@@ -264,9 +421,14 @@ inline void race_timer_handle_command(RaceCommand command) {
         run_sw.restart();
         mouse_run_count++;
         race_state = RaceState::RUNNING;
-      } else if (command == RaceCommand::NEW_MOUSE || command == RaceCommand::RESTART) {
-        race_timer_enter_new_mouse();
+      } else if (command == RaceCommand::RESTART) {
+        race_timer_enter_new_mouse(mouse_name);
       }
+      // Bare NEW_MOUSE (T/BTN_TOUCH short press) deliberately does nothing
+      // here -- docs/updated-state-table.md leaves T's meaning in ARMED
+      // undecided ("available if we should decide to use it at some
+      // point"), so it's disabled rather than left abandoning the armed
+      // mouse, until that's actually decided.
       break;
 
     case RaceState::RUNNING:
@@ -278,7 +440,7 @@ inline void race_timer_handle_command(RaceCommand command) {
         // Manual recovery. Abandon run
         race_timer_try_arm();
       } else if (command == RaceCommand::RESTART) {
-        race_timer_enter_new_mouse();
+        race_timer_enter_new_mouse(mouse_name);
       }
       break;
 
@@ -286,7 +448,7 @@ inline void race_timer_handle_command(RaceCommand command) {
       if (command == RaceCommand::ARM) {
         race_timer_try_arm();
       } else if (command == RaceCommand::RESTART) {
-        race_timer_enter_new_mouse();
+        race_timer_enter_new_mouse(mouse_name);
       }
       break;
 

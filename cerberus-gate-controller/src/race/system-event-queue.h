@@ -19,10 +19,12 @@
 struct SystemEvent {
   RaceCommand type;
   uint64_t timestamp_us;
-  // Mouse name (RaceCommand::NEW_MOUSE) or gate_id (HTTP), depending on
-  // source. TODO(mouse-name): not yet threaded through to
-  // race_timer_enter_new_mouse() -- see net/serial-protocol.h.
+  // Mouse name (RaceCommand::NEW_MOUSE, RATS V2) or gate_id (HTTP),
+  // depending on source -- payload_is_mouse_name disambiguates which,
+  // since main.cpp's system_event_handler() is the single consumer for
+  // every source and can't otherwise tell them apart.
   char payload[32];
+  bool payload_is_mouse_name = false;
 };
 
 inline QueueHandle_t xSystemEventQueue = nullptr;
@@ -33,11 +35,13 @@ inline void system_event_queue_init() {
 
 // Thread/ISR-safe producer, usable from the Serial RX task, the HTTP
 // server's own task, or an ISR context via xQueueSendFromISR.
-inline void system_event_post(RaceCommand type, uint64_t timestamp_us, const char *payload = "") {
+inline void system_event_post(RaceCommand type, uint64_t timestamp_us, const char *payload = "",
+                               bool payload_is_mouse_name = false) {
   SystemEvent evt{};
   evt.type = type;
   evt.timestamp_us = timestamp_us;
   strncpy(evt.payload, payload, sizeof(evt.payload) - 1);
+  evt.payload_is_mouse_name = payload_is_mouse_name;
   if (xSystemEventQueue != nullptr) {
     xQueueSend(xSystemEventQueue, &evt, 0);
   }

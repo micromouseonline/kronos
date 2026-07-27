@@ -15,6 +15,7 @@
 #include "input-events.h"
 #include "net/messages.h"
 #include "race-timer.h"
+#include "race/system-event-queue.h"
 
 struct ButtonCommandMap {
   RaceCommand on_press;
@@ -67,14 +68,13 @@ inline long serial_line_value_as_long(const SerialLine &line) {
   return strtol(line.value, nullptr, 10);
 }
 
-// Host session metadata captured from ContestName/EventName/AllowedRuns/
-// EntryTimeS -- informational only this round (not read anywhere yet, not
-// enforced against mouse_run_count/entry_sw). Kept here rather than in
-// race-timer.h since these describe the host's session, not race state.
+// Host session metadata captured from ContestName/EventName -- purely
+// informational (not read by race-timer.h's logic, not enforced against
+// anything). AllowedRuns/EntryTimeS live in race-timer.h now instead
+// (g_allowed_runs/g_entry_time_s_limit) since race_timer_mouse_exhausted()
+// and the display actually read them.
 inline char g_contest_name[32] = "";
 inline char g_event_name[32] = "";
-inline long g_allowed_runs = -1;      // -1 = not set by host
-inline long g_entry_time_s_limit = -1;
 
 inline RaceCommand race_command_from_serial(const SerialLine &line) {
   if (line.type == MSG_NEW_MOUSE) {
@@ -89,40 +89,56 @@ inline RaceCommand race_command_from_serial(const SerialLine &line) {
 
 // Handles every RATS V2 inbound message that ISN'T a race-state transition
 // (see race_command_from_serial() above for MSG_NEW_MOUSE, which is).
-// These are host/session metadata and device-identification requests --
-// routing them through SystemEvent/RaceCommand would force them into a
-// vocabulary that's specifically the race state machine's (see
-// race-timer.h's header comment), so they're captured/replied to directly
-// here instead, in the same RX task, alongside the queue post.
-inline void serial_protocol_handle_info_message(const SerialLine &line) {
+// ContestName/EventName/AllowedRuns/EntryTimeS are pure metadata capture,
+// applied directly here since a benign stale read of race_state (to gate
+// them, see below) or a stale write to the target globals is an accepted
+// risk already (see race-timer.h's comment on g_allowed_runs/
+// g_entry_time_s_limit). SetMode and ExtraRun DO mutate race state
+// (race_state/mouse_run_count) -- those go through system_event_post()
+// as RaceCommands instead of being applied directly from this RX task, to
+// avoid a cross-task write race with the main loop (see
+// race_timer_handle_command()'s own comment on ENTER_CALIBRATION/
+// RESUME_TIMER/EXTRA_RUN).
+inline void serial_protocol_handle_info_message(const SerialLine &line, uint64_t timestamp_us) {
   switch (line.type) {
     case MSG_CONTEST_NAME:
-      strncpy(g_contest_name, line.value, sizeof(g_contest_name) - 1);
-      g_contest_name[sizeof(g_contest_name) - 1] = '\0';
+      // docs/updated-state-table.md: accepted throughout WAITING (host
+      // message order isn't guaranteed), ignored in every other state
+      // (explicitly "ignored" while ARMED; not specified for
+      // CALIBRATE/RUNNING/GOAL, so treated the same -- WAITING is the
+      // only state explicitly granted acceptance).
+      if (race_state == RaceState::WAITING) {
+        strncpy(g_contest_name, line.value, sizeof(g_contest_name) - 1);
+        g_contest_name[sizeof(g_contest_name) - 1] = '\0';
+      }
       break;
     case MSG_EVENT_NAME:
-      strncpy(g_event_name, line.value, sizeof(g_event_name) - 1);
-      g_event_name[sizeof(g_event_name) - 1] = '\0';
+      if (race_state == RaceState::WAITING) {
+        strncpy(g_event_name, line.value, sizeof(g_event_name) - 1);
+        g_event_name[sizeof(g_event_name) - 1] = '\0';
+      }
       break;
     case MSG_ALLOWED_RUNS:
-      g_allowed_runs = serial_line_value_as_long(line);
+      if (race_state == RaceState::WAITING) {
+        g_allowed_runs = serial_line_value_as_long(line);
+      }
       break;
     case MSG_ENTRY_TIME_S:
-      g_entry_time_s_limit = serial_line_value_as_long(line);
+      if (race_state == RaceState::WAITING) {
+        g_entry_time_s_limit = serial_line_value_as_long(line);
+      }
       break;
     case MSG_EXTRA_RUN:
-      // Not wired into mouse_run_count this round -- no AllowedRuns
-      // enforcement exists yet for this to meaningfully extend (see
-      // IMPLEMENTATION-PLAN.md/plan notes). Logged so it's not silently
-      // dropped.
-      debug_printf("[serial-protocol] ExtraRun received (not enforced this round)\n");
+      system_event_post(RaceCommand::EXTRA_RUN, timestamp_us);
       break;
     case MSG_SET_MODE:
-      // TIMER/CALIBRATION: CERBERUS has no local gate hardware to
-      // calibrate (gates are separate WiFi-connected devices, see
-      // DESIGN-REQUIREMENT.md), so there's no established behaviour for
-      // CALIBRATION here yet -- logged only, pending clarification.
-      debug_printf("[serial-protocol] SetMode(%s) received (no action taken this round)\n", line.value);
+      if (strcmp(line.value, "CALIBRATION") == 0) {
+        system_event_post(RaceCommand::ENTER_CALIBRATION, timestamp_us);
+      } else if (strcmp(line.value, "TIMER") == 0) {
+        system_event_post(RaceCommand::RESUME_TIMER, timestamp_us);
+      } else {
+        debug_printf("[serial-protocol] SetMode(%s) unrecognised, ignored\n", line.value);
+      }
       break;
     case MSG_REQUEST_TYPE:
       // CERBERUS's telemetry is C1-only (race-serial-telemetry.h has no

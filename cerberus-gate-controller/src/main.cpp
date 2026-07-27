@@ -141,7 +141,10 @@ void input_event_handler(const InputEvent &evt) {
 // call race_timer_handle_command() directly in input_event_handler above;
 // both converge on the same state machine entry point.
 void system_event_handler(const SystemEvent &evt) {
-  race_timer_handle_command(evt.type);
+  // payload_is_mouse_name distinguishes a serial NewMouse's name from
+  // HTTP's gate_id, which reuses the same payload field for a different
+  // purpose (see system-event-queue.h's SystemEvent comment).
+  race_timer_handle_command(evt.type, evt.payload_is_mouse_name ? evt.payload : nullptr);
   neokey_reflect_race_state();
 }
 

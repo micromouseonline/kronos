@@ -200,7 +200,7 @@ inline void http_handle_leaderboard(AsyncWebServerRequest *request) {
         html += "<tr>";
       }
 
-      html += "<td>" + String(i + 1) + "</td><td>" + mouse_names[entries[i].mouse_id % NUM_MICE] + "</td><td>" + time_str + "</td></tr>";
+      html += "<td>" + String(i + 1) + "</td><td>" + entries[i].name + "</td><td>" + time_str + "</td></tr>";
     }
     html += F("</tbody></table></div>");
   }

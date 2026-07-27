@@ -30,7 +30,7 @@ constexpr uint8_t WIFI_STATUS_KEY = 3;
 // ... RSSI: ..." line while eyeballing a serial terminal by hand (see
 // docs/TESTING-SERIAL.md). Doesn't affect the one-shot connect/disconnect
 // messages, only the periodic re-report further down in wifi_connect_task.
-inline bool g_wifi_rssi_report_enabled = true;
+inline bool g_wifi_rssi_report_enabled = false;
 
 // Optional hook, invoked every time Wi-Fi transitions into the connected
 // state -- including the very first connect at boot, not just reconnects.
