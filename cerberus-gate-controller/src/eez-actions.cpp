@@ -18,6 +18,53 @@
 #include "input-events.h"     // input_queue_post, InputSource, ButtonID
 #include "net/wifi-credentials.h"
 #include "net/wifi-manager.h"  // wifi_request_provisioning
+#include "race/race-timer.h"   // race_timer_active
+
+// Define callback type for confirmation result
+typedef void (*confirm_cb_t)(bool confirmed, void *user_data);
+
+typedef struct {
+  confirm_cb_t cb;
+  void *user_data;
+} confirm_ctx_t;
+
+static void msgbox_event_cb(lv_event_t *e) {
+  lv_obj_t *mbox = lv_event_get_current_target(e);
+  confirm_ctx_t *ctx = (confirm_ctx_t *)lv_event_get_user_data(e);
+
+  // Get clicked button index (0 = OK, 1 = CANCEL)
+  uint16_t btn_id = lv_msgbox_get_active_btn(mbox);
+  bool confirmed = (btn_id == 0);
+
+  if (ctx && ctx->cb) {
+    ctx->cb(confirmed, ctx->user_data);
+  }
+
+  // Clean up dynamically allocated context memory
+  if (ctx)
+    lv_mem_free(ctx);
+
+  // Close and destroy dialog
+  lv_msgbox_close(mbox);
+}
+
+void show_confirm_dialog(const char *title, const char *msg, confirm_cb_t callback, void *user_data) {
+  static const char *btns[] = {"OK", "Cancel", ""};
+
+  // Allocate memory for context to pass callback through event user_data
+  confirm_ctx_t *ctx = (confirm_ctx_t *)lv_mem_alloc(sizeof(confirm_ctx_t));
+  if (!ctx)
+    return;
+  ctx->cb = callback;
+  ctx->user_data = user_data;
+
+  // Create modal message box (parent = NULL targets layer_top)
+  lv_obj_t *mbox = lv_msgbox_create(NULL, title, msg, btns, true);
+  lv_obj_center(mbox);
+
+  // Attach handler to VALUE_CHANGED event emitted by button matrix
+  lv_obj_add_event_cb(mbox, msgbox_event_cb, LV_EVENT_VALUE_CHANGED, ctx);
+}
 
 // EventType defaults to InputEventType::PRESSED if not provided
 void action_on_timer_arm(lv_event_t *e) {
@@ -66,8 +113,15 @@ void action_on_menu_calibrate(lv_event_t *e) {
   debug_println("CALIBRATE!");
 }
 
+static void on_reset_confirmed(bool confirmed, void *user_data) {
+  if (confirmed) {
+    ESP.restart();
+  }
+}
+
 void action_on_menu_reset(lv_event_t *e) {
-  ESP.restart();
+  show_confirm_dialog("System Restart", "Are you sure?", on_reset_confirmed, NULL);
+}
 }
 
 // Just navigation -- the actual decision is the wifi_setup screen's two
