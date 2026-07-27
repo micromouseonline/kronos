@@ -678,17 +678,19 @@ void create_screen_settings() {
                 {
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.obj18 = obj;
-                    lv_obj_set_pos(obj, 115, 157);
+                    lv_obj_set_pos(obj, 108, 157);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_label_set_text_static(obj, "UNUSED");
+                    lv_label_set_text_static(obj, "VERBOSE");
                 }
                 {
+                    // sw_debug_verbose
                     lv_obj_t *obj = lv_switch_create(parent_obj);
+                    objects.sw_debug_verbose = obj;
                     lv_obj_set_pos(obj, 193, 154);
                     lv_obj_set_size(obj, 40, 24);
-                    lv_obj_add_state(obj, LV_STATE_DISABLED);
+                    lv_obj_add_event_cb(obj, action_on_settings_change, LV_EVENT_VALUE_CHANGED, (void *)0);
                     add_style_custom_switch(obj);
                 }
                 {

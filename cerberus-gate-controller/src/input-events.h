@@ -54,6 +54,9 @@ struct InputEvent {
   uint64_t tsf_time;
   uint64_t local_time;
   void debug_print() {
+    if (!g_debug_verbose_enabled) {
+      return;
+    }
     // Lookup tables for names matching enum ordering
     static const char* button_names[] = {"ARM", "START", "GOAL", "TOUCH"};
     static const char* source_names[] = {"TOUCH", "GPIO_BUTTON", "NEOKEY_BUTTON"};

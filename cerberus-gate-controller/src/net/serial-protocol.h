@@ -18,12 +18,6 @@
 #include "race/race-command-source.h"
 #include "race/system-event-queue.h"
 
-// Manual-testing aid only, NOT part of the wire protocol -- toggle off if
-// the echo itself gets noisy. Safe to leave on with real host software
-// connected: prefixed with '#' like every other debug-log.h line, so the
-// host's supervisor treats it as a comment and skips it (see debug-log.h).
-inline bool g_serial_protocol_rx_echo = true;
-
 inline bool serial_protocol_parse_line(const char *line, SerialLine *out) {
   if (line == nullptr || out == nullptr) {
     return false;
@@ -65,7 +59,7 @@ inline bool serial_protocol_parse_line(const char *line, SerialLine *out) {
 // that function can focus purely on framing complete lines out of the RX
 // buffer.
 inline void serial_protocol_process_line(const char *line_str) {
-  if (g_serial_protocol_rx_echo) {
+  if (g_debug_verbose_enabled) {
     // Confirms to whoever's typing exactly what bytes were seen,
     // independent of terminal echo settings.
     debug_printf("[serial-protocol] rx: \"%s\"\n", line_str);

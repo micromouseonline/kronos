@@ -66,6 +66,7 @@ typedef struct _objects_t {
     lv_obj_t *obj17;
     lv_obj_t *sw_wifi_stats;
     lv_obj_t *obj18;
+    lv_obj_t *sw_debug_verbose;
 } objects_t;
 
 extern objects_t objects;

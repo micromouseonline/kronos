@@ -1963,7 +1963,7 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "juno -69dB",
+                  "text": " -69dBm",
                   "textType": "literal",
                   "longMode": "WRAP",
                   "recolor": false
@@ -2972,9 +2972,9 @@
                 {
                   "objID": "2f12a1ba-dea4-4d76-c472-0e86fa1fcde2",
                   "type": "LVGLLabelWidget",
-                  "left": 115,
+                  "left": 108,
                   "top": 157,
-                  "width": 73,
+                  "width": 80,
                   "height": 18,
                   "customInputs": [],
                   "customOutputs": [],
@@ -3014,7 +3014,7 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "UNUSED",
+                  "text": "VERBOSE",
                   "textType": "literal",
                   "longMode": "WRAP",
                   "recolor": false
@@ -3035,7 +3035,16 @@
                     "childStyles": []
                   },
                   "timeline": [],
-                  "eventHandlers": [],
+                  "eventHandlers": [
+                    {
+                      "objID": "2fb30569-e32d-48e8-e69e-19e66babe997",
+                      "eventName": "VALUE_CHANGED",
+                      "handlerType": "action",
+                      "action": "on_settings_change",
+                      "userData": 0
+                    }
+                  ],
+                  "identifier": "sw_debug_verbose",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
@@ -3050,7 +3059,7 @@
                   "scrollSnapX": "",
                   "scrollSnapY": "",
                   "checkedStateType": "literal",
-                  "disabledState": true,
+                  "disabledState": false,
                   "disabledStateType": "literal",
                   "states": "",
                   "useStyle": "custom_switch",

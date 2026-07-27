@@ -114,10 +114,10 @@ void action_on_menu_gate_test(lv_event_t *e) {
   loadScreen(SCREEN_ID_MAIN);
 }
 
-// Menu -> Settings. Syncs both switches to the current in-memory flag state
-// every time the screen is opened, rather than relying on screens.c's
+// Menu -> Settings. Syncs all three switches to the current in-memory flag
+// state every time the screen is opened, rather than relying on screens.c's
 // hardcoded initial CHECKED state (which predates persistence and doesn't
-// match either flag's real default).
+// match any flag's real default).
 void action_on_menu_settings(lv_event_t *e) {
   if (g_watchdog_tx_enabled) {
     lv_obj_add_state(objects.sw_watchdog, LV_STATE_CHECKED);
@@ -129,13 +129,18 @@ void action_on_menu_settings(lv_event_t *e) {
   } else {
     lv_obj_clear_state(objects.sw_wifi_stats, LV_STATE_CHECKED);
   }
+  if (g_debug_verbose_enabled) {
+    lv_obj_add_state(objects.sw_debug_verbose, LV_STATE_CHECKED);
+  } else {
+    lv_obj_clear_state(objects.sw_debug_verbose, LV_STATE_CHECKED);
+  }
   loadScreen(SCREEN_ID_SETTINGS);
 }
 
-// Shared VALUE_CHANGED handler for both switches -- identifies which one
-// fired via the event target, updates the matching global, and persists it
-// immediately (settings-store.h), same "write straight through" convention
-// as wifi_credentials_save() below.
+// Shared VALUE_CHANGED handler for all three switches -- identifies which
+// one fired via the event target, updates the matching global, and
+// persists it immediately (settings-store.h), same "write straight
+// through" convention as wifi_credentials_save() below.
 void action_on_settings_change(lv_event_t *e) {
   lv_obj_t *target = lv_event_get_target(e);
   bool checked = lv_obj_has_state(target, LV_STATE_CHECKED);
@@ -145,6 +150,9 @@ void action_on_settings_change(lv_event_t *e) {
   } else if (target == objects.sw_wifi_stats) {
     g_wifi_rssi_report_enabled = checked;
     settings_save_wifi_stats(checked);
+  } else if (target == objects.sw_debug_verbose) {
+    g_debug_verbose_enabled = checked;
+    settings_save_debug_verbose(checked);
   }
 }
 

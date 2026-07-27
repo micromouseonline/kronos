@@ -36,6 +36,15 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+// Gates high-frequency, per-event debug traces (button/touch/GPIO/NeoKey
+// events in input-events.h, inbound serial RX echo in
+// net/serial-protocol.h) behind the Settings screen's sw_debug_verbose
+// switch. Separate from the always-on one-shot lifecycle messages (Wi-Fi
+// connect, HTTP server start, etc.) elsewhere in this codebase, which stay
+// unconditional regardless of this flag -- those are rare and useful even
+// with verbose logging off.
+inline bool g_debug_verbose_enabled = false;
+
 inline SemaphoreHandle_t serial_write_mutex = xSemaphoreCreateMutex();
 
 inline void serial_write_lock() {

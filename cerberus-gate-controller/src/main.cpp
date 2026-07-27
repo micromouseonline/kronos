@@ -65,8 +65,20 @@ static void input_poll_task(void *) {
 // Key 3 (BTN_TOUCH) is deliberately never touched here -- it's owned
 // exclusively by the Wi-Fi status indicator (net/wifi-manager.h's
 // WIFI_STATUS_KEY), since none of the target boards has a working onboard
-// status LED.
+// status LED. The one exception is right below: leaving CALIBRATE has to
+// clear whatever the gate test (input_event_handler's CALIBRATE block)
+// last left key 3 showing, since that block only fires from a local
+// button press. A CALIBRATE exit triggered remotely (e.g. serial's
+// <98,xxx> NEW_MOUSE -> RESTART, routed through system_event_handler)
+// never runs that block, so without this, key 3 would stay stuck on
+// whatever gate-test colour it was last left at.
 void neokey_reflect_race_state() {
+  static RaceState last_state = race_state;  // matches boot value: no spurious first-call fire
+  if (last_state == RaceState::CALIBRATE && race_state != RaceState::CALIBRATE) {
+    neokey_set_colour(BTN_TOUCH, NP_OFF);
+  }
+  last_state = race_state;
+
   switch (race_state) {
     case RaceState::CALIBRATE:
       neokey_set_colour(0, NP_OFF);
@@ -192,7 +204,7 @@ void setup() {
   // Settings-screen toggles -- must run before anything reads either flag
   // (race_serial_telemetry_tick()'s watchdog check, wifi_connect_task's
   // RSSI report), so as early in setup() as possible.
-  settings_load(g_watchdog_tx_enabled, g_wifi_rssi_report_enabled);
+  settings_load(g_watchdog_tx_enabled, g_wifi_rssi_report_enabled, g_debug_verbose_enabled);
 
   input_queue_init();
   system_event_queue_init();
