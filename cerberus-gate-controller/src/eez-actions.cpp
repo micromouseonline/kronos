@@ -17,8 +17,10 @@
 #include "display/display.h"  // LGFX
 #include "input-events.h"     // input_queue_post, InputSource, ButtonID
 #include "net/wifi-credentials.h"
-#include "net/wifi-manager.h"  // wifi_request_provisioning
-#include "race/race-timer.h"   // race_timer_active
+#include "net/wifi-manager.h"          // wifi_request_provisioning, g_wifi_rssi_report_enabled
+#include "race/race-serial-telemetry.h"  // g_watchdog_tx_enabled
+#include "race/race-timer.h"           // race_timer_active
+#include "settings-store.h"            // settings_save_watchdog, settings_save_wifi_stats
 
 // Define callback type for confirmation result
 typedef void (*confirm_cb_t)(bool confirmed, void *user_data);
@@ -145,6 +147,44 @@ void action_on_menu_gate_test(lv_event_t *e) {
   race_timer_handle_command(RaceCommand::ENTER_CALIBRATION);
   neokey_reflect_race_state();
   loadScreen(SCREEN_ID_MAIN);
+}
+
+// Menu -> Settings. Syncs both switches to the current in-memory flag state
+// every time the screen is opened, rather than relying on screens.c's
+// hardcoded initial CHECKED state (which predates persistence and doesn't
+// match either flag's real default).
+void action_on_menu_settings(lv_event_t *e) {
+  if (g_watchdog_tx_enabled) {
+    lv_obj_add_state(objects.sw_watchdog, LV_STATE_CHECKED);
+  } else {
+    lv_obj_clear_state(objects.sw_watchdog, LV_STATE_CHECKED);
+  }
+  if (g_wifi_rssi_report_enabled) {
+    lv_obj_add_state(objects.sw_wifi_stats, LV_STATE_CHECKED);
+  } else {
+    lv_obj_clear_state(objects.sw_wifi_stats, LV_STATE_CHECKED);
+  }
+  loadScreen(SCREEN_ID_SETTINGS);
+}
+
+// Shared VALUE_CHANGED handler for both switches -- identifies which one
+// fired via the event target, updates the matching global, and persists it
+// immediately (settings-store.h), same "write straight through" convention
+// as wifi_credentials_save() below.
+void action_on_settings_change(lv_event_t *e) {
+  lv_obj_t *target = lv_event_get_target(e);
+  bool checked = lv_obj_has_state(target, LV_STATE_CHECKED);
+  if (target == objects.sw_watchdog) {
+    g_watchdog_tx_enabled = checked;
+    settings_save_watchdog(checked);
+  } else if (target == objects.sw_wifi_stats) {
+    g_wifi_rssi_report_enabled = checked;
+    settings_save_wifi_stats(checked);
+  }
+}
+
+void action_on_settings_return(lv_event_t *e) {
+  loadScreen(SCREEN_ID_MENU);
 }
 
 // Just navigation -- the actual decision is the wifi_setup screen's two

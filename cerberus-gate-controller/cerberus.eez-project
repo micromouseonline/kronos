@@ -250,6 +250,33 @@
       "componentGroups": [],
       "userProperties": [],
       "name": "on_menu_gate_test"
+    },
+    {
+      "objID": "5aa85538-ffcf-4ba8-f4b1-e7a4a7be8e4c",
+      "components": [],
+      "connectionLines": [],
+      "localVariables": [],
+      "componentGroups": [],
+      "userProperties": [],
+      "name": "on_menu_settings"
+    },
+    {
+      "objID": "1c25b00a-264d-4405-c6cb-200d6838df91",
+      "components": [],
+      "connectionLines": [],
+      "localVariables": [],
+      "componentGroups": [],
+      "userProperties": [],
+      "name": "on_settings_change"
+    },
+    {
+      "objID": "dce095b8-24e5-4e95-d347-04bfcbaa54f9",
+      "components": [],
+      "connectionLines": [],
+      "localVariables": [],
+      "componentGroups": [],
+      "userProperties": [],
+      "name": "on_settings_return"
     }
   ],
   "userPages": [
@@ -790,7 +817,15 @@
                     "childStyles": []
                   },
                   "timeline": [],
-                  "eventHandlers": [],
+                  "eventHandlers": [
+                    {
+                      "objID": "272600c5-5e88-41d2-80d8-106daacbca72",
+                      "eventName": "PRESSED",
+                      "handlerType": "action",
+                      "action": "on_menu_settings",
+                      "userData": 0
+                    }
+                  ],
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "%",
@@ -2833,8 +2868,8 @@
               "type": "LVGLSwitchWidget",
               "left": 193,
               "top": 50,
-              "width": 29,
-              "height": 15,
+              "width": 40,
+              "height": 24,
               "customInputs": [],
               "customOutputs": [],
               "style": {
@@ -2844,7 +2879,16 @@
                 "childStyles": []
               },
               "timeline": [],
-              "eventHandlers": [],
+              "eventHandlers": [
+                {
+                  "objID": "926c2ecf-7235-4979-a4fc-87e72419df40",
+                  "eventName": "VALUE_CHANGED",
+                  "handlerType": "action",
+                  "action": "on_settings_change",
+                  "userData": 0
+                }
+              ],
+              "identifier": "sw_watchdog",
               "leftUnit": "px",
               "topUnit": "px",
               "widthUnit": "px",
@@ -2872,9 +2916,9 @@
               "objID": "832ee75b-6c6f-4460-dfd9-7a5ef517e8d2",
               "type": "LVGLSwitchWidget",
               "left": 193,
-              "top": 75,
-              "width": 29,
-              "height": 15,
+              "top": 102,
+              "width": 40,
+              "height": 24,
               "customInputs": [],
               "customOutputs": [],
               "style": {
@@ -2884,7 +2928,16 @@
                 "childStyles": []
               },
               "timeline": [],
-              "eventHandlers": [],
+              "eventHandlers": [
+                {
+                  "objID": "a00ae164-3299-4896-c94c-de417d2c1c39",
+                  "eventName": "VALUE_CHANGED",
+                  "handlerType": "action",
+                  "action": "on_settings_change",
+                  "userData": 0
+                }
+              ],
+              "identifier": "sw_wifi_stats",
               "leftUnit": "px",
               "topUnit": "px",
               "widthUnit": "px",
@@ -2912,9 +2965,9 @@
               "objID": "61c375db-ba61-4177-8d72-593e3143c209",
               "type": "LVGLSwitchWidget",
               "left": 193,
-              "top": 99,
-              "width": 29,
-              "height": 15,
+              "top": 154,
+              "width": 40,
+              "height": 24,
               "customInputs": [],
               "customOutputs": [],
               "style": {
@@ -2950,10 +3003,10 @@
             {
               "objID": "4ce2aee6-c28d-4c8d-eae6-b2e16af15806",
               "type": "LVGLLabelWidget",
-              "left": 15,
+              "left": 88,
               "top": 50,
-              "width": 151,
-              "height": 16,
+              "width": 100,
+              "height": 18,
               "customInputs": [],
               "customOutputs": [],
               "style": {
@@ -2980,11 +3033,18 @@
               "disabledStateType": "literal",
               "states": "",
               "localStyles": {
-                "objID": "c151e265-fe6d-4797-a85a-0a1ffb03145d"
+                "objID": "c151e265-fe6d-4797-a85a-0a1ffb03145d",
+                "definition": {
+                  "MAIN": {
+                    "DEFAULT": {
+                      "text_font": "MONTSERRAT_16"
+                    }
+                  }
+                }
               },
               "group": "",
               "groupIndex": 0,
-              "text": "ENABLE WATCHDOG",
+              "text": "WATCHDOG",
               "textType": "literal",
               "longMode": "WRAP",
               "recolor": false
@@ -2992,10 +3052,10 @@
             {
               "objID": "2f12a1ba-dea4-4d76-c472-0e86fa1fcde2",
               "type": "LVGLLabelWidget",
-              "left": 20,
-              "top": 98,
-              "width": 146,
-              "height": 16,
+              "left": 115,
+              "top": 153,
+              "width": 73,
+              "height": 18,
               "customInputs": [],
               "customOutputs": [],
               "style": {
@@ -3022,11 +3082,18 @@
               "disabledStateType": "literal",
               "states": "",
               "localStyles": {
-                "objID": "98a05ebd-db49-43a6-83af-22af4d59fe3f"
+                "objID": "98a05ebd-db49-43a6-83af-22af4d59fe3f",
+                "definition": {
+                  "MAIN": {
+                    "DEFAULT": {
+                      "text_font": "MONTSERRAT_16"
+                    }
+                  }
+                }
               },
               "group": "",
               "groupIndex": 0,
-              "text": "SOME OTHER THING",
+              "text": "UNUSED",
               "textType": "literal",
               "longMode": "WRAP",
               "recolor": false
@@ -3034,10 +3101,10 @@
             {
               "objID": "72d81fa6-ed67-4d1f-937f-c785f6c910f8",
               "type": "LVGLLabelWidget",
-              "left": 85,
-              "top": 74,
-              "width": 81,
-              "height": 16,
+              "left": 97,
+              "top": 102,
+              "width": 91,
+              "height": 18,
               "customInputs": [],
               "customOutputs": [],
               "style": {
@@ -3064,7 +3131,14 @@
               "disabledStateType": "literal",
               "states": "",
               "localStyles": {
-                "objID": "2bfc73d1-53ab-43a2-a895-0f6ad3917015"
+                "objID": "2bfc73d1-53ab-43a2-a895-0f6ad3917015",
+                "definition": {
+                  "MAIN": {
+                    "DEFAULT": {
+                      "text_font": "MONTSERRAT_16"
+                    }
+                  }
+                }
               },
               "group": "",
               "groupIndex": 0,
@@ -3077,9 +3151,9 @@
               "objID": "f2c1a8e1-9cf3-4b31-98fd-5eac2b6828e8",
               "type": "LVGLButtonWidget",
               "left": 110,
-              "top": 210,
+              "top": 198,
               "width": 100,
-              "height": 22,
+              "height": 34,
               "customInputs": [],
               "customOutputs": [],
               "style": {
@@ -3089,7 +3163,15 @@
                 "childStyles": []
               },
               "timeline": [],
-              "eventHandlers": [],
+              "eventHandlers": [
+                {
+                  "objID": "9dcb7750-986b-41ce-c9d2-3b5900c1372b",
+                  "eventName": "PRESSED",
+                  "handlerType": "action",
+                  "action": "on_settings_return",
+                  "userData": 0
+                }
+              ],
               "leftUnit": "px",
               "topUnit": "px",
               "widthUnit": "px",

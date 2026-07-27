@@ -22,6 +22,9 @@ extern void action_on_wifi_setup_return(lv_event_t * e);
 extern void action_on_wifi_setup_confirm(lv_event_t * e);
 extern void action_on_menu_reset(lv_event_t * e);
 extern void action_on_menu_gate_test(lv_event_t * e);
+extern void action_on_menu_settings(lv_event_t * e);
+extern void action_on_settings_change(lv_event_t * e);
+extern void action_on_settings_return(lv_event_t * e);
 
 #ifdef __cplusplus
 }

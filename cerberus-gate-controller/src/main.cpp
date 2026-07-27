@@ -15,6 +15,7 @@
 #include "input-events.h"
 #include "neokey-buttons.h"
 #include "neokey/neokey-pixels.h"
+#include "settings-store.h"
 
 #include "race/race-command-source.h"
 #include "race/race-serial-telemetry.h"
@@ -187,6 +188,11 @@ void setup() {
   statusIndicator.begin();
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
+
+  // Settings-screen toggles -- must run before anything reads either flag
+  // (race_serial_telemetry_tick()'s watchdog check, wifi_connect_task's
+  // RSSI report), so as early in setup() as possible.
+  settings_load(g_watchdog_tx_enabled, g_wifi_rssi_report_enabled);
 
   input_queue_init();
   system_event_queue_init();

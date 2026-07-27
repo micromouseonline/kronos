@@ -186,6 +186,7 @@ void create_screen_menu() {
                     objects.obj9 = obj;
                     lv_obj_set_pos(obj, 129, 38);
                     lv_obj_set_size(obj, LV_PCT(46), LV_PCT(28));
+                    lv_obj_add_event_cb(obj, action_on_menu_settings, LV_EVENT_PRESSED, (void *)0);
                     add_style_menu_option_panel(obj);
                     lv_obj_set_style_bg_color(obj, lv_color_hex(0x252540), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xa0a5b5), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -635,44 +636,54 @@ void create_screen_settings() {
     {
         lv_obj_t *parent_obj = obj;
         {
+            // sw_watchdog
             lv_obj_t *obj = lv_switch_create(parent_obj);
+            objects.sw_watchdog = obj;
             lv_obj_set_pos(obj, 193, 50);
-            lv_obj_set_size(obj, 29, 15);
+            lv_obj_set_size(obj, 40, 24);
+            lv_obj_add_event_cb(obj, action_on_settings_change, LV_EVENT_VALUE_CHANGED, (void *)0);
+            lv_obj_add_state(obj, LV_STATE_CHECKED);
+        }
+        {
+            // sw_wifi_stats
+            lv_obj_t *obj = lv_switch_create(parent_obj);
+            objects.sw_wifi_stats = obj;
+            lv_obj_set_pos(obj, 193, 102);
+            lv_obj_set_size(obj, 40, 24);
+            lv_obj_add_event_cb(obj, action_on_settings_change, LV_EVENT_VALUE_CHANGED, (void *)0);
             lv_obj_add_state(obj, LV_STATE_CHECKED);
         }
         {
             lv_obj_t *obj = lv_switch_create(parent_obj);
-            lv_obj_set_pos(obj, 193, 75);
-            lv_obj_set_size(obj, 29, 15);
-            lv_obj_add_state(obj, LV_STATE_CHECKED);
-        }
-        {
-            lv_obj_t *obj = lv_switch_create(parent_obj);
-            lv_obj_set_pos(obj, 193, 99);
-            lv_obj_set_size(obj, 29, 15);
+            lv_obj_set_pos(obj, 193, 154);
+            lv_obj_set_size(obj, 40, 24);
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 15, 50);
+            lv_obj_set_pos(obj, 88, 50);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text_static(obj, "ENABLE WATCHDOG");
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_static(obj, "WATCHDOG");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 20, 98);
+            lv_obj_set_pos(obj, 115, 153);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text_static(obj, "SOME OTHER THING");
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_static(obj, "UNUSED");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 85, 74);
+            lv_obj_set_pos(obj, 97, 102);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text_static(obj, "WIFI STATS");
         }
         {
             lv_obj_t *obj = lv_btn_create(parent_obj);
-            lv_obj_set_pos(obj, 110, 210);
-            lv_obj_set_size(obj, 100, 22);
+            lv_obj_set_pos(obj, 110, 198);
+            lv_obj_set_size(obj, 100, 34);
+            lv_obj_add_event_cb(obj, action_on_settings_return, LV_EVENT_PRESSED, (void *)0);
             {
                 lv_obj_t *parent_obj = obj;
                 {
