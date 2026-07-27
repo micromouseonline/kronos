@@ -241,6 +241,15 @@
       "componentGroups": [],
       "userProperties": [],
       "name": "on_menu_reset"
+    },
+    {
+      "objID": "f270a64e-5158-4470-c2e7-e37468dde382",
+      "components": [],
+      "connectionLines": [],
+      "localVariables": [],
+      "componentGroups": [],
+      "userProperties": [],
+      "name": "on_menu_gate_test"
     }
   ],
   "userPages": [
@@ -545,7 +554,15 @@
                     "childStyles": []
                   },
                   "timeline": [],
-                  "eventHandlers": [],
+                  "eventHandlers": [
+                    {
+                      "objID": "b04c30b7-9f60-4a40-b1f1-5ac1c65ccf07",
+                      "eventName": "PRESSED",
+                      "handlerType": "action",
+                      "action": "on_menu_gate_test",
+                      "userData": 0
+                    }
+                  ],
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "%",
@@ -886,15 +903,7 @@
                     "childStyles": []
                   },
                   "timeline": [],
-                  "eventHandlers": [
-                    {
-                      "objID": "28ca45d1-937f-4838-e532-2cc8ac8c2ccc",
-                      "eventName": "PRESSED",
-                      "handlerType": "action",
-                      "action": "on_menu_calibrate",
-                      "userData": 0
-                    }
-                  ],
+                  "eventHandlers": [],
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "%",
@@ -905,7 +914,7 @@
                       "type": "LVGLLabelWidget",
                       "left": 9,
                       "top": 8,
-                      "width": 93,
+                      "width": 62,
                       "height": 18,
                       "customInputs": [],
                       "customOutputs": [],
@@ -945,7 +954,7 @@
                       },
                       "group": "",
                       "groupIndex": 0,
-                      "text": "CALIBRATE",
+                      "text": "unused",
                       "textType": "literal",
                       "longMode": "WRAP",
                       "recolor": false
