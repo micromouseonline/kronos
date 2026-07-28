@@ -19,20 +19,41 @@ def get_release_version():
     return "1.0.0"
 
 
-def get_git_hash():
-    """Last 6 hex digits of the current commit, or 'nogit' if unavailable."""
+def get_git_describe():
+    """git-describe-style build id: <commit count>-g<short hash>[-dirty].
+
+    The repo has no tags, so this stands in for `git describe --long`:
+    total commit count on HEAD gives a monotonic serial (increases every
+    commit, unlike the hash alone), followed by the short hash and a
+    -dirty suffix if the working tree has uncommitted changes.
+    Falls back to 'nogit' if git is unavailable.
+    """
+    project_dir = env.subst("$PROJECT_DIR")
     try:
-        return subprocess.check_output(
-            ["git", "rev-parse", "--short=6", "HEAD"],
-            cwd=env.subst("$PROJECT_DIR"),
+        count = subprocess.check_output(
+            ["git", "rev-list", "--count", "HEAD"],
+            cwd=project_dir,
+            stderr=subprocess.DEVNULL,
+        ).decode().strip()
+        short_hash = subprocess.check_output(
+            ["git", "rev-parse", "--short=7", "HEAD"],
+            cwd=project_dir,
+            stderr=subprocess.DEVNULL,
+        ).decode().strip()
+        dirty = subprocess.check_output(
+            ["git", "status", "--porcelain"],
+            cwd=project_dir,
             stderr=subprocess.DEVNULL,
         ).decode().strip()
     except (subprocess.CalledProcessError, FileNotFoundError):
         return "nogit"
 
+    suffix = "-dirty" if dirty else ""
+    return f"{count}-g{short_hash}{suffix}"
+
 
 def write_version_header():
-    version_string = f"{get_release_version()}-{get_git_hash()}"
+    version_string = f"{get_release_version()}-{get_git_describe()}"
     header_path = os.path.join(env.subst("$PROJECT_DIR"), "src", "version-generated.h")
 
     contents = (

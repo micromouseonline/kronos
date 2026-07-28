@@ -463,7 +463,7 @@ void create_screen_main() {
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xf0f8ff), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_label_set_text_static(obj, "juno -69dB");
+                    lv_label_set_text_static(obj, " -69dBm");
                 }
             }
         }
@@ -533,9 +533,10 @@ void create_screen_splash() {
             // lbl_version
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.lbl_version = obj;
-            lv_obj_set_pos(obj, 100, 210);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 10, 210);
+            lv_obj_set_size(obj, 300, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &ui_font_mono16, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text_static(obj, "0.0.0-000000");
         }
     }
