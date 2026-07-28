@@ -1,5 +1,12 @@
 # Network Reliability and Guaranteed Delivery
 
+> **Proposed design, not yet implemented.** None of transaction-ID
+> dedup, exponential backoff/jitter, or `TCP_NODELAY` appear in
+> cerberus-gate-controller or hesperus-timing-gate today (verified: zero
+> matches for any of these in either codebase). Kept here as the intended
+> approach if/when delivery reliability becomes a real problem in
+> practice.
+
 Capturing sensor events with microsecond accuracy is only half the battle. The other half is guaranteeing 100% delivery of the event notification to the server in a wireless environment.
 
 We utilize HTTP POST requests over TCP. While this adds overhead for simple messages, it provides multiple layers of delivery guarantees, which we reinforce with an application-level transaction protocol.

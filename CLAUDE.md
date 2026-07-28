@@ -7,8 +7,12 @@ Multi-project workspace for a two-gate infrared timing system.
 | Folder | Platform | Purpose |
 |--------|----------|---------|
 | `hesperus-timing-gate/` | ESP32-S3, PlatformIO | Gate firmware (WiFi TSF clock sync, HTTP event reporting) |
-| `event-pulse-generator-arduino-nano/` | Arduino Nano, PlatformIO | 1 Hz reference pulse generator for calibration |
+| `cerberus-gate-controller/` | ESP32/ESP32-S3, PlatformIO | Central gate controller: touchscreen UI, NeoKey physical input, race state machine, serial (RATS V2) + HTTP event ingestion, leaderboard. See its own `docs/` (start at `SYSTEM-DESCRIPTION.md` and `OPERATOR-GUIDE.md`) |
+| `ares-pulse-generator/` | ESP32-S3, PlatformIO | 1 Hz reference pulse generator for calibration |
 | `gate-controller-python-test-cerberus/` | Python 3 | HTTP server: receives gate events, matches pairs, logs forensics |
+
+Shared build/flashing/cataloguing utility scripts (not a sub-project) live
+in `tools/` at the workspace root.
 
 ## Off-limits directories
 

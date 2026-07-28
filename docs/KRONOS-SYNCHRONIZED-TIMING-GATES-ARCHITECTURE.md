@@ -14,14 +14,16 @@
 
 ## System Hierarchy & Component Roles
 
-To navigate this documentation, the architecture is broken down into six discrete layers named after classical mythology (because I could), establishing a clear chain of command from physical track sensors to the master scoreboard:
+To navigate this documentation, the architecture is broken down into eight discrete layers named after classical mythology (because I could), establishing a clear chain of command from physical track sensors to the master scoreboard:
 
 * **KRONOS** (*Keep‑alive Resilient Orchestration for Networked Optical Systems*): **The Overall Ecosystem.** Represents the complete network topology, the combined codebases, and the mathematical clock calibration models working as one unified system.
 * **HADES** (*Host Automation, Detection, Event Scoring*): **The Central PC Software.** The lord of the central network; it hosts the database, runs the retrospective sliding-window pairing algorithms, and maintains the official scoreboard.
 * **ATLAS** (*Access‑point Time‑Locking and Authoritative Synchronization*): **The Wi-Fi Access Point.** The absolute ruler of time on the track. Through hardware TSF beacon frames, it dictates the master timeline and physically ferries data packets across the air.
-* **CERBERUS** (*Clock‑disciplined Event Recorder & Bridge for ESP‑based Race Unit Synchronization*): **The Gate Controller.** The multi-threaded FreeRTOS application monitoring the gates. It handles hardware interrupts, executes continuous clock sanity audits, and caches events in RAM during network drops. It collates raw gate notifications into clean split and lap times. Itcan act as a stand-alone scoring device if needed.
+* **CERBERUS** (*Clock‑disciplined Event Recorder & Bridge for ESP‑based Race Unit Synchronization*): **The Gate Controller.** The multi-threaded FreeRTOS application monitoring the gates. It handles hardware interrupts, executes continuous clock sanity audits, and caches events in RAM during network drops. It collates raw gate notifications into clean split and lap times. It can act as a stand-alone scoring device if needed.
 * **HESPERUS** (Hardware for ESP‑based Sensor Precision Events and Reliable Uplink Signals): **The Physical Sensor Gates.**  The independant gate hardware and edge software. They control and monitor the individual maze/track sensors, tag events with microsecond-accurate timestamps and sends notifications to the gate controller.
 * **HERMES** (*Hyper-accurate ESP32 Remote Measurement Exchange System*): **The Communication Protocol.** The application-layer HTTP packet layout that swiftly carries microsecond timestamps from the individual HESPERUS gates to CERBERUS for processing into event times..
+* **ARES**: **The Pulse Generator.** Stimulates the gates with reference triggers during testing and calibration.
+* **ARGUS**: **The Data Collector.** The hundred-eyed giant that collects and analyses gate data. Not yet implemented.
 
 
 
@@ -219,7 +221,7 @@ One trial conducted over a period of approximately 3 hours collected 11,630 pair
 
 Below is the plotted telemetry showing the hardware timing gap measured across the duration of the test:
 
-![message-gap-with-2000us-threshold.png](:/da9df8fea1554e52806ffc7f21a57543)
+![message-gap-with-2000us-threshold.png](../_resources/message-gap-with-2000us-threshold.png)
 
 As illustrated, at approximately 6:10 PM, the calculated gap began to increase perfectly linearly. Shortly thereafter, the gap stepped sharply to roughly $2000\,\mu\text{s}$ before steadily and linearly declining until it returned to near-zero.
 
@@ -231,11 +233,11 @@ The entire temporal excursion lasted just under 5 minutes, and the total drift w
 
 Discounting this single network-induced excursion, the true average TSF tracking gap across the 3-hour trial was an astonishing $1.73\,\mu\text{s}$, and never exceeded $77\,\mu\text{s}$.
 
-Following that test, the additional protections for tracking clock drift and unexpected outages wer added and the gates were connected to a more stable dedicated access point. On a domestic mesh network, there is a tendency for the access points to reconfigure arbitrarily during a long tests. However, when connected to a separate, stable portable router, the results are very consistent. Using the same 1PPS simultaneous trigger on two timing gates, the gap between the recorded times from each gate is recorded over a three-hour period (approx 11,000 triggers) and summarized in a histogram:
+Following that test, the additional protections for tracking clock drift and unexpected outages were added and the gates were connected to a more stable dedicated access point. On a domestic mesh network, there is a tendency for the access points to reconfigure arbitrarily during a long tests. However, when connected to a separate, stable portable router, the results are very consistent. Using the same 1PPS simultaneous trigger on two timing gates, the gap between the recorded times from each gate is recorded over a three-hour period (approx 11,000 triggers) and summarized in a histogram:
 
-![event-gap-pps-record.png](:/5f54c1a99ddf4e2c977979d4dcea37fb)
+![event-gap-pps-record.png](../_resources/event-gap-pps-record.png)
 
-Note that the times are in microseconds. During that period, the mean gap was $2.36\,\mu\text{s}$ and the maximum gap was $55\,\mu\text{s}$. There were no lost notifications, no need for the synthetic time and no cumulative drift. There was one occasion wher one of the gates was unable to send its notification. However, the event remained queued and was send a little later. The timing information remained intact.
+Note that the times are in microseconds. During that period, the mean gap was $2.36\,\mu\text{s}$ and the maximum gap was $55\,\mu\text{s}$. There were no lost notifications, no need for the synthetic time and no cumulative drift. There was one occasion where one of the gates was unable to send its notification. However, the event remained queued and was sent a little later. The timing information remained intact.
 
 A further overnight trial generated nearly 60,000 matches. Analysis revealed the following statistics:
 
@@ -273,13 +275,13 @@ Battery operated gates are clearly vulnerable to low-capacity batteries. Left fu
 ```
    esp_wifi_set_ps(WIFI_PS_MAX_MODEM);
 ```
-the average current consumption is stlll quite high since the radio will keep waking up every three beacon frames or so to update the TSF clock. It must also wake up every time a broadcast frame arrives just in case it has to do something about it.
+the average current consumption is still quite high since the radio will keep waking up every three beacon frames or so to update the TSF clock. It must also wake up every time a broadcast frame arrives just in case it has to do something about it.
 
 On that last issue, There are a surprising number of broadcast frames on any network but we can keep tem to a minimum by using a dedicated AP with the minimum of devices attached.
 
-One abvious improvement might be to use a lower power device in the gate. An ESP32-C3 should be perfectly adequate for the task and might reduce the current draw by some tens of mA though it is hard to get a definite value without testing specific boards.
+One obvious improvement might be to use a lower power device in the gate. An ESP32-C3 should be perfectly adequate for the task and might reduce the current draw by some tens of mA though it is hard to get a definite value without testing specific boards.
 
-For significant power savings, we must use more cunning. In the configuration described above, the gates are continuously connected to the AP and listen for beacon frames in order to keep the local TSF counter closely synchronised with the network. If we were to characterise the local drift of the TSF counter and the internal processor clock, it might be possible for the radio to remain completely off for longer periods. Suppose  the local clocks drifted by sme 10ppm. That would mean a possible drift of 50us over the course of five seconds. This is still not very much. We could disable the radio for 5 second periods andturn it on for just long enough to capture a beacon frame. that contains enough information to re-sync the clocks and calculate an interpolation factor to characterise the drift.
+For significant power savings, we must use more cunning. In the configuration described above, the gates are continuously connected to the AP and listen for beacon frames in order to keep the local TSF counter closely synchronised with the network. If we were to characterise the local drift of the TSF counter and the internal processor clock, it might be possible for the radio to remain completely off for longer periods. Suppose the local clocks drifted by some 10ppm. That would mean a possible drift of 50us over the course of five seconds. This is still not very much. We could disable the radio for 5 second periods and turn it on for just long enough to capture a beacon frame. that contains enough information to re-sync the clocks and calculate an interpolation factor to characterise the drift.
 
 When a physical event occurs during a radio blackout, it is instantly timestamped using the monotonic processor clock. The firmware then applies the drift compensation model to mathematically correct and re-time the event before queuing the notification packet.
 
@@ -294,7 +296,7 @@ A significantly leaner transport protocol exists in the form of **ESP-NOW**. Nat
 
 Because link-layer retries are handled automatically at the silicon layer, an ESP-NOW frame is far more likely to reach its destination quickly than a standard UDP packet. To guarantee absolute transport resilience, a lightweight application-layer confirmation layer can easily be compiled on top. Under this paradigm, there is no network connection state to maintain and no handshake overhead - the firmware simply wakes the radio, fires a single layer-2 frame, verifies the hardware ACK, and instantly powers down.
 
-Crucially, this shift does not sacrifice master timeline synchronization. The edge firmware can still monitor the master BSSID clock by passively capturing standard AP beacon frames. Every 5 seconds, the firmware enables Wi-Fi promiscuous mode, listens on the designated channel for a maximum window of 100ms until a beacon frame arrives from **CHARON**, and extracts the authoritative TSF timestamp. 
+Crucially, this shift does not sacrifice master timeline synchronization. The edge firmware can still monitor the master BSSID clock by passively capturing standard AP beacon frames. Every 5 seconds, the firmware enables Wi-Fi promiscuous mode, listens on the designated channel for a maximum window of 100ms until a beacon frame arrives from **ATLAS**, and extracts the authoritative TSF timestamp. 
 
 While ESP-NOW requires more manual development overhead to coordinate custom packet sequencing and acknowledgement tracking, its minimal airtime footprint makes it the optimal choice for communicating precision event data within crowded or high-attenuation RF environments.
 

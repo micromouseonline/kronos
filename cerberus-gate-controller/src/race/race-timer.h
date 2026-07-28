@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-//  race-timer.h — Race timing state machine (docs/maze-timer-state-machine.md,
-//  workspace root). This is the model: state machine + run/leaderboard data.
+//  race-timer.h — Race timing state machine (docs/RACE-STATE-MACHINE.md,
+//  this project). This is the model: state machine + run/leaderboard data.
 //  It knows nothing about input hardware (only RaceCommands -- see
 //  race-command-source.h for the current ButtonID -> RaceCommand mapping)
 //  and nothing about display hardware (no lv_* calls, no ui/screens.h -- see
