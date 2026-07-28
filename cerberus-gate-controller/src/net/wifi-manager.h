@@ -28,7 +28,7 @@ constexpr uint8_t WIFI_STATUS_KEY = 3;
 
 // Manual-testing aid only -- toggle off to silence the repeating 5s "IP:
 // ... RSSI: ..." line while eyeballing a serial terminal by hand (see
-// docs/TESTING-SERIAL.md). Doesn't affect the one-shot connect/disconnect
+// tools/testing/SERIAL-TEST-PLAN.md). Doesn't affect the one-shot connect/disconnect
 // messages, only the periodic re-report further down in wifi_connect_task.
 inline bool g_wifi_rssi_report_enabled = false;
 

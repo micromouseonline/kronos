@@ -1,7 +1,7 @@
 # Gate Event Test Scripts
 
 Manual curl test scripts for the `POST /api/event` endpoint (see
-`SYSTEM-DESCRIPTION.md` section on the HTTP server,
+`docs/SYSTEM-DESCRIPTION.md`'s HTTP Server section,
 implemented in `src/net/http-server.h` / `src/race/race-command-source.h`).
 
 ## Endpoint

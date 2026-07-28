@@ -45,7 +45,7 @@ inline bool serial_protocol_parse_line(const char *line, SerialLine *out) {
   // literal '>' in the format that never matched (e.g. an unterminated
   // "<98,0" with no closing bracket at all) still leaves the count at 2,
   // since %[^>] happily stops at end-of-string too. Found via manual
-  // testing (docs/TESTING-SERIAL.md 7.1) accepting "<98,0" as valid.
+  // testing (tools/testing/SERIAL-TEST-PLAN.md 7.1) accepting "<98,0" as valid.
   // Require an actual '>' to exist somewhere in the line.
   if (strchr(line, '>') == nullptr) {
     return false;
@@ -93,7 +93,7 @@ inline void serial_protocol_rx_task(void *) {
   // buffer and extracting every complete line found in it, rather than
   // resetting a single small buffer after each line, means a burst can't
   // lose a line to timing. Found via manual testing
-  // (docs/TESTING-SERIAL.md Section 8: an unpaused multi-line send
+  // (tools/testing/SERIAL-TEST-PLAN.md Section 8: an unpaused multi-line send
   // produced no response at all).
   static char rx_buf[256];
   static size_t rx_len = 0;

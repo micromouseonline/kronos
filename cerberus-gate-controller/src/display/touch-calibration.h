@@ -10,7 +10,7 @@
 // pixels) -- also required on capacitive boards now: a capacitive chip
 // reports pixel coordinates in its own native orientation, but if that
 // doesn't match the panel's LCD_ROTATION, touches land in the wrong place
-// (found on Freenove; see USER-INPUT-SYSTEM.md). lcd.calibrateTouch()'s
+// (found on Freenove; see INPUT-SYSTEM.md). lcd.calibrateTouch()'s
 // 4-corner wizard is technology-agnostic -- it captures whatever mapping is
 // needed from raw-reported to actual-screen position, so it fixes rotation
 // offset the same way it fixes resistive scaling. Callers must still guard

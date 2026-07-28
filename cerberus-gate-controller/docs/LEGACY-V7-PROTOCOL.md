@@ -1,5 +1,12 @@
 # CERBERUS Gate Controller Message Format (Legacy V7.0 Protocol)
 
+> **Historical reference only.** This documents the older V7.0 message
+> set (`src/messages-reference.h`, not included in the current build). The
+> firmware today implements RATS V2 instead — see
+> `docs/preferredMessageSequencesV2.pdf` and `docs/RACE-STATE-MACHINE.md`
+> for the current, authoritative protocol and state machine. Kept here for
+> comparison only; may not reflect current firmware behaviour.
+
 Source: `messages-reference.h` (comment block + constants), original authors
 David Hannaford & Ian Butterworth (2017-09-25), modified by Peter Harrison
 (2022-06-07, v7.0).

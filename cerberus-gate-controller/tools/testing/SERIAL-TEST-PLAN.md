@@ -151,8 +151,8 @@ transition, no telemetry burst beyond what step 2 already caused).
 ## 9. New behaviour: SetMode, run limits, EntryTimeS, mouse name
 
 Covers the four items implemented after the initial parsing-only
-round (see `docs/PLANNED-UPDATES.md`'s Unresolved Protocol Behaviors section and the
-plan file's Decisions section).
+round (see `docs/PLANNED-UPDATES.md`'s "Protocol Behaviors — Resolved"
+section).
 
 - [x] **9.1 SetMode round-trip.** Send `<99,CALIBRATION>` from `WAITING`
       (or any state). Confirm the screen and NeoKeys show `CALIBRATE`
@@ -223,10 +223,10 @@ plan file's Decisions section).
       updates to show ".../8" -- both halves (current and max) must
       refresh whenever either changes.
 
-## 10. State-table reconciliation (docs/updated-state-table.md alignment)
+## 10. State-table reconciliation (docs/RACE-STATE-MACHINE.md alignment)
 
 Covers the round of fixes that brought the firmware into line with the
-now-confirmed `updated-state-table.md` (T-key restrictions, CALIBRATE
+now-confirmed `RACE-STATE-MACHINE.md` (T-key restrictions, CALIBRATE
 display reset, `CourseTimeMs` timing, `C1RunTime` x3, `EntryTimeS`
 default). None of this was covered by Sections 1-9 above.
 

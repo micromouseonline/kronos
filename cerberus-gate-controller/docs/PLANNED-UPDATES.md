@@ -6,7 +6,7 @@ This document tracks architecture and feature work deferred from the current imp
 
 ## Supervisor State Machine (READY/RACING/MAINTENANCE)
 
-Original design envisioned a three-level supervisory state machine distinct from the per-mouse race state machine. Current implementation is simpler: the race state machine alone governs timing flow, and screen navigation is decoupled via EEZ Studio's `loadScreen()` (see `USER-INPUT-SYSTEM.md:125`).
+Original design envisioned a three-level supervisory state machine distinct from the per-mouse race state machine. Current implementation is simpler: the race state machine alone governs timing flow, and screen navigation is decoupled via EEZ Studio's `loadScreen()` (see `INPUT-SYSTEM.md`'s "App state" section).
 
 A future supervisor layer could centralize mode-switching logic, but this is **not blocking current operation** and may not be necessary if the simpler architecture continues to work.
 
@@ -60,43 +60,25 @@ Not yet implemented. Currently, Core 1 (state machine) appends to `race_runs[]` 
 
 ---
 
-## Unresolved Protocol Behaviors (from RATS V2)
+## Protocol Behaviors — Resolved
 
-Three areas from `src/net/serial-protocol.h`, `src/race-command-source.h`, and the RATS V2 spec have no defined behavior yet:
+The three items formerly tracked here as open (`MSG_SET_MODE=99`, `MSG_EXTRA_RUN=92`, `MSG_ALLOWED_RUNS=94`) are all implemented and exercised in `tools/testing/SERIAL-TEST-PLAN.md` (§9–10):
 
-### `MSG_SET_MODE=99` / CALIBRATION Value
-
-The legacy host protocol includes a `SetMode` command; one mode value is CALIBRATION. CERBERUS firmware runs on a display board with no local gate sensor hardware (gates are separate WiFi-connected devices), so a "calibration mode" for phototransistor/pot readings doesn't apply.
-
-**Open question:** Should `MSG_SET_MODE=CALIBRATION` trigger any visible state change on the display (e.g. show a "Calibration Mode" banner)? Or is it ignored entirely?
-
-### `MSG_EXTRA_RUN=92` Enforcement
-
-The host can signal an extra run via `MSG_EXTRA_RUN`. Currently this is logged/echoed but does not actually increment `g_allowed_runs` or bypass any run-count limits.
-
-**Open question:** Should extra runs be immediately granted, or should they increment a separate "extra runs granted" counter that the firmware can check?
-
-### `MSG_ALLOWED_RUNS=94` Enforcement
-
-The host sets the max run count per mouse via `MSG_ALLOWED_RUNS`. Currently stored in `g_allowed_runs` but never checked; `MAX_RUNS_PER_MOUSE` is still a fixed local constant (`src/race/race-timer.h`).
-
-**Open question:** Should `g_allowed_runs` override the fixed constant, or is it informational metadata only?
+* `MSG_SET_MODE=99` — `"CALIBRATION"` posts `RaceCommand::ENTER_CALIBRATION`, `"TIMER"` posts `RaceCommand::RESUME_TIMER` (`race-command-source.h`, `race_timer_handle_command()`). Any other value is logged and ignored.
+* `MSG_EXTRA_RUN=92` — posts `RaceCommand::EXTRA_RUN`, which decrements `mouse_run_count` to undo a false-start run (`race-timer.h:407–412`).
+* `MSG_ALLOWED_RUNS=94` — `g_allowed_runs` overrides the fixed `MAX_RUNS_PER_MOUSE` constant via `race_timer_allowed_runs()` (`race-timer.h:310–319`), enforced as the run-count cap.
 
 ---
 
-## Host-Supplied Mouse Names
+## Host-Supplied Mouse Names — Resolved
 
-The RATS V2 protocol allows the host to send a mouse name in the `MSG_NEW_MOUSE=98` message (value field now contains text, not always `0`). This name reaches `SystemEvent.payload` (`src/race-command-source.h:280–289`) but is not currently threaded into the race state machine's run records.
-
-**Current behavior:** `RaceRun` entries and leaderboard display still pick from the canned `mouse_names[]` array (`src/race/race-timer.h:29–68`), ignoring the host-supplied name.
-
-**Open question:** Should the host-supplied name be stored in `RaceRun` and used on-screen and in the leaderboard instead of the canned list? If so, what UI fallback applies if a run completes without a host-supplied name?
+The RATS V2 protocol allows the host to send a mouse name in the `MSG_NEW_MOUSE=98` message (value field now contains text, not always `0`). This name reaches `SystemEvent.payload` and is threaded through: `race_timer_enter_new_mouse()` (`race-timer.h:283–307`) stores it in `current_mouse_name` when non-empty, falling back to the canned `mouse_names[]` array (`race-timer.h:29–68`) otherwise. `RaceRun.name` is copied from `current_mouse_name` at commit time (`race-timer.h:266`), so both on-screen display and the leaderboard use the host-supplied name when one was provided.
 
 ---
 
 ## Touch Calibration NVS Escape Hatch
 
-**Issue:** If NVS holds a `"calibrated"=true` entry with bad calibration data (e.g. leftover from earlier testing), `calibrate()` (`src/display/touch-calibration.h`) loads it and never re-launches the wizard. Since supervisor navigation is touch-driven, bad calibration locks the user out.
+**Issue:** If NVS holds a `"calibrated"=true` entry with bad calibration data (e.g. leftover from earlier testing), `calibrate()` (`src/display/touch-calibration.h`) loads it and never re-launches the wizard. Since menu/settings navigation is touch-driven, bad calibration locks the user out of the menu (race commands via NeoKey are unaffected).
 
 **Current workaround:** Full flash erase (`pio run -e <env> -t erase`).
 

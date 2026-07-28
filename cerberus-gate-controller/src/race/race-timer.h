@@ -153,7 +153,7 @@ inline uint32_t time_left = RACE_TIME_LIMIT;
 //
 // g_entry_time_s_limit does NOT reset -- once set via <93,xxx>, it
 // persists as the starting entry time for every subsequent NewMouse until
-// the host sends a new value. Defaults to 600s (docs/updated-state-table.md:
+// the host sends a new value. Defaults to 600s (docs/RACE-STATE-MACHINE.md:
 // "Default Entry time set to 600 seconds"), not "unset" -- a real countdown
 // is always active, even with no host ever connected, rather than falling
 // back to the old raw-elapsed display. Still negative-settable (e.g.
@@ -381,7 +381,7 @@ inline void race_timer_handle_command(RaceCommand command, const char *mouse_nam
   // instead of being applied as a direct write from another task.
   if (command == RaceCommand::ENTER_CALIBRATION) {
     race_state = RaceState::CALIBRATE;
-    // docs/updated-state-table.md: Calibrating shows a blank mouse name
+    // docs/RACE-STATE-MACHINE.md: Calibrating shows a blank mouse name
     // and "0/5" run count, not whatever the previous mouse left behind.
     // Run Times list is blanked in the display layer instead (see
     // race-timer-display.h) -- mouse_first_run_index is deliberately left
@@ -413,7 +413,7 @@ inline void race_timer_handle_command(RaceCommand command, const char *mouse_nam
 
   switch (race_state) {
     case RaceState::CALIBRATE:
-      // RESTART only, not bare NEW_MOUSE -- docs/updated-state-table.md:
+      // RESTART only, not bare NEW_MOUSE -- docs/RACE-STATE-MACHINE.md:
       // "Only a NewMouse event drops the controller out of CALIBRATING --
       // either receiving the <98,xxxx> message, or a long press on the A
       // key... T gets no response here." Both of those already normalize
@@ -447,7 +447,7 @@ inline void race_timer_handle_command(RaceCommand command, const char *mouse_nam
         race_timer_enter_new_mouse(mouse_name);
       }
       // Bare NEW_MOUSE (T/BTN_TOUCH short press) deliberately does nothing
-      // here -- docs/updated-state-table.md leaves T's meaning in ARMED
+      // here -- docs/RACE-STATE-MACHINE.md leaves T's meaning in ARMED
       // undecided ("available if we should decide to use it at some
       // point"), so it's disabled rather than left abandoning the armed
       // mouse, until that's actually decided.

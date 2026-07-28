@@ -1,18 +1,23 @@
 # cerberus-gate-controller
 
-ESP32 gate-timer controller with a touchscreen UI. Currently implements a
-Supervisor menu and input system (touch / GPIO / NeoKey 1x4) shared across
-four board targets; 
+ESP32 gate-timer controller with a touchscreen UI. Race commands (ARM,
+START, GOAL, new mouse) are driven by a physical NeoKey 1x4 keypad, or
+remotely over serial/HTTP; touch drives on-screen navigation only, not
+race commands. Shared input system across four board targets. There is
+no Supervisor/menu state machine -- race progress is tracked entirely by
+`RaceState`, decoupled from screen navigation.
 
+See `docs/OPERATOR-GUIDE.md` for how to run a race day, and
+`docs/SYSTEM-DESCRIPTION.md` for the full architecture.
 
 ## What it illustrates
 
-- **Producer-agnostic input dispatch** -- touch, physical GPIO buttons, and
-  an optional NeoKey 1x4 I2C keypad all post the same `ButtonID`
+- **Producer-agnostic input dispatch** -- physical NeoKey buttons (and,
+  in code, an unused GPIO-button path) all post the same `ButtonID`
   events into one FreeRTOS queue from a Core-1 polling task. The main task
-  drains the queue and dispatches through a single `on_button_event()`, so
+  drains the queue and dispatches through a single handler, so
   application logic never knows which physical device generated a press.
-  See `docs/USER-INPUT-SYSTEM.md` for the full design.
+  See `docs/INPUT-SYSTEM.md` for the full design.
 - **Runtime hardware presence detection** -- the NeoKey module is optional
   on every board; a background task probes for it non-blockingly and the
   rest of the app degrades to silent no-ops if it's absent or unplugged.
@@ -39,6 +44,6 @@ pio run -e cerberus-esp32-s3-cyd-touch-freenove
 pio run -e cerberus-esp32-s3-cyd-touch-freenove -t upload
 ```
 
-See the [workspace build guide](../BUILDING.md) for details on targeting
-different boards, and `docs/USER-INPUT-SYSTEM.md` for how the input/dispatch
+See the [workspace build guide](../platformio.md) for details on targeting
+different boards, and `docs/INPUT-SYSTEM.md` for how the input/dispatch
 layer works.

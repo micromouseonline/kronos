@@ -102,7 +102,7 @@ inline RaceCommand race_command_from_serial(const SerialLine &line) {
 inline void serial_protocol_handle_info_message(const SerialLine &line, uint64_t timestamp_us) {
   switch (line.type) {
     case MSG_CONTEST_NAME:
-      // docs/updated-state-table.md: accepted throughout WAITING (host
+      // docs/RACE-STATE-MACHINE.md: accepted throughout WAITING (host
       // message order isn't guaranteed), ignored in every other state
       // (explicitly "ignored" while ARMED; not specified for
       // CALIBRATE/RUNNING/GOAL, so treated the same -- WAITING is the

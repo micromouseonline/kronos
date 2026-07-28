@@ -17,7 +17,7 @@
 
 // Manual-testing aid only, NOT part of the wire protocol -- toggle off to
 // silence the once-a-second MSG_WATCHDOG line while eyeballing a serial
-// terminal by hand (see docs/TESTING-SERIAL.md). Leave on (the default)
+// terminal by hand (see tools/testing/SERIAL-TEST-PLAN.md). Leave on (the default)
 // whenever real RATS host software is attached: it expects a watchdog at
 // least every 2s and reports a timing-system fault if it stops.
 inline bool g_watchdog_tx_enabled = false;
@@ -57,7 +57,7 @@ inline void race_serial_telemetry_tick() {
 
   // entry_timer_started's false->true edge is the mouse's first
   // successful WAITING->ARMED transition for this entry (see
-  // race_timer_try_arm(), race-timer.h) -- docs/updated-state-table.md
+  // race_timer_try_arm(), race-timer.h) -- docs/RACE-STATE-MACHINE.md
   // ties CourseTimeMs to first start-cell arrival (State 2), not to
   // NewMouse/mouse_id changing (State 9), which is what this used to key
   // off. FirstRun-guarded: fires exactly once per entry, same as the

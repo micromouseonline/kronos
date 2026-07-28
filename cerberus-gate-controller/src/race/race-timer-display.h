@@ -160,7 +160,7 @@ inline void race_timer_render() {
   switch (race_timer_get_state()) {
     case RaceState::CALIBRATE:
       lv_label_set_text(objects.lbl_current_run_time, ".........");
-      // docs/updated-state-table.md: "Entry Time shows 00:00" while
+      // docs/RACE-STATE-MACHINE.md: "Entry Time shows 00:00" while
       // Calibrating -- a fixed idle value, not whatever EntryTimeS
       // countdown persisted from the last mouse. Overrides the
       // unconditional countdown block below, which explicitly skips
@@ -191,7 +191,7 @@ inline void race_timer_render() {
 
   // EntryTimeS countdown: shown whenever the host has set a limit, in
   // every state EXCEPT CALIBRATE (which forces a fixed "00:00" above --
-  // docs/updated-state-table.md). It reads as the full starting duration,
+  // docs/RACE-STATE-MACHINE.md). It reads as the full starting duration,
   // unchanging, until entry_sw actually starts on the mouse's first ARM
   // (race_timer_try_arm()) -- not at NewMouse itself -- then counts down
   // live, and turns red once it hits zero (track-and-display only:
@@ -210,7 +210,7 @@ inline void race_timer_render() {
     }
   }
 
-  // docs/updated-state-table.md: "Mouse Name, Run Times blank" while
+  // docs/RACE-STATE-MACHINE.md: "Mouse Name, Run Times blank" while
   // Calibrating -- current_mouse_name is already cleared by
   // ENTER_CALIBRATION (race-timer.h), but the run-times list is display
   // state only, so it's blanked here rather than mutating
