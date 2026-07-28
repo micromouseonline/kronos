@@ -60,7 +60,7 @@ below).
 
 ## Input producers
 
-**Touch** -- 4 of 5 boards. Capacitive (FT6336U, CST820) or resistive
+**Touch** -- all 4 boards. Capacitive (FT6336U, CST820) or resistive
 (XPT2046), abstracted by LovyanGFX.
 - On-screen buttons are EEZ Studio-generated LVGL screens (`ui/
   screens.c`); each posts via a hand-written callback in `eez-actions.cpp`
@@ -79,19 +79,19 @@ below).
   `main.cpp`'s `input_event_handler` -- same as a held NeoKey TOUCH
   button, not a separate code path.
 
-**Physical GPIO buttons** (`gpio-buttons.h`) -- M5 Core only.
+**Physical GPIO buttons** (`gpio-buttons.h`) -- currently unused, no board
+enables `HAS_GPIO_BUTTONS`.
 - Buttons A/B/C, active-low, debounced (`DebouncedButton`, `button/
   button.h`).
-- All three support press + hold (`GPIO_BUTTON_LONG_PRESS_MS`, `boards/
-  m5-core.h`): PRESSED fires on the press edge, HELD fires once mid-hold
-  if still down past the threshold -- the same dual-post pattern as
-  NeoKey and touch.
+- All three support press + hold (`GPIO_BUTTON_LONG_PRESS_MS`): PRESSED
+  fires on the press edge, HELD fires once mid-hold if still down past
+  the threshold -- the same dual-post pattern as NeoKey and touch.
 - Both map through `BUTTON_COMMAND_MAP` like every other producer.
-- This board has no touchscreen, so `BTN_TOUCH` is never produced here.
+- On a board with no touchscreen, `BTN_TOUCH` would never be produced here.
 
 **NeoKey 1x4** (`neokey/neokey-driver.h` / `neokey-buttons.h` /
 `neokey/neokey-pixels.h`) -- optional external I2C attachment (Adafruit
-seesaw chip, address 0x30), enabled by default on all 5 boards regardless
+seesaw chip, address 0x30), enabled by default on all 4 boards regardless
 of whether a physical module is present.
 - Init is fully non-blocking: a background FreeRTOS task does a quick
   presence probe, then the full handshake only if something acks. The rest
@@ -155,7 +155,6 @@ is a known gap.
 
 | Board | Touch | Calibration | Physical buttons | NeoKey SDA/SCL | NeoKey confirmed |
 |---|---|---|---|---|---|
-| M5 Core | none | n/a | A/B/C (GPIO) | 21/22 | absent-module only |
 | Freenove S3 CYD | FT6336U (capacitive) | yes | none | 6/5 | present + absent |
 | JC2432W328C | CST820 (capacitive) | yes | none | 21/22 | present + absent |
 | CYD2USB (ILI9341) | XPT2046 (resistive) | yes | none | 27/22 | present + absent |

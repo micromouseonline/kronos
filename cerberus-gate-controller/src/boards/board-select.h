@@ -5,9 +5,7 @@
 // ----------------------------------------------------------------------------
 #pragma once
 
-#ifdef BOARD_M5_CORE
-#include "m5-core.h"
-#elif defined(BOARD_CYD2USB_DIYMALLS_ILI9341)
+#if defined(BOARD_CYD2USB_DIYMALLS_ILI9341)
 #include "cyd2usb-diymalls-ili9341.h"
 #elif defined(BOARD_CYD2USB_DIYMALLS_ST7789)
 #include "cyd2usb-diymalls-st7789.h"

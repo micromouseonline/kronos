@@ -1,6 +1,7 @@
 // ----------------------------------------------------------------------------
 //  gpio-buttons.h — Physical-button input producer for boards with no
-//  touchscreen (M5Stack Core: buttons A/B/C, active-LOW).
+//  touchscreen (buttons A/B/C, active-LOW). Currently unused -- no board
+//  profile enables HAS_GPIO_BUTTONS.
 //
 //  Mapping (3 buttons -> BTN_ARM/BTN_START/BTN_GOAL, no BTN_TOUCH -- this
 //  board has no touchscreen):

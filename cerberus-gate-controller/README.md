@@ -2,13 +2,13 @@
 
 ESP32 gate-timer controller with a touchscreen UI. Currently implements a
 Supervisor menu and input system (touch / GPIO / NeoKey 1x4) shared across
-five board targets; 
+four board targets; 
 
 
 ## What it illustrates
 
-- **Producer-agnostic input dispatch** -- touch, physical GPIO buttons (M5
-  Core), and an optional NeoKey 1x4 I2C keypad all post the same `ButtonID`
+- **Producer-agnostic input dispatch** -- touch, physical GPIO buttons, and
+  an optional NeoKey 1x4 I2C keypad all post the same `ButtonID`
   events into one FreeRTOS queue from a Core-1 polling task. The main task
   drains the queue and dispatches through a single `on_button_event()`, so
   application logic never knows which physical device generated a press.
@@ -28,7 +28,6 @@ five board targets;
 | PlatformIO env                          | Board                              |
 |------------------------------------------|-------------------------------------|
 | cerberus-esp32-s3-cyd-touch-freenove     | Freenove FNK0104B ESP32-S3 CYD      |
-| cerberus-m5-core                         | M5Stack Core                        |
 | cerberus-cyd2usb-diymalls-ili9341        | CYD2USB (DIYMalls, ILI9341 panel)   |
 | cerberus-cyd2usb-diymalls-st7789         | CYD2USB (DIYMalls, ST7789 panel)    |
 | cerberus-jc2432w328c                     | JC2432W328C                         |

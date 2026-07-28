@@ -13,14 +13,7 @@
 #define LGFX_USE_V1
 #include "boards/board-select.h"
 
-#if defined(BOARD_M5_CORE)
-// Use LovyanGFX's runtime auto-detection to configure the M5Stack Core panel/backlight.
-// This board has no touchscreen (3 hardware buttons instead); autodetect simply
-// won't find a touch chip, which is correct.
-#define LGFX_AUTODETECT
-#include <LovyanGFX.hpp>
-
-#elif defined(BOARD_CYD2USB_DIYMALLS_ILI9341)  // Sunton CYD2USB, DIYMALLS variant with ILI9341 panel driver (ESP32-2432S028R family) Manual Configuration
+#if defined(BOARD_CYD2USB_DIYMALLS_ILI9341)  // Sunton CYD2USB, DIYMALLS variant with ILI9341 panel driver (ESP32-2432S028R family) Manual Configuration
 
 #include <LovyanGFX.hpp>
 class LGFX : public lgfx::LGFX_Device {
