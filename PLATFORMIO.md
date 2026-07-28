@@ -1,10 +1,12 @@
 # PlatformIO Environment Configuration
 
 How PlatformIO environments are structured across this workspace, using
-`cerberus-gate-controller/` as the reference implementation. The other
-firmware projects (`hesperus-timing-gate/`,
-`event-pulse-generator-arduino-nano/`) are simple, single-environment
-`platformio.ini` files and have not been migrated to this pattern.
+`cerberus-gate-controller/` as the reference implementation. The other two
+embedded firmware projects (`hesperus-timing-gate/`,
+`ares-pulse-generator/`) share the same `platformio.ini`/`boards.ini`
+composition pattern described below (their `boards.ini` section layout is
+close to identical to cerberus's) — cerberus is used throughout as the
+worked example because it has the most environments and features.
 
 ## Why this exists
 
@@ -29,10 +31,12 @@ PlatformIO's `extends` mechanism.
 2. **`proc_*`** (`proc_esp32s3`, `proc_esp32c3`, `proc_esp32`) - per-SoC
    settings: MCU, clock speed, USB mode flags. One per chip family.
 3. **`feature_*`** (`feature_lovyangfx`, `feature_neokey`, `feature_lvgl`,
-   `feature_http`, `feature_oled`, `feature_ble`, `feature_neopixel`) -
-   one optional capability each: its library dependency and a `-D HAS_X=1`
-   build flag. A board only pulls in the features it actually uses.
-4. **`base_*`** (`base_m5_core`, `base_cyd2usb_diymalls_ili9341`, ...) -
+   `feature_http`, `feature_oled`, `feature_ble`, `feature_neopixel`,
+   `feature_psram_qspi_8mb`, `feature_psram_opi_8mb`,
+   `feature_psram_opi_16mb`) - one optional capability each: its library
+   dependency and a `-D HAS_X=1` build flag. A board only pulls in the
+   features it actually uses.
+4. **`base_*`** (`base_s3_zero`, `base_cyd2usb_diymalls_ili9341`, ...) -
    one per physical board. Combines `env_common` + the matching `proc_*` +
    whichever `feature_*` blocks that board's hardware needs (e.g. every CYD
    variant needs `feature_oled`; only touchscreen boards need `feature_lvgl`).
@@ -75,11 +79,18 @@ in the `build_flags`/`lib_deps` reference list. Non-compose keys (`board`,
 `board_build.flash_mode`, etc.) behave as normal scalar overrides and don't
 need this treatment.
 
-After editing `boards.ini`, run:
+After editing `boards.ini`, run (from the workspace root — the script
+takes an explicit path and does nothing useful without one, since its
+no-argument default looks for a `base-boards.ini` that doesn't exist in
+this repo):
 
 ```
-python3 tools/check_ini_composition.py
+python3 tools/check_ini_composition.py cerberus-gate-controller/boards.ini
 ```
+
+Substitute `hesperus-timing-gate/boards.ini` or
+`ares-pulse-generator/boards.ini` to check those projects instead (or
+list more than one path — the script accepts multiple files at once).
 
 It statically flags sections that redefine `build_flags`/`lib_deps` but
 forgot a `${parent.key}` reference, or that inherit the same compose key
@@ -104,10 +115,12 @@ from every `base_*` or `[env:*]` block that should carry it.
 
 ## Other build-time behaviour
 
-- `env_common`'s `extra_scripts` runs `tools/generate_merged_bin.py` after
-  every build, producing a single flashable `<env>-v<version>-all-in-one.bin`
-  in `dist/` (version number comes from the `[env:version_metadata]` block
-  in `platformio.ini`).
+- `env_common`'s `extra_scripts` runs `tools/generate_version_header.py`
+  before every build (reads the release version from the
+  `[env:version_metadata]` block in `platformio.ini` and generates a
+  version header for the firmware), and `tools/generate_merged_bin.py`
+  after every build, producing a single flashable
+  `<env>-v<version>-all-in-one.bin` in `dist/`.
 - `[env:native]` in `platformio.ini` is a separate, unrelated environment for
   running host-side unit tests (`pio test -e native`) - it does not extend
   anything in `boards.ini` and has no board/display/WiFi dependency.
@@ -128,45 +141,18 @@ pio run                     # builds ALL environments - avoid unless you mean to
 
 ## Other sub-projects
 
-`hesperus-timing-gate/` and `event-pulse-generator-arduino-nano/`
-each use a single flat `[env:*]` block with no `extends`/feature
-composition - there is nothing to cross-reference against this document
-for them.
+`hesperus-timing-gate/` and `ares-pulse-generator/` each have their own
+`platformio.ini`/`boards.ini` pair using the same composition layers
+described above (`env_common`, `proc_*`, `feature_*`, `base_*`), with
+their own per-project environment name prefix (`hesperus-gate-*`,
+`ares-pulser-*`) instead of `cerberus-*`. Everything on this page —
+composition layers, the `extends` gotcha, adding a board/feature, running
+`check_ini_composition.py` — applies the same way in either project;
+just substitute the project's own `platformio.ini`/`boards.ini` for
+cerberus's.
 
 ## Converting an environment to Arduino IDE
 
-Not recommended for Cerberus day-to-day (you'd be reassembling by hand what
-`extends` does automatically), but if needed for one-off debugging:
-
-- **Resolve the full chain yourself first.** Pick the target `[env:*]`, then
-  manually walk its `extends` list and every parent's `extends` list
-  (`env:* → base_* → env_common, proc_*, feature_*`) to get the flattened
-  set of `board`, `build_flags`, and `lib_deps`. There's no tool for this -
-  read `boards.ini` and `platformio.ini` directly.
-- **Board selection**: match `board` + the `proc_*` block's MCU to the
-  closest entry under Arduino IDE's Tools > Board > esp32 menu (e.g.
-  `esp32-s3-devkitc-1` -> "ESP32S3 Dev Module"). Flash size, partition
-  scheme, PSRAM, and USB CDC/DFU mode become individual Tools submenu
-  selections instead of `board_build.*` keys and `-D ARDUINO_USB_*` flags -
-  set each one to match.
-- **Partition table**: `board_build.partitions = no_ota.csv` /
-  `default_16MB.csv` has no direct Arduino IDE picker for custom CSVs;
-  choose the closest built-in scheme from Tools > Partition Scheme, or
-  install the `.csv` into the ESP32 core's `tools/partitions/` folder to
-  make it selectable.
-- **`-D` build flags**: Arduino IDE has no `build_flags` field. Either
-  `#define` each one (e.g. `HAS_HTTP`, `HAS_LOVYANGFX`, `BOARD_M5_CORE`,
-  `STATUS_LED`) at the top of the `.ino`/main source before any header that
-  reads it, or add them to `boards.txt`/a `platform.local.txt` build
-  extra-flags override. Missing one silently disables a feature rather than
-  failing to compile, so cross-check against the flattened list.
-- **Libraries**: install each `lib_deps` entry's library manually via
-  Library Manager (name only - the `@ ^x.y.z` version pin is not enforced
-  by Arduino IDE, so pin the version yourself if it matters).
-- **`-Iinclude` / `-Isrc`**: Arduino IDE auto-includes the sketch folder but
-  not `include/`. `lv_conf.h` and similar headers need copying alongside
-  the `.ino`, or LVGL's `LV_CONF_INCLUDE_SIMPLE` lookup will fail.
-- **What you lose**: the `generate_merged_bin.py` post-build step (no
-  auto-generated `dist/*-all-in-one.bin`), and `check_ini_composition.py`'s
-  safety net - nothing will warn you if the manual translation drops a flag
-  or library.
+Direct Arduino IDE support (an auto-generated setup guide) has been
+dropped from the build — see [`ARDUINO.md`](ARDUINO.md) for the manual
+translation process, needed only for rare one-off debugging.

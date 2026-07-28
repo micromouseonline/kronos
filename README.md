@@ -54,6 +54,6 @@ For detailed clock calibration formulas, circuit diagrams, power management deep
 
 For the network provisioning approach (config-portal Wi-Fi setup, mDNS discovery), see [**docs/PROVISIONING.md**](docs/PROVISIONING.md). For the proposed application-level delivery-reliability scheme, see [**docs/RELIABILITY.md**](docs/RELIABILITY.md).
 
-For how the PlatformIO build environments are structured and composed (board/feature configuration, adding a new board, converting to Arduino IDE), see [**platformio.md**](platformio.md).
+For how the PlatformIO build environments are structured and composed (board/feature configuration, adding a new board), see [**PLATFORMIO.md**](PLATFORMIO.md); for the manual Arduino IDE conversion fallback, see [**ARDUINO.md**](ARDUINO.md).
 
 For CERBERUS specifically — the gate controller sub-project, its architecture, race state machine, and an operator's guide to running a race day — see [**cerberus-gate-controller/docs/**](cerberus-gate-controller/docs/), starting with [`SYSTEM-DESCRIPTION.md`](cerberus-gate-controller/docs/SYSTEM-DESCRIPTION.md) and [`OPERATOR-GUIDE.md`](cerberus-gate-controller/docs/OPERATOR-GUIDE.md).

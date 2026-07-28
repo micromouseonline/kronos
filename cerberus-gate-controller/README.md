@@ -44,6 +44,6 @@ pio run -e cerberus-esp32-s3-cyd-touch-freenove
 pio run -e cerberus-esp32-s3-cyd-touch-freenove -t upload
 ```
 
-See the [workspace build guide](../platformio.md) for details on targeting
+See the [workspace build guide](../PLATFORMIO.md) for details on targeting
 different boards, and `docs/INPUT-SYSTEM.md` for how the input/dispatch
 layer works.
