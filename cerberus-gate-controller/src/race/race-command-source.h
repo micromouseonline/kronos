@@ -7,8 +7,8 @@
 //  race_command_from_button() and, through it, BUTTON_COMMAND_MAP below.
 //  Serial/HTTP carry data ButtonID can't hold (mouse name, gate_id, remote
 //  timestamp) and get their own producer here once those payload types
-//  exist (see docs/DESIGN-REQUIREMENT.md's Serial Monitor Task /
-//  Asynchronous HTTP Listener).
+//  exist (see docs/SYSTEM-DESCRIPTION.md's Serial Protocol section /
+//  HTTP server section).
 // ----------------------------------------------------------------------------
 #pragma once
 
@@ -170,8 +170,8 @@ struct HttpEventCommandMap {
 // place to change what a source produces" role, just keyed by name instead
 // of ButtonID since a remote gate has no button to press. RESTART is
 // reachable here (unlike from a physical button, see BUTTON_COMMAND_MAP's
-// comment) since DESIGN-REQUIREMENT.md notes it "has no dedicated physical
-// button -- it is only ever raised via serial or HTTP command."
+// comment) -- it has no dedicated physical button and is only raised via
+// serial or HTTP command.
 // NEW_MOUSE -> RESTART, not RaceCommand::NEW_MOUSE -- same reasoning as
 // BUTTON_COMMAND_MAP's ARM-hold and race_command_from_serial's <98,0>
 // handling above: race_timer_handle_command's WAITING/RUNNING/GOAL branches

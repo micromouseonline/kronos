@@ -42,7 +42,7 @@ StatusLED statusIndicator;
 // draw setup instructions directly to the panel without owning the instance.
 LGFX lcd;
 
-// Local Input Polling Task (Core 1, per DESIGN-REQUIREMENT.md). Owns all
+// Local Input Polling Task (Core 1). Owns all
 // input-device reads (GPIO + NeoKey; touch is polled internally by LVGL's
 // own indev, see lvgl_touch_init()); the main task owns the display and
 // must never poll a device from here to avoid double-reads.

@@ -17,7 +17,7 @@
 //  protocol's MSG_NEW_MOUSE (race_command_from_serial(), same file), and
 //  HTTP's `"event": "RESTART"` (race_command_from_http(), same file).
 //  Session Countdown Timer, MAINTENANCE, and persistent mouse names are
-//  out of scope; see IMPLEMENTATION-PLAN.md for those phases.
+//  out of scope; see PLANNED-UPDATES.md.
 // ----------------------------------------------------------------------------
 #pragma once
 

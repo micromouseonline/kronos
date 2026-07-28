@@ -17,7 +17,7 @@
 //  2. APPLICATION SETTINGS & BEHAVIOR
 // ============================================================================
 
-// Local Input Polling Task period (Core 1) -- DESIGN-REQUIREMENT.md specifies
+// Local Input Polling Task period (Core 1) -- SYSTEM-DESCRIPTION.md specifies
 // GPIO/NeoKey/touch are all polled sequentially every 15ms from one task.
 constexpr int INPUT_POLL_PERIOD_MS = 15;
 

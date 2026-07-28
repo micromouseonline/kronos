@@ -9,8 +9,7 @@ notifications into a shared queue, drained by one common handler (see
 Architecture below).
 
 Remote operation by serial messages or HTTP POST requests is implemented
--- see `docs/DESIGN-REQUIREMENT.md`'s Serial Monitor Task / Asynchronous
-HTTP Listener and `docs/IMPLEMENTATION-PLAN.md`'s Stages B-D (serial) and
+-- see `docs/SYSTEM-DESCRIPTION.md`'s Serial Protocol section and
 F-H (HTTP). It does **not** share the local-input queue below: Serial
 (`net/serial-protocol.h`) and HTTP (`net/http-server.h`) both post into a
 separate Main Event Queue (`SystemEvent`, `race/system-event-queue.h`),

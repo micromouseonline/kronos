@@ -195,9 +195,7 @@ inline void race_timer_render() {
   // unchanging, until entry_sw actually starts on the mouse's first ARM
   // (race_timer_try_arm()) -- not at NewMouse itself -- then counts down
   // live, and turns red once it hits zero (track-and-display only:
-  // nothing forces a state change at zero, see race-timer.h's comment on
-  // g_entry_time_s_limit and DESIGN-REQUIREMENT.md's own open TODO on
-  // countdown-expiry behaviour).
+  // nothing forces a state change at zero; countdown stops/freezes at zero).
   if (race_timer_get_state() != RaceState::CALIBRATE) {
     if (g_entry_time_s_limit >= 0) {
       uint32_t remaining_ms = race_timer_entry_time_remaining_ms();

@@ -150,8 +150,8 @@ transition, no telemetry burst beyond what step 2 already caused).
 
 ## 9. New behaviour: SetMode, run limits, EntryTimeS, mouse name
 
-Covers the four items implemented after Stage K's initial parsing-only
-round (see `IMPLEMENTATION-PLAN.md` Stage K's "open questions" and the
+Covers the four items implemented after the initial parsing-only
+round (see `docs/PLANNED-UPDATES.md`'s Unresolved Protocol Behaviors section and the
 plan file's Decisions section).
 
 - [x] **9.1 SetMode round-trip.** Send `<99,CALIBRATION>` from `WAITING`

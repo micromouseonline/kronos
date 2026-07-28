@@ -1,0 +1,162 @@
+# CERBERUS: Multi-Gate Race Timer System Description
+
+CERBERUS is a multi-gate timing system for micromouse-style runs. A central controller (this project) runs on a Cheap Yellow Display (CYD) board and combines local physical inputs, a serial link to a host PC, and a WiFi station connection to a shared network. The controller is the definitive record for all run and session timing.
+
+## Hardware Target
+
+* **MCU:** ESP32 or ESP32-S3 (dual-core).
+* **Display & Touch:** Cheap Yellow Display (CYD) board with SPI TFT screen and XPT2046 touch controller.
+* **Storage:** Onboard SD card slot sharing the SPI bus with display and touch.
+* **Local inputs:** Four physical buttons (GPIO, touch, or I2C NeoKey expander, depending on board — see `USER-INPUT-SYSTEM.md`), mapped to race commands ARM, START, GOAL, NEW_MOUSE.
+* **Status LEDs:** Four onboard NeoPixel LEDs, independently controllable.
+
+---
+
+## Core Architecture & Execution Model
+
+The system uses an event-driven, decoupled, asynchronous architecture managed by FreeRTOS. Tasks communicate via thread-safe FreeRTOS queues.
+
+```
+Physical Buttons / Touch → InputEvent Queue → race_timer_handle_command()
+Serial Parser           → SystemEvent Queue ↑
+HTTP Server             → SystemEvent Queue ↑
+```
+
+### Core Assignment
+
+* **Core 0:** Network stack, WiFi station connection, asynchronous HTTP server engine. CERBERUS joins the shared network as a client (AP is separate, not CERBERUS) and listens for `POST /api/event` from remote intelligent gates, parses JSON, and injects events into the SystemEvent queue.
+* **Core 1:** Main application task (race state machine, display ownership), local input polling task (physical buttons), and serial driver task (host link).
+
+### Debug Output Policy
+
+All debug output is written to the host UART with a `#` prefix, making each debug line a comment to the legacy host protocol parser (which only parses text between `<` and `>` and treats `#` lines as comments to skip). This scheme is safe to use at any time, including while the Serial Driver Task is active.
+
+Debug output is implemented via `debug_print()`, `debug_println()`, and `debug_printf()` functions in `src/debug-log.h` (lines 57–89). These always write to Serial, protected by a `serial_write_mutex` shared with protocol writes to prevent interleaved corruption across Core 0/Core 1 producers.
+
+High-frequency per-event traces (button/touch/GPIO input events in `src/input-events.h` and inbound serial RX echo in `src/net/serial-protocol.h`) are gated behind the Settings screen's "Verbose Debug" toggle (`objects.sw_debug_verbose`, toggled in `src/eez-actions.cpp:145–155`, persisted to NVS via `src/settings-store.h`). This flag controls the `g_debug_verbose_enabled` variable (`src/debug-log.h:46`). One-shot lifecycle messages (WiFi connect, HTTP server start, etc.) are unconditional and remain visible regardless of this setting.
+
+---
+
+## Safe Memory & Data Structures
+
+### `SystemEvent` Struct
+
+A fixed-size struct passed by value into the Main Event Queue. No dynamic allocation is permitted.
+
+```c++
+struct SystemEvent {
+  RaceCommand type;           // ARM, START, GOAL, NEW_MOUSE, RESTART, etc.
+  uint64_t timestamp_us;      // TSF time if remote, esp_timer_get_time() if local
+  char payload[32];           // Mouse name (NEW_MOUSE) or gate_id (HTTP)
+  bool payload_is_mouse_name; // Disambiguates payload content
+};
+```
+
+Defined in `src/race/system-event-queue.h:19–28`.
+
+### `RaceCommand` Enum
+
+Defined in `src/race/race-timer.h:76–86`. Values: `NONE`, `NEW_MOUSE`, `ARM`, `START`, `GOAL`, `RESTART`, `ENTER_CALIBRATION`, `RESUME_TIMER`, `EXTRA_RUN`.
+
+---
+
+## Task Breakdown & Functional Specifications
+
+### 1. Input Layer & Event Generation
+
+See `USER-INPUT-SYSTEM.md` for complete details on local button hardware, debouncing, and event routing.
+
+* **Local Input Polling Task (Core 1):** Polls GPIO buttons, I2C NeoKey expander, and SPI touch screen every 15ms, handles debouncing in software, maps valid inputs to `RaceCommand` (ARM/START/GOAL/NEW_MOUSE), and pushes to the race state machine via `input_event_handler()` with local `esp_timer_get_time()` timestamp.
+* **Asynchronous HTTP Listener (Core 0):** Connects to shared WiFi network as a station and runs an async web server on port 80. Remote intelligent gates send timing events as `POST /api/event` with JSON body:
+  ```json
+  {
+    "gate_id": "START_GATE",
+    "event": "START",
+    "tsf_us": 4321098765,
+    "gate_us": 1098765634
+  }
+  ```
+  The handler parses JSON, constructs a `SystemEvent`, and pushes it to the Main Event Queue via `system_event_post()`. Implementation in `src/net/http-server.h:212–230`.
+* **Serial Monitor Task (Core 1):** Bidirectional owner of host UART. RX: parses legacy bracket-CSV protocol (`<type,value>`) per `preferredMessageSequencesV2.pdf`, pushes `SystemEvent` to Main Event Queue via `system_event_post()`. TX: mirrors every generated race event back to the host in real time using the legacy protocol. See `src/net/serial-protocol.h` for parsing, `src/net/messages.h` for protocol constants, `src/race/race-serial-telemetry.h` for TX telemetry tick.
+
+### 2. Main Processing & State Machine (Core 1)
+
+* **Resource Ownership:** The main application task holds exclusive ownership of the display (LovyanGFX) and the race state machine.
+* **Operation:** Loops using a bounded-timeout queue receive so it wakes on a short tick (~30–50ms) even with no event pending — required for live timer redraw. On timeout with no event, redraws active timers; on a real message, advances the state machine and updates the display.
+* **Race State Machine:** Manages the sequence of states for a single mouse run. See `docs/updated-state-table.md` for the authoritative state diagram and transition rules.
+  * **States** (from `src/race/race-timer.h:88–96`): `CALIBRATE` (boot), `NEW_MOUSE` (reset on new entry), `WAITING` (idle, waiting for start), `ARMED` (mouse in start cell), `RUNNING` (active race), `GOAL` (run finished), `TIMED_OUT` (run exceeded entry time).
+  * **Entry Time Countdown:** A per-mouse countdown starting at first ARM, configured via host `MSG_ENTRY_TIME_S` (default 600s). Stored in `g_entry_time_s_limit` (`src/race/race-timer.h:163`), displayed on screen, clamped to zero. Behaviour on expiry is already decided (freeze timer, do not auto-advance state).
+* **Leaderboard:** Computes top finishers from completed runs, displayed on-screen (top 5 only due to space) and served via HTTP `GET /leaderboard` for full standings in a browser.
+
+### 3. HTTP Server
+
+Implemented in `src/net/http-server.h` using `AsyncWebServer`. Endpoints:
+
+* `GET /` — Liveness check, returns `"CERBERUS OK"`.
+* `POST /api/event` — Gate event ingestion. Parses JSON (`gate_id`, `event`, `tsf_us`, `gate_us`), maps `event` string to `RaceCommand` via `race_command_from_http()`, posts `SystemEvent` to queue.
+* `GET /leaderboard` — Server-rendered HTML leaderboard, shows all completed runs (not just top 5), with a live-update mechanism via `EventSource('/events')` for single-page refresh on run completion.
+* `GET /time` — Returns current Unix timestamp (ms) for browser clock sync every 10s.
+* `GET /events` — Server-Sent Events endpoint; fires a message when a run is committed, triggering the leaderboard page to reload.
+
+### 4. WiFi & Network
+
+Implemented in `src/net/wifi-manager.h`.
+
+* **Non-blocking connect:** Runs as a background Core-0 task, polling WiFi status every 250ms. Reacts to connect/disconnect edges, not one-time checks, so reconnects are logged whether instant (cached NVS) or mid-retry.
+* **Fallback:** Local racing works even with no router present; WiFi joins whenever the router becomes available, no reboot needed.
+* **Credential storage:** SSID and password cached in NVS (`src/net/secrets.h`), loaded at boot.
+* **Status display:** WiFi connection status shown on NeoKey LED position 3 (WIFI_STATUS_KEY).
+
+### 5. Serial Protocol & Legacy Host Interop
+
+Implemented in `src/net/serial-protocol.h`, `src/net/messages.h`, `src/race/race-command-source.h`.
+
+* **Inbound:** Legacy bracket-CSV format (`<type,value>\r\n` or `<type,name>\r\n`). Parses all 8 RATS V2 message types from `preferredMessageSequencesV2.pdf` (dated 24 July 2026):
+  * `MSG_NEW_MOUSE=98` — Maps to `RaceCommand::RESTART` (works from any state).
+  * `MSG_ENTRY_TIME_S=93` — Sets `g_entry_time_s_limit`.
+  * `MSG_ALLOWED_RUNS=94` — Sets `g_allowed_runs` (not yet enforced).
+  * `MSG_EVENT_NAME=95` — Stores event name (metadata, not used).
+  * `MSG_CONTEST_NAME=96` — Stores contest name (metadata, not used).
+  * `MSG_REQUEST_TYPE=97` — Replied to with fixed `MSG_TIMER_TYPE=96` response (`"1CH"`).
+  * `MSG_EXTRA_RUN=92` — Logged only (no run-count enforcement yet).
+  * `MSG_SET_MODE=99` — Parsed but no behaviour defined (CALIBRATION value has no meaning in this hardware context).
+* **Outbound:** State transitions (`MSG_CURRENT_STATE=4`), timing splits/runs (`MSG_C1_SPLIT_TIME=12`, `MSG_C1_RUN_TIME=13`), watchdog/health (`MSG_WATCHDOG=0` every 1000ms), course-time marker (`MSG_COURSE_TIME_MS=30`). Driven by the telemetry tick in `src/race/race-serial-telemetry.h`, called once per `loop()` iteration.
+
+### 6. NVS & Persistent Settings
+
+Stored in ESP32 flash via Arduino Preferences API:
+
+* **Display calibration** (`touch-calibration.h`): XPT2046 touch offsets.
+* **Debug settings** (`settings-store.h`): Verbose debug enabled/disabled flag.
+* **WiFi credentials** (`net/secrets.h`): SSID and password.
+* **Boot counter** (future): Not yet implemented; see Planned Updates.
+
+---
+
+## Time Synchronization
+
+Remote intelligent gates and CERBERUS all connect to a shared WiFi AP (a separate travel router), which broadcasts a unified global clock via the 802.11 Timing Synchronization Function (TSF) in its beacon frames. Each gate reads the AP's TSF as `tsf_us` when an event occurs, and that timestamp is sent to CERBERUS in the `POST /api/event` JSON body.
+
+CERBERUS accepts `tsf_us` at face value as the event's absolute timestamp (`SystemEvent.timestamp_us = tsf_us`, `http-server.h:218–228`). Local events (button presses, serial commands) are timestamped with the local `esp_timer_get_time()` reading at arrival time. Local timestamps thus lack the global TSF reference but are sufficient for race timing (millisecond resolution).
+
+The `gate_us` field (gate's own free-running microsecond timer) is parsed from the HTTP request but currently not used (`http-server.h:219`). See Planned Updates for the planned TSF-based drift-compensation scheme.
+
+---
+
+## Coding Requirements
+
+* Generate clean, highly modular, thread-safe C/C++ code utilizing the Arduino-ESP32 core framework.
+* Ensure all SPI bus transactions are properly guarded.
+* FreeRTOS queue API interactions must check for timeout constraints.
+* No dynamic memory allocation is used inside the execution path.
+* Debug output uses the `debug_print()/debug_println()/debug_printf()` functions from `src/debug-log.h`, which always emit `#`-prefixed lines safe to send at any time on the shared UART.
+* Use Doxygen-compatible comments throughout.
+
+---
+
+## References
+
+* **Race state machine:** `docs/updated-state-table.md` (authoritative state diagram and transition rules).
+* **Input hardware & debouncing:** `docs/USER-INPUT-SYSTEM.md`.
+* **Serial protocol detail:** `docs/TESTING-SERIAL.md`, `docs/preferredMessageSequencesV2.pdf`.
+* **Leaderboard implementation:** `src/race-timer.h`, `src/net/http-server.h`.
