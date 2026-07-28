@@ -512,7 +512,7 @@ void create_screen_splash() {
             lv_obj_t *obj = lv_qrcode_create(parent_obj, 128, lv_color_hex(0x20429f), lv_color_hex(0xe2f5fe));
             lv_obj_set_pos(obj, 96, 45);
             lv_obj_set_size(obj, 128, 128);
-            lv_qrcode_update(obj, "UKMARS.ORG", 10);
+            lv_qrcode_update(obj, "https://github.com/micromouseonline/kronos", 42);
             lv_obj_add_flag(obj, LV_OBJ_FLAG_CLICKABLE);
         }
         {

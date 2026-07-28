@@ -1,6 +1,9 @@
 # PlatformIO build artefacts (all sub-projects)
 **/.pio/
 
+# Merged release binaries - published via GitHub Releases, not tracked here
+**/dist/
+
 # VSCode workspace settings (keep .code-workspace, ignore local overrides)
 **/.vscode/settings.json
 **/.vscode/*.log
