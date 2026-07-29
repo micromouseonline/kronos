@@ -1,12 +1,18 @@
 // #include "esp_wifi.h"
+#include <ArduinoJson.h>
 #include <Adafruit_NeoPixel.h>
+#include <ESPmDNS.h>
 #include <HTTPClient.h>
 #include <WiFi.h>
 
 #include "esp_wifi.h"
 
-#include "boards.h"   // contains the board MAC addresses to look up the identifiers
-#include "secrets.h"  // these are the network credentials neede to connect to the AP
+#include "board-role.h"             // BoardRole, role -> event-name mapping
+#include "boards.h"                 // contains the board MAC addresses to look up the identifiers
+#include "cli.h"                    // serial command line interface
+#include "provisioning-commands.h"  // `wifi`/`role` serial commands
+#include "secrets.h"                // these are the network credentials neede to connect to the AP
+#include "wifi-credentials.h"       // NVS-persisted wifi creds from the `wifi` command
 
 // --- Hardware Pin Configuration ---
 // STATUS_LED and NEOPIXEL_COLOR_ORDER come from the per-board build_flags in
@@ -18,8 +24,13 @@ Adafruit_NeoPixel led(1, STATUS_LED, NEOPIXEL_COLOR_ORDER + NEO_KHZ800);
 char gate_id[16];
 
 const int LED_PIN = 2;
-const int GATE_PIN = 1;
-const int GATE_PIN_B = 3;
+// Channel A / channel B -- see board-role.h for how these map to ARM/START/
+// GOAL depending on the board's provisioned role. Active-low.
+const int GATE_PIN = 7;
+const int GATE_PIN_B = 6;
+
+BoardRole board_role = BoardRole::UNSET;
+Cli cli;
 
 int state = 1;
 
@@ -48,6 +59,27 @@ const uint64_t DRIFT_MARGIN_US = 500;
 const int MAX_HTTP_RETRIES = 4;
 const int HTTP_TIMEOUT_MS = 250;
 const uint64_t MIN_PLAUSIBLE_TSF = 300000000;
+
+// --- CERBERUS DISCOVERY (mDNS) ---
+// Resolved once after Wi-Fi connects and cached for the rest of this boot --
+// the venue IP won't change mid-contest, so there's no need to re-query
+// mDNS for every event.
+IPAddress cerberus_ip;
+bool cerberus_ip_valid = false;
+
+/// @brief Resolves cerberus.local via mDNS and caches the result. Safe to
+/// call repeatedly (e.g. retried from uploadWorkerTask) until it succeeds --
+/// each call is a fresh query, not a re-use of a stale failure.
+void resolveCerberus() {
+    IPAddress ip = MDNS.queryHost("cerberus");
+    if (ip != IPAddress(0, 0, 0, 0)) {
+        cerberus_ip = ip;
+        cerberus_ip_valid = true;
+        Serial.printf("[MDNS] cerberus.local -> %s\n", ip.toString().c_str());
+    } else {
+        Serial.println("[MDNS] cerberus.local not found");
+    }
+}
 
 static int consecutive_audit_failures = 0;
 
@@ -188,10 +220,6 @@ void uploadWorkerTask(void *pvParameters) {
             uint64_t tsf_to_transmit = current_ev.tsf_observed;
             bool trust_observed_tsf = false;
             String clock_mode = "TSF";
-            String type_str = "TRA";
-
-            if (current_ev.type == TRIGGER_B) type_str = "TRB";
-            if (current_ev.type == HEARTBEAT) type_str = "HB";
 
             // --- TIMELINE SANITY AUDIT ENGINE ---
             if (current_ev.tsf_observed != 0 && has_initial_baseline) {
@@ -268,62 +296,89 @@ void uploadWorkerTask(void *pvParameters) {
             }
 
             // --- HTTP TRANSMISSION ENGINE ---
-            if (WiFi.status() == WL_CONNECTED) {
-                char tsf_buffer[21];
-                sprintf(tsf_buffer, "%llu", tsf_to_transmit);
-                String ap_bssid = WiFi.BSSIDstr();
+            // HEARTBEAT is only used above for local clock discipline/LED
+            // feedback -- cerberus's /api/event has no HEARTBEAT event type
+            // (see board-role.h's header comment), so it's never sent.
+            if (current_ev.type == HEARTBEAT) {
+                continue;
+            }
 
-                String request_path = String(server_url) + "?id=" + gate_id +
-                                      "&tsf=" + tsf_buffer +
-                                      "&bssid=" + ap_bssid +
-                                      "&mode=" + clock_mode +
-                                      "&type=" + type_str;
+            const char *event_name = board_event_name(board_role, current_ev.type == TRIGGER_A);
+            if (event_name == nullptr) {
+                Serial.println("[Async Worker] Role not set -- run `role start` or `role goal`. Event dropped.");
+                continue;
+            }
 
-                bool confirmed = false;
-                for (int attempt = 1; attempt <= MAX_HTTP_RETRIES && !confirmed; attempt++) {
-                    http.begin(request_path);
-                    http.setTimeout(HTTP_TIMEOUT_MS);
-                    int httpCode = http.GET();
-
-                    if (httpCode == 200) {
-                        if (http.getString() == tsf_buffer) {
-                            confirmed = true;
-                            Serial.printf("[Async Worker] Confirmed (%s) attempt %d.\n",
-                                          clock_mode.c_str(), attempt);
-                        } else {
-                            Serial.printf("[Async Worker] TSF echo mismatch attempt %d.\n", attempt);
-                        }
-                    } else {
-                        Serial.printf("[Async Worker] HTTP error attempt %d: %s\n", attempt,
-                                      httpCode > 0 ? String(httpCode).c_str()
-                                                   : http.errorToString(httpCode).c_str());
-                    }
-                    http.end();
-                }
-
-                if (!confirmed) {
-                    Serial.println("[Async Worker] Event dropped after max retries.");
-                }
-
-                // --- PATCH 1: NETWORK RECEIPT ESCAPE HATCH ---
-                // Only trigger TSF re-entry on confirmed delivery in SYN mode.
-                if (confirmed && clock_mode == "SYN") {
-                    uint64_t raw_tsf_check = esp_wifi_get_tsf_time(WIFI_IF_STA);
-                    if (raw_tsf_check > MIN_PLAUSIBLE_TSF) {
-                        Serial.println("[ESCAPE HATCH] Server confirmed online. Attempting TSF re-entry.");
-                        has_initial_baseline = false;
-                        cal_prev_tsf = 0;
-                        cal_prev_proc = 0;
-                        consecutive_audit_failures = 0;
-                    }
-                }
-            } else {
+            if (WiFi.status() != WL_CONNECTED) {
                 Serial.println("[Async Worker] Link down. Internal queue stacking.");
+                continue;
+            }
+
+            if (!cerberus_ip_valid) {
+                resolveCerberus();
+            }
+            if (!cerberus_ip_valid) {
+                Serial.println("[Async Worker] cerberus.local not resolved yet. Event dropped.");
+                continue;
+            }
+
+            JsonDocument doc;
+            doc["gate_id"] = gate_id;
+            doc["event"] = event_name;
+            doc["tsf_us"] = tsf_to_transmit;
+            doc["gate_us"] = current_ev.processor_clock;
+            String payload;
+            serializeJson(doc, payload);
+
+            String url = "http://" + cerberus_ip.toString() + "/api/event";
+
+            bool confirmed = false;
+            for (int attempt = 1; attempt <= MAX_HTTP_RETRIES && !confirmed; attempt++) {
+                http.begin(url);
+                http.addHeader("Content-Type", "application/json");
+                http.setTimeout(HTTP_TIMEOUT_MS);
+                int httpCode = http.POST(payload);
+
+                if (httpCode == 200) {
+                    confirmed = true;
+                    Serial.printf("[Async Worker] Confirmed %s (%s) attempt %d.\n",
+                                  event_name, clock_mode.c_str(), attempt);
+                } else {
+                    Serial.printf("[Async Worker] HTTP error attempt %d: %s\n", attempt,
+                                  httpCode > 0 ? String(httpCode).c_str()
+                                               : http.errorToString(httpCode).c_str());
+                }
+                http.end();
+            }
+
+            if (!confirmed) {
+                Serial.println("[Async Worker] Event dropped after max retries.");
+            }
+
+            // --- PATCH 1: NETWORK RECEIPT ESCAPE HATCH ---
+            // Only trigger TSF re-entry on confirmed delivery in SYN mode.
+            if (confirmed && clock_mode == "SYN") {
+                uint64_t raw_tsf_check = esp_wifi_get_tsf_time(WIFI_IF_STA);
+                if (raw_tsf_check > MIN_PLAUSIBLE_TSF) {
+                    Serial.println("[ESCAPE HATCH] Server confirmed online. Attempting TSF re-entry.");
+                    has_initial_baseline = false;
+                    cal_prev_tsf = 0;
+                    cal_prev_proc = 0;
+                    consecutive_audit_failures = 0;
+                }
             }
         }
     }
 }
 
+
+// Saved credentials (wifi-credentials.h, set via the `wifi` serial command)
+// take priority over secrets.h's compiled-in default -- mirrors cerberus's
+// wifi_connect_task priority order.
+char stored_ssid[33];
+char stored_pass[65];
+const char *connect_ssid = ssid;
+const char *connect_pass = password;
 
 void setup() {
     delay(2000);
@@ -337,12 +392,26 @@ void setup() {
     pinMode(GATE_PIN_B, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(GATE_PIN_B), handleSensor2, FALLING);
 
+    board_role = board_role_load();
+    if (board_role == BoardRole::UNSET) {
+        board_role = DEFAULT_BOARD_ROLE;
+    }
+    Serial.printf("[SYSTEM] Board role: %s\n", board_role_name(board_role));
+
+    cli.begin(PROVISIONING_COMMANDS, PROVISIONING_COMMAND_COUNT);
+
     networkQueue = xQueueCreate(10, sizeof(GateEvent));
     ledQueue = xQueueCreate(5, sizeof(LedPattern));
 
+    if (wifi_credentials_load(stored_ssid, sizeof(stored_ssid), stored_pass, sizeof(stored_pass))) {
+        connect_ssid = stored_ssid;
+        connect_pass = stored_pass;
+        Serial.println("[SYSTEM] Using saved Wi-Fi credentials from NVS");
+    }
+
     WiFi.persistent(false);
     WiFi.disconnect(true);
-    WiFi.begin(ssid, password, 0, bssid);
+    WiFi.begin(connect_ssid, connect_pass);
     esp_wifi_set_ps(WIFI_PS_MAX_MODEM);
 
     TimerHandle_t hbTimer = xTimerCreate("HB_Timer", pdMS_TO_TICKS(5147), pdTRUE, (void *) 0, heartbeatTimerCallback);
@@ -383,18 +452,23 @@ void loop() {
     if (WiFi.status() == WL_CONNECTED) {
         if (!was_connected) {
             Serial.println("\n[NETWORK] Link Active! IP: " + WiFi.localIP().toString());
+            if (!MDNS.begin(gate_id)) {
+                Serial.println("[MDNS] failed to start");
+            }
+            cerberus_ip_valid = false;  // re-resolve on this connection
             was_connected = true;
         }
         last_connected_time = current_time;
     } else {
         was_connected = false;
+        cerberus_ip_valid = false;
 
         if (current_time - last_connected_time > 15000) {
             Serial.println("\n[WATCHDOG FAULT] Wi-Fi link dead for 15s. Smashing network stack...");
             WiFi.disconnect(true, true);
             delay(500);
             Serial.println("[WATCHDOG RECOVERY] Re-initializing hardware radio interface...");
-            WiFi.begin(ssid, password, 0, bssid);
+            WiFi.begin(connect_ssid, connect_pass);
             last_connected_time = current_time;
             last_reconnect_attempt = current_time;
         } else if (current_time - last_reconnect_attempt > 3000) {
@@ -402,6 +476,8 @@ void loop() {
             last_reconnect_attempt = current_time;
         }
     }
+
+    cli.poll();
 
     static bool last_state = false;
     if (networkQueue != NULL) {
