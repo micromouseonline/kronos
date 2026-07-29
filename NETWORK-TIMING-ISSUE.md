@@ -244,6 +244,27 @@ Ordered by leverage, not necessarily implementation order.
    the lower-effort mitigations are in place and its residual necessity can
    be judged against observed real-world reliability.
 
+   **Refinement worth folding in, whether or not an explicit attempt-id is
+   added**: `tsf_us` is already a shared, ordered clock across boards, so
+   staleness can be detected without any new field at all — a `GOAL` whose
+   `tsf_us` precedes the *current* attempt's own recorded `START.tsf_us`
+   cannot possibly belong to the current attempt, since that attempt's clock
+   only starts counting forward from its own start. That comparison alone
+   is enough to recognize a late event as belonging to a previous,
+   already-superseded attempt. The catch: it's not a simple equality check
+   the way an attempt-id is — cerberus would need to retain a short history
+   of recent attempts' start (and eventual goal) timestamps and find which
+   window a late event's `tsf_us` actually falls into, rather than comparing
+   against a single current value. Fine as long as at most one attempt is
+   ever abandoned while something is still in flight (likely, given retries
+   top out in seconds), but it is a small ring-buffer-of-recent-attempts
+   problem, not a one-liner. This is a genuine complement to an explicit
+   attempt-id rather than a straight substitute for one: an id tells you
+   unambiguously *which* run a late event belongs to; tsf-ordering
+   additionally lets cerberus *do something useful with it* once
+   identified — retroactively complete what otherwise looked like an
+   abandoned run — rather than only being able to reject it as noise.
+
 6. **Event de-duplication on cerberus, as a cheap safety net** (optional,
    lower priority). A simple `gate_id` + `event` + `tsf_us` de-duplication
    check on `/api/event` — mirroring the existing Python test stub's
