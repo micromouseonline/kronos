@@ -31,7 +31,9 @@
 #pragma once
 
 #include <Arduino.h>
+#include <esp_wifi.h>
 #include <freertos/FreeRTOS.h>
+#include <freertos/queue.h>
 #include <freertos/semphr.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -54,10 +56,21 @@ inline void serial_write_unlock() {
   xSemaphoreGive(serial_write_mutex);
 }
 
+// Cerberus and every hesperus gate are stations on the same AP, so the
+// Wi-Fi TSF counter (already used for gate-event timing) gives a shared,
+// sub-ms-precision clock across boards -- dividing to ms gives a common
+// timeline that logs from different boards can be interleaved against
+// after the fact, without needing NTP or any other clock sync. Only
+// meaningful once Wi-Fi/beacon sync has occurred; lines logged before then
+// (early boot) will show a small/near-zero value.
+inline uint64_t debug_timestamp_ms() {
+  return esp_wifi_get_tsf_time(WIFI_IF_STA) / 1000;
+}
+
 template <typename T>
 inline void debug_print(T value) {
   serial_write_lock();
-  Serial.print('#');
+  Serial.printf("#[T=%llums] ", debug_timestamp_ms());
   Serial.print(value);
   serial_write_unlock();
 }
@@ -65,14 +78,14 @@ inline void debug_print(T value) {
 template <typename T>
 inline void debug_println(T value) {
   serial_write_lock();
-  Serial.print('#');
+  Serial.printf("#[T=%llums] ", debug_timestamp_ms());
   Serial.println(value);
   serial_write_unlock();
 }
 
 inline void debug_println() {
   serial_write_lock();
-  Serial.println('#');
+  Serial.printf("#[T=%llums]\n", debug_timestamp_ms());
   serial_write_unlock();
 }
 
@@ -83,7 +96,67 @@ inline void debug_printf(const char *fmt, ...) {
   vsnprintf(buf, sizeof(buf), fmt, args);
   va_end(args);
   serial_write_lock();
-  Serial.print('#');
+  Serial.printf("#[T=%llums] ", debug_timestamp_ms());
   Serial.print(buf);
   serial_write_unlock();
+}
+
+// ----------------------------------------------------------------------------
+//  Queued logging -- for call sites that must never block on Serial I/O
+//  (e.g. net/http-server.h's http_log_request(), which runs inside an
+//  AsyncWebServer request callback: any delay here adds directly to the
+//  client's round-trip time, and a contended serial_write_mutex or a full
+//  UART TX FIFO can stall long enough to blow through the client's own HTTP
+//  timeout and trigger a needless retry -- observed in practice logging
+//  every /api/event request while a gate's retry budget was already tight).
+//  debug_log_enqueue() only ever copies a fixed-size struct into a queue
+//  (non-blocking, drops the message if full) -- the actual Serial write
+//  happens later, on debug_log_drain_task's own task, off the caller's
+//  critical path entirely.
+// ----------------------------------------------------------------------------
+struct LogMessage {
+  char text[160];
+};
+
+inline QueueHandle_t debug_log_queue = xQueueCreate(16, sizeof(LogMessage));
+
+/// @brief Formats into a fixed buffer and enqueues for debug_log_drain_task
+/// to print later -- never blocks on Serial. Silently drops the message if
+/// the queue is full (16 deep) rather than blocking the caller or evicting
+/// an older entry: losing an occasional diagnostic line under load is
+/// preferable to adding response latency on the path that's under load.
+/// The timestamp is captured here, at enqueue time, not when
+/// debug_log_drain_task eventually prints it -- printing is deferred by
+/// design, so a print-time timestamp would misrepresent when the logged
+/// event actually happened.
+inline void debug_log_enqueue(const char *fmt, ...) {
+  uint64_t ts_ms = debug_timestamp_ms();
+  char body[136];
+  va_list args;
+  va_start(args, fmt);
+  vsnprintf(body, sizeof(body), fmt, args);
+  va_end(args);
+
+  LogMessage msg;
+  snprintf(msg.text, sizeof(msg.text), "[T=%llums] %s", ts_ms, body);
+  xQueueSend(debug_log_queue, &msg, 0);
+}
+
+inline void debug_log_drain_task(void *) {
+  LogMessage msg;
+  for (;;) {
+    if (xQueueReceive(debug_log_queue, &msg, portMAX_DELAY) == pdTRUE) {
+      serial_write_lock();
+      Serial.print('#');
+      Serial.println(msg.text);
+      serial_write_unlock();
+    }
+  }
+}
+
+/// @brief Starts the background task that drains debug_log_queue to Serial.
+/// Call once from setup(), after Serial.begin() and before anything that
+/// might call debug_log_enqueue().
+inline void debug_log_init() {
+  xTaskCreatePinnedToCore(debug_log_drain_task, "log_drain", 4096, nullptr, 1, nullptr, 1);
 }

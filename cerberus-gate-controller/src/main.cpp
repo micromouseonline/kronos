@@ -197,6 +197,7 @@ void wifi_provisioning_check_cancel(const InputEvent &evt) {
 void setup() {
   // get the serial connection kicked off.
   Serial.begin(9600);
+  debug_log_init();
   statusIndicator.begin();
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();

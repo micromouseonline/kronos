@@ -193,3 +193,34 @@ inline RaceCommand race_command_from_http(const HttpGateEvent &evt) {
   }
   return RaceCommand::NONE;  // unrecognised `event` value
 }
+
+struct HttpInfoMessageMap {
+  const char *name;
+  int type;  // one of net/messages.h's MessageType inbound values
+};
+
+// HTTP equivalents of every RATS V2 inbound message serial_protocol_handle_
+// info_message() above already handles, for hosts that talk HTTP instead of
+// the legacy UART wire. Keyed by name (there's no UART `<type,value>` framing
+// over HTTP), not by MessageType's numeric code -- mirrors
+// HTTP_EVENT_COMMAND_MAP's name-keyed shape just above.
+constexpr HttpInfoMessageMap HTTP_INFO_MESSAGE_MAP[] = {
+    {"CONTEST_NAME", MSG_CONTEST_NAME},
+    {"EVENT_NAME", MSG_EVENT_NAME},
+    {"ALLOWED_RUNS", MSG_ALLOWED_RUNS},
+    {"ENTRY_TIME_S", MSG_ENTRY_TIME_S},
+    {"EXTRA_RUN", MSG_EXTRA_RUN},
+    {"SET_MODE", MSG_SET_MODE},
+    {"REQUEST_TYPE", MSG_REQUEST_TYPE},
+};
+
+/// @brief Looks up an HTTP `event` name against HTTP_INFO_MESSAGE_MAP.
+/// @return the matching MessageType, or -1 if `event` isn't one of these.
+inline int http_info_message_type(const char *event_name) {
+  for (const auto &row : HTTP_INFO_MESSAGE_MAP) {
+    if (strcmp(event_name, row.name) == 0) {
+      return row.type;
+    }
+  }
+  return -1;
+}

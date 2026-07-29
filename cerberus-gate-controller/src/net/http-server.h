@@ -6,6 +6,7 @@
 #include <ArduinoJson.h>
 #include <AsyncJson.h>
 #include <ESPAsyncWebServer.h>
+#include <esp_timer.h>
 #include <time.h>
 
 #include "debug-log.h"
@@ -17,6 +18,32 @@
 #include "stylesheet.h"
 
 inline AsyncWebServer http_server(80);
+
+// One line per incoming request, gated behind the same sw_debug_verbose
+// switch as serial-protocol.h's RX echo -- this is the HTTP-side equivalent
+// of that trace. Called from every route handler below (AsyncWebServer has
+// no single before-dispatch hook to do this in one place). `body` is only
+// passed by the JSON POST handler (http_handle_event) -- GET routes have
+// nothing to serialize, so it stays empty for those.
+//
+// Uses debug_log_enqueue(), not debug_printf(), deliberately -- this runs
+// inside the AsyncWebServer request callback, and a blocking Serial write
+// here (e.g. serial_write_mutex contended by another task's own debug
+// output) adds straight to the client's round-trip time, which can be
+// enough on its own to blow through a gate's HTTP client timeout and
+// trigger a retry it didn't otherwise need.
+inline void http_log_request(AsyncWebServerRequest *request, const String &body = String()) {
+  if (!g_debug_verbose_enabled) {
+    return;
+  }
+  if (body.length() > 0) {
+    debug_log_enqueue("[HTTP] %s %s from %s body=%s", request->methodToString(), request->url().c_str(),
+                       request->client()->remoteIP().toString().c_str(), body.c_str());
+  } else {
+    debug_log_enqueue("[HTTP] %s %s from %s", request->methodToString(), request->url().c_str(),
+                       request->client()->remoteIP().toString().c_str());
+  }
+}
 
 // Pushes one SSE message per new result
 inline AsyncEventSource http_events("/events");
@@ -68,6 +95,7 @@ inline String formatTimeNow() {
 }
 
 inline void handleTime(AsyncWebServerRequest *request) {
+  http_log_request(request);
   request->send(200, "text/plain", formatTimeNow());
 }
 
@@ -92,6 +120,7 @@ inline String generate_html_head(const char *title, const char *extra_head = "")
 }
 
 inline void http_handle_root(AsyncWebServerRequest *request) {
+  http_log_request(request);
   // Page syncs offset with ESP32 and runs smooth 60 FPS clock locally
   String html;
   html.reserve(1500);  // to prevent fragmentation
@@ -164,6 +193,7 @@ inline void http_handle_root(AsyncWebServerRequest *request) {
 }
 
 inline void http_handle_leaderboard(AsyncWebServerRequest *request) {
+  http_log_request(request);
   LeaderboardEntry entries[MAX_RESULTS];
   size_t count = race_timer_compute_leaderboard(entries, MAX_RESULTS);
 
@@ -211,6 +241,9 @@ inline void http_handle_leaderboard(AsyncWebServerRequest *request) {
 
 inline void http_handle_event(AsyncWebServerRequest *request, JsonVariant &json) {
   JsonObject body = json.as<JsonObject>();
+  String body_str;
+  serializeJson(body, body_str);
+  http_log_request(request, body_str);
 
   HttpGateEvent evt{};
   strlcpy(evt.gate_id, body["gate_id"] | "", sizeof(evt.gate_id));
@@ -219,14 +252,30 @@ inline void http_handle_event(AsyncWebServerRequest *request, JsonVariant &json)
   evt.gate_us = body["gate_us"] | 0ULL;
 
   RaceCommand cmd = race_command_from_http(evt);
-  if (cmd == RaceCommand::NONE) {
-    debug_printf("[HTTP] rejected /api/event: gate_id=\"%s\" event=\"%s\"\n", evt.gate_id, evt.event);
-    request->send(400, "application/json", "{\"status\":\"error\",\"reason\":\"unrecognised event\"}");
+  if (cmd != RaceCommand::NONE) {
+    system_event_post(cmd, evt.tsf_us, evt.gate_id);
+    request->send(200, "application/json", "{\"status\":\"ok\"}");
     return;
   }
 
-  system_event_post(cmd, evt.tsf_us, evt.gate_id);
-  request->send(200, "application/json", "{\"status\":\"ok\"}");
+  // Not a gate/race event -- try the RATS V2 "info message" vocabulary
+  // (ContestName, EventName, AllowedRuns, EntryTimeS, ExtraRun, SetMode,
+  // RequestType), the same set net/serial-protocol.h's RX task hands to
+  // serial_protocol_handle_info_message(). Reuses that function unchanged:
+  // an HTTP SerialLine is built from `event`/`value` instead of parsed off
+  // the UART, everything downstream is identical to the serial path.
+  int info_type = http_info_message_type(evt.event);
+  if (info_type != -1) {
+    SerialLine line{};
+    line.type = info_type;
+    strlcpy(line.value, body["value"] | "", sizeof(line.value));
+    serial_protocol_handle_info_message(line, static_cast<uint64_t>(esp_timer_get_time()));
+    request->send(200, "application/json", "{\"status\":\"ok\"}");
+    return;
+  }
+
+  debug_printf("[HTTP] rejected /api/event: gate_id=\"%s\" event=\"%s\"\n", evt.gate_id, evt.event);
+  request->send(400, "application/json", "{\"status\":\"error\",\"reason\":\"unrecognised event\"}");
 }
 
 // Global static handler prevents heap re-allocation
