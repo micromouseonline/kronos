@@ -1,7 +1,16 @@
 // ----------------------------------------------------------------------------
-//  board-role.h — Which race event a gate's two physical channels report as,
-//  set via the `role <start|goal>` serial command (see provisioning-
-//  commands.h) and persisted to NVS. Cerberus's real ingestion endpoint
+//  board-role.h — Which race event a gate's two physical channels report as.
+//  Determined authoritatively at every boot by a hardware jumper (GPIO 9
+//  driven low, GPIO 8 read with its internal pull-up): wired together ->
+//  START, left disconnected -> GOAL -- a fixed physical per-board decision,
+//  not a software setting. See board_role_from_jumper() below.
+//
+//  `role <start|goal>` (provisioning-commands.h) and NVS still exist as a
+//  same-session manual override for testing without re-wiring the jumper --
+//  main.cpp's setup() re-reads the jumper and overwrites NVS on every boot,
+//  so a `role` override only lasts until the next power cycle.
+//
+//  Cerberus's real ingestion endpoint
 //  (cerberus-gate-controller/src/net/http-server.h's POST /api/event) has no
 //  concept of gate roles at all -- it just executes whatever `event` string
 //  arrives (ARM/START/GOAL/RESTART/NEW_MOUSE, see
@@ -26,6 +35,25 @@ const char* const BOARD_ROLE_NAMESPACE = "board-cfg";
 enum class BoardRole { UNSET,
                         START,
                         GOAL };
+
+// GPIO 9 drives low; GPIO 8 senses it through its internal pull-up. A wire
+// between the two reads low (shorted -> START); left disconnected, the
+// pull-up holds GPIO 8 high (GOAL). GPIO 9 is a strapping pin on some ESP32
+// variants, but that's resolved by the ROM bootloader before setup() ever
+// runs, so driving it here afterwards doesn't interfere with boot.
+const int JUMPER_DRIVE_PIN = 9;
+const int JUMPER_SENSE_PIN = 8;
+
+/// @brief Reads the start/goal hardware jumper. Always returns a definite
+/// answer (never UNSET) -- disconnected is itself a valid, meaningful
+/// reading (GOAL), not an absence of one.
+inline BoardRole board_role_from_jumper() {
+  pinMode(JUMPER_DRIVE_PIN, OUTPUT);
+  digitalWrite(JUMPER_DRIVE_PIN, LOW);
+  pinMode(JUMPER_SENSE_PIN, INPUT_PULLUP);
+  delayMicroseconds(10);  // let the pull-up settle before sampling
+  return (digitalRead(JUMPER_SENSE_PIN) == LOW) ? BoardRole::START : BoardRole::GOAL;
+}
 
 /// @brief Loads the saved role from NVS. Returns BoardRole::UNSET if the
 /// `role` command has never been run on this board.
