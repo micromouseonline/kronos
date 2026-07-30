@@ -3,6 +3,9 @@
 Manual curl test scripts for the `POST /api/event` endpoint (see
 `docs/SYSTEM-DESCRIPTION.md`'s HTTP Server section,
 implemented in `src/net/http-server.h` / `src/race/race-command-source.h`).
+See the bottom of this file for `ws_send_event.py`, the equivalent tool for
+the persistent WebSocket endpoint (`/ws`, NETWORK-TIMING-ISSUE.md
+recommendation 1).
 
 ## Endpoint
 
@@ -115,3 +118,28 @@ CERBERUS_HOST=192.168.1.50 ./send-full-race.sh
 At ~20-40s per sequence, 20 repeats takes roughly 7-13 minutes. A failed
 sequence (non-zero exit) is logged and the loop continues to the next repeat
 rather than stopping the batch.
+
+## ws_send_event.py
+
+Same event schema as the scripts above, but sent over `/ws` (a persistent
+WebSocket connection) instead of `POST /api/event` (a fresh HTTP connection
+per event) -- the transport recommendation 1 in
+`NETWORK-TIMING-ISSUE.md` introduces. One connection is opened and reused for
+every event in a run, matching how a real gate board behaves post-recommendation-1
+(unlike the HTTP scripts, which necessarily open a new connection each time).
+
+No response is sent back from cerberus over the socket (fire-and-forget by
+design -- see `net/http-server.h`'s `ws_event_handler()` comment), so `sent`
+below only confirms the local send succeeded, not that cerberus processed it.
+Check cerberus's own debug log for a `[WS] DATA ... body=...` line (with
+verbose debug logging on) to confirm that.
+
+Requires the `websocket-client` package: `pip install websocket-client`
+
+```
+./ws_send_event.py ARM                          # gate_id defaults to WS_TEST_GATE
+./ws_send_event.py START MY_GATE_LABEL           # override gate_id
+./ws_send_event.py sequence                      # NEW_MOUSE + 4 ARM/START/GOAL cycles, one connection
+./ws_send_event.py sequence --repeats 10         # 1 + 10 cycles instead of 1 + 3
+CERBERUS_HOST=192.168.1.50 ./ws_send_event.py GOAL
+```
