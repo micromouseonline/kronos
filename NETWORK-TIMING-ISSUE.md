@@ -271,6 +271,56 @@ realistic burst rates, this firmware silently loses race events today.
   end of the run). No separate fix needed here beyond what's already
   recommended.
 
+### 10. A radio-level Wi-Fi interruption can silently gate hesperus's events for up to 5 minutes
+
+Found during recommendation-1 (persistent WebSocket) bring-up bench testing,
+while deliberately testing reconnect-after-Wi-Fi-drop — unrelated to
+WebSockets itself, this is a pre-existing property of hesperus's clock-
+disciplining code (`main.cpp`'s "TIMELINE SANITY AUDIT ENGINE") that the
+test happened to expose clearly for the first time.
+
+`MIN_PLAUSIBLE_TSF = 300000000` (`hesperus-timing-gate/src/main.cpp`) is the
+threshold a fresh `tsf_observed` reading must clear before hesperus will
+trust it as an initial baseline (`has_initial_baseline`) — until that
+baseline exists, every trigger is unconditionally dropped
+(`[CRITICAL DROP] Baseline missing or un-synchronized. Packet dropped.`),
+before ever reaching the network send code (HTTP or WS). The assumption
+behind the threshold is that a implausibly-small TSF value means the Wi-Fi
+stack hasn't synced yet (e.g. very early boot) — but **`esp_wifi_get_tsf_time()`
+tracks time since the AP's own TSF epoch, not since hesperus associated**,
+so anything that resets the AP's TSF resets this for every station on it,
+regardless of how briefly.
+
+**Confirmed by direct bench test**: toggling only the AP's radio off and
+back on (not a full router reboot/power-cycle) was enough to reset its TSF
+epoch. hesperus's own log shows the exact boundary:
+```
+[T=297670ms] [PLAUSIBILITY REJECT] TSF 297670304 too low. Wi-Fi stack un-synchronized.
+[T=297670ms] [CRITICAL DROP] Baseline missing or un-synchronized. Packet dropped.
+[T=302817ms] [INITIALIZED] Valid Baseline Coordinates Locked: 302817313
+```
+Rejected at TSF=297,670,304 (<300,000,000), accepted 5,147,009us later
+(matching the heartbeat timer's ~5147ms period exactly) at
+TSF=302,817,313 (>300,000,000) — recovery is bounded and self-healing, but
+takes the *entire* 300-second threshold from the moment the AP's radio was
+disrupted, not from whenever hesperus itself reconnects (hesperus's own
+Wi-Fi reconnected in ~3.4s in this same test; TSF wasn't trusted again for
+another ~4.9 minutes after that).
+
+Separately, this same outage also triggered hesperus's existing "stuck in
+SYN mode >10s" watchdog (`main.cpp`'s "PATCH 2", `ESP.restart()`) — a full
+board reboot, not just a Wi-Fi radio reset — since a real outage keeps the
+board in SYN/extrapolated-time mode well past the 10s threshold. Worth
+noting alongside the TSF gate above since both fire from the same kind of
+event and compound the total time-to-recovery, but they're two independent
+mechanisms.
+
+**Practical implication**: any AP-side radio interruption — not just a full
+power outage — can leave every gate on the network dropping triggers
+silently for up to 5 minutes, with no operator-visible indication beyond
+the serial debug log. At a real contest this reads as "the gates just
+stopped working" for a very long five minutes.
+
 ## Summary and conclusions
 
 - The dominant source of everyday latency (~130-270ms) is TCP connection
@@ -487,6 +537,19 @@ Ordered by leverage, not necessarily implementation order.
    does no harm once persistent connections (rec. 1) are in place, and helps
    in the meantime.
 
+9. **Shorten or rethink `MIN_PLAUSIBLE_TSF`'s 5-minute recovery window**
+   (see #10). Not yet designed — options range from simply lowering the
+   300,000,000us threshold (cheapest, but was presumably chosen for a
+   reason not documented in code, so needs re-justifying, not just
+   shrinking blindly), to trusting a `tsf_observed` reading immediately
+   after a *fresh* Wi-Fi association event (via `WiFi.onEvent`'s
+   `ARDUINO_EVENT_WIFI_STA_CONNECTED`, distinguishing "just associated" from
+   "implausible reading mid-session") rather than gating purely on the
+   TSF value's magnitude. Whatever the fix, it should be bench-verified the
+   same way #10 was found: toggle the AP's radio (not just hesperus's own
+   Wi-Fi) and confirm recovery time, since that's the actual failure mode
+   observed, not a full router power-cycle.
+
 ## Alternative considered: ESP-NOW
 
 Worth recording explicitly, since it was raised and weighed rather than
@@ -676,6 +739,37 @@ inferred:
    roughly the ~15-30ms return-leg figures in #3, with no multi-second
    outliers or queue overflow at the burst rates tested here) against this
    document's baseline data.
+
+   **In progress, 2026-07-30/31 (`websockets` branch, not yet merged)**:
+   cerberus's `/ws` `AsyncWebSocket` endpoint landed and is bench-verified
+   (new `tools/testing/ws_send_event.py`, mirrors the existing `send-*.sh`
+   HTTP scripts but reuses one persistent connection). hesperus's WS client
+   landed, built for `hesperus-gate-c3-super-mini`, and **both physical
+   hesperus test boards (ARM/START, GOAL) are now flashed and running WS
+   successfully**. Bench-measured WS latency settled at **~5-12ms** typical
+   (an initial run saw a one-time ~1.1s first-connection warm-up that didn't
+   recur on later runs), against **~115-560ms** for the still-HTTP
+   comparison runs earlier in bring-up — beats this section's own ~15-30ms
+   prediction. Committed times stayed exact (2000/3000/4000/5000ms)
+   throughout, confirming recommendation 4 is unaffected. Reconnect-after-
+   Wi-Fi-drop and reconnect-after-cerberus-reboot are both bench-confirmed
+   working (self-healing, no manual intervention needed either time).
+   Reconnect testing is what surfaced #10 (5-minute `MIN_PLAUSIBLE_TSF`
+   lockout) — unrelated to WebSockets itself, but found here first; new
+   recommendation 9 covers it, not yet designed or fixed. One low-priority,
+   self-healing WS connect/disconnect/reconnect blip was also observed
+   during a cerberus-reboot test, investigated but not conclusively
+   explained (see `net/wifi-manager.h`'s documented `AsyncServer::begin()`
+   PCB-orphaning gotcha for the closest known-analogous issue) — watch for
+   recurrence rather than fixed speculatively.
+
+   **Still open**: confirm whether the other 3 hesperus board envs
+   (`hesperus-gate-s3-zero`, `hesperus-gate-s3-super-mini`,
+   `hesperus-gate-c3-xiao`) need separate building/testing or whether both
+   physical test boards are already covered by `c3-super-mini`; then re-run
+   the full bench suite (`trial_burst`/`trial_double_trigger`/
+   `trial_arm_then_start`, not just `trial_four_runs`) for the complete
+   before/after comparison this item originally asked for.
 3. Measure actual current draw on real hardware across `WIFI_PS_NONE` /
    `WIFI_PS_MIN_MODEM` / `WIFI_PS_MAX_MODEM` with a persistent connection
    open, to make an evidence-based power/latency tradeoff instead of relying
