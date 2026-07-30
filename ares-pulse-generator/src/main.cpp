@@ -14,19 +14,19 @@ const uint32_t one_second = 1000000;
 
 const int BURST_COUNT = 40;
 const uint32_t BURST_INTERVAL_MS = 90;  // above DEBOUNCE_US (50ms, hesperus
-                                         // main.cpp) so the ISR doesn't
-                                         // discard these as bounce, but well
-                                         // under the ~250-270ms per-event
-                                         // send cost (NETWORK-TIMING-ISSUE.md
-                                         // #8), so the burst is expected to
-                                         // queue.
+                                        // main.cpp) so the ISR doesn't
+                                        // discard these as bounce, but well
+                                        // under the ~250-270ms per-event
+                                        // send cost (NETWORK-TIMING-ISSUE.md
+                                        // #8), so the burst is expected to
+                                        // queue.
 const uint32_t BURST_PULSE_MS = 10;
 
 const uint32_t DOUBLE_TRIGGER_GAP_MS = 150;  // edge-to-edge; above
-                                              // DEBOUNCE_US (50ms) so
-                                              // hesperus's ISR treats these
-                                              // as two distinct triggers,
-                                              // not bounce.
+                                             // DEBOUNCE_US (50ms) so
+                                             // hesperus's ISR treats these
+                                             // as two distinct triggers,
+                                             // not bounce.
 
 /// @brief One trial: a single 100ms active-low pulse on TRG_ARM, mimicking
 /// one beam-break trigger. Swap the call in loop() to a different trial
@@ -97,9 +97,9 @@ void setup() {
   pinMode(TRG_ARM, OUTPUT);
   pinMode(TRG_START, OUTPUT);
   pinMode(TRG_GOAL, OUTPUT);
-  digitalWrite(TRG_ARM, 0);
-  digitalWrite(TRG_START, 0);
-  digitalWrite(TRG_GOAL, 0);
+  digitalWrite(TRG_ARM, 1);
+  digitalWrite(TRG_START, 1);
+  digitalWrite(TRG_GOAL, 1);
 
   pinMode(BTN_IN, INPUT_PULLUP);
   pinMode(BTN_OUT, OUTPUT);
