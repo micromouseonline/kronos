@@ -7,11 +7,6 @@ const int TRG_GOAL = 5;
 const int BTN_IN = 4;
 const int BTN_OUT = 2;
 
-// Back to 100 -- trial_double_trigger() below is one repeated per-second
-// trial like trial_arm_then_start(), not a self-contained burst.
-const int MAX_COUNT = 100;
-const uint32_t one_second = 1000000;
-
 const int BURST_COUNT = 40;
 const uint32_t BURST_INTERVAL_MS = 90;  // above DEBOUNCE_US (50ms, hesperus
                                         // main.cpp) so the ISR doesn't
@@ -27,6 +22,16 @@ const uint32_t DOUBLE_TRIGGER_GAP_MS = 150;  // edge-to-edge; above
                                              // hesperus's ISR treats these
                                              // as two distinct triggers,
                                              // not bounce.
+
+const uint32_t RUN_DURATIONS_MS[] = {2000, 3000, 4000, 5000};  // START-to-GOAL,
+                                                                // leading-edge-
+                                                                // to-leading-edge,
+                                                                // one per run.
+const uint32_t ARM_TO_START_GAP_MS = 200;  // leading-edge-to-leading-edge,
+                                           // same convention as
+                                           // trial_arm_then_start().
+const uint32_t INTER_RUN_GAP_MS = 2000;    // GOAL's leading edge to the next
+                                           // run's ARM leading edge.
 
 /// @brief One trial: a single 100ms active-low pulse on TRG_ARM, mimicking
 /// one beam-break trigger. Swap the call in loop() to a different trial
@@ -93,6 +98,36 @@ void trial_double_trigger() {
   digitalWrite(TRG_GOAL, 1);
 }
 
+/// @brief Four full ARM-START-GOAL runs of increasing duration (2s, 3s, 4s,
+/// 5s), fired once per BTN_IN press (see loop()) rather than the
+/// press-once-then-auto-repeat-MAX_COUNT-times pattern the other trial_*
+/// functions above use. ARM-to-START and GOAL-to-next-ARM gaps are both
+/// measured leading-edge-to-leading-edge, same convention as
+/// trial_arm_then_start() -- each pulse's own PULSE_MS width is subtracted
+/// out of the delay that follows it so the edges land exactly on the
+/// configured spacing.
+void trial_four_runs() {
+  const uint32_t PULSE_MS = 100;
+  for (int i = 0; i < 4; i++) {
+    digitalWrite(LED_BUILTIN, 1);
+    digitalWrite(TRG_ARM, 0);
+    delay(PULSE_MS);
+    digitalWrite(TRG_ARM, 1);
+    delay(ARM_TO_START_GAP_MS - PULSE_MS);
+
+    digitalWrite(TRG_START, 0);
+    delay(PULSE_MS);
+    digitalWrite(TRG_START, 1);
+    delay(RUN_DURATIONS_MS[i] - PULSE_MS);
+
+    digitalWrite(TRG_GOAL, 0);
+    delay(PULSE_MS);
+    digitalWrite(LED_BUILTIN, 0);
+    digitalWrite(TRG_GOAL, 1);
+    delay(INTER_RUN_GAP_MS - PULSE_MS);
+  }
+}
+
 void setup() {
   pinMode(TRG_ARM, OUTPUT);
   pinMode(TRG_START, OUTPUT);
@@ -106,33 +141,19 @@ void setup() {
   digitalWrite(BTN_OUT, 0);
 
   pinMode(LED_BUILTIN, OUTPUT);
-
-  while (digitalRead(BTN_IN) == 1) {
-    yield();
-  }
 }
 
-int count = 0;
-uint32_t last_pulse;
-bool started = false;
-
 void loop() {
-  if (!started) {
-    // Started here, not in setup(), so the first trial lands exactly
-    // one_second after the button press -- not after however long it took
-    // to press it (setup()'s wait can take arbitrarily long).
-    last_pulse = micros();
-    started = true;
+  // Fire-once-per-press: trial_four_runs() runs exactly once per BTN_IN
+  // press, then this waits for release before arming for the next one --
+  // unlike the other trial_* functions above, which expect the old
+  // press-once-then-auto-repeat-MAX_COUNT-times loop (reinstate that
+  // structure if swapping back to one of them here).
+  if (digitalRead(BTN_IN) == 0) {
+    trial_four_runs();
+    while (digitalRead(BTN_IN) == 0) {
+      yield();
+    }
   }
-
-  if (count >= MAX_COUNT) {
-    yield();
-    return;
-  }
-  if (micros() - last_pulse < one_second) {
-    return;
-  }
-  last_pulse += one_second;
-  trial_double_trigger();
-  count++;
+  yield();
 }
