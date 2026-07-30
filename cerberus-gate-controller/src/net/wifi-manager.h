@@ -119,11 +119,11 @@ inline void wifi_connect_task(void*) {
   if (wifi_credentials_load(stored_ssid, sizeof(stored_ssid), stored_pass, sizeof(stored_pass))) {
     connect_ssid = stored_ssid;
     connect_pass = stored_pass;
-    debug_println("[SYSTEM] Using saved Wi-Fi credentials from NVS");
+    debug_log_enqueue("[SYSTEM] Using saved Wi-Fi credentials from NVS");
   }
 
-  debug_printf("[SYSTEM] My MAC Address %s\n", WiFi.macAddress().c_str());
-  debug_printf("[SYSTEM] Connecting to %s\n", connect_ssid);
+  debug_log_enqueue("[SYSTEM] My MAC Address %s", WiFi.macAddress().c_str());
+  debug_log_enqueue("[SYSTEM] Connecting to %s", connect_ssid);
   WiFi.begin(connect_ssid, connect_pass);
 
   bool was_connected = false;
@@ -153,7 +153,7 @@ inline void wifi_connect_task(void*) {
     // pointless reconnect() calls against a now-AP-mode radio.
     if (wifi_provisioning_requested ||
         (!ever_connected && !connected && millis() - disconnected_since > WIFI_PROVISIONING_TIMEOUT_MS)) {
-      debug_println("[SYSTEM] Entering Wi-Fi provisioning mode");
+      debug_log_enqueue("[SYSTEM] Entering Wi-Fi provisioning mode");
       if (wifi_on_provisioning_needed != nullptr) {
         wifi_on_provisioning_needed();
       }
@@ -164,13 +164,13 @@ inline void wifi_connect_task(void*) {
       ever_connected = true;
       esp_wifi_set_ps(WIFI_PS_NONE);
       neokey_set_colour(WIFI_STATUS_KEY, NP_OFF);
-      debug_println("[SYSTEM] Wi-Fi Connected!");
-      debug_printf("[SYSTEM] IP: %s  RSSI: %d dBm\n", WiFi.localIP().toString().c_str(), WiFi.RSSI());
+      debug_log_enqueue("[SYSTEM] Wi-Fi Connected!");
+      debug_log_enqueue("[SYSTEM] IP: %s  RSSI: %d dBm", WiFi.localIP().toString().c_str(), WiFi.RSSI());
       if (wifi_on_connected != nullptr) {
         wifi_on_connected();
       }
     } else if (!connected && was_connected) {
-      debug_println("[SYSTEM] Wi-Fi connection lost, reconnecting...");
+      debug_log_enqueue("[SYSTEM] Wi-Fi connection lost, reconnecting...");
       WiFi.reconnect();
       attempt_start = millis();
       disconnected_since = millis();
@@ -178,7 +178,7 @@ inline void wifi_connect_task(void*) {
       blink_state = !blink_state;
       neokey_set_colour(WIFI_STATUS_KEY, blink_state ? NP_CYAN : NP_OFF);
       if (millis() - attempt_start > 10000) {
-        debug_println("[SYSTEM] Wi-Fi connect attempt timed out, retrying...");
+        debug_log_enqueue("[SYSTEM] Wi-Fi connect attempt timed out, retrying...");
         WiFi.reconnect();
         attempt_start = millis();
       }
@@ -191,7 +191,7 @@ inline void wifi_connect_task(void*) {
     // join the new network" matters most.
     if (connected && g_wifi_rssi_report_enabled) {
       if (millis() - last_ip_report > 5000) {
-        debug_printf("[SYSTEM] IP: %s  RSSI: %d dBm\n", WiFi.localIP().toString().c_str(), WiFi.RSSI());
+        debug_log_enqueue("[SYSTEM] IP: %s  RSSI: %d dBm", WiFi.localIP().toString().c_str(), WiFi.RSSI());
         last_ip_report = millis();
       }
     }

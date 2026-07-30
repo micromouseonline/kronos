@@ -88,7 +88,7 @@ class Neokey {
     myWire.beginTransmission(NEOKEY_I2C_ADDR);
     if (myWire.endTransmission() != 0) {
       available = false;
-      debug_println("[NEOKEY] not found (quick probe), check wiring");
+      debug_log_enqueue("[NEOKEY] not found (quick probe), check wiring");
       return;
     }
 
@@ -100,7 +100,7 @@ class Neokey {
       // with address collisions). Deliberately not a while(1) hang: this
       // runs from a background task (neokey_buttons_init(),
       // neokey-buttons.h), but must still not wedge that task forever.
-      debug_println("[NEOKEY] not found, check wiring");
+      debug_log_enqueue("[NEOKEY] not found, check wiring");
       return;
     }
     setAllColour(NP_OFF);  // Turn off all pixels initially

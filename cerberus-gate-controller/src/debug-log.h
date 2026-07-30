@@ -7,21 +7,25 @@
 //  so debug output is safe to send at any time, including while the legacy
 //  protocol is live, as long as each call is one complete line.
 //
-//  Each debug_print/println/printf call must render a whole line (or, for
-//  debug_print, a value that already ends in '\n' -- see input-events.h's
-//  debug_print() member for that case): calling debug_print() repeatedly to
-//  assemble one line piece by piece would emit a '#' before every fragment
-//  instead of once at the start.
+//  All debug text funnels through debug_log_enqueue() onto the single
+//  debug_log_queue, drained in order by debug_log_drain_task -- this is
+//  deliberate, not just for the non-blocking guarantee described below:
+//  before this, the synchronous debug_print/println/printf helpers wrote
+//  straight to Serial (under serial_write_mutex, timestamped the same way)
+//  while debug_log_enqueue's callers went through the queue, so a sync call
+//  could land on the wire ahead of an earlier-enqueued-but-not-yet-drained
+//  message and print out of timestamp order. A single queue makes the wire
+//  order match the timestamp order.
 //
 //  serial_write_mutex guards every write to Serial across all producers of
-//  it (this file, net/messages.h's serial_send_message(), and
-//  serial-protocol.h's RX echo, which itself goes through debug_printf) --
-//  they run from different FreeRTOS tasks on both cores (e.g. Core 0's
-//  Wi-Fi connect task vs. Core 1's main loop() telemetry tick) with no other
-//  synchronization, and an unguarded interleaved write can corrupt or
-//  silently swallow whichever side loses the race. Created eagerly (not
-//  lazily like neokey_bus_mutex) since Serial output can start from the
-//  very first line of setup(), before any other init has run.
+//  it (this file's debug_log_drain_task and net/messages.h's
+//  serial_send_message()) -- they run from different FreeRTOS tasks on both
+//  cores (e.g. Core 0's Wi-Fi connect task vs. Core 1's main loop()
+//  telemetry tick) with no other synchronization, and an unguarded
+//  interleaved write can corrupt or silently swallow whichever side loses
+//  the race. Created eagerly (not lazily like neokey_bus_mutex) since
+//  Serial output can start from the very first line of setup(), before any
+//  other init has run.
 //
 //  Deliberately a leaf header (only depends on Arduino.h and FreeRTOS) so
 //  every call site can include it without risk of a circular include back
@@ -63,42 +67,8 @@ inline void serial_write_unlock() {
 // after the fact, without needing NTP or any other clock sync. Only
 // meaningful once Wi-Fi/beacon sync has occurred; lines logged before then
 // (early boot) will show a small/near-zero value.
-inline uint64_t debug_timestamp_ms() {
-  return esp_wifi_get_tsf_time(WIFI_IF_STA) / 1000;
-}
-
-template <typename T>
-inline void debug_print(T value) {
-  serial_write_lock();
-  Serial.printf("#[T=%llums] ", debug_timestamp_ms());
-  Serial.print(value);
-  serial_write_unlock();
-}
-
-template <typename T>
-inline void debug_println(T value) {
-  serial_write_lock();
-  Serial.printf("#[T=%llums] ", debug_timestamp_ms());
-  Serial.println(value);
-  serial_write_unlock();
-}
-
-inline void debug_println() {
-  serial_write_lock();
-  Serial.printf("#[T=%llums]\n", debug_timestamp_ms());
-  serial_write_unlock();
-}
-
-inline void debug_printf(const char *fmt, ...) {
-  char buf[128];
-  va_list args;
-  va_start(args, fmt);
-  vsnprintf(buf, sizeof(buf), fmt, args);
-  va_end(args);
-  serial_write_lock();
-  Serial.printf("#[T=%llums] ", debug_timestamp_ms());
-  Serial.print(buf);
-  serial_write_unlock();
+inline uint32_t debug_timestamp_ms() {
+  return (uint32_t)(esp_wifi_get_tsf_time(WIFI_IF_STA) / 1000);
 }
 
 // ----------------------------------------------------------------------------
@@ -130,7 +100,7 @@ inline QueueHandle_t debug_log_queue = xQueueCreate(16, sizeof(LogMessage));
 /// design, so a print-time timestamp would misrepresent when the logged
 /// event actually happened.
 inline void debug_log_enqueue(const char *fmt, ...) {
-  uint64_t ts_ms = debug_timestamp_ms();
+  uint32_t ts_ms = debug_timestamp_ms();
   char body[136];
   va_list args;
   va_start(args, fmt);
@@ -138,7 +108,7 @@ inline void debug_log_enqueue(const char *fmt, ...) {
   va_end(args);
 
   LogMessage msg;
-  snprintf(msg.text, sizeof(msg.text), "[T=%llums] %s", ts_ms, body);
+  snprintf(msg.text, sizeof(msg.text), "[%lu] %s", ts_ms, body);
   xQueueSend(debug_log_queue, &msg, 0);
 }
 

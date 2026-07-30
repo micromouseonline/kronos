@@ -26,12 +26,12 @@ inline AsyncWebServer http_server(80);
 // passed by the JSON POST handler (http_handle_event) -- GET routes have
 // nothing to serialize, so it stays empty for those.
 //
-// Uses debug_log_enqueue(), not debug_printf(), deliberately -- this runs
-// inside the AsyncWebServer request callback, and a blocking Serial write
-// here (e.g. serial_write_mutex contended by another task's own debug
-// output) adds straight to the client's round-trip time, which can be
-// enough on its own to blow through a gate's HTTP client timeout and
-// trigger a retry it didn't otherwise need.
+// This runs inside the AsyncWebServer request callback, so it relies on
+// debug_log_enqueue() being non-blocking -- a blocking Serial write here
+// (e.g. serial_write_mutex contended by another task's own debug output)
+// adds straight to the client's round-trip time, which can be enough on
+// its own to blow through a gate's HTTP client timeout and trigger a
+// retry it didn't otherwise need.
 inline void http_log_request(AsyncWebServerRequest *request, const String &body = String()) {
   if (!g_debug_verbose_enabled) {
     return;
@@ -55,7 +55,7 @@ inline void http_notify_leaderboard_changed() {
 inline void http_server_restart() {
   http_server.end();
   http_server.begin();
-  debug_println("[SYSTEM] HTTP server restarted after Wi-Fi (re)connect");
+  debug_log_enqueue("[SYSTEM] HTTP server restarted after Wi-Fi (re)connect");
 }
 
 // Time / NTP Configuration (Europe/London)
@@ -274,7 +274,7 @@ inline void http_handle_event(AsyncWebServerRequest *request, JsonVariant &json)
     return;
   }
 
-  debug_printf("[HTTP] rejected /api/event: gate_id=\"%s\" event=\"%s\"\n", evt.gate_id, evt.event);
+  debug_log_enqueue("[HTTP] rejected /api/event: gate_id=\"%s\" event=\"%s\"", evt.gate_id, evt.event);
   request->send(400, "application/json", "{\"status\":\"error\",\"reason\":\"unrecognised event\"}");
 }
 
@@ -299,5 +299,5 @@ inline void http_server_init() {
   }
 
   http_server.begin();
-  debug_println("[SYSTEM] HTTP server listening on port 80");
+  debug_log_enqueue("[SYSTEM] HTTP server listening on port 80");
 }

@@ -31,7 +31,7 @@ inline void re_calibrate(LGFX& lcd) {
   prefs.begin(PREFS_NAMESPACE, false);
   prefs.clear();
 
-  debug_println("Starting native LovyanGFX calibration wizard...");
+  debug_log_enqueue("Starting native LovyanGFX calibration wizard...");
 
   // 2. Clear screen and display basic instructions
   lcd.fillScreen(TFT_BLACK);
@@ -71,10 +71,10 @@ inline void calibrate(LGFX& lcd) {
 
     // Apply it to the display instance
     lcd.setTouchCalibrate(touchCalData);
-    debug_println("Native touch calibration loaded successfully.");
+    debug_log_enqueue("Native touch calibration loaded successfully.");
   } else {
     prefs.end();
-    debug_println("No calibration data found. Launching wizard...");
+    debug_log_enqueue("No calibration data found. Launching wizard...");
     re_calibrate(lcd);
   }
 }

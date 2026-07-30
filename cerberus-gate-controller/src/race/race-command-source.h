@@ -137,7 +137,7 @@ inline void serial_protocol_handle_info_message(const SerialLine &line, uint64_t
       } else if (strcmp(line.value, "TIMER") == 0) {
         system_event_post(RaceCommand::RESUME_TIMER, timestamp_us);
       } else {
-        debug_printf("[serial-protocol] SetMode(%s) unrecognised, ignored\n", line.value);
+        debug_log_enqueue("[serial-protocol] SetMode(%s) unrecognised, ignored", line.value);
       }
       break;
     case MSG_REQUEST_TYPE:

@@ -71,12 +71,9 @@ struct InputEvent {
     const char* type_str = type_names[int(type)];
 
     char buf[96];  // Increased buffer size to prevent truncation
-    snprintf(buf, sizeof(buf), "EVT: %s, %s, %s, tsf=%llu local=%llu us\n", btn_str, src_str, type_str,
+    snprintf(buf, sizeof(buf), "EVT: %s, %s, %s, tsf=%llu local=%llu us", btn_str, src_str, type_str,
              (unsigned long long)tsf_time, (unsigned long long)local_time);
-    // ::-qualified: this is a member function also named debug_print(), so
-    // unqualified lookup would find itself (0-arg) instead of the global
-    // free function (1-arg) and fail to compile.
-    ::debug_print(buf);
+    debug_log_enqueue("%s", buf);
   }
 };
 

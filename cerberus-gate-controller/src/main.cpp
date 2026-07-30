@@ -187,7 +187,7 @@ void on_wifi_connected() {
 // cycle.
 void wifi_provisioning_check_cancel(const InputEvent &evt) {
   if (evt.id == BTN_TOUCH && evt.type == InputEventType::HELD) {
-    debug_println("[SYSTEM] Wi-Fi provisioning cancelled, rebooting");
+    debug_log_enqueue("[SYSTEM] Wi-Fi provisioning cancelled, rebooting");
     ESP.restart();
   }
 }
@@ -264,8 +264,8 @@ void setup() {
   // sharing Serial with it yet.
   serial_protocol_init();
   lv_scr_load(objects.menu);
-  debug_println(F("CERBERUS: gate controller"));
-  debug_printf("version: %s\n", FIRMWARE_VERSION_STRING);
+  debug_log_enqueue("CERBERUS: gate controller");
+  debug_log_enqueue("version: %s", FIRMWARE_VERSION_STRING);
 }
 
 //////////////////////////////////////////////////////////////////////

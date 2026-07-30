@@ -82,7 +82,7 @@ void action_on_menu_maze_timer(lv_event_t *e) {
 }
 
 void action_on_menu_calibrate(lv_event_t *e) {
-  debug_println("CALIBRATE!");
+  debug_log_enqueue("CALIBRATE!");
 }
 
 static void on_reset_confirmed(bool confirmed, void *user_data) {
@@ -108,7 +108,7 @@ extern void neokey_reflect_race_state();
 // processing if it's the first screen visited after boot.
 void action_on_menu_gate_test(lv_event_t *e) {
   race_timer_active = true;
-  debug_println("GATE TEST!");
+  debug_log_enqueue("GATE TEST!");
   race_timer_handle_command(RaceCommand::ENTER_CALIBRATION);
   neokey_reflect_race_state();
   loadScreen(SCREEN_ID_MAIN);
@@ -199,7 +199,7 @@ void action_on_wifi_setup_return(lv_event_t *e) {
 // takes over the LCD directly once that fires, so no further screen
 // navigation is needed here.
 void action_on_wifi_setup_confirm(lv_event_t *e) {
-  debug_println("[SYSTEM] Wi-Fi reconfigure requested: clearing saved credentials");
+  debug_log_enqueue("[SYSTEM] Wi-Fi reconfigure requested: clearing saved credentials");
   wifi_credentials_clear();
   wifi_request_provisioning();
 }

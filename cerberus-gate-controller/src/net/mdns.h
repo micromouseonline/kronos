@@ -17,9 +17,9 @@
 
 inline void mdns_start() {
   if (!MDNS.begin("cerberus")) {
-    debug_println("[SYSTEM] mDNS failed to start");
+    debug_log_enqueue("[SYSTEM] mDNS failed to start");
   } else {
     MDNS.addService("http", "tcp", 80);
-    debug_println("[SYSTEM] mDNS started: http://cerberus.local/");
+    debug_log_enqueue("[SYSTEM] mDNS started: http://cerberus.local/");
   }
 }

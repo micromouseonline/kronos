@@ -57,7 +57,7 @@ inline void wifi_provisioning_handle_save(AsyncWebServerRequest* request) {
   String new_ssid = request->arg("ssid");
   String new_pass = request->arg("pass");
   wifi_credentials_save(new_ssid.c_str(), new_pass.c_str());
-  debug_printf("[SYSTEM] Wi-Fi credentials saved for \"%s\", rebooting\n", new_ssid.c_str());
+  debug_log_enqueue("[SYSTEM] Wi-Fi credentials saved for \"%s\", rebooting", new_ssid.c_str());
 
   String html;
   html.reserve(400);
