@@ -48,6 +48,14 @@ inline void http_log_request(AsyncWebServerRequest *request, const String &body 
 // Pushes one SSE message per new result
 inline AsyncEventSource http_events("/events");
 
+// Persistent connection for gate boards (NETWORK-TIMING-ISSUE.md
+// recommendation 1) -- replaces the per-event TCP connect+POST+close cycle
+// /api/event still serves. Rides the same AsyncWebServer instance/port, so
+// no separate mDNS service or wifi_on_connected hook is needed: http_server's
+// existing restart-on-reconnect (http_server_restart() below) carries this
+// route through too.
+inline AsyncWebSocket http_ws("/ws");
+
 inline void http_notify_leaderboard_changed() {
   http_events.send("update");
 }
@@ -239,12 +247,14 @@ inline void http_handle_leaderboard(AsyncWebServerRequest *request) {
   request->send(200, "text/html", html);
 }
 
-inline void http_handle_event(AsyncWebServerRequest *request, JsonVariant &json) {
-  JsonObject body = json.as<JsonObject>();
-  String body_str;
-  serializeJson(body, body_str);
-  http_log_request(request, body_str);
-
+// Transport-agnostic core shared by http_handle_event() (below) and
+// ws_event_handler()'s WS_EVT_DATA case -- parses the same 4-field
+// gate_id/event/tsf_us/gate_us schema (or the RATS V2 info-message
+// vocabulary) and dispatches into the race state machine exactly the same
+// way regardless of whether it arrived over a POST body or a WS text frame.
+// Returns true if the event was recognised (either a race command or an
+// info message) and handled.
+inline bool handle_gate_event_json(JsonObject &body, String &response_json, int &http_status) {
   HttpGateEvent evt{};
   strlcpy(evt.gate_id, body["gate_id"] | "", sizeof(evt.gate_id));
   strlcpy(evt.event, body["event"] | "", sizeof(evt.event));
@@ -254,32 +264,101 @@ inline void http_handle_event(AsyncWebServerRequest *request, JsonVariant &json)
   RaceCommand cmd = race_command_from_http(evt);
   if (cmd != RaceCommand::NONE) {
     system_event_post(cmd, evt.tsf_us, evt.gate_id);
-    request->send(200, "application/json", "{\"status\":\"ok\"}");
-    return;
+    http_status = 200;
+    response_json = "{\"status\":\"ok\"}";
+    return true;
   }
 
   // Not a gate/race event -- try the RATS V2 "info message" vocabulary
   // (ContestName, EventName, AllowedRuns, EntryTimeS, ExtraRun, SetMode,
   // RequestType), the same set net/serial-protocol.h's RX task hands to
   // serial_protocol_handle_info_message(). Reuses that function unchanged:
-  // an HTTP SerialLine is built from `event`/`value` instead of parsed off
-  // the UART, everything downstream is identical to the serial path.
+  // a SerialLine is built from `event`/`value` instead of parsed off the
+  // UART, everything downstream is identical to the serial path.
   int info_type = http_info_message_type(evt.event);
   if (info_type != -1) {
     SerialLine line{};
     line.type = info_type;
     strlcpy(line.value, body["value"] | "", sizeof(line.value));
     serial_protocol_handle_info_message(line, static_cast<uint64_t>(esp_timer_get_time()));
-    request->send(200, "application/json", "{\"status\":\"ok\"}");
-    return;
+    http_status = 200;
+    response_json = "{\"status\":\"ok\"}";
+    return true;
   }
 
-  debug_log_enqueue("[HTTP] rejected /api/event: gate_id=\"%s\" event=\"%s\"", evt.gate_id, evt.event);
-  request->send(400, "application/json", "{\"status\":\"error\",\"reason\":\"unrecognised event\"}");
+  http_status = 400;
+  response_json = "{\"status\":\"error\",\"reason\":\"unrecognised event\"}";
+  return false;
+}
+
+inline void http_handle_event(AsyncWebServerRequest *request, JsonVariant &json) {
+  JsonObject body = json.as<JsonObject>();
+  String body_str;
+  serializeJson(body, body_str);
+  http_log_request(request, body_str);
+
+  String response_json;
+  int http_status;
+  bool handled = handle_gate_event_json(body, response_json, http_status);
+  if (!handled) {
+    debug_log_enqueue("[HTTP] rejected /api/event: gate_id=\"%s\" event=\"%s\"",
+                       (const char *)(body["gate_id"] | ""), (const char *)(body["event"] | ""));
+  }
+  request->send(http_status, "application/json", response_json);
 }
 
 // Global static handler prevents heap re-allocation
 inline AsyncCallbackJsonWebHandler api_event_handler("/api/event", http_handle_event);
+
+// AsyncWebSocket event handler for http_ws ("/ws") -- persistent-connection
+// counterpart to http_handle_event() above (see NETWORK-TIMING-ISSUE.md
+// recommendation 1). No ack is sent back over the socket: a retry/
+// reliability mechanism is a separate, not-yet-designed item (see that
+// doc's status section) and half-building an ack scheme here would preempt
+// it -- this only needs to get the event into the race state machine.
+inline void ws_event_handler(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg,
+                              uint8_t *data, size_t len) {
+  if (type == WS_EVT_CONNECT) {
+    // Auto ping/pong every 5s -- gives WS_EVT_DISCONNECT-based detection of
+    // a peer that vanishes without a clean close (power loss, WiFi drop),
+    // which a plain held-open TCP socket doesn't provide on its own.
+    client->keepAlivePeriod(5);
+    debug_log_enqueue("[WS] client #%u connected from %s", client->id(), client->remoteIP().toString().c_str());
+  } else if (type == WS_EVT_DISCONNECT) {
+    debug_log_enqueue("[WS] client #%u disconnected", client->id());
+  } else if (type == WS_EVT_ERROR) {
+    debug_log_enqueue("[WS] client #%u error", client->id());
+  } else if (type == WS_EVT_DATA) {
+    AwsFrameInfo *info = (AwsFrameInfo *)arg;
+    // Single-frame text fast path only -- the 4-field event payload is well
+    // under any frame-size concern, so no multi-frame reassembly is needed.
+    if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
+      data[len] = 0;  // AsyncWebSocket null-terminates single-frame text payloads
+      JsonDocument doc;
+      DeserializationError err = deserializeJson(doc, (char *)data);
+      if (err) {
+        debug_log_enqueue("[WS] JSON parse error from client #%u", client->id());
+        return;
+      }
+      JsonObject body = doc.as<JsonObject>();
+      // Same "body=" shape http_log_request() uses -- tools/cerberus_log_stats.py's
+      // LINE_RE matches on "body={...}" regardless of the preceding tag, so
+      // this keeps that tool working unmodified.
+      if (g_debug_verbose_enabled) {
+        String body_str;
+        serializeJson(body, body_str);
+        debug_log_enqueue("[WS] DATA from %s body=%s", client->remoteIP().toString().c_str(), body_str.c_str());
+      }
+      String response_json;
+      int http_status;
+      bool handled = handle_gate_event_json(body, response_json, http_status);
+      if (!handled) {
+        debug_log_enqueue("[WS] rejected: gate_id=\"%s\" event=\"%s\"", (const char *)(body["gate_id"] | ""),
+                           (const char *)(body["event"] | ""));
+      }
+    }
+  }
+}
 
 inline void http_server_init() {
   static bool initialized = false;
@@ -294,6 +373,9 @@ inline void http_server_init() {
 
     http_server.addHandler(&http_events);
     race_timer_on_run_committed = http_notify_leaderboard_changed;
+
+    http_ws.onEvent(ws_event_handler);
+    http_server.addHandler(&http_ws);
 
     initialized = true;
   }
