@@ -62,7 +62,7 @@ inline void serial_protocol_process_line(const char *line_str) {
   if (g_debug_verbose_enabled) {
     // Confirms to whoever's typing exactly what bytes were seen,
     // independent of terminal echo settings.
-    debug_log_enqueue("[serial-protocol] rx: \"%s\"", line_str);
+    debug_log_enqueue("[serial] rx: \"%s\"", line_str);
   }
   SerialLine line;
   if (serial_protocol_parse_line(line_str, &line)) {

@@ -128,15 +128,152 @@ Persistent connections and more aggressive retry (see recommendations) reduce
 the probability of this scenario substantially but do not eliminate it
 structurally.
 
+### 8. Confirmed by direct bench test: burst latency is queueing on hesperus, not the network
+
+Two follow-up bench tests isolated the queueing theory from #3 directly, using
+the same `receipt_ms*1000 − tsf_us` method against a rapid sequence of real
+`GOAL` triggers.
+
+**Test A — rapid-fire triggering (~88 events, spacing mostly 60-800ms):**
+one-way latency ramped smoothly from ~110ms up to 2773ms over each ~8s burst,
+resetting back down whenever a multi-second pause let the backlog drain.
+Latency growth per event correlated directly with inter-trigger spacing: gaps
+under ~130ms added ~140-190ms of extra latency each; gaps over ~250ms let
+latency drain instead of growing. This is a queueing signature, not network
+jitter or clock drift (hesperus's own `tsf_observed` and `processor_clock`
+tracked each other to within tens of microseconds throughout, ruling out any
+clock-discipline artifact on the gate). The mechanism: `uploadWorkerTask`
+(`hesperus-timing-gate/src/main.cpp:238`) drains `networkQueue` one event at a
+time, and each full connect+POST+confirm cycle costs ~230-270ms (matching the
+#3 baseline exactly) — triggers arriving faster than that queue up and each
+waits longer than the last for its turn, on top of whatever the network
+itself costs.
+
+**Test B — control, same trigger source, ~1-2s spacing (~87 events):** mean
+234.6ms, median 259.5ms, p90 319ms, p95 345ms, stdev 102ms. Only one outlier,
+818.8ms — the very first request of the session (cold connection), closely
+matching the ~856ms first-connection figure already noted in #3. A few
+switch-bounce pairs (~140-235ms apart) showed a mild one-off bump
+(~300-385ms) but never compounded, since the next event always had enough of
+a gap to drain the queue first. This confirms Test A's spike was purely a
+by-product of sustained rapid-fire triggering outrunning hesperus's
+one-event-at-a-time send cycle, not a new or separate network problem — at
+realistic trigger spacing, latency stays in the range #3 already documented.
+
+**Practical implication, confirmed by a third, controlled bench test:**
+`networkQueue` is only 10 deep (`hesperus-timing-gate/src/main.cpp:452`). At
+a ~250ms service time, a sustained trigger rate faster than that for more
+than ~2.5s overflows it — silently dropping events, not just delaying them.
+`ares-pulse-generator`'s `trial_burst` fired 40 `GOAL` pulses at a fixed,
+known 90ms interval (raw data/analysis in
+`test-data/trial-burst-20260630-1542*.txt`); only 24 reached cerberus. The
+other 16 are independently confirmed dropped two ways at once: hesperus's own
+serial log showed `[QUEUE OVERFLOW] N networkQueue event(s) dropped.` lines
+summing to exactly 16, and cerberus's received events show gaps of 180ms/270ms
+(2x/3x the 90ms send interval) exactly where pulses are missing, precisely
+matching hesperus's per-line drop counts. The first ~15-16 pulses got through
+with no drops at all, at a clean, unbroken 90ms spacing — but their latency
+climbed the whole time, from 272ms to 2726ms, the same ramp signature as
+Test A. Drops begin almost exactly where the depth-10 queue at a ~250-270ms
+service time against a 90ms arrival interval was expected to saturate.
+Once saturated, latency stops climbing and flattens at ~2700-2770ms instead
+of growing further — arrivals beyond capacity are now rejected outright
+rather than added to an ever-deeper backlog, exactly the behaviour a
+hard-capacity queue should show. This is no longer an inferred risk: at
+realistic burst rates, this firmware silently loses race events today.
+
+### 9. Two real-world trigger patterns this queueing interacts with
+
+- **A single gate re-triggering on one pass.** A robot with a gapped/slotted
+  structure can break one gate's beam more than once during what should
+  count as a single crossing. `DEBOUNCE_US` (50ms, ISR-level) suppresses
+  electrical/mechanical bounce, but a structural gap can plausibly be wider
+  than that, generating genuinely separate, correctly-timestamped triggers
+  for what should be one logical event. The race state machine already
+  tolerates this once it's out of `RUNNING` (a later duplicate is dropped
+  by state, not corrupted), so this isn't a correctness bug today — but per
+  #8, needlessly sending/queueing extra events adds avoidable network-side
+  pressure for no benefit, since only the first trigger of a crossing is
+  ever wanted for a race time. A short post-trigger lock-out on hesperus
+  itself (deactivate that sensor for ~300ms after it fires, distinct from
+  and longer than the 50ms electrical debounce) would suppress these at the
+  source. Cheap to add, does no harm once persistent connections (rec. 1)
+  make per-event overhead small, and reduces load in the meantime.
+
+  **Confirmed by bench test** (`ares-pulse-generator`'s `trial_double_trigger`,
+  two `GOAL` pulses on the same pin, edges 150ms apart, 100 trials; raw
+  data/analysis in `test-data/trial-double-trigger-20260630-1604*.txt`): of
+  98 cleanly-paired trials, the first trigger's latency averaged 267.3ms
+  (stdev 5.9ms) — matching baseline — and the second averaged 371.2ms
+  (stdev 6.0ms), a consistent **~104ms** queueing delay, the same mechanism
+  as the `ARM`/`START` case below, scaled up because 150ms of spacing
+  overlaps more of the ~267ms send cycle than `ARM`/`START`'s 200ms does
+  (267−150=117ms forced overlap vs. 267−200=67ms, roughly matching the
+  ~104ms vs. ~53ms difference between the two tests).
+
+  **Open question, not yet settled:** 198 of the expected 200 events arrived.
+  One is a confirmed genuine drop — `gate_us` (captured at the true trigger
+  instant, unaffected by transmission delay) shows the very first trial's
+  second edge is simply missing from the sequence, not just delayed; its
+  first edge had an unusually slow ~816ms cold-start connection, which may
+  have tied up the worker long enough to cause it, but this wasn't confirmed
+  against hesperus's own serial log the way the #8 burst-overflow drops were,
+  so the exact mechanism is unknown. The second missing event is a lone,
+  ordinary-looking trailing trigger with no partner following it, most likely
+  just the log capture ending before the response came back rather than a
+  real drop, but that's not confirmed either. Noted here as a real, open
+  question rather than settled — dropped messages generally are an accepted
+  risk at this stage, expected to be addressed once a retry mechanism is
+  implemented, so not pursued further for now.
+
+- **One board serving both `ARM` and `START` gates.** Observation indicates
+  a robot can cross the `ARM` gate and then the `START` gate as little as
+  ~200ms apart. Both sensors share one hesperus board's `networkQueue`, so
+  per #8 this routinely (not just occasionally) queues the `START` event
+  behind the `ARM` event's in-flight send cycle — at ~230-270ms per cycle, a
+  200ms gap is squarely inside the range where the second event queues.
+
+  **Confirmed by bench test** (`ares-pulse-generator`'s `trial_arm_then_start`,
+  99 trigger pairs, edges 200ms apart, raw data/analysis in
+  `test-data/arm-then-start-test-20260630-1522*.txt`): `ARM` latency —
+  mean 266.6ms, median 266.2ms, stdev 3.4ms — matches the solo-trigger
+  baseline (#8, Test B) exactly, as expected. `START` latency — mean 319.7ms,
+  median 318.8ms, stdev 6.3ms — consistently ~53ms higher than `ARM`,
+  on essentially every pair (one outlier at 373.7ms, the first trial right
+  after the button press, matching the same cold-connection pattern seen at
+  the start of every other test here). The tightness of both stdevs (3-6ms,
+  not tens of ms) confirms this is a near-deterministic queueing offset from
+  `START` waiting out the remainder of `ARM`'s in-flight send cycle, not
+  ordinary network jitter.
+
+  Order is preserved (FIFO drain, `ARM`'s full cycle completes before
+  `START`'s begins), so this doesn't risk `START` arriving before `ARM` or
+  otherwise confusing the state machine — it only delays *when* `START`'s
+  HTTP request lands, never *what* timestamp it carries. Since
+  `START.tsf_us` is captured at the true trigger instant regardless of when
+  it's transmitted, this delay is exactly what recommendation 4 (tsf_us-based
+  `run_sw` baseline) already conceals from the display, and doesn't touch
+  the committed `GOAL.tsf_us − START.tsf_us` result at all. No separate fix
+  needed here beyond what's already recommended.
+
 ## Summary and conclusions
 
-- The dominant source of both everyday latency (~130-270ms) and worst-case
-  outliers (up to ~3s) is TCP connection establishment, paid fresh on every
-  event. This was previously invisible because the timeout being tuned
-  (`HTTP_TIMEOUT_MS`) never actually bounded that phase.
+- The dominant source of everyday latency (~130-270ms) is TCP connection
+  establishment, paid fresh on every event. This was previously invisible
+  because the timeout being tuned (`HTTP_TIMEOUT_MS`) never actually bounded
+  that phase.
+- Worst-case outliers (up to ~3s) have two distinct, additive causes now
+  confirmed separately: single-attempt TCP connect-phase trouble (#3), and
+  — confirmed directly by bench test in #8 — queueing on hesperus's own
+  single-worker send cycle when triggers arrive faster than one ~230-270ms
+  connect+POST+confirm cycle can complete. At realistic trigger spacing
+  (#8, Test B) latency stays in the everyday ~130-270ms range; the queueing
+  contribution only appears once triggers outrun that per-event cost, which
+  #9 identifies as a routine (not just edge-case) occurrence for a board
+  serving both `ARM` and `START`.
 - `WIFI_PS_NONE` removes one class of latency spike (radio wake-up) but not
-  the connect-phase/packet-loss class, and comes at a real, hard-constrained
-  power cost given the sub-500mAh battery budget.
+  the connect-phase/packet-loss or queueing classes, and comes at a real,
+  hard-constrained power cost given the sub-500mAh battery budget.
 - The displayed race time's credibility to a spectator is threatened by
   *variance/asymmetry* between the two legs' latency, not by latency's
   absolute size — a small, consistent latency would be invisible in the
@@ -244,6 +381,16 @@ Ordered by leverage, not necessarily implementation order.
    the lower-effort mitigations are in place and its residual necessity can
    be judged against observed real-world reliability.
 
+   **Separable from recommendation 1, but not unrelated.** Persistent
+   connections and this attempt-id are independent workstreams — neither
+   blocks the other, and they touch different code (transport vs. event
+   contract/state machine). They do interact one way: shorter latency from
+   (1) shrinks the window during which a stale event can still plausibly be
+   in flight when a new attempt gets armed, which makes any timeout-based
+   staleness judgment (here or in the tsf-ordering refinement just below)
+   easier to call correctly and lets it be tuned more aggressively without
+   risking false positives against genuinely-late-but-valid events.
+
    **Refinement worth folding in, whether or not an explicit attempt-id is
    added**: `tsf_us` is already a shared, ordered clock across boards, so
    staleness can be detected without any new field at all — a `GOAL` whose
@@ -298,6 +445,16 @@ Ordered by leverage, not necessarily implementation order.
      actually independent (supporting the technique) or correlated (e.g. all
      5 failing together under channel congestion, undermining it) — see
      Experiment 7 below.
+
+8. **Gate-side post-trigger lock-out (~300ms)** (see #9). Deactivate a
+   sensor for a short window after it fires, on top of the existing 50ms
+   `DEBOUNCE_US` electrical debounce — aimed at a robot's structure (e.g. a
+   gapped chassis) producing more than one genuine, correctly-spaced trigger
+   for what should count as a single crossing. The state machine already
+   tolerates the duplicate once it's left `RUNNING`, so this isn't fixing a
+   correctness bug, only avoiding needless queued/sent events per #8 — cheap,
+   does no harm once persistent connections (rec. 1) are in place, and helps
+   in the meantime.
 
 ## Alternative considered: ESP-NOW
 
@@ -442,16 +599,50 @@ attempt number wins each time. Two things to check specifically:
   independent, directly testing the assumption the technique's benefit
   depends on.
 
-## Suggested next steps
+## Status as of 2026-07-30 and what's next
 
-- Implement persistent connections on hesperus and re-run the bench
-  ARM/START/GOAL sequence; compare the resulting latency distribution
-  (expect it to tighten to roughly the ~15-30ms return-leg figures above,
-  with no multi-second outliers) against this document's baseline data.
-- Measure actual current draw on real hardware across `WIFI_PS_NONE` /
-  `WIFI_PS_MIN_MODEM` / `WIFI_PS_MAX_MODEM` with a persistent connection
-  open, to make an evidence-based power/latency tradeoff instead of relying
-  on generic ESP32 figures.
-- Decide, based on the above, whether items (4) and (5) are pursued now or
-  deferred — both are correctness/appearance fixes rather than blockers
-  given current bench-test success.
+**Bench-testing phase (this document's #8/#9) is substantially done.** Four
+controlled tests were run using `ares-pulse-generator` (now has four
+`trial_*` functions: solo pulse, `ARM`-then-`START`, controlled burst,
+same-pin double-trigger) and `tools/cerberus_log_stats.py` (extracts
+`recv_ms`/`event`/`tsf_us`/`gate_us` from cerberus's debug log and reports
+latency stats, with a `--gaps` mode for the queueing diagnostic). Raw data
+and analysis for all of them are in `test-data/`. Confirmed, not just
+inferred:
+- Queueing (not TCP-connect alone) explains worst-case latency under burst
+  triggering (#8), and the depth-10 `networkQueue` really does overflow and
+  silently drop events at realistic burst rates (40 sent, 24 received, 16
+  confirmed dropped both via hesperus's own overflow log and independently
+  via `gate_us` gap analysis).
+- The `ARM`/`START` shared-board scenario (#9) adds a consistent, near-
+  deterministic ~53ms delay to `START` at 200ms trigger spacing.
+- The single-gate double-trigger scenario (#9) adds ~104ms to the second
+  trigger at 150ms spacing, plus two still-unresolved single-event drops
+  (one confirmed real via `gate_us`, cause unknown; one likely just a
+  capture-boundary artifact) — noted as an open question, not pursued
+  further since dropped messages are an accepted risk pending the retry
+  mechanism below.
+- Experiment 6 (deliberately reproducing the #7 misattribution scenario) was
+  considered and explicitly deferred: expected to be rare in practice and
+  its effects easy to infer without a dedicated test, and better revisited
+  after the event-contract/protocol changes below land, since those may
+  change how it plays out anyway.
+
+**Next, in the order this session left off on:**
+1. Implement a retry/reliability mechanism for dropped events (the accepted
+   gap noted above) — not yet designed as of this writing.
+2. Implement persistent connections on hesperus (recommendation 1) and
+   re-run the bench `ARM`/`START`/`GOAL`/burst sequence with the same tools;
+   compare the resulting latency distribution (expect it to tighten to
+   roughly the ~15-30ms return-leg figures in #3, with no multi-second
+   outliers or queue overflow at the burst rates tested here) against this
+   document's baseline data.
+3. Measure actual current draw on real hardware across `WIFI_PS_NONE` /
+   `WIFI_PS_MIN_MODEM` / `WIFI_PS_MAX_MODEM` with a persistent connection
+   open, to make an evidence-based power/latency tradeoff instead of relying
+   on generic ESP32 figures.
+4. Decide, based on the above, whether items (4) and (5) in "Proposed
+   experiments" are pursued now or deferred — both are correctness/
+   appearance fixes rather than blockers given current bench-test success.
+5. Return to the misattribution test (Experiment 6) once the protocol
+   changes are in.

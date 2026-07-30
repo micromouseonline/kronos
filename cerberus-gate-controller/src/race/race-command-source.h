@@ -137,7 +137,7 @@ inline void serial_protocol_handle_info_message(const SerialLine &line, uint64_t
       } else if (strcmp(line.value, "TIMER") == 0) {
         system_event_post(RaceCommand::RESUME_TIMER, timestamp_us);
       } else {
-        debug_log_enqueue("[serial-protocol] SetMode(%s) unrecognised, ignored", line.value);
+        debug_log_enqueue("[serial] SetMode(%s) unrecognised, ignored", line.value);
       }
       break;
     case MSG_REQUEST_TYPE:
@@ -178,11 +178,8 @@ struct HttpEventCommandMap {
 // only act on RESTART, so this is what makes an HTTP new-mouse request take
 // effect regardless of current race state, matching the other two producers.
 constexpr HttpEventCommandMap HTTP_EVENT_COMMAND_MAP[] = {
-    {"ARM", RaceCommand::ARM},
-    {"START", RaceCommand::START},
-    {"GOAL", RaceCommand::GOAL},
-    {"RESTART", RaceCommand::RESTART},
-    {"NEW_MOUSE", RaceCommand::RESTART},
+    {"ARM", RaceCommand::ARM},         {"START", RaceCommand::START},       {"GOAL", RaceCommand::GOAL},
+    {"RESTART", RaceCommand::RESTART}, {"NEW_MOUSE", RaceCommand::RESTART},
 };
 
 inline RaceCommand race_command_from_http(const HttpGateEvent &evt) {
@@ -205,13 +202,8 @@ struct HttpInfoMessageMap {
 // over HTTP), not by MessageType's numeric code -- mirrors
 // HTTP_EVENT_COMMAND_MAP's name-keyed shape just above.
 constexpr HttpInfoMessageMap HTTP_INFO_MESSAGE_MAP[] = {
-    {"CONTEST_NAME", MSG_CONTEST_NAME},
-    {"EVENT_NAME", MSG_EVENT_NAME},
-    {"ALLOWED_RUNS", MSG_ALLOWED_RUNS},
-    {"ENTRY_TIME_S", MSG_ENTRY_TIME_S},
-    {"EXTRA_RUN", MSG_EXTRA_RUN},
-    {"SET_MODE", MSG_SET_MODE},
-    {"REQUEST_TYPE", MSG_REQUEST_TYPE},
+    {"CONTEST_NAME", MSG_CONTEST_NAME}, {"EVENT_NAME", MSG_EVENT_NAME}, {"ALLOWED_RUNS", MSG_ALLOWED_RUNS}, {"ENTRY_TIME_S", MSG_ENTRY_TIME_S},
+    {"EXTRA_RUN", MSG_EXTRA_RUN},       {"SET_MODE", MSG_SET_MODE},     {"REQUEST_TYPE", MSG_REQUEST_TYPE},
 };
 
 /// @brief Looks up an HTTP `event` name against HTTP_INFO_MESSAGE_MAP.
