@@ -2,7 +2,7 @@
 #include <Adafruit_NeoPixel.h>
 #include <ArduinoJson.h>
 #include <ESPmDNS.h>
-#include <HTTPClient.h>
+#include <WebSocketsClient.h>
 #include <WiFi.h>
 
 #include "esp_wifi.h"
@@ -55,8 +55,6 @@ uint64_t cal_prev_tsf = 0;
 uint64_t cal_prev_proc = 0;
 
 const uint64_t DRIFT_MARGIN_US = 500;
-const int MAX_HTTP_RETRIES = 4;
-const int HTTP_TIMEOUT_MS = 2000;
 const uint64_t MIN_PLAUSIBLE_TSF = 300000000;
 
 // ISR debounce guard for both trigger pins -- one place to tune. 50ms
@@ -73,6 +71,14 @@ const uint64_t DEBOUNCE_US = 50000;
 // mDNS for every event.
 IPAddress cerberus_ip;
 bool cerberus_ip_valid = false;
+
+// --- PERSISTENT CONNECTION TO CERBERUS (NETWORK-TIMING-ISSUE.md rec. 1) ---
+// One connection opened per boot (see loop()'s g_ready edge-detection) and
+// held open across every subsequent event, replacing the old per-event
+// HTTPClient connect+POST+close cycle. .loop() is pumped from
+// uploadWorkerTask (below) -- not safe to call into this from a second task
+// without a mutex, so socket-pump and event-send deliberately share one task.
+WebSocketsClient wsClient;
 
 /// @brief Resolves cerberus.local via mDNS and caches the result. Safe to
 /// call repeatedly (e.g. retried from uploadWorkerTask) until it succeeds --
@@ -237,10 +243,14 @@ void heartbeatTimerCallback(TimerHandle_t xTimer) {
 // --- CORE NETWORK WORKER TASK WITH DISCIPLINED OSCILLATOR MATH ---
 void uploadWorkerTask(void *pvParameters) {
   GateEvent current_ev;
-  HTTPClient http;
 
   while (1) {
-    if (xQueueReceive(networkQueue, &current_ev, portMAX_DELAY) == pdPASS) {
+    // Bounded, not portMAX_DELAY -- wsClient.loop() must be pumped
+    // regularly (reconnect, ping/pong, disconnect detection) even when no
+    // event is waiting; 10ms is well under DEBOUNCE_US/event-spacing scales
+    // here, at negligible cost on an otherwise-idle core-1 task.
+    wsClient.loop();
+    if (xQueueReceive(networkQueue, &current_ev, pdMS_TO_TICKS(10)) == pdPASS) {
       // TODO: Serial logging is unavailable in field deployment. Future options:
       //   - RGB LED pattern to signal overflow (extend LedPattern enum)
       //   - Write overflow count to SPIFFS for post-session retrieval
@@ -352,7 +362,7 @@ void uploadWorkerTask(void *pvParameters) {
       }
 
       if (WiFi.status() != WL_CONNECTED) {
-        debug_println("[Async Worker] Link down. Internal queue stacking.");
+        debug_println("[WS Worker] Link down. Internal queue stacking.");
         continue;
       }
 
@@ -360,7 +370,7 @@ void uploadWorkerTask(void *pvParameters) {
         resolveCerberus();
       }
       if (!cerberus_ip_valid) {
-        debug_println("[Async Worker] cerberus.local not resolved yet. Event dropped.");
+        debug_println("[WS Worker] cerberus.local not resolved yet. Event dropped.");
         continue;
       }
 
@@ -372,41 +382,28 @@ void uploadWorkerTask(void *pvParameters) {
       String payload;
       serializeJson(doc, payload);
 
-      String url = "http://" + cerberus_ip.toString() + "/api/event";
-
-      bool confirmed = false;
-      for (int attempt = 1; attempt <= MAX_HTTP_RETRIES && !confirmed; attempt++) {
-        // Timed deliberately -- HTTP_TIMEOUT_MS needs to be set from
-        // real observed round-trip times, not guessed: too short
-        // wastes retries for no reason (250ms was observed to fail
-        // every single attempt); too long means a genuinely lost
-        // first attempt can leave cerberus's run_sw (which starts on
-        // its own local receipt time, not tsf_us -- see race-timer.h)
-        // sitting idle for the whole window before a retry lands.
-        unsigned long attempt_start_ms = millis();
-        http.begin(url);
-        http.addHeader("Content-Type", "application/json");
-        http.setTimeout(HTTP_TIMEOUT_MS);
-        int httpCode = http.POST(payload);
-        unsigned long attempt_ms = millis() - attempt_start_ms;
-
-        if (httpCode == 200) {
-          confirmed = true;
-          debug_printf("[Async Worker] Confirmed %s (%s) attempt %d in %lu ms.\n", event_name, clock_mode.c_str(), attempt, attempt_ms);
-        } else {
-          debug_printf("[Async Worker] HTTP error attempt %d after %lu ms: %s\n", attempt, attempt_ms,
-                       httpCode > 0 ? String(httpCode).c_str() : http.errorToString(httpCode).c_str());
-        }
-        http.end();
-      }
-
-      if (!confirmed) {
-        debug_println("[Async Worker] Event dropped after max retries.");
+      // --- WS TRANSMISSION ---
+      // Fire-and-forget over the persistent connection -- no ack expected
+      // back from cerberus (see net/http-server.h's ws_event_handler()
+      // comment on the same repo). A retry/reliability mechanism is a
+      // separate, not-yet-designed item (NETWORK-TIMING-ISSUE.md status
+      // section) -- this deliberately doesn't try to half-build one here.
+      // Matches the pre-WS behaviour exactly for the down/unresolved cases
+      // above: drop, no requeue.
+      bool sent = wsClient.isConnected();
+      if (sent) {
+        wsClient.sendTXT(payload);
+        debug_printf("[WS Worker] Sent %s (%s).\n", event_name, clock_mode.c_str());
+      } else {
+        debug_println("[WS Worker] Link down. Event dropped.");
       }
 
       // --- PATCH 1: NETWORK RECEIPT ESCAPE HATCH ---
-      // Only trigger TSF re-entry on confirmed delivery in SYN mode.
-      if (confirmed && clock_mode == "SYN") {
+      // Only trigger TSF re-entry once we've actually sent in SYN mode --
+      // "sent" here means the socket was connected at send time, not a
+      // server-confirmed receipt (no ack exists over WS, unlike the old
+      // httpCode==200 check).
+      if (sent && clock_mode == "SYN") {
         uint64_t raw_tsf_check = esp_wifi_get_tsf_time(WIFI_IF_STA);
         if (raw_tsf_check > MIN_PLAUSIBLE_TSF) {
           debug_println("[ESCAPE HATCH] Server confirmed online. Attempting TSF re-entry.");
@@ -486,6 +483,7 @@ void loop() {
   static uint32_t last_cerberus_attempt = 0;
   static uint32_t syn_mode_start_time = 0;  // Tracks duration of fallback timing
   static bool was_connected = false;
+  static bool ws_was_ready = false;  // g_ready edge-detection, opens wsClient once per readiness
 
   uint32_t current_time = millis();
 
@@ -534,12 +532,24 @@ void loop() {
     } else {
       led_base = LedBase::READY;
       g_ready = true;
+      // Edge-triggered: open the persistent connection once per readiness
+      // transition, not every loop() tick. wsClient handles its own
+      // reconnect loop internally once begun, so this doesn't need to be
+      // re-called on every tick while already ready.
+      if (!ws_was_ready) {
+        wsClient.begin(cerberus_ip.toString(), 80, "/ws");
+        wsClient.enableHeartbeat(5000, 3000, 2);  // 5s ping, 3s pong timeout, disconnect after 2 misses
+        ws_was_ready = true;
+      }
     }
   } else {
     was_connected = false;
     cerberus_ip_valid = false;
     led_base = LedBase::OFF;
     g_ready = false;
+    // Force a fresh begin() next time readiness is reached -- cerberus may
+    // resolve to a different IP after this WiFi drop/rejoin.
+    ws_was_ready = false;
 
     if (current_time - last_connected_time > 15000) {
       debug_println("[WATCHDOG FAULT] Wi-Fi link dead for 15s. Smashing network stack...");
