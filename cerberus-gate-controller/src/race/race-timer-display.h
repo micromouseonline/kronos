@@ -184,7 +184,16 @@ inline void race_timer_render() {
         race_timer_format_time_seconds(entry_sw.time(), buf, sizeof(buf));
         lv_label_set_text(objects.lbl_time_remaining, buf);
       }
-      race_timer_format_time(run_sw.time(), buf, sizeof(buf));
+      // GOAL shows the exact committed run time (race_timer_last_run_time_ms(),
+      // the same number recorded to the run list/leaderboard), not run_sw.time()
+      // -- run_sw is receipt-time based and can differ from the tsf-exact
+      // committed value by a little return-leg network jitter. ARMED/RUNNING
+      // have no committed value yet, so they still show the live run_sw reading.
+      if (race_timer_get_state() == RaceState::GOAL) {
+        race_timer_format_time(race_timer_last_run_time_ms(), buf, sizeof(buf));
+      } else {
+        race_timer_format_time(run_sw.time(), buf, sizeof(buf));
+      }
       lv_label_set_text(objects.lbl_current_run_time, buf);
       break;
   }

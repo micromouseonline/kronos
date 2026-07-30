@@ -121,6 +121,18 @@ inline uint16_t mouse_id = 0;
 inline Stopwatch run_sw;    // measures individual run time
 inline Stopwatch entry_sw;  // measures elapsed maze time
 
+// tsf_us of the START event that began the run currently in run_sw, 0 if
+// that START had no real tsf timestamp (local button, not HTTP). Lets the
+// committed run time be computed as an exact GOAL.tsf_us - START.tsf_us,
+// independent of run_sw's own receipt-time-based start/stop -- see the
+// RUNNING+GOAL branch below. Deliberately NOT used to back-date run_sw
+// itself: doing that made the live display overrun past the true finish
+// (by however late the GOAL message's network leg was) and then visibly
+// snap back once it arrived, which read worse to a spectator than a
+// display that's simply consistently ~latency-late but never jumps
+// backward (confirmed by bench testing after trying the backdated version).
+inline uint64_t g_run_start_tsf_us = 0;
+
 inline RaceState race_state = RaceState::CALIBRATE;
 inline uint16_t mouse_run_count = 0;
 
@@ -271,6 +283,15 @@ inline void race_timer_commit_run(uint32_t time_ms) {
   }
 }
 
+// The exact value race_timer_commit_run() most recently recorded -- lets the
+// display show the *same* number that was committed (e.g. leaderboard/run
+// list) once a run ends, rather than run_sw.time()'s own receipt-time-based
+// reading, which can differ by the return-leg network jitter still present
+// even after the tsf-exact commit fix (see race-timer-display.h's GOAL case).
+inline uint32_t race_timer_last_run_time_ms() {
+  return race_run_count > 0 ? race_runs[race_run_count - 1].time_ms : 0;
+}
+
 //============================================================================
 // Doc's "first time for this mouse" contest_time/run-counter reset is
 // consolidated here (NEW_MOUSE unconditionally resets mouse_run_count before
@@ -362,7 +383,15 @@ inline void race_timer_try_arm() {
 // mouse_name is only ever non-null for a RATS V2 NewMouse carrying a real
 // name (see system_event_handler(), main.cpp) -- passed straight through
 // to race_timer_enter_new_mouse() at every call site below.
-inline void race_timer_handle_command(RaceCommand command, const char *mouse_name = nullptr) {
+//
+// event_tsf_us is 0 unless the command came from an HTTP gate event (see
+// http-server.h's `body["tsf_us"] | 0ULL`, threaded through unchanged as
+// SystemEvent::timestamp_us) -- local buttons and the legacy serial
+// protocol never produce a real tsf_us (race_command_from_serial() never
+// returns START/GOAL, the only commands that read this parameter), so 0
+// unambiguously means "no tsf timestamp available, use plain millis()".
+inline void race_timer_handle_command(RaceCommand command, const char *mouse_name = nullptr,
+                                       uint64_t event_tsf_us = 0) {
   if (command == RaceCommand::NONE) {
     return;
   }
@@ -440,7 +469,13 @@ inline void race_timer_handle_command(RaceCommand command, const char *mouse_nam
 
     case RaceState::ARMED:
       if (command == RaceCommand::START) {
+        // run_sw itself stays plain receipt-time (no tsf backdating) so the
+        // live display is a smooth, monotonic (if latency-delayed) count --
+        // see g_run_start_tsf_us's comment above for why. event_tsf_us is
+        // still recorded so the *committed* time can be computed exactly,
+        // independent of run_sw, once GOAL arrives (RUNNING branch below).
         run_sw.restart();
+        g_run_start_tsf_us = event_tsf_us;
         mouse_run_count++;
         race_state = RaceState::RUNNING;
       } else if (command == RaceCommand::RESTART) {
@@ -456,7 +491,18 @@ inline void race_timer_handle_command(RaceCommand command, const char *mouse_nam
     case RaceState::RUNNING:
       if (command == RaceCommand::GOAL) {
         run_sw.stop();
-        race_timer_commit_run(run_sw.time());
+        // Prefer the exact GOAL.tsf_us - START.tsf_us when both ends of this
+        // run have a real tsf timestamp (HTTP-sourced); this is accurate
+        // regardless of either leg's network latency. Falls back to
+        // run_sw.time() (receipt-time based) for a locally-buttoned run,
+        // where no tsf_us exists at all and receipt time IS the true time.
+        uint32_t committed_ms = run_sw.time();
+        if (event_tsf_us != 0 && g_run_start_tsf_us != 0) {
+          // Round to the nearest ms rather than truncate -- a genuine
+          // 3999.994ms run should read 4000, not 3999.
+          committed_ms = (uint32_t)((event_tsf_us - g_run_start_tsf_us + 500) / 1000);
+        }
+        race_timer_commit_run(committed_ms);
         race_state = RaceState::GOAL;
       } else if (command == RaceCommand::ARM) {
         // Manual recovery. Abandon run

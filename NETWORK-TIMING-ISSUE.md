@@ -90,7 +90,7 @@ should be verified with real measurement before relying on them). Against a
 sub-500mAh budget, that's plausibly the difference between a few hours and
 most of a day of runtime.
 
-### 6. Displayed run time vs. true TSF-based time
+### 6. Displayed run time vs. true TSF-based time (resolved)
 
 Cerberus's `race-timer.h` starts and stops its `run_sw` `Stopwatch` using
 cerberus's own local `millis()`, captured at the moment it processes each
@@ -105,6 +105,16 @@ legs injects directly, and visibly, into the displayed number — this is a
 spectator-facing appearance problem, not a data-accuracy problem: the true
 elapsed time is already recoverable precisely from `tsf_us` differences today,
 independent of any of this.
+
+**Resolved 2026-07-30** — see recommendation 4 for what was actually shipped.
+The first attempt (backdating `run_sw` itself at both `START` and `GOAL` using
+`tsf_us`, as originally proposed below) made the *committed* time exact but
+introduced a worse spectator-facing problem than the one it fixed: the live
+display, ticking in real time off a backdated start, correctly kept counting
+past the true finish for however long the `GOAL` message's own network leg
+took to arrive, then visibly snapped backward once it did. Bench-confirmed
+(`ares-pulse-generator`'s `trial_four_runs`, four back-to-back runs of known
+2000/3000/4000/5000ms duration) before being replaced by the adopted design.
 
 ### 7. Race state-machine event-ordering risk (most serious finding)
 
@@ -251,10 +261,15 @@ realistic burst rates, this firmware silently loses race events today.
   otherwise confusing the state machine — it only delays *when* `START`'s
   HTTP request lands, never *what* timestamp it carries. Since
   `START.tsf_us` is captured at the true trigger instant regardless of when
-  it's transmitted, this delay is exactly what recommendation 4 (tsf_us-based
-  `run_sw` baseline) already conceals from the display, and doesn't touch
-  the committed `GOAL.tsf_us − START.tsf_us` result at all. No separate fix
-  needed here beyond what's already recommended.
+  it's transmitted, this delay never touches the committed
+  `GOAL.tsf_us − START.tsf_us` result at all — recommendation 4 (as actually
+  shipped, see #6) computes that independently of `run_sw`. The *live*
+  display will show this ~53ms as an ordinary part of its receipt-time lag
+  (recommendation 4's revised design deliberately left `run_sw` on plain
+  receipt time rather than concealing network delay behind a backdated
+  start, precisely to avoid a worse overrun/snap-back problem at the other
+  end of the run). No separate fix needed here beyond what's already
+  recommended.
 
 ## Summary and conclusions
 
@@ -359,16 +374,32 @@ Ordered by leverage, not necessarily implementation order.
    connections, for whatever cold-connect path still exists (first
    connection, or reconnect after a drop).
 
-4. **Use `tsf_us` directly for the displayed/committed run time**, instead of
-   cerberus's local receipt-time clock. On `START`, initialize the live
-   stopwatch's elapsed baseline to `cerberus_tsf_now − start_event.tsf_us`
-   (via `Stopwatch::restart(timestamp)`) so the display "catches up"
-   immediately rather than starting at zero and running permanently behind.
-   Compute the final committed run time directly as
-   `GOAL.tsf_us − START.tsf_us`, already accurate to near-microsecond
-   precision regardless of network latency, symmetric or not. This is a fix
-   by construction, complementary to (1)/(2) rather than a substitute for
-   them.
+4. **Use `tsf_us` directly for the committed run time, but not for the live
+   display** (implemented and bench-confirmed 2026-07-30 — see #6). The
+   originally-proposed version of this recommendation backdated `run_sw`
+   itself at both `START` and `GOAL` (via `Stopwatch::restart(timestamp)`/
+   `stop(timestamp)`) so the committed time came out exact. It did — but the
+   live display, ticking in real time from a backdated start, then had to
+   keep counting past the true finish for as long as the `GOAL` message's own
+   network leg took to arrive, and visibly snapped backward the instant it
+   did. That read worse to a spectator than the original problem (a display
+   that's merely a bit late is far less alarming than one that runs, then
+   suddenly rewinds).
+
+   **What shipped instead**: `run_sw` stays exactly as it was before this
+   recommendation — plain receipt-time `restart()`/`stop()`, no backdating —
+   so the live display is smooth and monotonic, just consistently
+   latency-late (the original, milder problem). Separately, cerberus records
+   the `START` event's `tsf_us` (`g_run_start_tsf_us` in `race-timer.h`) and,
+   on `GOAL`, computes the committed time directly as
+   `round((GOAL.tsf_us − START.tsf_us) / 1000)` — exact to the millisecond,
+   completely independent of `run_sw` and unaffected by either leg's latency.
+   The display then shows that exact committed value from the moment the run
+   ends (`RaceState::GOAL`) instead of `run_sw`'s own frozen reading, so the
+   only visible "snap" left is the small residual return-leg jitter (single
+   digits to a few tens of ms) rather than a whole network round trip.
+   Falls back to `run_sw.time()` unchanged for a locally-buttoned run, which
+   has no `tsf_us` at all and no network hop to correct for.
 
 5. **Add a run/attempt identifier to the event contract**, to structurally
    close the stale-event misattribution risk. Tag each armed attempt with a
@@ -559,7 +590,7 @@ and START-to-GOAL spacing). This directly answers both the "well under 50mA"
 question and whether a lighter sleep mode's wake latency is actually small
 and bounded, rather than assumed from generic ESP32 figures.
 
-### 5. Directly validate the display-catch-up model with injected asymmetric latency
+### 5. Directly validate the display-catch-up model with injected asymmetric latency (done)
 
 To test the `L_goal − L_start` model (#6) and a future `tsf_us`-based fix
 (recommendation 4) directly rather than waiting for it to occur naturally:
@@ -569,6 +600,14 @@ then compare cerberus's displayed/committed time against the
 `GOAL.tsf_us − START.tsf_us` truth. This should let the predicted error
 (`L_goal − L_start`) be checked against the actual observed display error
 before and after adopting a `tsf_us`-based `run_sw`.
+
+**Done differently, 2026-07-30**: rather than injecting artificial asymmetric
+latency, `ares-pulse-generator`'s `trial_four_runs` (four back-to-back
+ARM-START-GOAL runs of known 2s/3s/4s/5s duration) exercised real gate
+hardware/network latency directly. This is how the recommendation-4 flaw
+(live display overrun-then-snap-back) was actually caught, and how the
+revised fix was confirmed to commit exact 2000/3000/4000/5000ms results. See
+#6/recommendation 4.
 
 ### 6. Reproduce the state-machine misattribution scenario deliberately
 
@@ -641,8 +680,14 @@ inferred:
    `WIFI_PS_MIN_MODEM` / `WIFI_PS_MAX_MODEM` with a persistent connection
    open, to make an evidence-based power/latency tradeoff instead of relying
    on generic ESP32 figures.
-4. Decide, based on the above, whether items (4) and (5) in "Proposed
-   experiments" are pursued now or deferred — both are correctness/
-   appearance fixes rather than blockers given current bench-test success.
+4. Experiment 5 (validate the display-catch-up model) is done: recommendation
+   4 was implemented, found to have a worse spectator-facing flaw than the
+   problem it fixed, revised, and bench-confirmed (see #6/recommendation 4).
+   Experiment 4 / item 3 above (power-save mode characterization) is
+   **deferred** — decided 2026-07-30 to wait until persistent connections
+   (recommendation 1) land before measuring current draw across
+   `WIFI_PS_NONE`/`WIFI_PS_MIN_MODEM`/`WIFI_PS_MAX_MODEM`, since that's the
+   configuration it's actually meant to be measured under; measuring the
+   current per-event-connection behaviour first would be throwaway work.
 5. Return to the misattribution test (Experiment 6) once the protocol
    changes are in.

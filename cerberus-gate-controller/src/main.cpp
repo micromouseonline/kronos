@@ -163,7 +163,12 @@ void system_event_handler(const SystemEvent &evt) {
   // payload_is_mouse_name distinguishes a serial NewMouse's name from
   // HTTP's gate_id, which reuses the same payload field for a different
   // purpose (see system-event-queue.h's SystemEvent comment).
-  race_timer_handle_command(evt.type, evt.payload_is_mouse_name ? evt.payload : nullptr);
+  // evt.timestamp_us carries tsf_us for HTTP-sourced events (0 otherwise) --
+  // race_timer_handle_command() uses it to backdate run_sw's start/stop so
+  // the displayed/committed run time isn't skewed by network latency (see
+  // NETWORK-TIMING-ISSUE.md #6/recommendation 4).
+  race_timer_handle_command(evt.type, evt.payload_is_mouse_name ? evt.payload : nullptr,
+                             evt.timestamp_us);
   neokey_reflect_race_state();
 }
 
