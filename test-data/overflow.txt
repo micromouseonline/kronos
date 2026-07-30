@@ -1,0 +1,57 @@
+#[257491839] EVT: ARM, NEOKEY_BUTTON, PRESSED, tsf=62699417 local=62699417 us
+#[257493843] EVT: ARM, NEOKEY_BUTTON, HELD, tsf=64712406 local=64712406 us
+<4,1> #
+#[257544481] EVT: ARM, NEOKEY_BUTTON, PRESSED, tsf=115364389 local=115364389 us
+<30,0>
+<4,2> #
+#[257592850] EVT: ARM, NEOKEY_BUTTON, PRESSED, tsf=163762405 local=163762405 us
+#[257593154] EVT: START, NEOKEY_BUTTON, PRESSED, tsf=164111426 local=164111426 us
+<4,4> #
+<12,0>
+#[257594061] EVT: GOAL, NEOKEY_BUTTON, PRESSED, tsf=164949422 local=164949422 us
+<4,5> #
+<13,907>
+<13,907>
+<13,907>
+#[257594733] EVT: ARM, NEOKEY_BUTTON, PRESSED, tsf=165698420 local=165698420 us
+<4,2> #
+#[257598707] [HTTP] POST /api/event from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":257597886815,"gate_us":1744655119}
+#[257598961] [HTTP] POST /api/event from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":257598087259,"gate_us":1744855562}
+<4,4> #
+<12,0>
+#[257600603] [HTTP] POST /api/event from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":257600087254,"gate_us":1745888945}
+<4,5> #
+<13,2000>
+<13,2000>
+<13,2000>
+#[257602353] [HTTP] POST /api/event from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":257602087315,"gate_us":1748855596}
+<4,2> #
+#[257602601] [HTTP] POST /api/event from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":257602287254,"gate_us":1749055539}
+<4,4> #
+<12,0>
+#[257605555] [HTTP] POST /api/event from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":257605287257,"gate_us":1751088920}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[257607558] [HTTP] POST /api/event from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":257607287310,"gate_us":1754055567}
+<4,2> #
+#[257607813] [HTTP] POST /api/event from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":257607487257,"gate_us":1754255510}
+<4,4> #
+<12,0>
+#[257613576] [HTTP] POST /api/event from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":257613487307,"gate_us":1760255531}
+<4,2> #
+#[257613822] [HTTP] POST /api/event from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":257613687247,"gate_us":1760455474}
+<4,4> #
+<12,0>
+#[257619333] [HTTP] POST /api/event from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":257611487254,"gate_us":1757288889}
+<4,5> #
+<13,1271308120>
+<13,1271308120>
+<13,1271308120>
+#[257619585] [HTTP] POST /api/event from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":257618687249,"gate_us":1764488852}
+#[257644992] EVT: TOUCH, NEOKEY_BUTTON, PRESSED, tsf=215825425 local=215825425 us
+#[257646985] EVT: TOUCH, NEOKEY_BUTTON, HELD, tsf=217826387 local=217826387 us
+#[257718573] EVT: ARM, NEOKEY_BUTTON, PRESSED, tsf=289431366 local=289431366 us
+<4,1> #
+#[257720546] EVT: ARM, NEOKEY_BUTTON, HELD, tsf=291445370 local=291445370 us
