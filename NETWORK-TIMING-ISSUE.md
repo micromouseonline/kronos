@@ -192,6 +192,18 @@ rather than added to an ever-deeper backlog, exactly the behaviour a
 hard-capacity queue should show. This is no longer an inferred risk: at
 realistic burst rates, this firmware silently loses race events today.
 
+**Re-run under WebSockets (recommendation 1), 2026-06-30 (raw data in
+`test-data/trial-burst-ws-20260630-1036.txt`):** same `trial_burst` (40
+`GOAL` pulses, fixed 90ms interval). All 40/40 pulses reached cerberus — zero
+drops, no `[QUEUE OVERFLOW]` lines. Latency: mean 8.7ms, median 8.2ms, stdev
+2.7ms, min 5.2ms, max 18.2ms, p99 18.2ms — flat throughout the burst, no
+climbing/ramp signature at all (`tools/cerberus_log_stats.py
+test-data/trial-burst-ws-20260630-1036.txt --event GOAL --gaps`). This
+confirms the mechanism directly: the persistent WS connection eliminates the
+~250-270ms per-event connect+POST+confirm service time that was the actual
+bottleneck, so at this 90ms burst rate the depth-10 `networkQueue` now never
+comes close to saturating.
+
 ### 9. Two real-world trigger patterns this queueing interacts with
 
 - **A single gate re-triggering on one pass.** A robot with a gapped/slotted
@@ -236,6 +248,23 @@ realistic burst rates, this firmware silently loses race events today.
   risk at this stage, expected to be addressed once a retry mechanism is
   implemented, so not pursued further for now.
 
+  **Re-run under WebSockets (recommendation 1), 2026-07-31 (raw data in
+  `test-data/trial-double-trigger-ws-20260631-1104.txt`):** same
+  `trial_double_trigger` (100 trials, edges 150ms apart). All 200/200 events
+  arrived — no drops, resolving in WS's favour the open question above
+  (that run's baseline drop/ambiguous-trailing-event was specific to HTTP's
+  per-event connection cost; not reproduced here). First-trigger latency —
+  mean 7.7ms, median 6.6ms, stdev 3.9ms. Second-trigger latency — mean
+  8.5ms, median 7.5ms, stdev 2.4ms. The ~104ms queueing offset is gone
+  (down to **~0.7ms**), consistent with #8 and the `ARM`/`START` case
+  above: removing HTTP's per-event connect+POST+confirm cost removes the
+  send-cycle overlap that caused it. One first-trigger outlier at 41.6ms
+  (trial 51 of 100, isolated, paired second-trigger event unaffected) plus
+  a handful of smaller 10-20ms spikes scattered through the run (more
+  frequent than the single 37.7ms outlier seen in the `ARM`/`START` re-run)
+  — same low-priority, unexplained, single-event-jitter character as noted
+  there, not investigated further.
+
 - **One board serving both `ARM` and `START` gates.** Observation indicates
   a robot can cross the `ARM` gate and then the `START` gate as little as
   ~200ms apart. Both sensors share one hesperus board's `networkQueue`, so
@@ -256,6 +285,25 @@ realistic burst rates, this firmware silently loses race events today.
   `START` waiting out the remainder of `ARM`'s in-flight send cycle, not
   ordinary network jitter.
 
+  **Re-run under WebSockets (recommendation 1), 2026-07-31 (raw data/analysis
+  in `test-data/arm-then-start-test-ws-20260631-1045*.txt`):** same
+  `trial_arm_then_start` (100 pairs, edges 200ms apart). `ARM` latency —
+  mean 6.7ms, median 5.8ms, stdev 2.0ms. `START` latency — mean 8.2ms,
+  median 6.7ms, stdev 3.9ms. The `ARM`/`START` offset drops from ~53ms
+  (HTTP) to ~1.5ms — consistent with #8's finding that WS removes the
+  in-flight send-cycle duration `START` was queueing behind, leaving almost
+  nothing left to wait out. Unlike the HTTP baseline, no cold-connection
+  outlier appears at the first pair — steady-state latency from pair 1
+  onward, confirming the persistent connection removes that penalty too.
+  One isolated `START` outlier at 37.7ms (pair 39 of 100, p99): its paired
+  `ARM` event and the surrounding pairs were all normal (~6-8ms), so this
+  is a single-frame delay, not a connection drop — and at ~30ms above
+  baseline it's two orders of magnitude smaller than the ~468-531ms
+  connect/disconnect/reconnect blip noted in the WS bring-up section below,
+  so it's not the same phenomenon. Not investigated further (single
+  occurrence, no shared cause found, doesn't affect committed times) — a
+  new, distinct, low-priority curiosity, noted here rather than explained.
+
   Order is preserved (FIFO drain, `ARM`'s full cycle completes before
   `START`'s begins), so this doesn't risk `START` arriving before `ARM` or
   otherwise confusing the state machine — it only delays *when* `START`'s
@@ -270,6 +318,56 @@ realistic burst rates, this firmware silently loses race events today.
   start, precisely to avoid a worse overrun/snap-back problem at the other
   end of the run). No separate fix needed here beyond what's already
   recommended.
+
+### 10. A radio-level Wi-Fi interruption can silently gate hesperus's events for up to 5 minutes
+
+Found during recommendation-1 (persistent WebSocket) bring-up bench testing,
+while deliberately testing reconnect-after-Wi-Fi-drop — unrelated to
+WebSockets itself, this is a pre-existing property of hesperus's clock-
+disciplining code (`main.cpp`'s "TIMELINE SANITY AUDIT ENGINE") that the
+test happened to expose clearly for the first time.
+
+`MIN_PLAUSIBLE_TSF = 300000000` (`hesperus-timing-gate/src/main.cpp`) is the
+threshold a fresh `tsf_observed` reading must clear before hesperus will
+trust it as an initial baseline (`has_initial_baseline`) — until that
+baseline exists, every trigger is unconditionally dropped
+(`[CRITICAL DROP] Baseline missing or un-synchronized. Packet dropped.`),
+before ever reaching the network send code (HTTP or WS). The assumption
+behind the threshold is that a implausibly-small TSF value means the Wi-Fi
+stack hasn't synced yet (e.g. very early boot) — but **`esp_wifi_get_tsf_time()`
+tracks time since the AP's own TSF epoch, not since hesperus associated**,
+so anything that resets the AP's TSF resets this for every station on it,
+regardless of how briefly.
+
+**Confirmed by direct bench test**: toggling only the AP's radio off and
+back on (not a full router reboot/power-cycle) was enough to reset its TSF
+epoch. hesperus's own log shows the exact boundary:
+```
+[T=297670ms] [PLAUSIBILITY REJECT] TSF 297670304 too low. Wi-Fi stack un-synchronized.
+[T=297670ms] [CRITICAL DROP] Baseline missing or un-synchronized. Packet dropped.
+[T=302817ms] [INITIALIZED] Valid Baseline Coordinates Locked: 302817313
+```
+Rejected at TSF=297,670,304 (<300,000,000), accepted 5,147,009us later
+(matching the heartbeat timer's ~5147ms period exactly) at
+TSF=302,817,313 (>300,000,000) — recovery is bounded and self-healing, but
+takes the *entire* 300-second threshold from the moment the AP's radio was
+disrupted, not from whenever hesperus itself reconnects (hesperus's own
+Wi-Fi reconnected in ~3.4s in this same test; TSF wasn't trusted again for
+another ~4.9 minutes after that).
+
+Separately, this same outage also triggered hesperus's existing "stuck in
+SYN mode >10s" watchdog (`main.cpp`'s "PATCH 2", `ESP.restart()`) — a full
+board reboot, not just a Wi-Fi radio reset — since a real outage keeps the
+board in SYN/extrapolated-time mode well past the 10s threshold. Worth
+noting alongside the TSF gate above since both fire from the same kind of
+event and compound the total time-to-recovery, but they're two independent
+mechanisms.
+
+**Practical implication**: any AP-side radio interruption — not just a full
+power outage — can leave every gate on the network dropping triggers
+silently for up to 5 minutes, with no operator-visible indication beyond
+the serial debug log. At a real contest this reads as "the gates just
+stopped working" for a very long five minutes.
 
 ## Summary and conclusions
 
@@ -487,6 +585,57 @@ Ordered by leverage, not necessarily implementation order.
    does no harm once persistent connections (rec. 1) are in place, and helps
    in the meantime.
 
+9. **Replace `MIN_PLAUSIBLE_TSF`'s magnitude gate with trust-on-reconnect**
+   (see #10). **Decided, 2026-07-31** (design reasoning, not yet
+   implemented): the original 300-second value's justification isn't
+   documented anywhere in the code and isn't recalled either — re-examined
+   from first principles instead of just re-tuning the number.
+
+   The scenario the gate is actually trying to guard against is the AP's
+   TSF epoch resetting *mid-run*. On this system's single-AP topology, the
+   only plausible way for that to happen is an AP radio failure/reset —
+   which takes down Wi-Fi for every gate on the network simultaneously, a
+   total system failure regardless of what hesperus's TSF logic does. A
+   magnitude gate that stays shut for 5 minutes doesn't protect against
+   that scenario (there's nothing left to protect at that point); it only
+   adds unnecessary downtime on top of it, and — per #10 — a much smaller,
+   *more common* trigger (a brief AP radio blip well short of a full
+   outage) already demonstrates this.
+
+   The residual risk a gate might still be defending against is a
+   genuinely tiny/implausible `tsf_observed` value being trusted right
+   after reconnect — but the client radio's own reconnection already takes
+   several seconds, during which the AP's TSF clock (if it's running at
+   all) will have advanced well past any near-zero danger zone. No
+   plausible mechanism for a large spurious jump was identified for a
+   single, non-mesh AP.
+
+   **Decision: trust `tsf_observed` immediately on a fresh Wi-Fi
+   association event** rather than gating on the value's absolute
+   magnitude at all. **Implemented, 2026-07-31**
+   (`hesperus-timing-gate/src/main.cpp`, the initial-baseline gate at
+   `!has_initial_baseline`): the `tsf_observed >= MIN_PLAUSIBLE_TSF` check
+   is replaced with `WiFi.status() == WL_CONNECTED`, matching the
+   connectivity check already used elsewhere in this file — since this
+   branch only ever runs while no baseline exists yet, checking current
+   connectivity right there achieves "trust once actually connected"
+   without needing a separate `WiFi.onEvent` handler/flag. Builds clean for
+   `hesperus-gate-c3-super-mini`; not yet flashed or bench-verified.
+   Scoped narrowly to this one gate — a second, separate use of
+   `MIN_PLAUSIBLE_TSF` exists in the "escape hatch" SYN-mode recovery
+   heuristic (PATCH 1, `main.cpp:401-415`) and was deliberately left
+   untouched, not being what #10 documents as the bug.
+
+   **Verification plan, proposed but not run — left open, 2026-07-31:** the
+   idea was a second ESP32 as a soft AP, fully under test control, to check
+   the load-bearing assumption above — whether there is *any* way to take an
+   AP's radio down (even briefly) without resetting its TSF epoch. No spare
+   ESP32 available to dedicate as a test-controlled soft AP right now, so
+   this isn't being pursued further at this time. If one becomes available,
+   the same setup would also bench-verify the reconnect-trust fix itself the
+   way #10 was found: toggle the AP's radio (not just hesperus's own Wi-Fi)
+   and confirm recovery time.
+
 ## Alternative considered: ESP-NOW
 
 Worth recording explicitly, since it was raised and weighed rather than
@@ -638,6 +787,35 @@ attempt number wins each time. Two things to check specifically:
   independent, directly testing the assumption the technique's benefit
   depends on.
 
+### 8. Long single-gate sequence to characterise the WS jitter spikes
+
+The `trial_arm_then_start` and `trial_double_trigger` WS re-runs (#8/#9)
+each showed one or a few isolated single-event latency spikes (10-40ms,
+vs. ~6-9ms baseline) with no shared cause with their paired event and no
+correlation to connection start — cause not identified (see discussion:
+candidates include `uploadWorkerTask`'s `wsClient.loop()` occasionally
+blocking on a keepalive/partial read, a single 802.11 MAC-layer retry, or
+cerberus-side contention from its own busier workload). n=100-200 per run
+so far is too small to see a pattern, if one exists.
+
+Proposed: a single-gate `GOAL`-only sequence, much longer and steadier than
+the existing trials — e.g. 10,000 messages at a fixed 250ms interval (well
+clear of any queueing effect, per #8's WS results) — logged and run through
+`tools/cerberus_log_stats.py --gaps`. At that volume, look for: periodicity
+(a spike every N messages, which would point at a fixed-period task like
+the heartbeat timer or a WS keepalive interval), clustering in time (bursts
+of spikes vs. uniformly scattered), or drift/rate correlation. Would need
+`ares-pulse-generator`'s `MAX_COUNT`/interval reconfigured for this (currently
+100 at 1s spacing) — a straightforward change, but a 10,000-message run at
+250ms is ~42 minutes per pass, worth planning for.
+
+Would not, on its own, isolate *which* stage the delay happens in (hesperus
+pickup vs. network transit vs. cerberus processing) — the current log only
+has `tsf_us` (hesperus ISR time) and `recv_ms` (cerberus receipt time), which
+bundles all three. If the pattern-hunt above doesn't point at an obvious
+cause, the next step would be adding a hesperus-side send timestamp to the
+log to split the latency into legs.
+
 ## Status as of 2026-07-30 and what's next
 
 **Bench-testing phase (this document's #8/#9) is substantially done.** Four
@@ -676,6 +854,45 @@ inferred:
    roughly the ~15-30ms return-leg figures in #3, with no multi-second
    outliers or queue overflow at the burst rates tested here) against this
    document's baseline data.
+
+   **In progress, 2026-07-30/31 (`websockets` branch, not yet merged)**:
+   cerberus's `/ws` `AsyncWebSocket` endpoint landed and is bench-verified
+   (new `tools/testing/ws_send_event.py`, mirrors the existing `send-*.sh`
+   HTTP scripts but reuses one persistent connection). hesperus's WS client
+   landed, built for `hesperus-gate-c3-super-mini`, and **both physical
+   hesperus test boards (ARM/START, GOAL) are now flashed and running WS
+   successfully**. Bench-measured WS latency settled at **~5-12ms** typical
+   (an initial run saw a one-time ~1.1s first-connection warm-up that didn't
+   recur on later runs), against **~115-560ms** for the still-HTTP
+   comparison runs earlier in bring-up — beats this section's own ~15-30ms
+   prediction. Committed times stayed exact (2000/3000/4000/5000ms)
+   throughout, confirming recommendation 4 is unaffected. Reconnect-after-
+   Wi-Fi-drop and reconnect-after-cerberus-reboot are both bench-confirmed
+   working (self-healing, no manual intervention needed either time).
+   Reconnect testing is what surfaced #10 (5-minute `MIN_PLAUSIBLE_TSF`
+   lockout) — unrelated to WebSockets itself, but found here first;
+   recommendation 9 covers it. Fix designed and implemented 2026-07-31
+   (trust `tsf_observed` on Wi-Fi reconnect instead of gating on
+   magnitude, see recommendation 9) — builds clean, not yet flashed or
+   bench-verified. One low-priority,
+   self-healing WS connect/disconnect/reconnect blip was also observed
+   during a cerberus-reboot test, investigated but not conclusively
+   explained (see `net/wifi-manager.h`'s documented `AsyncServer::begin()`
+   PCB-orphaning gotcha for the closest known-analogous issue) — watch for
+   recurrence rather than fixed speculatively.
+
+   The other 3 hesperus board envs (`hesperus-gate-s3-zero`,
+   `hesperus-gate-s3-super-mini`, `hesperus-gate-c3-xiao`) don't need
+   separate testing. The full bench suite re-run for the complete
+   before/after comparison this item originally asked for is **done**:
+   `trial_burst` (see #8 above — 40/40 delivered, 8.7ms mean latency, vs.
+   24/40 delivered climbing to ~2.7s under HTTP), `trial_arm_then_start`
+   (see #9 above — `ARM`/`START` offset dropped from ~53ms to ~1.5ms), and
+   `trial_double_trigger` (see #9 above — 200/200 delivered with no drops,
+   vs. 198/200 under HTTP; queueing offset dropped from ~104ms to ~0.7ms).
+   All three confirm the same mechanism: WS's persistent connection removes
+   the ~250-270ms per-event connect+POST+confirm cost that caused HTTP's
+   queueing, drops, and latency ramp alike.
 3. Measure actual current draw on real hardware across `WIFI_PS_NONE` /
    `WIFI_PS_MIN_MODEM` / `WIFI_PS_MAX_MODEM` with a persistent connection
    open, to make an evidence-based power/latency tradeoff instead of relying

@@ -7,6 +7,12 @@ const int TRG_GOAL = 5;
 const int BTN_IN = 4;
 const int BTN_OUT = 2;
 
+const int MAX_COUNT = 100;  // trial_double_trigger() is one GOAL/GOAL pair
+                            // per call, repeated MAX_COUNT times one_second
+                            // apart, matching the HTTP baseline's 100-trial
+                            // run.
+const uint32_t one_second = 1000000;
+
 const int BURST_COUNT = 40;
 const uint32_t BURST_INTERVAL_MS = 90;  // above DEBOUNCE_US (50ms, hesperus
                                         // main.cpp) so the ISR doesn't
@@ -141,19 +147,38 @@ void setup() {
   digitalWrite(BTN_OUT, 0);
 
   pinMode(LED_BUILTIN, OUTPUT);
+
+  while (digitalRead(BTN_IN) == 1) {
+    yield();
+  }
 }
 
+int count = 0;
+uint32_t last_pulse;
+bool started = false;
+
 void loop() {
-  // Fire-once-per-press: trial_four_runs() runs exactly once per BTN_IN
-  // press, then this waits for release before arming for the next one --
-  // unlike the other trial_* functions above, which expect the old
-  // press-once-then-auto-repeat-MAX_COUNT-times loop (reinstate that
-  // structure if swapping back to one of them here).
-  if (digitalRead(BTN_IN) == 0) {
-    trial_four_runs();
-    while (digitalRead(BTN_IN) == 0) {
-      yield();
-    }
+  // Press-once-then-auto-repeat-MAX_COUNT-times: setup() blocks for the
+  // first button press, then this fires trial_double_trigger() MAX_COUNT
+  // times, one_second apart, with no further button interaction needed.
+  // Swap back to the fire-once-per-press pattern (see trial_four_runs()'s
+  // history) if reusing that trial instead.
+  if (!started) {
+    // Started here, not in setup(), so the first trial lands exactly
+    // one_second after the button press -- not after however long it took
+    // to press it (setup()'s wait can take arbitrarily long).
+    last_pulse = micros();
+    started = true;
   }
-  yield();
+
+  if (count >= MAX_COUNT) {
+    yield();
+    return;
+  }
+  if (micros() - last_pulse < one_second) {
+    return;
+  }
+  last_pulse += one_second;
+  trial_double_trigger();
+  count++;
 }
