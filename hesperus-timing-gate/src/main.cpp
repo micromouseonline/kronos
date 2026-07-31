@@ -57,6 +57,22 @@ uint64_t cal_prev_proc = 0;
 const uint64_t DRIFT_MARGIN_US = 500;
 const uint64_t MIN_PLAUSIBLE_TSF = 300000000;
 
+// --- WS ACK/RETRY (NETWORK-TIMING-ISSUE.md status section item 1) ---
+// Blocking, single-in-flight retry: uploadWorkerTask waits for cerberus's
+// ack before dequeuing the next networkQueue event, matching the existing
+// one-worker/one-event-at-a-time architecture exactly (no pending-events
+// table needed). WS_ACK_TIMEOUT_MS is comfortably above the ~5-15ms typical
+// WS round trip measured during rec. 1's bring-up, generous against the
+// occasional ~40ms single-event jitter spike also seen there.
+const uint32_t WS_ACK_TIMEOUT_MS = 300;            // per-attempt: resend if no ack within this
+const uint8_t WS_MAX_SEND_ATTEMPTS = 5;            // mirrors the old (removed) MAX_HTTP_RETRIES=4's scale
+const uint32_t WS_ACK_WAIT_TICK_MS = 5;            // real vTaskDelay between poll iterations -- see below
+const uint32_t WS_ACK_OVERALL_DEADLINE_MS = 2000;  // hard wall-clock cap, applies even while disconnected --
+                                                    // without this a real Wi-Fi outage would park
+                                                    // uploadWorkerTask on one stale event for the whole
+                                                    // outage while fresh events overflow-drop from
+                                                    // networkQueue behind it
+
 // ISR debounce guard for both trigger pins -- one place to tune. 50ms
 // comfortably absorbs mechanical switch bounce (bench-testing with a
 // pushbutton) without masking two genuinely separate IR-beam triggers close
@@ -95,6 +111,29 @@ void resolveCerberus() {
 }
 
 static int consecutive_audit_failures = 0;
+
+// Ack-tracking state for the WS retry mechanism -- plain, not volatile, since
+// both wsClient.onEvent()'s callback and uploadWorkerTask's wait loop run on
+// the same task (onEvent fires synchronously from inside wsClient.loop()).
+bool g_ws_ack_received = false;
+uint64_t g_ws_ack_tsf_us = 0;  // last acked tsf_us, compared by value against the pending send
+
+/// @brief wsClient.onEvent() handler -- receives cerberus's per-event ack
+/// ({"ack_tsf_us": ...}, see net/http-server.h's ws_event_handler() on that
+/// repo) so uploadWorkerTask's send-and-wait loop knows an event landed.
+/// Also clears a stale ack flag on disconnect so a reconnect mid-wait can't
+/// leave old bookkeeping lying around into the next connection.
+void wsClientEventHandler(WStype_t type, uint8_t *payload, size_t length) {
+  if (type == WStype_TEXT) {
+    JsonDocument doc;
+    if (deserializeJson(doc, payload, length) == DeserializationError::Ok) {
+      g_ws_ack_tsf_us = doc["ack_tsf_us"] | 0ULL;
+      g_ws_ack_received = true;
+    }
+  } else if (type == WStype_DISCONNECTED) {
+    g_ws_ack_received = false;
+  }
+}
 
 volatile uint32_t networkq_overflow_count = 0;  ///< Incremented by ISR/timer on dropped networkQueue send
 
@@ -391,27 +430,75 @@ void uploadWorkerTask(void *pvParameters) {
       String payload;
       serializeJson(doc, payload);
 
-      // --- WS TRANSMISSION ---
-      // Fire-and-forget over the persistent connection -- no ack expected
-      // back from cerberus (see net/http-server.h's ws_event_handler()
-      // comment on the same repo). A retry/reliability mechanism is a
-      // separate, not-yet-designed item (NETWORK-TIMING-ISSUE.md status
-      // section) -- this deliberately doesn't try to half-build one here.
-      // Matches the pre-WS behaviour exactly for the down/unresolved cases
-      // above: drop, no requeue.
+      // --- WS TRANSMISSION, WITH BOUNDED RETRY-ON-LOST-ACK ---
+      // Sends the exact frozen payload built above; a retry NEVER
+      // re-derives tsf_to_transmit, since re-running the TSF-audit engine
+      // a second time for what should be one logical event would both give
+      // a different answer and incorrectly re-mutate clock_alpha/
+      // cal_prev_*/last_good_state again. Matches the pre-existing
+      // "drop, no requeue" behaviour for the down/unresolved cases above --
+      // this only adds recovery for a message lost after this point.
+      // Blocks uploadWorkerTask (matching the existing one-worker/
+      // one-event-at-a-time model, no new pending-events table) for up to
+      // WS_ACK_OVERALL_DEADLINE_MS -- see net/http-server.h's ws_event_
+      // handler() on cerberus for the ack this waits on, and
+      // net/gate-event-dedup.h for why a resend after a lost ack is safe
+      // (recognised as a duplicate there, not double-processed).
       bool sent = wsClient.isConnected();
       if (sent) {
         wsClient.sendTXT(payload);
-        debug_printf("[WS Worker] Sent %s (%s).\n", event_name, clock_mode.c_str());
+        debug_printf("[WS Worker] Sent %s (%s), attempt 1.\n", event_name, clock_mode.c_str());
+
+        g_ws_ack_received = false;
+        uint64_t expected_ack = tsf_to_transmit;
+        uint8_t attempt = 1;
+        uint32_t attempt_start = millis();
+        uint32_t wait_start = attempt_start;
+
+        while (!g_ws_ack_received) {
+          wsClient.loop();
+          if (g_ws_ack_received) {
+            if (g_ws_ack_tsf_us != expected_ack) {
+              g_ws_ack_received = false;  // stale/mismatched ack -- keep waiting for ours
+            } else {
+              break;
+            }
+          }
+
+          uint32_t now = millis();
+          if (now - wait_start > WS_ACK_OVERALL_DEADLINE_MS) {
+            debug_println("[WS Worker] Event dropped after ack deadline.");
+            break;
+          }
+          if (now - attempt_start > WS_ACK_TIMEOUT_MS) {
+            if (attempt >= WS_MAX_SEND_ATTEMPTS) {
+              debug_println("[WS Worker] Event dropped after max retries.");
+              break;
+            }
+            if (wsClient.isConnected()) {
+              wsClient.sendTXT(payload);
+              attempt++;
+              debug_printf("[WS Worker] Resent %s (%s), attempt %u.\n", event_name, clock_mode.c_str(), attempt);
+            }
+            attempt_start = now;
+          }
+          // Real block, not a bare wsClient.loop()-only spin -- uploadWorkerTask
+          // runs at a higher FreeRTOS priority than ledDiagnosticTask/loop() on
+          // the same core, so without this LED feedback/cli.poll()/the Wi-Fi
+          // watchdogs would starve for the whole wait.
+          vTaskDelay(pdMS_TO_TICKS(WS_ACK_WAIT_TICK_MS));
+        }
       } else {
         debug_println("[WS Worker] Link down. Event dropped.");
       }
 
       // --- PATCH 1: NETWORK RECEIPT ESCAPE HATCH ---
       // Only trigger TSF re-entry once we've actually sent in SYN mode --
-      // "sent" here means the socket was connected at send time, not a
-      // server-confirmed receipt (no ack exists over WS, unlike the old
-      // httpCode==200 check).
+      // "sent" here still means only "had connectivity and attempted at
+      // least one send" (evaluated from the first attempt only, above),
+      // independent of whether an ack ultimately arrived -- this escape
+      // hatch is about local clock resync given Wi-Fi is up, unrelated to
+      // delivery confirmation.
       if (sent && clock_mode == "SYN") {
         uint64_t raw_tsf_check = esp_wifi_get_tsf_time(WIFI_IF_STA);
         if (raw_tsf_check > MIN_PLAUSIBLE_TSF) {
@@ -548,6 +635,7 @@ void loop() {
       if (!ws_was_ready) {
         wsClient.begin(cerberus_ip.toString(), 80, "/ws");
         wsClient.enableHeartbeat(5000, 3000, 2);  // 5s ping, 3s pong timeout, disconnect after 2 misses
+        wsClient.onEvent(wsClientEventHandler);   // receives cerberus's per-event ack
         ws_was_ready = true;
       }
     }

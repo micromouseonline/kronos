@@ -10,6 +10,7 @@
 #include <time.h>
 
 #include "debug-log.h"
+#include "net/gate-event-dedup.h"
 #include "net/wifi-manager.h"
 #include "race/race-command-source.h"
 #include "race/race-timer.h"
@@ -253,17 +254,27 @@ inline void http_handle_leaderboard(AsyncWebServerRequest *request) {
 // vocabulary) and dispatches into the race state machine exactly the same
 // way regardless of whether it arrived over a POST body or a WS text frame.
 // Returns true if the event was recognised (either a race command or an
-// info message) and handled.
-inline bool handle_gate_event_json(JsonObject &body, String &response_json, int &http_status) {
+// info message) and handled. out_tsf_us always reflects the parsed tsf_us
+// field regardless of outcome -- callers that ack a specific event back to
+// its sender (ws_event_handler()) need this even on a recognised duplicate,
+// since the caller can't otherwise see inside evt.
+inline bool handle_gate_event_json(JsonObject &body, String &response_json, int &http_status, uint64_t &out_tsf_us) {
   HttpGateEvent evt{};
   strlcpy(evt.gate_id, body["gate_id"] | "", sizeof(evt.gate_id));
   strlcpy(evt.event, body["event"] | "", sizeof(evt.event));
   evt.tsf_us = body["tsf_us"] | 0ULL;
   evt.gate_us = body["gate_us"] | 0ULL;
+  out_tsf_us = evt.tsf_us;
 
   RaceCommand cmd = race_command_from_http(evt);
   if (cmd != RaceCommand::NONE) {
-    system_event_post(cmd, evt.tsf_us, evt.gate_id);
+    // A duplicate (gate_id, event, tsf_us) is most likely a retried event
+    // whose original ack was lost, not a new event -- skip re-dispatching
+    // into the race state machine, but still report success so the caller
+    // acks it (see NETWORK-TIMING-ISSUE.md recommendation 6).
+    if (!gate_event_is_duplicate(evt.gate_id, evt.event, evt.tsf_us)) {
+      system_event_post(cmd, evt.tsf_us, evt.gate_id);
+    }
     http_status = 200;
     response_json = "{\"status\":\"ok\"}";
     return true;
@@ -299,7 +310,8 @@ inline void http_handle_event(AsyncWebServerRequest *request, JsonVariant &json)
 
   String response_json;
   int http_status;
-  bool handled = handle_gate_event_json(body, response_json, http_status);
+  uint64_t tsf_us = 0;
+  bool handled = handle_gate_event_json(body, response_json, http_status, tsf_us);
   if (!handled) {
     debug_log_enqueue("[HTTP] rejected /api/event: gate_id=\"%s\" event=\"%s\"",
                        (const char *)(body["gate_id"] | ""), (const char *)(body["event"] | ""));
@@ -312,10 +324,11 @@ inline AsyncCallbackJsonWebHandler api_event_handler("/api/event", http_handle_e
 
 // AsyncWebSocket event handler for http_ws ("/ws") -- persistent-connection
 // counterpart to http_handle_event() above (see NETWORK-TIMING-ISSUE.md
-// recommendation 1). No ack is sent back over the socket: a retry/
-// reliability mechanism is a separate, not-yet-designed item (see that
-// doc's status section) and half-building an ack scheme here would preempt
-// it -- this only needs to get the event into the race state machine.
+// recommendation 1). Acks a handled event back over the same client (see
+// the WS_EVT_DATA branch below) so hesperus's retry mechanism (that doc's
+// status section item 1) knows the event landed; combined with
+// gate-event-dedup.h's de-duplication, a resend after a lost ack is
+// recognised rather than double-processed.
 inline void ws_event_handler(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg,
                               uint8_t *data, size_t len) {
   if (type == WS_EVT_CONNECT) {
@@ -351,10 +364,22 @@ inline void ws_event_handler(AsyncWebSocket *server, AsyncWebSocketClient *clien
       }
       String response_json;
       int http_status;
-      bool handled = handle_gate_event_json(body, response_json, http_status);
+      uint64_t tsf_us = 0;
+      bool handled = handle_gate_event_json(body, response_json, http_status, tsf_us);
       if (!handled) {
         debug_log_enqueue("[WS] rejected: gate_id=\"%s\" event=\"%s\"", (const char *)(body["gate_id"] | ""),
                            (const char *)(body["event"] | ""));
+      } else {
+        // Ack back over the same client so hesperus's retry mechanism
+        // (NETWORK-TIMING-ISSUE.md status section item 1) knows this event
+        // landed -- sent whether this was a fresh dispatch or a recognised
+        // duplicate (handle_gate_event_json()'s dedup check), since either
+        // way cerberus genuinely has this event now. Hand-built literal
+        // rather than JsonDocument/serializeJson: a single scalar field, on
+        // the shared async_tcp task, doesn't need it.
+        char ack[48];
+        snprintf(ack, sizeof(ack), "{\"ack_tsf_us\":%llu}", (unsigned long long)tsf_us);
+        client->text(ack);
       }
     }
   }
