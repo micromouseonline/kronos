@@ -1082,3 +1082,8 @@ inferred:
    current per-event-connection behaviour first would be throwaway work.
 5. Return to the misattribution test (Experiment 6) once the protocol
    changes are in.
+
+   **Done.** The #7 misattribution scenario was reproduced on demand via
+   `ws_send_event.py --tsf-us`'s ability to craft an arbitrarily old `GOAL`,
+   and confirmed fixed on real hardware — see recommendation 5's
+   bench-confirmation note above for the full log and sequence.
