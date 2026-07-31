@@ -462,6 +462,18 @@ Ordered by leverage, not necessarily implementation order.
    `NONE` for both latency and current draw. Requires real on-hardware
    measurement before committing to a specific mode.
 
+   **Note, 2026-07-31:** current `WIFI_PS_NONE` draw measured at ~110mA
+   average on a gate — a real, non-hypothetical cost, so this is worth
+   prioritising now that persistent connections have landed. Keep the
+   `NONE` baseline number alongside whatever `MIN_MODEM` measures — "we cut
+   power" needs both figures to mean anything, not just the new one. The WS
+   ack/retry mechanism (status item 1) also gives a concrete pass/fail
+   signal for this test that didn't exist when it was first proposed: run
+   the existing multi-run trial suite under `MIN_MODEM` and check retry
+   counts/rate against the `NONE` baseline, not just whether runs complete
+   — a real regression (missed beacon wake windows delaying sends) would
+   show up as elevated retries before it shows up as a visible fault.
+
 3. **Configure both HTTP timeouts explicitly.** Call
    `http.setConnectTimeout()` (currently unset, silently defaulting to
    5000ms) alongside `http.setTimeout()`. Suggested starting point, pending
@@ -639,6 +651,17 @@ Ordered by leverage, not necessarily implementation order.
      5 failing together under channel congestion, undermining it) — see
      Experiment 7 below.
 
+   **Re-assessed, 2026-07-31: weaker case than when proposed.** This was
+   speculative from the start — no observed fault motivates it, and it
+   predates the WS ack/retry mechanism (status item 1), which already
+   recovers a lost send via bounded sequential retry (5 attempts, 300ms
+   per-attempt timeout, 2000ms hard deadline). That mechanism now also
+   produces the right signal to decide *whether* hedging is worth building:
+   watch real-world retry counts/rate over normal operation first. If
+   attempt 1 essentially always succeeds, hedging buys nothing measurable;
+   if retries are frequent, that's the concrete case for it — build from
+   observed need, not in advance of it.
+
 8. **Gate-side post-trigger lock-out (~300ms)** (see #9). Deactivate a
    sensor for a short window after it fires, on top of the existing 50ms
    `DEBOUNCE_US` electrical debounce — aimed at a robot's structure (e.g. a
@@ -648,6 +671,24 @@ Ordered by leverage, not necessarily implementation order.
    correctness bug, only avoiding needless queued/sent events per #8 — cheap,
    does no harm once persistent connections (rec. 1) are in place, and helps
    in the meantime.
+
+   **Two open concerns, 2026-07-31, not yet resolved:**
+   - **The ~300ms figure is arbitrary.** It's only justified as "distinct
+     from and longer than the 50ms electrical debounce" — not derived from
+     any measured robot gap width or crossing speed. Worth a better
+     estimate grounded in real robot geometry/speed before implementing,
+     rather than picking a round number.
+   - **This changes the failure mode, not just the traffic volume.** Today,
+     a genuine duplicate is tolerated by being *ignored* on arrival — the
+     event still reaches cerberus, it's just a no-op once the state machine
+     is out of `RUNNING`. A source-side lock-out is qualitatively
+     different: the second event is never sent at all. If the window is
+     too long, a real second crossing (two robots close together, a robot
+     re-entering) is silently dropped instead of harmlessly ignored —
+     trading a visible non-issue today for a potentially invisible one.
+     Worth explicitly working out what that failure looks like (and how
+     it'd be noticed) before picking a window width, not just picking one
+     and moving on.
 
 9. **Replace `MIN_PLAUSIBLE_TSF`'s magnitude gate with trust-on-reconnect**
    (see #10). **Decided, 2026-07-31** (design reasoning, not yet
