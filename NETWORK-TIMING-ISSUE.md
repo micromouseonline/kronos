@@ -541,6 +541,29 @@ Ordered by leverage, not necessarily implementation order.
    identified — retroactively complete what otherwise looked like an
    abandoned run — rather than only being able to reject it as noise.
 
+   **Implemented (reject-only scope), 2026-07-31**
+   (`cerberus-gate-controller/src/race/race-timer.h`, the `RaceState::RUNNING`
+   `GOAL` branch): a `GOAL` is now rejected (logged as `[RACE] rejected stale
+   GOAL: tsf_us=... < start_tsf_us=...`, state stays `RUNNING`, nothing
+   committed) whenever its `event_tsf_us` is less than the current attempt's
+   own `g_run_start_tsf_us`. On review, a ring-buffer-of-recent-attempts
+   turned out **not** to be needed for this reject-only scope, correcting the
+   paragraph above: `g_run_start_tsf_us` is a single scalar that's always
+   overwritten by the most recent `START`, and `tsf_us` is monotonic across
+   every attempt, so comparing only against the *current* attempt's start
+   already catches a stale event regardless of how many attempts were
+   abandoned in between — no history needed just to reject. A ring buffer
+   would still be needed for the fancier follow-on this paragraph also
+   describes (retroactively completing an abandoned run from a late `GOAL`
+   instead of merely rejecting it), which remains unimplemented and is still
+   a genuine complement to, not a substitute for, an explicit attempt-id.
+   Native unit tests added (`test_race_timer.cpp`) covering the stale-reject
+   case and the `<` vs `<=` boundary (an exactly-equal tsf still commits).
+   Builds clean (`pio test -e native`, `pio run -e
+   cerberus-cyd2usb-diymalls-ili9341`); not yet flashed or bench-verified.
+   Bench-reproducing the #7 scenario deliberately (Experiment 6 below) is the
+   natural next step now that there's a defense to verify.
+
 6. **Event de-duplication on cerberus, as a cheap safety net** (optional,
    lower priority). A simple `gate_id` + `event` + `tsf_us` de-duplication
    check on `/api/event` — mirroring the existing Python test stub's

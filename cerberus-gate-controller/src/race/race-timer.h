@@ -22,8 +22,10 @@
 #pragma once
 
 #include <Arduino.h>
+#include <cstring>
 #include <stdio.h>
 
+#include "debug-log.h"
 #include "stopwatch.h"
 
 const char *mouse_names[] = {
@@ -490,20 +492,35 @@ inline void race_timer_handle_command(RaceCommand command, const char *mouse_nam
 
     case RaceState::RUNNING:
       if (command == RaceCommand::GOAL) {
-        run_sw.stop();
-        // Prefer the exact GOAL.tsf_us - START.tsf_us when both ends of this
-        // run have a real tsf timestamp (HTTP-sourced); this is accurate
-        // regardless of either leg's network latency. Falls back to
-        // run_sw.time() (receipt-time based) for a locally-buttoned run,
-        // where no tsf_us exists at all and receipt time IS the true time.
-        uint32_t committed_ms = run_sw.time();
-        if (event_tsf_us != 0 && g_run_start_tsf_us != 0) {
-          // Round to the nearest ms rather than truncate -- a genuine
-          // 3999.994ms run should read 4000, not 3999.
-          committed_ms = (uint32_t)((event_tsf_us - g_run_start_tsf_us + 500) / 1000);
+        // NETWORK-TIMING-ISSUE.md #7 / recommendation 5 (tsf-ordering
+        // refinement): a GOAL whose tsf_us predates this attempt's own
+        // START.tsf_us was physically triggered before this attempt even
+        // began, so it must be a stale message from an already-superseded
+        // attempt (delayed by a network retry/congestion after a new attempt
+        // was armed and started). Reject it and keep waiting for this
+        // attempt's own GOAL, rather than ending the current run on someone
+        // else's finish. Guarded the same way as the tsf-based commit below
+        // (both non-zero) so locally-buttoned/serial-sourced runs, which
+        // never carry a real tsf_us, are unaffected.
+        if (event_tsf_us != 0 && g_run_start_tsf_us != 0 && event_tsf_us < g_run_start_tsf_us) {
+          debug_log_enqueue("[RACE] rejected stale GOAL: tsf_us=%llu < start_tsf_us=%llu",
+                             (unsigned long long)event_tsf_us, (unsigned long long)g_run_start_tsf_us);
+        } else {
+          run_sw.stop();
+          // Prefer the exact GOAL.tsf_us - START.tsf_us when both ends of this
+          // run have a real tsf timestamp (HTTP-sourced); this is accurate
+          // regardless of either leg's network latency. Falls back to
+          // run_sw.time() (receipt-time based) for a locally-buttoned run,
+          // where no tsf_us exists at all and receipt time IS the true time.
+          uint32_t committed_ms = run_sw.time();
+          if (event_tsf_us != 0 && g_run_start_tsf_us != 0) {
+            // Round to the nearest ms rather than truncate -- a genuine
+            // 3999.994ms run should read 4000, not 3999.
+            committed_ms = (uint32_t)((event_tsf_us - g_run_start_tsf_us + 500) / 1000);
+          }
+          race_timer_commit_run(committed_ms);
+          race_state = RaceState::GOAL;
         }
-        race_timer_commit_run(committed_ms);
-        race_state = RaceState::GOAL;
       } else if (command == RaceCommand::ARM) {
         // Manual recovery. Abandon run
         race_timer_try_arm();

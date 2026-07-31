@@ -14,6 +14,13 @@ void reset_race_timer_state() {
   run_sw.reset();
   entry_sw.reset();
   g_mock_millis = 0;
+  g_run_start_tsf_us = 0;
+  // race_timer_handle_command() is a no-op until the operator selects the
+  // maze timer off the main menu (see race_timer_active's comment in
+  // race-timer.h) -- tests exercise the state machine directly, bypassing
+  // that menu action, so it must be set here or every command below is
+  // silently ignored.
+  race_timer_active = true;
 }
 
 int state_of(RaceState state) {
@@ -187,6 +194,39 @@ void test_running_goal_commits_run_and_enters_goal(void) {
   TEST_ASSERT_EQUAL_UINT32(1500, race_runs[0].time_ms);
 }
 
+void test_running_stale_goal_is_rejected_and_stays_running(void) {
+  race_timer_handle_command(RaceCommand::NEW_MOUSE);
+  race_timer_handle_command(RaceCommand::ARM);
+  race_timer_handle_command(RaceCommand::START, nullptr, 5000000);  // this attempt's START tsf
+
+  // Stale GOAL: tsf_us predates this attempt's own START -- must be a
+  // late-arriving message from an already-superseded attempt (#7).
+  race_timer_handle_command(RaceCommand::GOAL, nullptr, 4000000);
+
+  ASSERT_STATE_EQ(RaceState::RUNNING);
+  TEST_ASSERT_EQUAL_UINT32(0, (uint32_t)race_run_count);
+
+  // The attempt's own genuine GOAL still commits normally afterward.
+  race_timer_handle_command(RaceCommand::GOAL, nullptr, 8500000);
+  ASSERT_STATE_EQ(RaceState::GOAL);
+  TEST_ASSERT_EQUAL_UINT32(1, (uint32_t)race_run_count);
+  TEST_ASSERT_EQUAL_UINT32(3500, race_runs[0].time_ms);
+}
+
+void test_running_goal_at_exact_start_tsf_commits_zero(void) {
+  race_timer_handle_command(RaceCommand::NEW_MOUSE);
+  race_timer_handle_command(RaceCommand::ARM);
+  race_timer_handle_command(RaceCommand::START, nullptr, 5000000);
+
+  // Exactly-equal tsf is a legitimate (if implausibly fast) same-instant
+  // commit, not staleness -- confirms the boundary is `<`, not `<=`.
+  race_timer_handle_command(RaceCommand::GOAL, nullptr, 5000000);
+
+  ASSERT_STATE_EQ(RaceState::GOAL);
+  TEST_ASSERT_EQUAL_UINT32(1, (uint32_t)race_run_count);
+  TEST_ASSERT_EQUAL_UINT32(0, race_runs[0].time_ms);
+}
+
 void test_running_arm_abandons_without_commit(void) {
   race_timer_handle_command(RaceCommand::NEW_MOUSE);
   race_timer_handle_command(RaceCommand::ARM);
@@ -270,6 +310,8 @@ int main(int argc, char **argv) {
   RUN_TEST(test_waiting_restart_reenters_new_mouse);
   RUN_TEST(test_armed_start_enters_running);
   RUN_TEST(test_running_goal_commits_run_and_enters_goal);
+  RUN_TEST(test_running_stale_goal_is_rejected_and_stays_running);
+  RUN_TEST(test_running_goal_at_exact_start_tsf_commits_zero);
   RUN_TEST(test_running_arm_abandons_without_commit);
   RUN_TEST(test_running_restart_abandons_and_reenters_new_mouse);
   RUN_TEST(test_goal_restart_reenters_new_mouse);
