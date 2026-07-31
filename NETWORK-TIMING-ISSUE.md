@@ -591,6 +591,27 @@ Ordered by leverage, not necessarily implementation order.
    retry-driven duplicate processing, independent of the deeper timing
    questions above.
 
+   **Implemented, 2026-07-31** (bundled into status item 1's retry
+   mechanism, not kept separate — retry is what introduces duplicate
+   delivery in the first place). `cerberus-gate-controller/src/net/
+   gate-event-dedup.h`: a small fixed-size (16-slot, round-robin overwrite)
+   table keyed on `(gate_id, event)` → last-seen `tsf_us`, checked in
+   `handle_gate_event_json()` before `race_command_from_http()` dispatch. A
+   recognised duplicate skips re-dispatch into the race state machine but
+   still reports `handled = true`, so `ws_event_handler()` still acks it —
+   the most likely reason the same event arrives twice is that the
+   *original* was already processed and only its *ack* was lost, so
+   cerberus re-acking without reprocessing is the correct response, not an
+   error. Keyed on `(gate_id, event)`, not `tsf_us` alone: `tsf_us` is a
+   clock shared across every station on the AP, so two different boards'
+   values could plausibly collide. Native unit tests added
+   (`test_gate_event_dedup.cpp`): same-key-same-tsf is a duplicate,
+   same-key-different-tsf isn't, different gate_id/event isn't, and table
+   wraparound behaves correctly past 16 distinct keys. Builds clean
+   (`pio test -e native`, `pio run -e cerberus-cyd2usb-diymalls-ili9341`).
+   **Bench-confirmed on real hardware, 2026-07-31** — see status item 1's
+   bench-confirmation note for the full log/sequence.
+
 7. **Redundant "hedged" sends for the first few attempts** (speculative).
    Gate triggers are sparse — on the order of one every 20+ seconds per gate,
    sometimes minutes apart — so the traffic-volume cost of this idea is much
@@ -938,6 +959,53 @@ inferred:
 **Next, in the order this session left off on:**
 1. Implement a retry/reliability mechanism for dropped events (the accepted
    gap noted above) — not yet designed as of this writing.
+
+   **Implemented, 2026-07-31.** Cerberus acks each handled WS event back to
+   the sending gate over the same connection (`ws_event_handler()`, a
+   hand-built `{"ack_tsf_us":...}` literal via `client->text()` — confirmed
+   safe/non-blocking to call directly from that callback). Hesperus
+   (`uploadWorkerTask`) waits for that ack after sending, resending the exact
+   same frozen payload (never re-derived — the TSF drift-audit engine that
+   computes `tsf_to_transmit` mutates shared state as a side effect of
+   running, so it must run exactly once per logical event) up to 5 attempts
+   at a 300ms per-attempt timeout, bounded by a hard 2000ms overall deadline
+   that applies even while disconnected (so a real Wi-Fi outage can't park
+   the worker on one stale event while fresh ones overflow-drop from
+   `networkQueue` behind it). Blocking, single-in-flight design, deliberately
+   chosen over an async multi-pending-events table: matches the existing
+   one-worker/one-event-at-a-time architecture exactly, at the cost of
+   reintroducing burst-queueing behaviour (#8) during a lost-ack failure
+   window specifically, not normally. Uses a real `vTaskDelay` between poll
+   iterations rather than a bare `wsClient.loop()` spin — `uploadWorkerTask`
+   runs at a higher FreeRTOS priority than `ledDiagnosticTask`/`loop()` on
+   the same core, so a spin would have starved LED feedback, `cli.poll()`,
+   and the Wi-Fi/SYN watchdogs for the whole wait. Recommendation 6's dedup
+   was bundled into this same change (see its own entry above) rather than
+   deferred, since retry is what introduces duplicate-delivery risk for the
+   first time in the WS era. Builds clean (cerberus native + embedded,
+   hesperus `hesperus-gate-c3-super-mini`).
+
+   **Flashed and bench-confirmed, 2026-07-31** (cerberus + both hesperus
+   boards). Normal-operation regression check first: one full ARM/START/GOAL
+   cycle over real gate WS traffic (committed `3533ms`) and one full cycle
+   via local NeoKey buttons (committed `1991ms`), both clean, no unexpected
+   `[RACE]`/drop lines. Dedup+ack confirmed directly via
+   `ws_send_event.py --tsf-us`: `NEW_MOUSE` → `ARM(10000)` → `<4,2>` (ARMED)
+   → `START(20000)` → `<4,4>` (RUNNING) → resending the identical
+   `ARM(10000)` produced **no state-change telemetry at all**, and the
+   display stayed on `RUNNING` — confirming cerberus recognised the repeat
+   as a duplicate and skipped reprocessing it. Without this fix, that
+   resend would have hit `RaceState::RUNNING`'s "manual recovery, abandon
+   run" branch and wrongly aborted the run in progress. (One methodological
+   snag hit and resolved along the way: re-running the same `--tsf-us`
+   values across separate attempts *within the same cerberus boot* makes
+   the second attempt's own first `ARM` look like a duplicate of the first
+   attempt's — the dedup table's memory persists for the whole boot, not
+   just one test run — so repeat tests need fresh `tsf_us` values or a
+   reboot in between.) Hesperus's own retry-on-genuinely-lost-ack path
+   remains unverified — still needs real network trouble or a deliberate
+   fault-injection point to trigger for real, an accepted gap for now (same
+   status as the already-unpursued `netem` experiment below).
 2. Implement persistent connections on hesperus (recommendation 1) and
    re-run the bench `ARM`/`START`/`GOAL`/burst sequence with the same tools;
    compare the resulting latency distribution (expect it to tighten to
