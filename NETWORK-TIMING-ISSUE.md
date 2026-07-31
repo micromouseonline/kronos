@@ -626,14 +626,15 @@ Ordered by leverage, not necessarily implementation order.
    heuristic (PATCH 1, `main.cpp:401-415`) and was deliberately left
    untouched, not being what #10 documents as the bug.
 
-   **Verification plan, proposed but not yet run:** use a second ESP32 as a
-   soft AP, fully under test control, specifically to check the load-bearing
-   assumption above — whether there is *any* way to take an AP's radio down
-   (even briefly) without resetting its TSF epoch. If confirmed there isn't
-   (on this hardware), that closes the loop on why a magnitude-based gate
-   was never load-bearing to begin with on a single-AP topology. Bench-verify
-   the actual reconnect-trust fix the same way #10 was found: toggle the
-   AP's radio (not just hesperus's own Wi-Fi) and confirm recovery time.
+   **Verification plan, proposed but not run — left open, 2026-07-31:** the
+   idea was a second ESP32 as a soft AP, fully under test control, to check
+   the load-bearing assumption above — whether there is *any* way to take an
+   AP's radio down (even briefly) without resetting its TSF epoch. No spare
+   ESP32 available to dedicate as a test-controlled soft AP right now, so
+   this isn't being pursued further at this time. If one becomes available,
+   the same setup would also bench-verify the reconnect-trust fix itself the
+   way #10 was found: toggle the AP's radio (not just hesperus's own Wi-Fi)
+   and confirm recovery time.
 
 ## Alternative considered: ESP-NOW
 
