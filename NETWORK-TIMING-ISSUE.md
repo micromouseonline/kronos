@@ -620,21 +620,57 @@ Ordered by leverage, not necessarily implementation order.
    branch only ever runs while no baseline exists yet, checking current
    connectivity right there achieves "trust once actually connected"
    without needing a separate `WiFi.onEvent` handler/flag. Builds clean for
-   `hesperus-gate-c3-super-mini`; not yet flashed or bench-verified.
+   `hesperus-gate-c3-super-mini`; flashed and bench-verified 2026-07-31 (see
+   below).
    Scoped narrowly to this one gate — a second, separate use of
    `MIN_PLAUSIBLE_TSF` exists in the "escape hatch" SYN-mode recovery
    heuristic (PATCH 1, `main.cpp:401-415`) and was deliberately left
    untouched, not being what #10 documents as the bug.
 
-   **Verification plan, proposed but not run — left open, 2026-07-31:** the
-   idea was a second ESP32 as a soft AP, fully under test control, to check
-   the load-bearing assumption above — whether there is *any* way to take an
-   AP's radio down (even briefly) without resetting its TSF epoch. No spare
-   ESP32 available to dedicate as a test-controlled soft AP right now, so
-   this isn't being pursued further at this time. If one becomes available,
-   the same setup would also bench-verify the reconnect-trust fix itself the
-   way #10 was found: toggle the AP's radio (not just hesperus's own Wi-Fi)
-   and confirm recovery time.
+   **Verification plan, proposed 2026-07-31, superseded by a direct test the
+   same day:** the original idea was a second ESP32 as a soft AP, fully
+   under test control, to check the load-bearing assumption above — whether
+   there is *any* way to take an AP's radio down (even briefly) without
+   resetting its TSF epoch. No spare ESP32 was available to dedicate as a
+   test-controlled soft AP, so instead the real venue AP's radio was toggled
+   off and back on directly (its normal ~30s recovery time) while collecting
+   logs from cerberus and the GOAL-board hesperus unit.
+
+   **Bench-confirmed, 2026-07-31.** hesperus's GOAL board logged
+   `[INITIALIZED] Valid Baseline Coordinates Locked: 2408999` — a TSF value
+   far below the old `MIN_PLAUSIBLE_TSF` (300,000,000) that would previously
+   have been rejected outright — accepted immediately because the new gate
+   only checks `WiFi.status() == WL_CONNECTED` (`main.cpp:326`), not
+   magnitude. This is the fix working exactly as designed, on the real AP,
+   confirming the soft-AP assumption above didn't need to be separately
+   proven: the real AP's radio-only toggle did reset its TSF epoch (matching
+   #10's original finding) and the new code recovered from it immediately.
+
+   Full recovery sequence observed (hesperus GOAL board's own TSF-based
+   `[T=]` log clock reads near-zero until re-associated, so times below are
+   relative to each stage, not one continuous clock): losing AP sync tripped
+   the existing "PATCH 2" `[ROLLOVER FAULT]` watchdog (`main.cpp:502-511`)
+   after 10s stuck in `DISCIPLINED SYN` mode, forcing a full `ESP.restart()`
+   — expected, and independent of #10/recommendation 9. Post-reboot, the
+   separate 15s "Wi-Fi link dead" watchdog (`main.cpp:563-570`) cycled at
+   least 3 times (~45s+) while the AP radio was still coming back up,
+   consistent with its normal ~30s recovery. Once reconnected: `[NETWORK]
+   Link Active!` at T=1136ms, mDNS resolved at T=2051ms, baseline locked at
+   T=2775ms — **under 2 seconds after Wi-Fi actually came back**, not the
+   old 5-minute magnitude-gate wait. Cerberus itself (never rebooted, just
+   lost/regained Wi-Fi) reconnected in ~916ms and had both gates' WS clients
+   back within a few seconds. Total time-to-recovery in this test is now
+   governed by hesperus's own 10s-SYN-timeout reboot plus actual Wi-Fi
+   reassociation time, not by an arbitrary threshold.
+
+   One new, unexplained data point from this same test: cerberus logged
+   `[E][ESPmDNS.cpp:148] addService(): Failed adding service http.tcp.`
+   immediately after reconnecting (non-fatal — mDNS started cleanly on the
+   very next line). Not confirmed, but plausibly the same underlying
+   mechanism as the already-open WS connect/disconnect/reconnect blip noted
+   in the WS bring-up section below (`net/wifi-manager.h`'s
+   `AsyncServer::begin()` PCB-orphaning gotcha) — flagged here rather than
+   investigated further.
 
 ## Alternative considered: ESP-NOW
 
@@ -873,8 +909,9 @@ inferred:
    lockout) — unrelated to WebSockets itself, but found here first;
    recommendation 9 covers it. Fix designed and implemented 2026-07-31
    (trust `tsf_observed` on Wi-Fi reconnect instead of gating on
-   magnitude, see recommendation 9) — builds clean, not yet flashed or
-   bench-verified. One low-priority,
+   magnitude, see recommendation 9) — flashed and bench-confirmed
+   2026-07-31 against a real AP radio toggle: baseline locked under 2s
+   after Wi-Fi reassociation, versus the old 5-minute lockout. One low-priority,
    self-healing WS connect/disconnect/reconnect blip was also observed
    during a cerberus-reboot test, investigated but not conclusively
    explained (see `net/wifi-manager.h`'s documented `AsyncServer::begin()`
