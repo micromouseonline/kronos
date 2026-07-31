@@ -23,6 +23,7 @@ Usage:
   ./ws_send_event.py sequence
   ./ws_send_event.py sequence --repeats 3 --gate-id MY_GATE_LABEL
   CERBERUS_HOST=192.168.1.50 ./ws_send_event.py GOAL
+  ./ws_send_event.py GOAL --tsf-us 123456  # craft a specific/stale tsf_us
 """
 import argparse
 import json
@@ -41,8 +42,8 @@ def now_us() -> int:
     return time.time_ns() // 1000
 
 
-def send_event(ws: websocket.WebSocket, event: str, gate_id: str) -> None:
-    ts = now_us()
+def send_event(ws: websocket.WebSocket, event: str, gate_id: str, tsf_us: int = None) -> None:
+    ts = now_us() if tsf_us is None else tsf_us
     payload = json.dumps({"gate_id": gate_id, "event": event, "tsf_us": ts, "gate_us": ts})
     try:
         ws.send(payload)
@@ -78,6 +79,14 @@ def main() -> int:
     parser.add_argument("gate_id", nargs="?", default="WS_TEST_GATE", help="gate_id label (default: WS_TEST_GATE)")
     parser.add_argument("--host", default=DEFAULT_HOST, help=f"cerberus host (default: {DEFAULT_HOST}, or $CERBERUS_HOST)")
     parser.add_argument("--repeats", type=int, default=3, help="sequence mode: extra ARM/START/GOAL cycles after the first (default: 3)")
+    parser.add_argument(
+        "--tsf-us",
+        type=int,
+        default=None,
+        help="override tsf_us instead of stamping 'now' -- e.g. to manually craft a stale GOAL "
+        "(a tsf_us before an already-sent START) for NETWORK-TIMING-ISSUE.md #7's misattribution "
+        "test, without needing a real delayed message. Single-event mode only.",
+    )
     args = parser.parse_args()
 
     url = f"ws://{args.host}/ws"
@@ -92,7 +101,7 @@ def main() -> int:
         if args.event == "sequence":
             run_sequence(ws, args.gate_id, args.repeats)
         else:
-            send_event(ws, args.event, args.gate_id)
+            send_event(ws, args.event, args.gate_id, args.tsf_us)
     finally:
         ws.close()
 

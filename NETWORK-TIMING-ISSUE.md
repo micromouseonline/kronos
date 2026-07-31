@@ -560,9 +560,29 @@ Ordered by leverage, not necessarily implementation order.
    Native unit tests added (`test_race_timer.cpp`) covering the stale-reject
    case and the `<` vs `<=` boundary (an exactly-equal tsf still commits).
    Builds clean (`pio test -e native`, `pio run -e
-   cerberus-cyd2usb-diymalls-ili9341`); not yet flashed or bench-verified.
-   Bench-reproducing the #7 scenario deliberately (Experiment 6 below) is the
-   natural next step now that there's a defense to verify.
+   cerberus-cyd2usb-diymalls-ili9341`).
+
+   **Bench-confirmed, 2026-07-31 (Experiment 6, using a synthetic client
+   instead of a delay-injection shim/`netem`)**: rather than holding back a
+   real `GOAL` in flight, `tools/testing/ws_send_event.py` was used to craft
+   the scenario directly against cerberus's real `/ws` endpoint — it gained
+   an optional `--tsf-us` override (default unchanged: stamps "now") so a
+   `GOAL` with an arbitrarily old `tsf_us` can be sent on demand, which a
+   real gate can never naturally produce but which reproduces exactly what a
+   sufficiently-delayed real message would look like on arrival. Sequence:
+   `NEW_MOUSE` → `ARM` → `START` (real `tsf_us`, e.g. `1785522630871972`) →
+   `GOAL --tsf-us 1`. Cerberus's own log confirmed the fix end-to-end:
+   ```
+   [WS] DATA ... {"event":"START","tsf_us":1785522630871972,...}
+   [WS] DATA ... {"event":"GOAL","tsf_us":1,...}
+   [RACE] rejected stale GOAL: tsf_us=1 < start_tsf_us=1785522630871972
+   EVT: GOAL, NEOKEY_BUTTON, PRESSED, tsf=59521406 local=59521406 us
+   ```
+   The crafted stale `GOAL` was rejected and logged; `race_state` stayed
+   `RUNNING`; nothing committed. A genuine `GOAL` (real NeoKey button press)
+   immediately afterward committed normally (`16201ms`). This is the #7
+   misattribution scenario, reproduced and shown fixed on real hardware, not
+   just in the native unit tests above.
 
 6. **Event de-duplication on cerberus, as a cheap safety net** (optional,
    lower priority). A simple `gate_id` + `event` + `tsf_us` de-duplication
@@ -819,15 +839,26 @@ revised fix was confirmed to commit exact 2000/3000/4000/5000ms results. See
 
 ### 6. Reproduce the state-machine misattribution scenario deliberately
 
-The stale-`GOAL`-lands-during-a-later-run scenario (#7) is currently only a
-code-reading finding, not something observed happening. Using the same
-delay-injection shim as experiment 5 (or `netem` from experiment 2), hold a
-`GOAL` message back deliberately, manually re-arm and start a new attempt
-during the delay, then release the held `GOAL`. Confirming this actually
-produces a bogus committed time for the second attempt (rather than being
-rejected or ignored) would turn recommendation 5 (run/attempt identifier)
-from a theoretical concern into a confirmed, reproducible bug with a known
-trigger condition.
+The stale-`GOAL`-lands-during-a-later-run scenario (#7) was originally only a
+code-reading finding. Rather than the delay-injection shim/`netem` approach
+sketched below, it was reproduced more directly: `tools/testing/
+ws_send_event.py` (a synthetic WS client, no real gate needed) sent a real
+`ARM`/`START`, then a `GOAL` with a hand-crafted, arbitrarily old `tsf_us`
+(via its new `--tsf-us` override) — exactly what a sufficiently-delayed real
+message would look like on arrival, without needing to actually hold
+anything back in flight.
+
+**Done, 2026-07-31, against recommendation 5's fix rather than pre-fix
+behaviour**: by the time this was run, recommendation 5's tsf-ordering
+rejection already existed, so rather than confirming the *bug*, this
+confirmed the *fix* — see recommendation 5's "Bench-confirmed" note above for
+the full log. The crafted stale `GOAL` was rejected and logged
+(`[RACE] rejected stale GOAL: tsf_us=1 < start_tsf_us=...`), state stayed
+`RUNNING`, and a genuine `GOAL` immediately after still committed normally.
+Confirming the original *unfixed* misattribution bug this way (pre-fix) was
+not separately done, since the fix landed first — not considered necessary
+in hindsight, since the code-reading finding plus this same tool's later
+confirmation of the fix's correctness together cover both directions.
 
 ### 7. Validate the hedged-burst-send technique (recommendation 7)
 
