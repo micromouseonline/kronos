@@ -1002,10 +1002,25 @@ inferred:
    the second attempt's own first `ARM` look like a duplicate of the first
    attempt's — the dedup table's memory persists for the whole boot, not
    just one test run — so repeat tests need fresh `tsf_us` values or a
-   reboot in between.) Hesperus's own retry-on-genuinely-lost-ack path
-   remains unverified — still needs real network trouble or a deliberate
-   fault-injection point to trigger for real, an accepted gap for now (same
-   status as the already-unpursued `netem` experiment below).
+   reboot in between.)
+
+   **Retry-on-genuinely-lost-ack path bench-confirmed, 2026-07-31.** Added a
+   temporary `TEST_DROP_FIRST_ACK` switch to cerberus's `ws_event_handler()`
+   (deliberately drop the ack on an event's first sighting only, using the
+   existing dedup check to detect "first sighting" — no netem/proxy needed)
+   and ran a full ARM/START/GOAL session with it enabled. Logs from both
+   sides confirm the complete loop: cerberus received each event, withheld
+   the ack, and logged the drop; hesperus's `uploadWorkerTask` got no ack,
+   waited out its per-attempt timeout, and resent the identical frozen
+   payload (its own "Resent ... (TSF), attempt 2" log lines land ~300ms
+   after the first send, matching the per-attempt timeout); cerberus's
+   dedup recognised the resend as the same `(gate_id, event, tsf_us)` and
+   acked it normally on that second delivery. Confirmed across ARM, START,
+   and GOAL events in the same session, including back-to-back GOAL
+   double-triggers, with no misbehaviour. This closes the previously
+   accepted gap above. The test switch has been removed now that it's
+   served its purpose (same status as the already-unpursued `netem`
+   experiment below, which was never needed as a result).
 2. Implement persistent connections on hesperus (recommendation 1) and
    re-run the bench `ARM`/`START`/`GOAL`/burst sequence with the same tools;
    compare the resulting latency distribution (expect it to tighten to
