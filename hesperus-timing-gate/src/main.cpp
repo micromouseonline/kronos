@@ -314,14 +314,23 @@ void uploadWorkerTask(void *pvParameters) {
           }
         }
       } else if (current_ev.tsf_observed != 0 && !has_initial_baseline) {
-        if (current_ev.tsf_observed >= MIN_PLAUSIBLE_TSF) {
+        // NETWORK-TIMING-ISSUE.md recommendation 9: trust the first TSF
+        // reading as soon as the radio is actually associated, rather than
+        // gating on the TSF value's absolute magnitude. esp_wifi_get_tsf_time()
+        // tracks time since the AP's own TSF epoch, not since hesperus
+        // associated -- a magnitude gate assumes a small value means "Wi-Fi
+        // stack not synced yet", but any AP radio interruption resets it for
+        // every station, and the old MIN_PLAUSIBLE_TSF=300000000 threshold
+        // then silently dropped every trigger for up to 5 minutes (#10),
+        // regardless of how quickly hesperus itself reconnected.
+        if (WiFi.status() == WL_CONNECTED) {
           trust_observed_tsf = true;
           has_initial_baseline = true;
           cal_prev_tsf = current_ev.tsf_observed;
           cal_prev_proc = current_ev.processor_clock;
           debug_printf("[INITIALIZED] Valid Baseline Coordinates Locked: %llu\n", current_ev.tsf_observed);
         } else {
-          debug_printf("[PLAUSIBILITY REJECT] TSF %llu too low. Wi-Fi stack un-synchronized.\n", current_ev.tsf_observed);
+          debug_printf("[PLAUSIBILITY REJECT] Wi-Fi not connected. Baseline not established.\n");
         }
       }
 
