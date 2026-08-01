@@ -56,11 +56,19 @@ inline void race_timer_render_mouse_name() {
 
 //============================================================================
 // Shows the current mouse's own runs -- race_runs[mouse_first_run_index,
-// race_run_count), which is at most MAX_RUNS_PER_MOUSE entries because runs
-// for a given mouse are always contiguous.
+// race_run_count), capped at this mouse's allowed run count
+// (race_timer_allowed_runs()). ARM is no longer blocked once that count is
+// used up (race_timer_try_arm(), race-timer.h), so a mouse can rack up more
+// runs than the limit; those still land in race_runs[] (and so still reach
+// the leaderboard and host telemetry), they just don't get listed here --
+// only the official first N do.
 inline void race_timer_render_run_times() {
   label_list_clear(run_times_buf, objects.lbl_run_time_list);
+  long allowed = race_timer_allowed_runs();
   for (size_t i = mouse_first_run_index; i < race_run_count; i++) {
+    if ((long)race_runs[i].run_number > allowed) {
+      break;
+    }
     char time_str[16];
     race_timer_format_time(race_runs[i].time_ms, time_str, sizeof(time_str));
     char line[32];

@@ -71,7 +71,7 @@ inline long serial_line_value_as_long(const SerialLine &line) {
 // Host session metadata captured from ContestName/EventName -- purely
 // informational (not read by race-timer.h's logic, not enforced against
 // anything). AllowedRuns/EntryTimeS live in race-timer.h now instead
-// (g_allowed_runs/g_entry_time_s_limit) since race_timer_mouse_exhausted()
+// (g_allowed_runs/g_entry_time_s_limit) since race_timer_allowed_runs()
 // and the display actually read them.
 inline char g_contest_name[32] = "";
 inline char g_event_name[32] = "";

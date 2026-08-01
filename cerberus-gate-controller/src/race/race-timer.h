@@ -331,15 +331,14 @@ inline void race_timer_enter_new_mouse(const char *name = nullptr) {
 
 //============================================================================
 // Host-configured AllowedRuns overrides the fixed cap when set (see
-// g_allowed_runs above); exposed separately from race_timer_mouse_exhausted()
-// so the display (race-timer-display.h's "current/max" run-number label)
-// can show the same effective limit without duplicating the fallback logic.
+// g_allowed_runs above). Used by the display for the "current/max"
+// run-number label and to cap race_timer_render_run_times() (race-timer-
+// display.h) at this mouse's first N runs -- runs past N still happen (ARM
+// is no longer blocked once this limit is reached) and still reach the
+// leaderboard and host telemetry, they just don't appear in that on-screen
+// list.
 inline long race_timer_allowed_runs() {
   return (g_allowed_runs >= 0) ? g_allowed_runs : (long)MAX_RUNS_PER_MOUSE;
-}
-
-inline bool race_timer_mouse_exhausted() {
-  return (long)mouse_run_count >= race_timer_allowed_runs();
 }
 
 // Remaining entry time in ms for the host-supplied EntryTimeS countdown,
@@ -362,9 +361,13 @@ inline uint32_t race_timer_entry_time_remaining_ms() {
   return (uint32_t)remaining_ms;
 }
 
-// Arms for another run unless this mouse has used up its MAX_RUNS_PER_MOUSE
-// attempts, in which case it drops back to WAITING -- the operator must send
-// RaceCommand::NEW_MOUSE to continue.
+// Arms for another run. Used to drop back to WAITING once this mouse's
+// allowed run count (race_timer_allowed_runs()) was used up, requiring
+// RaceCommand::NEW_MOUSE to continue -- that gate is gone: runs past the
+// allowed count still arm normally. race_timer_allowed_runs() now only
+// bounds what race_timer_render_run_times() (race-timer-display.h) shows
+// and what counts as this mouse's "official" run_number range; the
+// leaderboard and host telemetry are unaffected and still see every run.
 //
 // The entry-time countdown (g_entry_time_s_limit) starts here, once --
 // the mouse's first successful WAITING->ARMED transition -- not at
@@ -373,9 +376,8 @@ inline uint32_t race_timer_entry_time_remaining_ms() {
 // entry_timer_started true, so entry_sw just keeps counting through the
 // whole entry, same as before this round's changes).
 inline void race_timer_try_arm() {
-  bool exhausted = race_timer_mouse_exhausted();
-  race_state = exhausted ? RaceState::WAITING : RaceState::ARMED;
-  if (!exhausted && !entry_timer_started) {
+  race_state = RaceState::ARMED;
+  if (!entry_timer_started) {
     entry_timer_started = true;
     entry_sw.restart();
   }
