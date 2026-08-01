@@ -279,6 +279,7 @@ void create_screen_main() {
                     objects.lbl_mouse_name = obj;
                     lv_obj_set_pos(obj, -5, -8);
                     lv_obj_set_size(obj, 163, LV_SIZE_CONTENT);
+                    lv_label_set_long_mode(obj, LV_LABEL_LONG_CLIP);
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xf0f8ff), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -388,6 +389,7 @@ void create_screen_main() {
                     objects.lbl_run_number = obj;
                     lv_obj_set_pos(obj, -8, -9);
                     lv_obj_set_size(obj, 26, 18);
+                    lv_label_set_long_mode(obj, LV_LABEL_LONG_CLIP);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xadff2f), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);

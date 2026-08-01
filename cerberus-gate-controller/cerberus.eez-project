@@ -1191,7 +1191,7 @@
                   "groupIndex": 0,
                   "text": "CUNNING ODYSSEUS",
                   "textType": "literal",
-                  "longMode": "WRAP",
+                  "longMode": "CLIP",
                   "recolor": false
                 }
               ],
@@ -1666,7 +1666,7 @@
                   "groupIndex": 0,
                   "text": "0/5",
                   "textType": "literal",
-                  "longMode": "WRAP",
+                  "longMode": "CLIP",
                   "recolor": false
                 }
               ],
