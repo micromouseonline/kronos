@@ -427,6 +427,7 @@ void uploadWorkerTask(void *pvParameters) {
       doc["event"] = event_name;
       doc["tsf_us"] = tsf_to_transmit;
       doc["gate_us"] = current_ev.processor_clock;
+      doc["rssi"] = WiFi.RSSI();
       String payload;
       serializeJson(doc, payload);
 
