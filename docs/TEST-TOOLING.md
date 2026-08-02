@@ -30,21 +30,31 @@ Build/flash: `pio run -e <env> -t upload` from inside `ares-pulse-generator/`,
 one of `ares-pulser-s3-zero`, `ares-pulser-s3-super-mini`,
 `ares-pulser-c3-super-mini`, `ares-pulser-c3-xiao`.
 
-**Which scenario runs is a compile-time choice** — `loop()` hardcodes a
-call to one `trial_*` function (currently `trial_double_trigger()`).
-Switching scenarios means editing `main.cpp`'s `loop()` and reflashing;
-nothing here is runtime-configurable. `setup()` blocks on a `BTN_IN`
-(pin 4) press before starting; the four repeat-pattern trials then auto-fire
-`MAX_COUNT` (100) times, `one_second` apart, with no further interaction.
-`trial_four_runs()` instead fires once per button press.
+**Scenario selection is a runtime serial CLI** (115200 baud, USB serial).
+Connect and type `help` (alias: `?`) to see the available commands
+(`list`, `run`, `arm`, `status`) with a one-line description of each, or
+`list` to see available trial names with a one-line description of each.
+`run <name> [count] [interval_ms]` fires a trial immediately (blocks until
+done, printing one `RUN <name>` line per rep then `OK <name>`); `arm <name>
+[count] [interval_ms]` sets which trial the physical `BTN_IN` (pin 4)
+button fires on its next press (`BTN <name>` per rep, `OK <name>` when the
+repeats finish); `status` reports what's currently armed and with what
+count/interval. `count` and `interval_ms` are both optional, defaulting to
+1 rep and 1000ms between reps — pass `count` to reproduce a statistical run
+(e.g. the old 100-rep pattern, or several `full_run`s back-to-back, e.g.
+`run full_run 4`) without the host having to loop the command itself.
+Unknown trial names print `ERR unknown trial: <name>` instead of silently
+doing nothing.
 
-| Function | Scenario | Key constants |
+| Trial name | Scenario | Key constants |
 |---|---|---|
-| `trial_arm_pulse()` | Single 100ms pulse on `TRG_ARM` — smoke test/baseline. | — |
-| `trial_arm_then_start()` | `TRG_ARM` then `TRG_START`, edges 200ms apart — one board serving both ARM and START gates, robot crossing both in quick succession. | `ARM_TO_START_GAP_MS` (200) |
-| `trial_burst()` | `BURST_COUNT` pulses on `TRG_GOAL`, `BURST_INTERVAL_MS` apart, each `BURST_PULSE_MS` wide — rapid-fire triggering, checks whether the send-side queue overflows/drops. Interval is chosen above the 50ms debounce but well under a ~250-270ms send cycle, so a queue backlog is expected. | `BURST_COUNT` (40), `BURST_INTERVAL_MS` (90ms), `BURST_PULSE_MS` (10ms) |
-| `trial_double_trigger()` | Two `TRG_GOAL` pulses on the same pin, `DOUBLE_TRIGGER_GAP_MS` apart — a robot with a gapped/slotted structure breaking one gate's beam twice for what should count as one crossing. **Currently wired into `loop()`.** | `DOUBLE_TRIGGER_GAP_MS` (150ms) |
-| `trial_four_runs()` | Four full ARM→START→GOAL sequences, increasing START-to-GOAL duration (`RUN_DURATIONS_MS` = 2s/3s/4s/5s) — end-to-end/leaderboard-facing checks (e.g. does the committed time come out exact) rather than a single stress dimension. Fires once per button press, not auto-repeated. | `RUN_DURATIONS_MS` ({2000,3000,4000,5000}), `ARM_TO_START_GAP_MS` (200), `INTER_RUN_GAP_MS` (2000) |
+| `arm_pulse` | Single 100ms pulse on `TRG_ARM` — smoke test/baseline. | — |
+| `goal_pulse` | Single 100ms pulse on `TRG_GOAL` — smoke test/baseline, and the single-gate `GOAL`-only steady-state traffic for the proposed WS-jitter characterization test (`run goal_pulse 10000 250`, ~42 minutes; see the "Unexplained minor WS jitter" issue in `NETWORK-TIMING-ISSUE.md`). | — |
+| `arm_then_start` | `TRG_ARM` then `TRG_START`, edges 200ms apart — one board serving both ARM and START gates, robot crossing both in quick succession. | `ARM_TO_START_GAP_MS` (200) |
+| `burst` | `BURST_COUNT` pulses on `TRG_GOAL`, `BURST_INTERVAL_MS` apart, each `BURST_PULSE_MS` wide — rapid-fire triggering, checks whether the send-side queue overflows/drops. Interval is chosen above the 50ms debounce but well under a ~250-270ms send cycle, so a queue backlog is expected. | `BURST_COUNT` (40), `BURST_INTERVAL_MS` (90ms), `BURST_PULSE_MS` (10ms) |
+| `double_trigger` | Two `TRG_GOAL` pulses on the same pin, `DOUBLE_TRIGGER_GAP_MS` apart — a robot with a gapped/slotted structure breaking one gate's beam twice for what should count as one crossing. | `DOUBLE_TRIGGER_GAP_MS` (150ms) |
+| `full_run` | One full ARM→START→GOAL sequence, `RUN_DURATION_MS` START-to-GOAL — end-to-end/leaderboard-facing checks (e.g. does the committed time come out exact) rather than a single stress dimension. Fire several with `run full_run <count>` (the old `four_runs` trial's fixed internal 4x-increasing-duration loop is now the caller's choice of count, all runs sharing `RUN_DURATION_MS`). Also the pattern to repeat throughout an external congested-airtime stress window (airtime saturation/bulk throughput/channel interference/broadband noise, see below) once one is running. | `RUN_DURATION_MS` (3000), `ARM_TO_START_GAP_MS` (200) |
+| `wake_sweep` | One `TRG_ARM` pulse after each of `WAKE_SWEEP_GAPS_MS`'s idle gaps in turn (1s, 5s, 15s, 30s, 60s), printing the gap before each pulse — the wake-to-first-byte-after-idle-gap sweep the Wi-Fi power-save issue's verification method proposes, for comparing `WIFI_PS_NONE`/`MIN_MODEM`/`MAX_MODEM` modem-sleep wake cost. Takes ~111s (the sum of the gaps) to run. | `WAKE_SWEEP_GAPS_MS` ({1000,5000,15000,30000,60000}) |
 
 Caveats: needs the physical pulser board wired to a real gate's trigger
 inputs; no Wi-Fi logic in the pulser itself, it's pure GPIO.
