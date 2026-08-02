@@ -218,14 +218,33 @@ void ledDiagnosticTask(void *pvParameters) {
 }
 
 // --- HARDWARE INTERRUPT SERVICE ROUTINES (ISRs) WITH DEBOUNCE ---
+// CHANGE, not FALLING -- the debounce below needs to see both edges. A
+// mechanical switch (bench-testing with a pushbutton) bounces on release as
+// well as on press, so a FALLING-only interrupt debounced against the last
+// *accepted* edge would let release bounce through as a spurious trigger
+// once the button had been held longer than DEBOUNCE_US (the window had
+// long since expired by release time). Instead: track quiet time since the
+// last edge of EITHER polarity, and only trust the pin level once it's been
+// quiet for DEBOUNCE_US -- LOW after a quiet gap is a real press, HIGH after
+// a quiet gap re-arms for the next one, anything inside the gap is bounce.
 void IRAM_ATTR handleSensor1() {
-  static uint64_t last_interrupt_time = 0;
-  uint64_t current_time = esp_timer_get_time();
+  static uint64_t last_edge_time = 0;
+  static bool armed = true;
 
-  if (current_time - last_interrupt_time < DEBOUNCE_US) {
+  uint64_t current_time = esp_timer_get_time();
+  bool quiet = (current_time - last_edge_time) >= DEBOUNCE_US;
+  last_edge_time = current_time;
+
+  if (digitalRead(GATE_PIN) == HIGH) {
+    if (quiet) {
+      armed = true;  // settled back high -- ready for the next press
+    }
     return;
   }
-  last_interrupt_time = current_time;
+  if (!quiet || !armed) {
+    return;  // still bouncing, or this press was already reported
+  }
+  armed = false;
 
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
   GateEvent ev;
@@ -242,13 +261,23 @@ void IRAM_ATTR handleSensor1() {
 }
 
 void IRAM_ATTR handleSensor2() {
-  static uint64_t last_interrupt_time = 0;
-  uint64_t current_time = esp_timer_get_time();
+  static uint64_t last_edge_time = 0;
+  static bool armed = true;
 
-  if (current_time - last_interrupt_time < DEBOUNCE_US) {
+  uint64_t current_time = esp_timer_get_time();
+  bool quiet = (current_time - last_edge_time) >= DEBOUNCE_US;
+  last_edge_time = current_time;
+
+  if (digitalRead(GATE_PIN_B) == HIGH) {
+    if (quiet) {
+      armed = true;  // settled back high -- ready for the next press
+    }
     return;
   }
-  last_interrupt_time = current_time;
+  if (!quiet || !armed) {
+    return;  // still bouncing, or this press was already reported
+  }
+  armed = false;
 
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
   GateEvent ev;
@@ -530,9 +559,9 @@ void setup() {
 
   strlcpy(gate_id, identifyBoard(), sizeof(gate_id));
   pinMode(GATE_PIN, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(GATE_PIN), handleSensor1, FALLING);
+  attachInterrupt(digitalPinToInterrupt(GATE_PIN), handleSensor1, CHANGE);
   pinMode(GATE_PIN_B, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(GATE_PIN_B), handleSensor2, FALLING);
+  attachInterrupt(digitalPinToInterrupt(GATE_PIN_B), handleSensor2, CHANGE);
 
   // Hardware jumper is authoritative -- re-read and re-save on every boot,
   // so a `role` command from a previous session never lingers past a power
