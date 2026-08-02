@@ -7,16 +7,15 @@ reliability, race-timing correctness), see `NETWORK-TIMING-ISSUE.md`, which
 cross-references specific tools by name from within each issue's
 Confirmation/Verification sections.
 
-Three categories: bench/hardware tools (need real gate hardware, exercise
-real Wi-Fi/TSF timing), native unit tests (deterministic, no hardware, run
-in CI-style fashion), and a Python ingestion-test stub (standalone, not the
-real cerberus).
+Two categories: bench/hardware tools (need real gate hardware, exercise
+real Wi-Fi/TSF timing) and native unit tests (deterministic, no hardware,
+run in CI-style fashion).
 
 ## Bench/hardware tools
 
-These require a real `cerberus-gate-controller` board (or the Python stub
-below) plus, depending on the tool, either real `hesperus-timing-gate`
-boards or `ares-pulse-generator` standing in for one.
+These require a real `cerberus-gate-controller` board, plus, depending on
+the tool, either real `hesperus-timing-gate` boards or `ares-pulse-generator`
+standing in for one.
 
 ### `ares-pulse-generator` — GPIO trigger simulator
 
@@ -163,29 +162,6 @@ compiles and runs on the host, no board needed.
   `net/gate-event-dedup.h`'s `gate_event_is_duplicate()`: first-sighting
   vs. exact-repeat, new-tsf-on-same-key, different-gate-id/different-event
   collisions, and round-robin table-wraparound past capacity.
-
-## Python ingestion-test stub
-
-`gate-controller-python-test-cerberus/server.py` — a stdlib-only Python 3
-script that stands in for a *subset* of cerberus's ingestion role, for
-testing gate firmware's HTTP reporting path in isolation. **Not the real
-cerberus** and not schema-compatible with it: this stub takes `GET`
-requests with query params (`id`, `tsf`, `bssid`, `mode`, `type`), where
-production cerberus takes `POST /api/event` with a JSON body.
-
-```
-python server.py       # listens on 0.0.0.0:8000
-```
-
-Four concurrent threads: HTTP server; a system-health watchdog that flags a
-gate `OFFLINE` after `HEARTBEAT_TIMEOUT_SEC` (15.0s) silence; a window
-processor that pairs same-`tsf`-window events from different gate IDs
-within `MATCH_THRESHOLD_US` (200,000µs) every `WINDOW_PROCESS_INTERVAL_SEC`
-(0.5s); and an async disk writer draining a queue into `forensics.log` so
-HTTP handling never blocks on disk I/O. Output: timestamped console lines,
-mirrored into `forensics.log` (recreated each start). Per that directory's
-own `CLAUDE.md`: other `*.log`/`*.txt` files accumulating there are
-captured test data — do not delete or overwrite.
 
 ## Not yet built: congested-airtime stress testing
 

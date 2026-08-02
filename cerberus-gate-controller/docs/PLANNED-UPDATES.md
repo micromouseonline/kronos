@@ -40,11 +40,11 @@ Not yet implemented. Once SD-card logging exists:
 
 Not yet implemented. Original design called for:
 
-* Gates include both `tsf_us` (WiFi AP's global TSF clock) and `gate_us` (gate's own free-running microsecond timer) in every `POST /api/event` message.
+* Gates include both `tsf_us` (WiFi AP's global TSF clock) and `gate_us` (gate's own free-running microsecond timer) in every event message (`/ws` or `/api/event`).
 * CERBERUS would track the relationship between its own `esp_timer_get_time()` and the incoming TSF values to model clock drift dynamically.
 * During WiFi beacon loss or AP time shifts, a gate's `gate_us` cross-reference would allow CERBERUS to compensate for the drift and maintain microsecond-level accuracy for up to ~5 minutes of independent operation.
 
-**Current state:** `gate_us` is parsed but not used (`src/net/http-server.h:219`). TSF timestamps (`tsf_us`) are taken at face value. CERBERUS has no local TSF reader.
+**Current state:** `gate_us` is parsed but not used (`handle_gate_event_json()` in `src/net/http-server.h`). TSF timestamps (`tsf_us`) are taken at face value. CERBERUS has no local TSF reader.
 
 **Rationale:** With an AP that stays online and stable, drift is negligible; this is forward-looking insurance for edge cases (transient AP reset, dynamic mesh topology, RF interference).
 
@@ -57,22 +57,6 @@ Not yet implemented. Currently, Core 1 (state machine) appends to `race_runs[]` 
 **Worst case:** A stale leaderboard read, not data corruption (the array is fixed-size, not reallocated).
 
 **Fix:** Wrap array access in a `portMUX` spinlock or FreeRTOS mutex, protecting both the append and leaderboard-read paths. This is **not blocking** and should only be done if stale/garbled reads are actually observed on real hardware.
-
----
-
-## Protocol Behaviors — Resolved
-
-The three items formerly tracked here as open (`MSG_SET_MODE=99`, `MSG_EXTRA_RUN=92`, `MSG_ALLOWED_RUNS=94`) are all implemented and exercised in `tools/testing/SERIAL-TEST-PLAN.md` (§9–10):
-
-* `MSG_SET_MODE=99` — `"CALIBRATION"` posts `RaceCommand::ENTER_CALIBRATION`, `"TIMER"` posts `RaceCommand::RESUME_TIMER` (`race-command-source.h`, `race_timer_handle_command()`). Any other value is logged and ignored.
-* `MSG_EXTRA_RUN=92` — posts `RaceCommand::EXTRA_RUN`, which decrements `mouse_run_count` to undo a false-start run (`race-timer.h:407–412`).
-* `MSG_ALLOWED_RUNS=94` — `g_allowed_runs` overrides the fixed `MAX_RUNS_PER_MOUSE` constant via `race_timer_allowed_runs()` (`race-timer.h:310–319`), enforced as the run-count cap.
-
----
-
-## Host-Supplied Mouse Names — Resolved
-
-The RATS V2 protocol allows the host to send a mouse name in the `MSG_NEW_MOUSE=98` message (value field now contains text, not always `0`). This name reaches `SystemEvent.payload` and is threaded through: `race_timer_enter_new_mouse()` (`race-timer.h:283–307`) stores it in `current_mouse_name` when non-empty, falling back to the canned `mouse_names[]` array (`race-timer.h:29–68`) otherwise. `RaceRun.name` is copied from `current_mouse_name` at commit time (`race-timer.h:266`), so both on-screen display and the leaderboard use the host-supplied name when one was provided.
 
 ---
 

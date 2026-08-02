@@ -26,7 +26,7 @@ Touch → screen navigation only (loadScreen()); not a race-command producer
 
 ### Core Assignment
 
-* **Core 0:** Network stack, WiFi station connection, asynchronous HTTP server engine. CERBERUS joins the shared network as a client (AP is separate, not CERBERUS) and listens for `POST /api/event` from remote intelligent gates, parses JSON, and injects events into the SystemEvent queue.
+* **Core 0:** Network stack, WiFi station connection, asynchronous HTTP/WebSocket server engine. CERBERUS joins the shared network as a client (AP is separate, not CERBERUS) and accepts a persistent WebSocket connection (`/ws`) from each remote intelligent gate, parses JSON event frames, and injects events into the SystemEvent queue. A `POST /api/event` HTTP endpoint with the same JSON schema still serves as a secondary path.
 * **Core 1:** Main application task (race state machine, display ownership), local input polling task (physical buttons), and serial driver task (host link).
 
 ### Debug Output Policy
@@ -69,7 +69,7 @@ Defined in `src/race/race-timer.h:76–86`. Values: `NONE`, `NEW_MOUSE`, `ARM`, 
 See `INPUT-SYSTEM.md` for complete details on local button hardware, debouncing, and event routing.
 
 * **Local Input Polling Task (Core 1):** Polls GPIO buttons and the I2C NeoKey expander every 15ms, handles debouncing in software, maps valid inputs to `RaceCommand` (ARM/START/GOAL/NEW_MOUSE), and pushes to the race state machine via `input_event_handler()` with local `esp_timer_get_time()` timestamp. Touch is polled separately by LVGL's own input device and drives on-screen navigation only — it is not on this task and does not produce race commands.
-* **Asynchronous HTTP Listener (Core 0):** Connects to shared WiFi network as a station and runs an async web server on port 80. Remote intelligent gates send timing events as `POST /api/event` with JSON body:
+* **Asynchronous HTTP/WebSocket Listener (Core 0):** Connects to shared WiFi network as a station and runs an async web server on port 80. Remote intelligent gates hold a persistent WebSocket connection to `/ws` (replacing an earlier per-event TCP connect+POST+close cycle) and send timing events as JSON text frames:
   ```json
   {
     "gate_id": "START_GATE",
@@ -78,7 +78,7 @@ See `INPUT-SYSTEM.md` for complete details on local button hardware, debouncing,
     "gate_us": 1098765634
   }
   ```
-  The handler parses JSON, constructs a `SystemEvent`, and pushes it to the Main Event Queue via `system_event_post()`. Implementation in `src/net/http-server.h:212–230`.
+  CERBERUS acks each event back over the same WebSocket connection (`{"ack_tsf_us": ...}`) so the gate's retry logic knows it landed. The same JSON schema is also still accepted over `POST /api/event` as a secondary path. Either way, the handler parses JSON, constructs a `SystemEvent`, and pushes it to the Main Event Queue via `system_event_post()`. Shared parsing in `src/net/http-server.h`'s `handle_gate_event_json()`; WebSocket handling in `ws_event_handler()`, HTTP handling in `http_handle_event()`.
 * **Serial Monitor Task (Core 1):** Bidirectional owner of host UART. RX: parses legacy bracket-CSV protocol (`<type,value>`) per `preferredMessageSequencesV2.pdf`, pushes `SystemEvent` to Main Event Queue via `system_event_post()`. TX: mirrors every generated race event back to the host in real time using the legacy protocol. See `src/net/serial-protocol.h` for parsing, `src/net/messages.h` for protocol constants, `src/race/race-serial-telemetry.h` for TX telemetry tick.
 
 ### 2. Main Processing & State Machine (Core 1)
@@ -95,7 +95,8 @@ See `INPUT-SYSTEM.md` for complete details on local button hardware, debouncing,
 Implemented in `src/net/http-server.h` using `AsyncWebServer`. Endpoints:
 
 * `GET /` — Liveness check, returns `"CERBERUS OK"`.
-* `POST /api/event` — Gate event ingestion. Parses JSON (`gate_id`, `event`, `tsf_us`, `gate_us`), maps `event` string to `RaceCommand` via `race_command_from_http()`, posts `SystemEvent` to queue.
+* `WS /ws` — Persistent WebSocket connection for gate event ingestion; primary transport for `hesperus-timing-gate` boards. Parses JSON (`gate_id`, `event`, `tsf_us`, `gate_us`), maps `event` string to `RaceCommand` via `race_command_from_http()`, posts `SystemEvent` to queue, acks back over the same connection.
+* `POST /api/event` — Same JSON schema and dispatch as `/ws`, as a secondary one-shot HTTP path.
 * `GET /leaderboard` — Server-rendered HTML leaderboard, shows all completed runs (not just top 5), with a live-update mechanism via `EventSource('/events')` for single-page refresh on run completion.
 * `GET /time` — Returns current Unix timestamp (ms) for browser clock sync every 10s.
 * `GET /events` — Server-Sent Events endpoint; fires a message when a run is committed, triggering the leaderboard page to reload.
@@ -137,11 +138,11 @@ Stored in ESP32 flash via Arduino Preferences API:
 
 ## Time Synchronization
 
-Remote intelligent gates and CERBERUS all connect to a shared WiFi AP (a separate travel router), which broadcasts a unified global clock via the 802.11 Timing Synchronization Function (TSF) in its beacon frames. Each gate reads the AP's TSF as `tsf_us` when an event occurs, and that timestamp is sent to CERBERUS in the `POST /api/event` JSON body.
+Remote intelligent gates and CERBERUS all connect to a shared WiFi AP (a separate travel router), which broadcasts a unified global clock via the 802.11 Timing Synchronization Function (TSF) in its beacon frames. Each gate reads the AP's TSF as `tsf_us` when an event occurs, and that timestamp is sent to CERBERUS in the event's JSON body (over `/ws` or `/api/event`).
 
-CERBERUS accepts `tsf_us` at face value as the event's absolute timestamp (`SystemEvent.timestamp_us = tsf_us`, `http-server.h:218–228`). Local events (button presses, serial commands) are timestamped with the local `esp_timer_get_time()` reading at arrival time. Local timestamps thus lack the global TSF reference but are sufficient for race timing (millisecond resolution).
+CERBERUS accepts `tsf_us` at face value as the event's absolute timestamp (`SystemEvent.timestamp_us = tsf_us`, `handle_gate_event_json()` in `http-server.h`). Local events (button presses, serial commands) are timestamped with the local `esp_timer_get_time()` reading at arrival time. Local timestamps thus lack the global TSF reference but are sufficient for race timing (millisecond resolution).
 
-The `gate_us` field (gate's own free-running microsecond timer) is parsed from the HTTP request but currently not used (`http-server.h:219`). See Planned Updates for the planned TSF-based drift-compensation scheme.
+The `gate_us` field (gate's own free-running microsecond timer) is parsed but currently not used. See Planned Updates for the planned TSF-based drift-compensation scheme.
 
 ---
 

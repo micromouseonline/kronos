@@ -221,7 +221,7 @@ One trial conducted over a period of approximately 3 hours collected 11,630 pair
 
 Below is the plotted telemetry showing the hardware timing gap measured across the duration of the test:
 
-![message-gap-with-2000us-threshold.png](../_resources/message-gap-with-2000us-threshold.png)
+![message-gap-with-2000us-threshold.png](_resources/message-gap-with-2000us-threshold.png)
 
 As illustrated, at approximately 6:10 PM, the calculated gap began to increase perfectly linearly. Shortly thereafter, the gap stepped sharply to roughly $2000\,\mu\text{s}$ before steadily and linearly declining until it returned to near-zero.
 
@@ -235,7 +235,7 @@ Discounting this single network-induced excursion, the true average TSF tracking
 
 Following that test, the additional protections for tracking clock drift and unexpected outages were added and the gates were connected to a more stable dedicated access point. On a domestic mesh network, there is a tendency for the access points to reconfigure arbitrarily during a long tests. However, when connected to a separate, stable portable router, the results are very consistent. Using the same 1PPS simultaneous trigger on two timing gates, the gap between the recorded times from each gate is recorded over a three-hour period (approx 11,000 triggers) and summarized in a histogram:
 
-![event-gap-pps-record.png](../_resources/event-gap-pps-record.png)
+![event-gap-pps-record.png](_resources/event-gap-pps-record.png)
 
 Note that the times are in microseconds. During that period, the mean gap was $2.36\,\mu\text{s}$ and the maximum gap was $55\,\mu\text{s}$. There were no lost notifications, no need for the synthetic time and no cumulative drift. There was one occasion where one of the gates was unable to send its notification. However, the event remained queued and was sent a little later. The timing information remained intact.
 
