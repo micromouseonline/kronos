@@ -1,14 +1,16 @@
 # Network Reliability and Guaranteed Delivery
 
-> **Section 1 reflects what's actually implemented (2026-07-31); sections 2
-> and 3 remain proposed designs, not yet built** (verified: no exponential
-> backoff/jitter or `TCP_NODELAY` in either codebase as of this writing).
-> The original version of this document proposed a transaction-ID-based
-> idempotent-retry scheme before any of this existed; what actually shipped
-> uses a different mechanism (below). Full investigation, measurements, and
-> bench-confirmation are in `NETWORK-TIMING-ISSUE.md`'s "Reliable delivery
-> over persistent WS connection" issue — this page is a summary, not the
-> source of truth.
+> **Section 1 reflects what's actually implemented (2026-07-31). Section 2
+> (congestion avoidance) remains a proposed design, not built — verified: no
+> exponential backoff/jitter in either codebase as of this writing. Section
+> 3 (Nagle/`TCP_NODELAY`) turned out to already be true by default (2026-08-02)
+> — see that section for the library-level evidence; no app code change was
+> ever needed.** The original version of this document proposed a
+> transaction-ID-based idempotent-retry scheme before any of this existed;
+> what actually shipped uses a different mechanism (below). Full
+> investigation, measurements, and bench-confirmation are in
+> `NETWORK-TIMING-ISSUE.md`'s "Reliable delivery over persistent WS
+> connection" issue — this page is a summary, not the source of truth.
 
 Capturing sensor events with microsecond accuracy is only half the battle. The other half is guaranteeing 100% delivery of the event notification to the server in a wireless environment.
 
@@ -57,12 +59,16 @@ To prevent sensors from flooding the Access Point during network recovery, we ca
 - **Traffic Note**: While congestion is highly unlikely on a dedicated AP with sparse gate transition events, these measures provide robust insurance against transient local interference (like router beaconing).
 
 
-## 3. Low Latency Tuning
-By default, the TCP protocol uses Nagle's Algorithm to bundle small outgoing payloads into larger network packets to save bandwidth. For real-time event reporting, this can introduce unacceptable delays.
+## 3. Low Latency Tuning — Already True By Default
 
-- **Optimization**: We disable Nagle's Algorithm on both the sensor (client) and the server.
+By default, the TCP protocol uses Nagle's Algorithm to bundle small outgoing payloads into larger network packets to save bandwidth. For real-time event reporting, this can introduce unacceptable delays — but analysis of the actual traffic pattern (see `NETWORK-TIMING-ISSUE.md`) found Nagle was never likely to bite here anyway: hesperus's ack/retry loop is stop-and-wait (never two un-acked writes in flight on the same socket) and events are naturally spaced seconds to minutes apart, not bursty.
 
-- **Implementation**: Set the TCP_NODELAY socket option immediately after establishing a connection. This forces the TCP stack to transmit our tiny event payloads instantly.
+Moot either way — both ends already disable Nagle, as a side effect of the exact library versions this project pins, not app code:
+
+- **Sensor (client)**: `links2004/WebSockets @ ^2.4.1` — `WebSocketsClient::connectedCb()` calls `_client.tcp->setNoDelay(true)` unconditionally on ESP32 whenever the connection is (re)established.
+- **Server**: `esp32async/ESPAsyncWebServer @ ^3.11.2` — `AsyncWebServer::begin()` calls `_server.setNoDelay(true)` unconditionally, which `esp32async/AsyncTCP @ ^3.5.0` then applies to every accepted connection (`tcp_accept()`). Note AsyncTCP's own `AsyncServer` defaults `_noDelay` to `false` — it's specifically `ESPAsyncWebServer::begin()` that turns it on, so this is a property of this library stack, not something to assume from AsyncTCP alone if it's ever swapped out.
+
+No implementation needed. Only a risk if a future library upgrade or a switch away from `ESPAsyncWebServer`/`WebSockets` silently drops this default — worth a quick re-check of both libraries' source if either is ever upgraded or replaced.
 
 
 ---
