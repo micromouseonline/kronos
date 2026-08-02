@@ -64,4 +64,7 @@ Smaller item tracked only in-code:
 
 ## ares-pulse-generator
 
-Nothing open.
+- Resetting the ARES board while wired directly to a pair of hesperus boards
+  tends to make both gates fire -- looks like an electrical glitch on reset,
+  not yet investigated. Doesn't block using ARES to run test trials, so
+  deprioritized for now. (noted 2026-08-02)
