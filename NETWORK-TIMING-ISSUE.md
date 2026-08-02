@@ -49,19 +49,16 @@ and how to invoke it; this doc only references them by name.
    — low-priority curiosity, self-healing, doesn't touch committed times.
    Proposed long steady-state (10,000-message) characterization test not
    yet run.
-6. **Explicit HTTP connect/read timeouts** (part of the first issue below)
-   — never implemented; low remaining value now that WS replaced per-event
-   HTTP as the normal path, but still flagged as useful for whatever
-   cold-connect path remains (first WS connection, reconnect after a drop).
 
 Everything else below this list is either resolved or has no further action
-planned.
+planned. (Explicit HTTP connect/read timeouts, formerly tracked here, turned
+out to be N/A rather than just deprioritized — see the first issue below.)
 
 ## Issues
 
 ### Issue: Per-event connection latency & queueing
 
-**[RESOLVED — persistent WebSocket connections shipped; one small piece (explicit HTTP timeouts) still open, see outstanding-work #6]**
+**[RESOLVED — persistent WebSocket connections shipped; the one remaining recommendation (explicit HTTP timeouts) is now N/A, see below]**
 *(was Observations #1, #2, #3, #8; Recommendation 1, Recommendation 3)*
 
 **Observation.** Every trigger initially produced exactly four identical
@@ -185,17 +182,17 @@ WS connection still needs an initial HTTP-upgrade handshake, so there's
 still a first-connection cost, just paid once per board instead of once per
 event.
 
-**Still open**: recommendation to also configure both HTTP timeouts
-explicitly (`http.setConnectTimeout()`, currently unset and silently
-defaulting to 5000ms, alongside `http.setTimeout()`) was never implemented.
-Lower value now that WS replaced the per-event HTTP path, but still useful
-for whatever cold-connect path remains (first connection, reconnect after a
-drop) — see outstanding-work list. Two proposed characterization
-experiments (isolating raw connect-phase latency with temporary
-`WiFiClient::connect()` instrumentation; injecting packet loss on demand via
-Linux `netem`) were never run and are now largely moot — both specifically
-targeted characterizing the old per-event HTTP connect phase, which no
-longer exists as the dominant cost.
+**N/A (was "Still open")**: the recommendation to configure `HTTPClient`
+timeouts explicitly (`http.setConnectTimeout()`, alongside `http.setTimeout()`)
+was never implemented, and now never will be — hesperus's runtime code no
+longer constructs an `HTTPClient` object at all (verified: `main.cpp` only
+mentions it in a historical comment). The WS client library
+(`WebSocketsClient`) handles the persistent connection instead, with its own
+timeout/heartbeat config (`enableHeartbeat()`), unrelated to `HTTPClient`'s
+settings. The two proposed characterization experiments (isolating
+connect-phase latency with temporary `WiFiClient::connect()` instrumentation;
+injecting packet loss via Linux `netem`) are moot for the same reason — both
+targeted the old per-event HTTP connect phase, which no longer exists.
 
 **Verification.** Bench-measured WS latency settled at ~5-12ms typical
 (a one-time ~1.1s first-connection warm-up on an early run didn't recur

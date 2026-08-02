@@ -21,7 +21,6 @@ than mirrored here. As of 2026-08-02, in priority order:
 3. Congested-airtime stress testing — sketched in `hesperus-timing-gate/review.md` / `docs/TEST-TOOLING.md`, never built
 4. Hedged burst sends for tail latency — deprioritized, watch retry telemetry first
 5. Unexplained minor WS jitter / reconnect blip — low-priority curiosity
-6. Explicit HTTP connect/read timeouts — low remaining value, still open
 
 Other cross-project items not tracked in that file:
 
