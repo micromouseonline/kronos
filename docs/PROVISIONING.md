@@ -1,15 +1,14 @@
 # Provisioning the Kronos network
 
 This document originally described a proposed provisioning approach for
-KRONOS sensors generally. Since then, CERBERUS has implemented its own
-version of the network-join half of it (config-portal fallback + mDNS
-server advertising) — those sections below are now marked **Implemented
-(CERBERUS)** and describe what's actually there, with the specifics
-corrected against the code. The sensor/gate-side sections (mDNS client
-discovery, deep-sleep wake cycling, the registration handshake) remain
-**Proposed** — hesperus-timing-gate today just connects with hardcoded
-credentials from `secrets.h` and has none of this yet, though it's the
-expected direction for that project.
+KRONOS sensors generally. Since then, both projects have implemented most
+of it, each with its own mechanism — those sections below are now marked
+**Implemented (CERBERUS)** or **Implemented (HESPERUS)** and describe what's
+actually there, with the specifics corrected against the code (verified
+2026-08-02). Only two pieces remain **Proposed**: deep-sleep wake cycling
+(hesperus runs continuously today, no sleep/wake logic at all) and the
+sensor registration/auth-token handshake (no `/api/register` endpoint or
+identity validation exists on cerberus).
 
 ## Sensor Connection to Network — Implemented (CERBERUS)
 
@@ -35,6 +34,16 @@ them. Two things can trigger this flow: the 60-second no-connect timeout
 above, or an on-demand "Wi-Fi Setup" menu action that forces the portal
 open even while already connected, for switching to a different network.
 Holding the TOUCH key cancels and reboots back to normal operation.
+
+### Sensor Connection to Network — Implemented (HESPERUS, different mechanism)
+
+hesperus has no captive-portal AP mode. Instead, credentials are set over
+its serial CLI (a `wifi` command, see `hesperus-timing-gate/src/cli.h`) and
+persisted to NVS via `wifi-credentials.h`; on boot, `wifi_credentials_load()`
+is tried first and, if present, overrides the compiled-in default from
+`secrets.h` (`hesperus-timing-gate/src/main.cpp:517-553`). So it's not
+"hardcoded credentials, no provisioning" — it's a serial-driven mechanism
+rather than a self-hosted AP + web form.
 
 --- 
 
@@ -62,14 +71,36 @@ IP (not at boot), to avoid racing mDNS init against an unconnected radio.
   - Service records (e.g., _http._tcp.local advertising a service) are about 75 minutes
 - Because fof this, we need some more overhead, checking that a failed POST is not simply a result of the mDNS records becoming stale
 
-### Sensor-Side Discovery & Power Cycling — Proposed, not yet built
+### Sensor-Side Discovery & Connection — Implemented (HESPERUS)
 
-Nothing below this point exists in hesperus-timing-gate yet — it currently
-connects with a hardcoded SSID/password from `secrets.h` and has no mDNS
-client, no sleep-wake cycling, and no dynamic server discovery. Kept here
-as the intended direction for that project.
+hesperus resolves and connects to cerberus dynamically, no hardcoded
+server IP: `resolveCerberus()` (`hesperus-timing-gate/src/main.cpp:99-111`)
+calls `MDNS.queryHost("cerberus")` and caches the result in
+`cerberus_ip`/`cerberus_ip_valid`. It's re-triggered (throttled to once per
+second) whenever `cerberus_ip_valid` is false, and gets explicitly
+invalidated — forcing a fresh mDNS query — on every Wi-Fi
+disconnect/reconnect (`main.cpp:610,645,650`), since cerberus could come
+back on a different IP after that. Once resolved, `wsClient.begin()` opens
+the persistent WebSocket connection to it (`main.cpp:637`).
 
-**NOTE**: if we use deep sleep, the cached service locators are lost and the discovery must start again when the radio wakes up. Modem sleep is much simpler
+**Known gap**: this re-resolve only fires on a hesperus-side Wi-Fi drop.
+If cerberus alone restarts while hesperus's own Wi-Fi link stays up,
+hesperus never re-queries mDNS — it relies on the WS client library's own
+reconnect loop retrying the *same cached IP*. Fine as long as cerberus's
+IP is stable across its reboot (typical with a normal DHCP lease), but if
+it ever came back on a different IP without hesperus's Wi-Fi also
+cycling, hesperus would keep retrying a dead address indefinitely. Not yet
+hit in practice, not yet tested.
+
+### Power Cycling (Deep Sleep) — Proposed, not yet built
+
+hesperus runs continuously today — no `esp_sleep`/`forceSleepBegin`/
+`forceSleepWake` calls exist anywhere in its source. If deep-sleep power
+saving is added later, the discovery model above would need to change: a
+deep sleep cycle drops the cached mDNS result, so discovery would need to
+re-run on every wake, not just on reconnect as it does now. Modem sleep
+(radio-off, RAM-retained) would be simpler than deep sleep here, since it
+doesn't lose that state.
 
 ```
 // Pseudocode for Sensor Loop
@@ -103,22 +134,113 @@ void loop() {
 }
 ```
 
+---
 
-### Client-Side Setup (Sensors) — Proposed, not yet built
+## Recovery from Failure
 
-1. The sensor connects to Wi-Fi.
-2. It performs an mDNS query for the service `_http._tcp.local` or directly targets `myserver.local`.
-3. Once the IP is resolved, the sensor begins sending its HTTP POST requests to that destination.
+Covers failures in the network relationship between hesperus and cerberus
+— what an operator sees, what's automatic, and what needs manual action.
+Failures local to one project with no network component (e.g. cerberus's
+touch-calibration NVS lockout) belong in that project's own operator
+documentation instead — see `cerberus-gate-controller/docs/OPERATOR-GUIDE.md`.
+
+hesperus's onboard NeoPixel reports discovery/connection state directly
+(`main.cpp:155-186`), so most of this is diagnosable from the LED alone:
+
+| LED | Meaning |
+|-----|---------|
+| Off | Wi-Fi not connected |
+| Blinking blue | Wi-Fi connected, still resolving `cerberus.local` |
+| Solid green | Wi-Fi connected and cerberus's IP is cached (`g_ready`) |
+
+### Hesperus can't find cerberus at boot
+
+**Symptom**: LED stuck blinking blue.
+
+**Automatic**: `resolveCerberus()` retries the mDNS query once per second,
+indefinitely — no timeout, no operator action needed once cerberus becomes
+reachable.
+
+**If it persists**: check that cerberus is actually powered on and joined
+to the *same* Wi-Fi network (not stuck in its own `CERBERUS-SETUP` AP
+fallback — see above), and that the AP/router isn't blocking mDNS
+multicast between clients (some consumer routers with "AP/client
+isolation" enabled do this, which would make discovery fail permanently
+until that setting is changed).
+
+### Hesperus's own Wi-Fi link drops
+
+**Symptom**: LED goes off, then blinks blue again once reconnected (before
+cerberus re-resolves).
+
+**Automatic**: a 15-second dead-link watchdog forces `WiFi.disconnect()` +
+`WiFi.begin()` if the radio doesn't recover on its own (`main.cpp:652-659`).
+Either way, reconnection unconditionally invalidates the cached cerberus
+IP and re-triggers `resolveCerberus()`, and reopens the WebSocket fresh
+once resolved (`main.cpp:645,650`) — this path assumes cerberus may have
+come back on a different IP, so it always re-discovers rather than
+trusting the old address. No operator action needed.
+
+### Cerberus restarts while hesperus's Wi-Fi link stays up
+
+**Symptom**: LED stays solid green throughout (hesperus doesn't know
+cerberus is gone yet); any event that occurs during the outage gets
+dropped after hesperus's ack/retry budget is exhausted (5 attempts over a
+hard 2-second deadline, `main.cpp:67-70`, logged as `"Event dropped after
+max retries"` / `"...after ack deadline"`).
+
+**Automatic, if cerberus comes back on the same IP**: the WebSocket client
+library (`WebSocketsClient`) auto-reconnects on its own — this can't be
+disabled and isn't app code — retrying every 500ms by default (verified in
+`links2004/WebSockets@2.4.1` source). Since `resolveCerberus()` is never
+re-invoked here, hesperus is still pointed at the same cached IP, so this
+recovers with no operator action as long as that IP is unchanged, which is
+the normal case (stable DHCP lease).
+
+**Manual action needed, if cerberus comes back on a *different* IP**:
+hesperus has no way to detect this on its own — it will keep retrying the
+old, now-dead address forever. Power-cycle the hesperus board (or
+otherwise force its Wi-Fi to drop and reconnect) to make it re-run
+`resolveCerberus()` against the new IP. Not yet observed in practice, but
+follows directly from the code path above.
+
+### Hesperus has wrong or stale Wi-Fi credentials
+
+**Symptom**: LED stays off; `WiFi.begin()` never succeeds.
+
+**Manual action required — serial only, no wireless recovery path**:
+connect over USB and re-run `wifi <ssid> <passphrase>`
+(`provisioning-commands.h`), which saves to NVS and reboots. There's no
+separate "forget credentials" command — re-running `wifi` is also how you
+revert to a different network. If NVS is corrupted or credentials need to
+be fully cleared back to the compiled-in `secrets.h` default, a flash
+erase (`pio run -e <env> -t erase`) is the only option today.
+
+### Cerberus can't join Wi-Fi at boot
+
+Covered above under "Sensor Connection to Network — Implemented
+(CERBERUS)": falls back to its own `CERBERUS-SETUP` AP after 60 seconds,
+with the AP name/password shown on its own screen. Its live connection
+state (once joined) is also shown on NeoKey LED position 3
+(`cerberus-gate-controller/docs/SYSTEM-DESCRIPTION.md`).
+
+### Everything restarts together (e.g. a power outage)
+
+No special case — this is just the "hesperus's own Wi-Fi link drops"
+scenario above (the AP going down drops every device's link at once) plus
+cerberus's own boot-time Wi-Fi join, both of which are already
+self-recovering. No particular power-on order is required.
 
 ---
 
 ### Sensor Registration & Security — Proposed, not yet built
 
 No `/api/register` endpoint or auth-token handshake exists anywhere in
-the repo today — CERBERUS's HTTP server only implements `/`, `/api/event`,
-`/leaderboard`, `/time`, and `/events` (see `cerberus-gate-controller/
-docs/SYSTEM-DESCRIPTION.md`), none of which validate a registered sensor
-identity. This section remains a proposal for if/when that's needed.
+the repo today — CERBERUS's HTTP/WebSocket server only implements `/`,
+`/ws`, `/api/event`, `/leaderboard`, `/time`, and `/events` (see
+`cerberus-gate-controller/docs/SYSTEM-DESCRIPTION.md`), none of which
+validate a registered sensor identity. This section remains a proposal for
+if/when that's needed.
 
 The KRONOS architecture has sensors pushing data *to* the server. We need a handshake to register and validate new sensors.
 
@@ -158,5 +280,5 @@ The KRONOS architecture has sensors pushing data *to* the server. We need a hand
          └─────────── Resolved ──────────┘
                          │
                          ▼
-        [ Sensor Node ] ──(HTTP POST)──> [ ESP32 Server ]
+        [ Sensor Node ] ──(persistent WS connection)──> [ ESP32 Server ]
 ```        

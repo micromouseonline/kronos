@@ -25,7 +25,7 @@ than mirrored here. As of 2026-08-02, in priority order:
 Other cross-project items not tracked in that file:
 
 - **ARGUS** (data collector/analysis layer) — not started at all. See `docs/KRONOS-SYNCHRONIZED-TIMING-GATES-ARCHITECTURE.md`.
-- **Provisioning** — sensor-side mDNS discovery/power cycling, client-side setup, registration & auth handshake all still "Proposed, not yet built". See `docs/PROVISIONING.md`.
+- **Provisioning** — sensor-side mDNS discovery and Wi-Fi credential override are already implemented (`resolveCerberus()`, serial `wifi` command + NVS on hesperus); only deep-sleep power cycling and the sensor registration/auth-token handshake remain proposed. See `docs/PROVISIONING.md`, which now also has a "Recovery from Failure" section (per-scenario: what's automatic vs. needs manual action, including the known "cerberus restarts on a new IP" gap — untested, no repro yet).
 - **Reliability: congestion avoidance** (exponential backoff+jitter) — proposed design only, not implemented. See `docs/RELIABILITY.md` (section 2). (`TCP_NODELAY`, formerly listed alongside this, turned out to already be enabled by default via the WebSockets/ESPAsyncWebServer library versions in use — no action needed, see that doc's section 3.)
 
 ### Testing gaps
@@ -52,13 +52,11 @@ Smaller items tracked only in-code, not in that doc:
 ## hesperus-timing-gate
 
 Full list: **`hesperus-timing-gate/review.md`**'s "Future Development Path"
-table (OTA update, SSD1306 display, NVS config store, configurable
-debounce, stack telemetry, NVS event buffering, multi-AP BSSID fallback,
-local standalone scoring).
-
-Note: two rows in that table are stale — "mDNS server discovery" and "HTTP
-keep-alive/WebSocket" are both already implemented; don't treat that table
-as current status for those two.
+table (Wi-Fi modem sleep, NVS config store, configurable debounce, OTA
+update, SSD1306 display, stack telemetry, NVS event buffering, multi-AP
+BSSID fallback, local standalone scoring) — kept current as of 2026-08-02,
+the two rows that had shipped (mDNS discovery, WebSocket) were removed
+from it rather than left stale.
 
 Smaller item tracked only in-code:
 

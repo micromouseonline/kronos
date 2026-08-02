@@ -104,16 +104,21 @@ pairing over 60,000 events) validate the architecture.
 
 ## Future Development Path
 
+Updated 2026-08-02: removed two rows that shipped since this table was
+written (mDNS server discovery, HTTP keep-alive/WebSocket — see
+`docs/PROVISIONING.md` and `NETWORK-TIMING-ISSUE.md` respectively) and
+trimmed "server URL" from the NVS config store row for the same reason
+(cerberus's address is now resolved dynamically via mDNS, not a
+config-store override).
+
 | Phase | Feature | Notes |
 |-------|---------|-------|
-| Near | mDNS server discovery | Replace hardcoded IP with `timing.local` |
-| Near | Wi-Fi Modem Sleep | `WIFI_PS_MIN_MODEM` between events; TSF active during sleep |
-| Near | NVS config store | gate_id override, debounce, DRIFT_MARGIN_US, server URL |
+| Near | Wi-Fi Modem Sleep | Currently forced off (`esp_wifi_set_ps(WIFI_PS_NONE)`, `main.cpp:565`) after `WIFI_PS_MAX_MODEM` was traced to a 2.9s first-packet penalty; see `NETWORK-TIMING-ISSUE.md`'s "Wi-Fi power-save vs. battery budget" issue for the full investigation, now unblocked and the highest-priority open item there |
+| Near | NVS config store | gate_id override, debounce, DRIFT_MARGIN_US |
 | Near | Configurable debounce | Per-pin, loaded from NVS |
 | Medium | OTA firmware update | ArduinoOTA or ESP-IDF OTA; critical for field deployment |
 | Medium | SSD1306 display task | Gate ID, clock mode, last gap, queue depth (lib already in platformio.ini) |
-| Medium | Stack telemetry in heartbeat | Append `&stack=NNN` to HB URL for remote diagnostics |
-| Long | HTTP keep-alive / WebSocket | Persistent connection; halves TCP handshake overhead per event |
+| Medium | Stack telemetry in heartbeat | Append `&stack=NNN` to HB URL for remote diagnostics; scaffolding exists but is commented out (`main.cpp:277-279`) |
 | Long | NVS event buffering | Survive power cycle with unsent events preserved in flash |
 | Long | Multi-AP BSSID fallback | Secondary AP list with explicit TSF-resync on AP switch |
 | Long | Local standalone scoring | Compute lap/split locally if server unreachable; display on SSD1306 |
