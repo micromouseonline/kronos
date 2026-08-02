@@ -13,6 +13,10 @@ Multi-project workspace for a two-gate infrared timing system.
 Shared build/flashing/cataloguing utility scripts (not a sub-project) live
 in `tools/` at the workspace root.
 
+Outstanding work is tracked in `TODO.md` (root) — an index pointing at each
+sub-project's own planning docs plus the cross-project (interoperability,
+testing) items that don't belong to any single one.
+
 ## Off-limits directories
 
 - `.pio/` in any sub-project: generated build artefacts and vendored libraries - do not read or modify

@@ -28,13 +28,12 @@ struct ButtonCommandMap {
 // post into the same queue and land here).
 //
 // ARM's hold is a force-new-mouse override regardless of current race state
-// (e.g. escaping a mouse_exhausted WAITING state) -- RESTART, not NEW_MOUSE,
-// since race_timer_handle_command's WAITING/GOAL branches only act on
-// RESTART. TOUCH's hold has no RaceCommand here: on GPIO/NeoKey it's a
-// UI-only "return to menu" handled in main.cpp's input_event_handler; on
-// the touch panel itself it's a separate LVGL-native long-press
-// (action_on_timer_touch_long, eez-actions.cpp) that never reaches this
-// table at all.
+// -- RESTART, not NEW_MOUSE, since race_timer_handle_command's WAITING/GOAL
+// branches only act on RESTART. TOUCH's hold has no RaceCommand here: on
+// GPIO/NeoKey it's a UI-only "return to menu" handled in main.cpp's
+// input_event_handler; on the touch panel itself it's a separate
+// LVGL-native long-press (action_on_timer_touch_long, eez-actions.cpp)
+// that never reaches this table at all.
 // TODO examine these against the state machine
 constexpr ButtonCommandMap BUTTON_COMMAND_MAP[NUM_BUTTONS] = {
     /* BTN_ARM   */ {RaceCommand::ARM, RaceCommand::RESTART},
