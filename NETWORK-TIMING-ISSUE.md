@@ -23,32 +23,61 @@ and how to invoke it; this doc only references them by name.
 
 ## Outstanding work, prioritized
 
-1. **[Wi-Fi power-save vs. battery budget](#issue-wi-fi-power-save-vs-battery-budget)**
+1. **[Acks not arriving back at hesperus in time](#issue-acks-not-arriving-back-at-hesperus-in-time-despite-cerberus-receiving-the-event)**
+   — **START HERE.** Found 2026-08-03 while reviewing item 3's verification
+   data: cerberus received the retried event multiple times, well inside
+   hesperus's own wait window, in both residual outlier cases — yet no ack
+   ever got back to hesperus in time. Unstarted: next step is instrumenting
+   cerberus's `ws_event_handler()` (`net/http-server.h`) to log DATA-receipt
+   vs. ack-dispatch timing and find out whether cerberus is slow to ack, the
+   ack is lost on the way back, or hesperus's own `wsClient.loop()` isn't
+   free to process an ack that arrived fine. Full detail in the issue below.
+2. **[Wi-Fi power-save vs. battery budget](#issue-wi-fi-power-save-vs-battery-budget)**
    — measure current draw across `WIFI_PS_NONE`/`MIN_MODEM`/`MAX_MODEM` with
    persistent connections in place. Real, measured 110mA cost today; the
    thing this was explicitly deferred pending (persistent connections) has
-   now landed, so this is unblocked and the highest-value open item.
-2. **[Duplicate triggers from gapped robot structure](#issue-duplicate-triggers-from-gapped-robot-structure)**
+   now landed, so this is unblocked.
+3. **[`wsClient.loop()` blocking under congestion](#issue-wsclientloop-blocking-under-congestion-defeats-the-ackretry-deadline-bound)**
+   — confirmed via instrumentation + cross-board log correlation: beacon
+   spam causes real TCP-level WS disconnects (up to ~18s outages seen) on
+   the hesperus side, with `wsClient.loop()` blocking up to ~9.5s per call,
+   silently blowing the 2000ms ack/retry deadline bound. Not classic
+   airtime saturation (a laptop held 25Mbps through the same spam) —
+   likely ESP32-specific WiFi-stack overhead from beacon-frame volume.
+   Undermined the already-shipped retry/dedup mechanism precisely under the
+   real-world congestion it exists for. **Resolved and hardware-verified
+   2026-08-03** (dedicated `wsPumpTask` + mutexes decouple the socket pump
+   from the retry deadline logic) — 5/6 verification deltas landed within
+   ~500ms of the 2000ms target, down from the original bug's 7.6s+
+   untethered stalls. The two residual outliers are now tracked as item 1
+   above, not here. Root RF-level cause (why the outages happen at all)
+   remains open too, folded into item 5 below.
+4. **[Duplicate triggers from gapped robot structure](#issue-duplicate-triggers-from-gapped-robot-structure)**
    — the proposed ~300ms post-trigger lock-out window is arbitrary and its
    failure mode (silently dropping a genuine second crossing, rather than
    today's harmless ignore-once-out-of-`RUNNING`) hasn't been worked out.
    Cheap once resolved, but resolve the design questions first.
-3. **Congested-airtime stress testing** (cross-cutting, not tied to one
+5. **Congested-airtime stress testing** (cross-cutting, not tied to one
    issue) — the four stressor layers sketched in
    `hesperus-timing-gate/review.md` (airtime saturation, bulk throughput,
    channel interference, broadband noise; see `docs/TEST-TOOLING.md`) have
-   never been built into an actual test. Would validate several of the
+   never been built into a repeatable harness, though the ad hoc beacon-spam
+   runs behind items 1 and 3 above are informal data points in that
+   direction, and are how both were found. Would validate several of the
    already-shipped fixes (dedup, retry, TSF trust-on-reconnect) under
    realistic contest-venue conditions, not just the quiet-network bench
    tests done so far.
-4. **[Hedged burst sends](#issue-hedged-burst-sends-for-tail-latency)** —
+6. **[Hedged burst sends](#issue-hedged-burst-sends-for-tail-latency)** —
    deprioritized; watch real-world retry counts/rate from the now-shipped
    ack/retry mechanism before building this. No action needed unless that
    telemetry shows frequent retries.
-5. **[Unexplained minor WS jitter / reconnect blip](#issue-unexplained-minor-ws-jitter--reconnect-blip)**
+7. **[Unexplained minor WS jitter / reconnect blip](#issue-unexplained-minor-ws-jitter--reconnect-blip)**
    — low-priority curiosity, self-healing, doesn't touch committed times.
    Proposed long steady-state (10,000-message) characterization test not
-   yet run.
+   yet run. Its own leading candidate cause (`wsClient.loop()` occasionally
+   blocking) is the same one item 3 now has direct evidence for, just at
+   millisecond rather than multi-second scale — worth re-reading together
+   now that item 3's instrumentation exists.
 
 Everything else below this list is either resolved or has no further action
 planned. (Explicit HTTP connect/read timeouts, formerly tracked here, turned
@@ -808,6 +837,297 @@ has `tsf_us` (hesperus ISR time) and `recv_ms` (cerberus receipt time),
 which bundles all three. If the pattern-hunt doesn't point at an obvious
 cause, the next step would be adding a hesperus-side send timestamp to
 split the latency into legs.
+
+### Issue: `wsClient.loop()` blocking under congestion defeats the ack/retry deadline bound
+
+**[RESOLVED, with a smaller residual issue tracked separately below]**
+*(new, 2026-08-02; fix implemented and hardware-verified 2026-08-03)*
+
+**Observation.** Manual stress test 2026-08-02: ARES set to generate
+continuous full runs against a live cerberus + two hesperus boards, then
+one and then a second Wi-Fi beacon spammer switched on partway through.
+Only the GOAL gate's serial output was kept (not the full log, so
+`networkq_overflow_count` reports are not available for this run). Early in
+the log, sends succeed on attempt 1; as congestion increases, retries
+appear and mostly follow the expected shape — attempts ~300ms apart
+(`WS_ACK_TIMEOUT_MS`), "dropped after max retries" at ~1.5s, safely under
+the 2000ms `WS_ACK_OVERALL_DEADLINE_MS`. But several drops instead show
+almost no gap between the last logged resend and "dropped after ack
+deadline" — e.g. `Resent ... attempt 3` then `dropped after ack deadline`
+8ms later — while the *previous* resend was 7.6 real seconds earlier. That
+7.6s is genuine elapsed time: the `[T=...]` log prefix is
+`debug_timestamp_ms()` (`hesperus-timing-gate/src/debug-log.h`), which
+reads the WiFi TSF hardware counter, not `millis()`.
+
+That's inconsistent with the retry loop itself
+(`hesperus-timing-gate/src/main.cpp`, `uploadWorkerTask`'s ack-wait loop,
+~line 488 onward): it re-checks the 2000ms deadline every
+`vTaskDelay(WS_ACK_WAIT_TICK_MS)` (5ms) iteration, so it shouldn't be able
+to let 7+ seconds pass silently between checks. The only place that much
+wall time can disappear without a log line is inside a single call to
+`wsClient.loop()`. Leading hypothesis: the `WebSocketsClient` library
+performing a blocking internal TCP reconnect (`WiFiClient::connect()`)
+after the socket drops, which can stall for several seconds on a congested
+channel — a known characteristic of that library, not investigated further
+here since it's vendored (out of scope to read/modify per this repo's
+CLAUDE.md). If correct, the consequence is real: the whole point of the
+300ms/2000ms bounds is to cap how long `uploadWorkerTask` can stall on one
+event so `networkQueue` (depth 10) doesn't back up; a multi-second block
+inside `wsClient.loop()` defeats that, and ARES's continuous-run traffic
+arriving during the stall would silently overflow-drop from the queue
+rather than go through the visible retry/drop path — not confirmed in this
+run since the overflow counter wasn't captured.
+
+Directly relevant to the "Unexplained minor WS jitter / reconnect blip"
+issue below, whose leading candidate cause is the same `wsClient.loop()`
+call, just observed there at 10-40ms scale under quiet conditions rather
+than seconds under real congestion.
+
+**Confirmed, 2026-08-02** (`test-data/spam-tests/{hesperus-gate,hesperus-start,cerberus}.log`).
+Re-ran with the proposed instrumentation in place (per-call `wsClient.loop()`
+timing, logged above 50ms) and full unfiltered serial from both hesperus
+boards and cerberus this time, not just GOAL. Scenario: continuous ARES
+full runs; one beacon spammer switched on after ~15 runs, a second after
+~30, first one switched off after ~40, second shortly after.
+
+- Both boards hit the block directly: hesperus-gate up to 9450ms, hesperus-start
+  up to 6233ms, several others in the 100ms-5s range, all logged with
+  `wifi_status=3` (`WL_CONNECTED` — the underlying 802.11 association to
+  the AP never drops) and `ws_connected` varying 0/1. So this is squarely a
+  TCP/WebSocket-layer stall, not a loss of Wi-Fi association.
+- Cross-referenced against cerberus's own WS accept/disconnect log — a
+  source independent of hesperus's self-reported state. During the
+  spammer-active window (T~206082107-145951, ~64s) cerberus recorded real
+  connect/disconnect churn for both boards: hesperus-start (192.168.0.6)
+  had a 16.1s outage (client #5 disconnect @082107 → #7 reconnect @098160)
+  plus a connection that lasted only 1.1s shortly after; hesperus-gate
+  (192.168.0.189) had an 18.1s outage (#6 @084550 → #8 @102681). These
+  line up with the largest `wsClient.loop()` blocks — e.g. hesperus-gate's
+  9450ms block at T=206097314 falls inside its own 18.1s outage window.
+  Confirms the stall is a genuine two-sided TCP connection loss, not a
+  one-sided reporting quirk in the client library.
+- Secondary symptom: `[QUEUE OVERFLOW] ledQueue full; LED feedback dropped`
+  fires alongside the worst blocks (T=206097316, T=206143632) — the stall
+  starves more than just the network path, consistent with
+  `uploadWorkerTask` running at higher FreeRTOS priority than
+  `ledDiagnosticTask` on the same core.
+- cerberus.log has zero `[E]`/error lines through the whole run — cerberus
+  itself stayed healthy throughout; the instability is specific to the two
+  hesperus (client) boards' connections.
+- New context reframes the mechanism: a laptop on the same network
+  sustained 25Mbps on a browser speed test with both spammers running,
+  ruling out classic airtime/throughput saturation — the channel isn't
+  actually full. Beacon spammers flood small, low-duty-cycle management
+  frames rather than payload traffic, which a laptop's WiFi chipset filters
+  largely in hardware. The ESP32's software-heavier WiFi stack processes
+  more of that on the same CPU that also runs `uploadWorkerTask`/
+  `wsClient.loop()`, which better explains why the ESP32-side connection
+  destabilizes while a laptop on the same air doesn't notice anything. Not
+  "the channel is congested" in the classic sense — beacon-frame volume
+  overloading the ESP32's own processing path is the better-supported
+  reading of the evidence so far.
+- Race-outcome-level impact, walked through cerberus's own state telemetry
+  in the same log: 64 distinct ARM triggers and 65 distinct START triggers
+  arrived, and the race state machine entered `RUNNING` (`<4,4>`) 63 times
+  — ARM/START came through almost intact. But only 54 of those runs ever
+  reached `GOAL` (`<4,5>`) and committed a result — **9 runs (~14% of
+  those armed and started) vanished with no GOAL ever arriving**, against
+  60 distinct GOAL triggers cerberus received in total (a handful landed
+  outside a `RUNNING` context and were correctly ignored). Not evidence
+  that GOAL is transported worse than ARM/START — same `uploadWorkerTask`/
+  `wsClient.loop()` path handles all three — but GOAL is the last event in
+  a run, so it's the only one with no downstream step to mask a stall: an
+  ARM/START hiccup that eventually lands via retry leaves no visible
+  trace, while any GOAL lost during one of the multi-second
+  `wsClient.loop()` stalls above shows up directly as a run with no
+  recorded time. (Separately, and not a bug: every committed run in this
+  log reads exactly `<13,3000>` — `ares-pulse-generator`'s `trial_full_run()`
+  waits exactly `RUN_DURATION_MS` = 3000ms between firing START and GOAL
+  by construction, so a fixed 3000ms result is the synthetic trial working
+  correctly, not a lost-signal fallback. The message appears 3x per run,
+  20ms apart, `162` lines / `3` = the same `54` completed runs above — RATS
+  V2's deliberate line-noise mitigation, already documented in
+  `messages-reference.h`/TODO.md, unrelated to this issue.)
+
+**Resolution, 2026-08-03.** Implemented in `hesperus-timing-gate/src/main.cpp`:
+decoupled the WS socket pump from `uploadWorkerTask`'s ack-wait deadline
+logic, without switching networking libraries (no async WebSocket *client*
+exists in this ecosystem — `ESPAsyncWebServer`'s `AsyncWebSocket` is
+server-only, so a client-side rewrite would mean hand-rolling WS framing on
+raw `AsyncTCP`, out of proportion for this fix). A new task, `wsPumpTask`,
+becomes the sole caller of `wsClient.loop()`. Two new mutexes:
+`ws_client_mutex` guards every call into `wsClient` (`.loop()`, `.sendTXT()`,
+`.isConnected()`, `.begin()`, `.enableHeartbeat()`, `.onEvent()`) —
+`wsPumpTask` holds it for the full duration of each `.loop()` call (the one
+place still allowed to block for however long a stall runs), while every
+other caller (`uploadWorkerTask`'s send/resend, `loop()`'s reconnect edge)
+takes it with a short bounded timeout (`WS_MUTEX_SEND_TIMEOUT_MS`=20ms,
+`WS_MUTEX_SETUP_TIMEOUT_MS`=50ms) via new `wsIsConnectedBounded()`/
+`wsSendTxtBounded()` wrappers, treating a failed acquisition as "skip this
+attempt / not connected" rather than blocking. `ws_ack_state_mutex` guards
+`(g_ws_ack_received, g_ws_ack_tsf_us)` as one unit — needed because
+`g_ws_ack_tsf_us` is a non-atomic `uint64_t` write on this 32-bit hardware,
+and the ack callback now genuinely fires from a different task
+(`wsPumpTask`) than the one reading it (`uploadWorkerTask`), unlike before.
+`uploadWorkerTask`'s ack-wait loop no longer calls `wsClient.loop()` at all
+— it only polls the ack flag (`wsTakeAckIfReceived()`) and its own
+`millis()` timers, so its 300ms/2000ms deadline checks run on schedule
+regardless of how long `wsPumpTask` is stalled. The `wsClient.loop()`-timing
+diagnostic (added 2026-08-02) was relocated into `wsPumpTask` and kept
+permanently as a low-cost canary (only logs above 50ms) rather than
+stripped, resolving that open question in its favor.
+
+Also added, same session, as a separate additive changeset (Track 2, not
+touching the above): an on-demand diagnostics HTTP server
+(`hesperus-timing-gate/src/net/debug-http-server.h`, `feature_http` now
+extended by all 4 hesperus envs) exposing `GET /logs` (an in-RAM 150-line
+ring buffer of recent debug output, captured via a new `debug-log.h` line
+hook) and `GET /status` (uptime, RSSI, queue depth, overflow count) — motivated
+by wanting to remotely interrogate a hesperus board's own logs without a
+serial connection. Confirmed comfortable RAM headroom on both non-PSRAM C3
+envs (19% used / 81% free after linking `AsyncTCP`+`ESPAsyncWebServer`).
+
+**What this does and doesn't fix**: bounds worst-case per-event stall to
+~2000ms regardless of how long the underlying `wsClient.loop()` stall runs,
+and stops `uploadWorkerTask` itself from starving `ledDiagnosticTask`/
+`cli.poll()`. Does **not** fix the root RF-level cause (genuine ~16-18s
+two-sided TCP outages under beacon spam, still open/unscoped) — events lost
+during a real outage are still lost, just via a clean bounded drop instead of
+an unbounded stall. Also does not resolve whether `wsPumpTask` stalling (same
+priority/core as `uploadWorkerTask` was) still starves `ledDiagnosticTask` via
+a different task — an empirical question left to the verification pass below,
+not assumed either way.
+
+All 4 hesperus envs (`pio run`) build clean with both changesets.
+
+**Hardware-verified, 2026-08-03** (`test-data/spam-tests/{cerberus-2,hesperus-2-goal,hesperus-start-2}.log`).
+Re-ran the same beacon-spam scenario: continuous ARES full runs, first
+spammer on after ~15 runs, second spammer on after ~15 more — per the user,
+the second spammer "effectively killed the system," recovering once it was
+switched off.
+
+- Computed every `attempt 1` → `dropped` delta across both hesperus logs:
+  `2064ms, 2536ms, 2005ms, 2003ms, 2001ms` (5 of 6 within ~500ms of the
+  intended `WS_ACK_OVERALL_DEADLINE_MS`=2000ms — a dramatic improvement over
+  the original bug's signature of 7.6s+ gaps completely untethered from the
+  deadline) and one outlier at **6611ms** (3.3x over target).
+- The 6611ms outlier (and, on closer look, the 2536ms one too) is a
+  different, smaller-magnitude phenomenon, not the original bug recurring —
+  but the first-pass explanation for it (FreeRTOS scheduler contention
+  delaying `uploadWorkerTask`'s own deadline loop) turned out to be too
+  hasty and was superseded same-day by a better-supported one, below. Kept
+  here crossed out rather than silently deleted, since it shaped the first
+  write-up: ~~`wsPumpTask` was stuck across several consecutive `.loop()`
+  calls back-to-back, and during that stretch `uploadWorkerTask`'s own
+  `vTaskDelay(5ms)`-paced deadline-check loop itself ran late, pointing to
+  genuine FreeRTOS scheduler contention under the worst moment of beacon
+  flooding.~~
+  **Superseded finding, same day**: cross-referencing `cerberus-2.log`'s raw
+  `[WS] DATA` receipt lines against the exact frozen `tsf_us` hesperus was
+  retrying shows cerberus actually **received the event multiple times
+  during hesperus's own wait window, for both outlier cases**, and never got
+  an ack back in time regardless:
+  - GOAL (2536ms case): hesperus retried `tsf_us=209988167825` at
+    T=209988170/477/779/990700(hesperus-side timestamps); cerberus logged
+    receiving that exact payload **four times**, at T=209988746, 989326,
+    990243, 991100 — the first three all inside hesperus's own wait window
+    (deadline hit at 990706).
+  - ARM (6611ms case): `tsf_us=209976367966` received by cerberus at
+    T=976573, 977579, 977583, 983237, while hesperus waited from 976370 to
+    982981 — again, multiple deliveries landed well inside the window.
+
+  So in both outlier cases the forward path (hesperus → cerberus) was
+  intermittently working — repeatedly — while the ack never made it back in
+  time either way. That points at the **ack return path** (cerberus slow to
+  send it, or the ack itself being lost/delayed asymmetrically under the
+  same RF conditions) rather than at `uploadWorkerTask`'s own scheduling.
+  Not yet isolated further — see the new issue immediately below, which is
+  the natural next step and was still unstarted when this session ended.
+- Race-outcome accounting on `cerberus-2.log` (same method as the original
+  investigation): 41 distinct ARM and 41 distinct START triggers, 41
+  `RUNNING` entries, 38 `GOAL` entries/committed results — a ~7% loss rate
+  among armed+started runs, better than the original test's ~14%, despite
+  this run reportedly being more severe. Not a strictly controlled A/B
+  comparison (different session, different exact run count/duration), but
+  consistent with the fix helping rather than a regression.
+- `[QUEUE OVERFLOW] ledQueue full` still occurred once, during the worst
+  window. Answers the open question from the design, but not in the
+  direction of "solved": since `uploadWorkerTask` can no longer itself block
+  on `wsClient` by construction, something else is still starving
+  `ledDiagnosticTask` under the worst congestion. Cause not identified —
+  don't assume it's the same mechanism as the ack-path finding above without
+  checking; could be genuine CPU/scheduler contention from beacon-frame
+  processing, or something else entirely. Open.
+- Stack headroom (`uxTaskGetStackHighWaterMark()`) not yet checked after a
+  soak run — still open.
+
+Note: `cerberus-2.log` also shows cerberus's own boot banner partway through
+the capture (WS clients disconnecting at `[T=0]`, then a fresh
+`CERBERUS: gate controller...` banner) — this is a manual restart performed
+at the start of the trial, not a runtime crash; confirmed by the user. Not a
+finding, just recorded here in case anyone rereads that raw log later and
+wonders about the `[T=0]` lines.
+
+**Not yet done**: `uxTaskGetStackHighWaterMark()` soak check; the ack-path
+investigation in the new issue immediately below (this is the priority next
+step, unstarted); deciding whether the `ledQueue` overflow shares a cause
+with the ack-path finding or is separate.
+
+### Issue: acks not arriving back at hesperus in time despite cerberus receiving the event
+
+**[OPEN — priority next step, unstarted]**
+*(new, 2026-08-03, found while reviewing the `wsClient.loop()` fix's
+verification data above)*
+
+**Observation.** In both residual outlier cases from the 2026-08-03
+verification (GOAL 2536ms, ARM 6611ms — see above), cross-referencing
+`cerberus-2.log`'s raw `[WS] DATA` lines by the exact frozen `tsf_us` hesperus
+was retrying shows cerberus received the event **multiple times**, well
+inside hesperus's own wait window, and no ack ever reached hesperus in time
+regardless:
+
+- GOAL: `tsf_us=209988167825` — cerberus received it at T=209988746, 989326,
+  990243, 991100 (cerberus-side TSF timestamps); hesperus's wait window ran
+  T=209988170 to 990706 (dropped). First three cerberus receipts fall inside
+  that window.
+- ARM: `tsf_us=209976367966` — cerberus received it at T=976573, 977579,
+  977583, 983237; hesperus's window ran 976370 to 982981. Again, multiple
+  receipts land inside the window.
+
+Both boards' `wsClient.loop()`s were mid-stall around this same time (per
+the relocated diagnostic — see the resolved issue above), so this isn't
+necessarily "cerberus is slow" in isolation; hesperus's own client may not
+have been cycling fast enough to *process* an ack that cerberus sent
+promptly, since incoming frames are also handled inside the same
+`wsClient.loop()` call that the mutex redesign still lets block for however
+long a stall takes. That's a live, undecided alternative explanation, not
+ruled out — the instrumentation below is what would distinguish it from a
+genuine cerberus-side or return-path problem.
+
+**Resolution.** Not started.
+
+**Verification / next steps, not yet run.**
+
+1. Instrument `cerberus-gate-controller/src/net/http-server.h`'s
+   `ws_event_handler()` (`WS_EVT_DATA` branch, around the `client->text(ack)`
+   call, ~line 379-382 as of this write-up) — log the timestamp when DATA is
+   received and when the ack is dispatched, and whether `client->text()`
+   itself takes any notable time or fails. Follow this project's usual
+   staged workflow for cerberus changes: one atomic stage, build one env to
+   verify (`cerberus-cyd2usb-diymalls-ili9341` is the usual pick), report and
+   wait for hardware confirmation before considering it done — do not commit.
+2. Re-run the same beacon-spam stress scenario, capturing cerberus's serial
+   output too this time (the 2026-08-03 run captured cerberus's WS-layer log
+   but not fine-grained ack timing).
+3. If cerberus's own ack-dispatch is fast every time, that rules cerberus
+   out and points at either the return path (asymmetric RF loss/delay) or
+   hesperus's own `wsClient.loop()` not being free to process the incoming
+   ack promptly during its own stalls — cross-reference against hesperus's
+   `[WS Pump] wsClient.loop() blocked` lines for the same window to
+   distinguish these.
+4. If cerberus's ack-dispatch itself is slow, look at whether it's
+   `AsyncTCP`'s own send path getting backed up under the same connection
+   churn cerberus was juggling from both boards during this window.
 
 ## Decision record: ESP-NOW alternative
 
