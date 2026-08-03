@@ -68,14 +68,31 @@ const uint64_t MIN_PLAUSIBLE_TSF = 300000000;
 // table needed). WS_ACK_TIMEOUT_MS is comfortably above the ~5-15ms typical
 // WS round trip measured during rec. 1's bring-up, generous against the
 // occasional ~40ms single-event jitter spike also seen there.
-const uint32_t WS_ACK_TIMEOUT_MS = 300;            // per-attempt: resend if no ack within this
-const uint8_t WS_MAX_SEND_ATTEMPTS = 5;            // mirrors the old (removed) MAX_HTTP_RETRIES=4's scale
-const uint32_t WS_ACK_WAIT_TICK_MS = 5;            // real vTaskDelay between poll iterations -- see below
-const uint32_t WS_ACK_OVERALL_DEADLINE_MS = 2000;  // hard wall-clock cap, applies even while disconnected --
-                                                    // without this a real Wi-Fi outage would park
+const uint32_t WS_ACK_TIMEOUT_MS = 300;         // per-attempt base: resend if no ack within this
+const uint32_t WS_ACK_TIMEOUT_JITTER_MS = 60;   // +/- randomised against the base above (see below) --
+                                                 // 2026-08-03 beacon-spam stress testing (session 3)
+                                                 // found cerberus's own ack dispatch reliably fast
+                                                 // (<15ms) even under heavy congestion, yet acks still
+                                                 // failed to arrive back in time; a fixed retry schedule
+                                                 // means both gate boards' retries (or retries vs. ARES's
+                                                 // own periodic traffic) can lock-step and collide
+                                                 // repeatedly on an already-congested channel -- jitter
+                                                 // breaks that synchronisation. Deliberately widening the
+                                                 // interval under congestion (not shortening it) rather
+                                                 // than retrying faster into contention.
+const uint8_t WS_MAX_SEND_ATTEMPTS = 10;        // raised from 5, 2026-08-03 session 3 -- extra attempts
+                                                 // only ever fire on a timeout, so a healthy send (the
+                                                 // normal case) pays none of this cost; only the tail
+                                                 // under congestion gets more chances
+const uint32_t WS_ACK_WAIT_TICK_MS = 5;         // real vTaskDelay between poll iterations -- see below
+const uint32_t WS_ACK_OVERALL_DEADLINE_MS = 3200;  // hard wall-clock cap, applies even while disconnected
+                                                    // -- without this a real Wi-Fi outage would park
                                                     // uploadWorkerTask on one stale event for the whole
                                                     // outage while fresh events overflow-drop from
-                                                    // networkQueue behind it
+                                                    // networkQueue behind it. Raised from 2000 alongside
+                                                    // WS_MAX_SEND_ATTEMPTS: at ~300ms/attempt, 10 attempts
+                                                    // need ~2700-3000ms of room to actually occur before
+                                                    // this cap would otherwise cut them off first.
 
 // ISR debounce guard for both trigger pins -- one place to tune. 50ms
 // comfortably absorbs mechanical switch bounce (bench-testing with a
@@ -600,6 +617,10 @@ void uploadWorkerTask(void *pvParameters) {
         uint32_t attempt_start = millis();
         uint32_t wait_start = attempt_start;
         bool acked = false;
+        // Jittered per-attempt timeout (WS_ACK_TIMEOUT_MS +/- WS_ACK_TIMEOUT_JITTER_MS)
+        // -- re-rolled on every attempt, see WS_ACK_TIMEOUT_JITTER_MS above.
+        uint32_t attempt_timeout_ms =
+            WS_ACK_TIMEOUT_MS + random(-(int32_t)WS_ACK_TIMEOUT_JITTER_MS, (int32_t)WS_ACK_TIMEOUT_JITTER_MS + 1);
 
         // No wsClient.loop() call here -- wsPumpTask pumps the socket on its
         // own task now, so this loop's millis()-based deadline checks below
@@ -623,7 +644,7 @@ void uploadWorkerTask(void *pvParameters) {
             debug_println("[WS Worker] Event dropped after ack deadline.");
             break;
           }
-          if (now - attempt_start > WS_ACK_TIMEOUT_MS) {
+          if (now - attempt_start > attempt_timeout_ms) {
             if (attempt >= WS_MAX_SEND_ATTEMPTS) {
               debug_println("[WS Worker] Event dropped after max retries.");
               break;
@@ -637,6 +658,8 @@ void uploadWorkerTask(void *pvParameters) {
             // down -- this resend is skipped, but the deadline checks above
             // keep running on schedule regardless.
             attempt_start = now;
+            attempt_timeout_ms =
+                WS_ACK_TIMEOUT_MS + random(-(int32_t)WS_ACK_TIMEOUT_JITTER_MS, (int32_t)WS_ACK_TIMEOUT_JITTER_MS + 1);
           }
           // Real block, not a spin -- uploadWorkerTask runs at a higher
           // FreeRTOS priority than ledDiagnosticTask/loop() on the same
