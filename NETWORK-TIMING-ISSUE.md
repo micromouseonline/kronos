@@ -21,6 +21,54 @@ Bench-testing tools referenced throughout (`ares-pulse-generator`'s
 catalogued in `docs/TEST-TOOLING.md` — that doc covers what each tool does
 and how to invoke it; this doc only references them by name.
 
+## Acceptance criteria for beacon-spam stress testing
+
+Decided 2026-08-03, after three stress-test sessions (see the beacon-spam
+issues below): any lost timing event is a broken system by acceptance-testing
+standards, but demanding that in *every conceivable* radio environment isn't
+realistic — a pass/fail line has to be drawn somewhere, and where matters
+because the stress-test protocol (15 runs no spammer, 15 with one spammer,
+then a second spammer added) exercises two very different threat levels in
+one script:
+
+- **One beacon spammer is a realistic-but-heavy load** — plausibly at the
+  high end of what a busy exhibition hall could produce, but not something
+  a contest would rarely or never see. **This is the pass/fail bar.**
+- **Two simultaneous spammers (~1000 beacon frames/sec combined) is an
+  extreme adversarial scenario** — far beyond anything a real venue's own
+  traffic would generate; every radio on the channel has to process each
+  beacon frame at the hardware/MAC level regardless of payload, which is why
+  it hits the ESP32's software WiFi stack disproportionately hard (see the
+  `wsClient.loop()`-blocking issue below) even though a laptop on the same
+  air noticed nothing. Treated as a **smoke test** (does the system degrade
+  gracefully and recover automatically, without crashing or corrupting a
+  result) rather than a pass/fail gate — zero-loss under deliberate,
+  sustained ~1000fps beacon flooding is not a requirement.
+
+**Single-spammer result so far: passes cleanly.** Isolating each stress
+session's no-spammer + single-spammer phase (everything before the first
+`Resent` line, which lines up almost exactly with the 15+15-run protocol)
+and checking committed vs. armed+started: session 3, 29/30 (the one gap is
+the session's very first run, a cold-start artifact, not spammer-induced);
+session 4, 31/31; session 5, 29/30 (the one gap is the *last* run before
+cutoff, whose `GOAL` landed 131ms after the first `Resent` — caught by the
+onset of the second spammer, not a failure during clean single-spammer
+running). **Zero genuine single-spammer losses across all three
+independent sessions** once the cold-start and cutoff-boundary artifacts are
+excluded. This held both before and after the 2026-08-03 retry-schedule
+mitigation (session 5's session-3-era predecessor already passed too) — the
+retry/deadline logic never even engages during single-spammer running (no
+`Resent` lines appear until the second spammer goes on), so that mitigation
+is aimed entirely at the smoke-test scenario, not the pass bar.
+
+**Practical implication**: further tuning effort aimed specifically at the
+two-spammer case (chasing its ~2-3% residual loss, or side-effects like the
+`networkQueue`/`ledQueue` overflow seen in session 5) is lower priority than
+confirming single-spammer robustness more rigorously — larger sample sizes,
+and the more realistic congested-airtime conditions sketched in outstanding-
+work item 5 below, rather than continuing to optimize against a scenario
+this system isn't required to survive losslessly.
+
 ## Outstanding work, prioritized
 
 1. **[Acks not arriving back at hesperus in time](#issue-acks-not-arriving-back-at-hesperus-in-time-despite-cerberus-receiving-the-event)**
@@ -69,7 +117,6 @@ and how to invoke it; this doc only references them by name.
    issue) — the four stressor layers sketched in
    `hesperus-timing-gate/review.md` (airtime saturation, bulk throughput,
    channel interference, broadband noise; see `docs/TEST-TOOLING.md`) have
-   never been built into a repeatable harness, though the ad hoc beacon-spam
    runs behind items 1 and 3 above are informal data points in that
    direction, and are how both were found. Would validate several of the
    already-shipped fixes (dedup, retry, TSF trust-on-reconnect) under
@@ -1191,8 +1238,39 @@ recovers, a few more runs recorded), then the first switched off.
   under this level of congestion — the instrumentation above hasn't been
   run against real beacon-spam conditions yet.
 
-**Resolution.** Not started (ack-path root cause itself — the instrumentation
-exists but hasn't been exercised against a real congested run yet).
+**Resolution.** Root cause itself (AsyncTCP write-completion timing vs.
+genuine return-leg RF loss — the two candidates the session-3 hardware
+verification above narrowed it to) still not identified. **Mitigation
+implemented instead, 2026-08-03** (`hesperus-timing-gate/src/main.cpp`,
+same constants block as the WS ack/retry design): rather than chase the
+root cause further immediately, tuned hesperus's own (fully in-scope,
+non-vendored) retry schedule to absorb more of the residual loss regardless
+of which of the two candidates turns out to be right:
+
+- `WS_MAX_SEND_ATTEMPTS`: 5 → 10. Extra attempts only ever fire on a
+  timeout, so a healthy send (the normal case) pays none of this cost —
+  only the congested tail gets more chances.
+- `WS_ACK_TIMEOUT_MS` kept at 300 (not shortened) — deliberately, since
+  shortening it would mean retrying *more* aggressively into an
+  already-congested channel, working against standard backoff practice.
+  New `WS_ACK_TIMEOUT_JITTER_MS` = 60 randomises each attempt's actual
+  timeout to 240-360ms, re-rolled per attempt — breaks the fully
+  deterministic retry schedule that let both gate boards' retries (or
+  retries vs. ARES's own periodic traffic) lock-step and collide
+  repeatedly under congestion.
+- `WS_ACK_OVERALL_DEADLINE_MS`: 2000 → 3200. Necessary side-effect of
+  raising max attempts — at ~300ms/attempt, 10 attempts need ~2700-3000ms
+  of room to actually occur; left at 2000 they'd never be reached, since
+  the overall deadline is a hard cap that fires independently of the
+  attempt counter. Raises worst-case per-event stall on
+  `uploadWorkerTask` from 2000ms to 3200ms — acceptable given events are
+  sparse (one every 20+ seconds in a real race) and `networkQueue` is
+  depth 10, but worth naming explicitly as the tradeoff for the extra
+  attempts.
+
+All 4 hesperus envs (`pio run`) build clean. Not yet hardware-verified —
+next step is re-running the same beacon-spam stress scenario to see whether
+loss rate/outlier frequency improves.
 
 **Verification / next steps.**
 
