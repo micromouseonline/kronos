@@ -342,6 +342,11 @@ inline void ws_event_handler(AsyncWebSocket *server, AsyncWebSocketClient *clien
   } else if (type == WS_EVT_ERROR) {
     debug_log_enqueue("[WS] client #%u error", client->id());
   } else if (type == WS_EVT_DATA) {
+    // Ack-path timing instrumentation (NETWORK-TIMING-ISSUE.md, "acks not
+    // arriving back at hesperus in time" issue) -- captured unconditionally
+    // (not gated on g_debug_verbose_enabled) so a beacon-spam stress run
+    // doesn't need verbose mode on to get this data.
+    uint32_t t_data_recv_ms = debug_timestamp_ms();
     AwsFrameInfo *info = (AwsFrameInfo *)arg;
     // Single-frame text fast path only -- the 4-field event payload is well
     // under any frame-size concern, so no multi-frame reassembly is needed.
@@ -379,7 +384,12 @@ inline void ws_event_handler(AsyncWebSocket *server, AsyncWebSocketClient *clien
         // the shared async_tcp task, doesn't need it.
         char ack[48];
         snprintf(ack, sizeof(ack), "{\"ack_tsf_us\":%llu}", (unsigned long long)tsf_us);
+        uint32_t t_ack_dispatch_ms = debug_timestamp_ms();
         client->text(ack);
+        uint32_t t_ack_sent_ms = debug_timestamp_ms();
+        debug_log_enqueue("[WS-ACK] tsf_us=%llu recv=%u dispatch=%u sent=%u text_ms=%u",
+                           (unsigned long long)tsf_us, t_data_recv_ms, t_ack_dispatch_ms, t_ack_sent_ms,
+                           (unsigned)(t_ack_sent_ms - t_ack_dispatch_ms));
       }
     }
   }

@@ -27,11 +27,19 @@ and how to invoke it; this doc only references them by name.
    — **START HERE.** Found 2026-08-03 while reviewing item 3's verification
    data: cerberus received the retried event multiple times, well inside
    hesperus's own wait window, in both residual outlier cases — yet no ack
-   ever got back to hesperus in time. Unstarted: next step is instrumenting
-   cerberus's `ws_event_handler()` (`net/http-server.h`) to log DATA-receipt
-   vs. ack-dispatch timing and find out whether cerberus is slow to ack, the
-   ack is lost on the way back, or hesperus's own `wsClient.loop()` isn't
-   free to process an ack that arrived fine. Full detail in the issue below.
+   ever got back to hesperus in time. Same-day session 3, with new
+   `[WS-ACK]` timing instrumentation hardware-verified: **cerberus's own
+   ack dispatch is confirmed fast** (max 15ms, `recv`→`client->text()`
+   return, even under the worst congestion) — rules out "cerberus is slow"
+   as a cause. But a specific case shows cerberus application-acked the
+   same event 4 times, all well inside hesperus's window, with no
+   `wsPumpTask` stall logged either — yet hesperus still never recognised
+   an ack and dropped after max retries. Narrows to two undistinguished
+   candidates: `AsyncTCP`'s actual on-air write completion (vs. just
+   accepting the call) lagging behind `client->text()` returning, or
+   genuine asymmetric packet loss on the return leg specifically. Next
+   step: instrument `AsyncTCP`'s write-completion callback, or a return-leg
+   packet capture. Full detail in the issue below.
 2. **[Wi-Fi power-save vs. battery budget](#issue-wi-fi-power-save-vs-battery-budget)**
    — measure current draw across `WIFI_PS_NONE`/`MIN_MODEM`/`MAX_MODEM` with
    persistent connections in place. Real, measured 110mA cost today; the
@@ -1104,30 +1112,158 @@ long a stall takes. That's a live, undecided alternative explanation, not
 ruled out — the instrumentation below is what would distinguish it from a
 genuine cerberus-side or return-path problem.
 
-**Resolution.** Not started.
+**Instrumentation added, 2026-08-03** (`cerberus-gate-controller/src/net/http-server.h`,
+`ws_event_handler()`'s `WS_EVT_DATA` branch): a new unconditional (not gated
+behind `g_debug_verbose_enabled`) log line, `[WS-ACK] tsf_us=... recv=...
+dispatch=... sent=... text_ms=...`, captured around the existing
+`client->text(ack)` call — `recv` is DATA-receipt time, `dispatch` is just
+before `client->text()`, `sent` is just after, `text_ms` is the difference
+(isolates time spent inside `client->text()` itself from cerberus's own
+JSON-parse/dedup/dispatch processing, which is `dispatch - recv`). Builds
+clean (`pio run -e cerberus-cyd2usb-diymalls-ili9341`). Not yet
+hardware-verified against a real beacon-spam run — the 2026-08-03 session-2
+stress test (analysed immediately below) was captured *before* this
+instrumentation was flashed, so it has no `[WS-ACK]` lines; a re-run with it
+in place is still the next step.
 
-**Verification / next steps, not yet run.**
+**Analysed without the above instrumentation, 2026-08-03 (session 2)**
+(`test-data/spam-tests/{cerberus-3,hesperus-start-3,hesperus-3-goal}.log`) —
+directly answers this session's "is cerberus failing?" question, using only
+data already available (raw `[WS] DATA` receipt lines against hesperus's own
+retry/drop log), same cross-referencing method as the outlier analysis
+above. Scenario: 15 runs with no spammer, 15 with one spammer, then a second
+spammer switched on (link drops), then the second spammer switched off (link
+recovers, a few more runs recorded), then the first switched off.
 
-1. Instrument `cerberus-gate-controller/src/net/http-server.h`'s
-   `ws_event_handler()` (`WS_EVT_DATA` branch, around the `client->text(ack)`
-   call, ~line 379-382 as of this write-up) — log the timestamp when DATA is
-   received and when the ack is dispatched, and whether `client->text()`
-   itself takes any notable time or fails. Follow this project's usual
-   staged workflow for cerberus changes: one atomic stage, build one env to
-   verify (`cerberus-cyd2usb-diymalls-ili9341` is the usual pick), report and
-   wait for hardware confirmation before considering it done — do not commit.
-2. Re-run the same beacon-spam stress scenario, capturing cerberus's serial
-   output too this time (the 2026-08-03 run captured cerberus's WS-layer log
-   but not fine-grained ack timing).
+- **Cerberus itself stayed healthy throughout**: zero `[E]` error lines,
+  zero restarts/reboots (`ESP-ROM` banner appears exactly once per file, at
+  each hesperus board's own boot at the start of the capture, not mid-session
+  — ruling out a repeat of the earlier false-alarm "restart looks like a
+  crash" reading). Both boards' WS connections dropped exactly once each
+  during the two-spammer window (client #3/hesperus-start disconnect at
+  T=239499727, reconnect T=239520226; client #4/hesperus-goal disconnect
+  T=239505029, reconnect T=239520246 — ~20.5s and ~15.2s outages
+  respectively) and recovered cleanly with no further churn.
+- **Race-outcome accounting** (distinct `tsf_us` per event, not raw
+  duplicate-inclusive line counts): 41 distinct `ARM`, 42 `START`, 43 `GOAL`
+  triggers; 41 `RUNNING` entries (`<4,4>`), 39 committed results (`<4,5>`) —
+  2 of 41 armed+started runs (~5%) never got a committed `GOAL`, similar to
+  (slightly better than) the original stress test's ~7%.
+- **New finding: at least one "lost" event by hesperus's own bookkeeping was
+  not actually lost at cerberus.** GOAL `tsf_us=239494634838`: hesperus sent
+  attempt 1 at T=239494637, resent through attempt 5 (T=239495850), and
+  logged `Event dropped after max retries` at T=239496151, having given up
+  waiting for an ack. But cerberus's own `[WS] DATA` log shows it received
+  that exact payload at T=239496925 — **774ms after hesperus had already
+  moved on** — and correctly committed it (`<4,5>` immediately follows in
+  the log). The same payload arrived at cerberus a second time, T=239502033,
+  ~5.1s later still — a genuine duplicate at the transport level, correctly
+  recognised and no-op'd by the existing dedup rather than double-committed.
+  This reframes the open question: it isn't only "ack lost on the return
+  leg" (the outlier analysis above) — under the worst congestion, the
+  **forward** leg itself can take over a second longer than hesperus's own
+  2000ms deadline budget allows for, with cerberus's receive/commit path
+  itself not implicated as slow. (Can't yet separate "cerberus slow to ack"
+  from "forward transit slow" with certainty for the *ack* itself — that's
+  what the instrumentation above is for — but this specific case shows
+  cerberus was neither slow nor wrong once the data did arrive.)
+- **New failure mode observed, not present in the 2026-08-02/2026-08-03
+  session-1 logs**: `[WS Worker] Link down. Event dropped.` — fires when
+  `wsIsConnectedBounded()` returns false (real disconnect, or
+  `ws_client_mutex` held because `wsPumpTask` is itself mid-stall), and
+  drops the event **immediately with zero retry attempts** (skips straight
+  past the whole ack-wait loop). Occurred 9 times across both boards
+  (T=239495755–239517456), clustered right around and during the two
+  `wsClient.loop() blocked ~5002ms` stalls that mark the worst of the
+  two-spammer window — i.e. this is the mechanism by which events are lost
+  outright during a genuine multi-second outage, distinct from (and more
+  severe than) the ack-timeout/max-retries paths, which at least attempt a
+  send. Expected given the design (an unreachable link has nothing to send
+  to), not a new bug — but worth naming explicitly since it hadn't shown up
+  in a captured log before this run.
+- **Conclusion so far: no evidence cerberus itself is the failing
+  component.** No crashes, no errors, correct dedup under duplicate
+  delivery, correct commit once data arrives. The ~5% run-loss rate is
+  consistent with the already-documented forward-path/outage mechanism
+  (the `wsClient.loop()`-blocking issue above, root RF cause still open per
+  outstanding-work item 5), not a new cerberus-side defect. Still open:
+  direct confirmation that cerberus's *ack dispatch* is uniformly fast even
+  under this level of congestion — the instrumentation above hasn't been
+  run against real beacon-spam conditions yet.
+
+**Resolution.** Not started (ack-path root cause itself — the instrumentation
+exists but hasn't been exercised against a real congested run yet).
+
+**Verification / next steps.**
+
+1. ~~Instrument `cerberus-gate-controller/src/net/http-server.h`'s
+   `ws_event_handler()`~~ — **done, 2026-08-03**, see above. Not yet
+   hardware-verified.
+2. Re-run the same beacon-spam stress scenario with the new instrumentation
+   in place, capturing cerberus's serial output too (session 2, analysed
+   above, predates this instrumentation).
 3. If cerberus's own ack-dispatch is fast every time, that rules cerberus
    out and points at either the return path (asymmetric RF loss/delay) or
    hesperus's own `wsClient.loop()` not being free to process the incoming
    ack promptly during its own stalls — cross-reference against hesperus's
    `[WS Pump] wsClient.loop() blocked` lines for the same window to
-   distinguish these.
+   distinguish these. Session 2's finding above (forward-path delay, not
+   just return-path) is also now a live candidate to weigh against these.
 4. If cerberus's ack-dispatch itself is slow, look at whether it's
    `AsyncTCP`'s own send path getting backed up under the same connection
    churn cerberus was juggling from both boards during this window.
+
+**Hardware-verified, 2026-08-03 (session 3)**
+(`test-data/spam-tests/{cerberus-4,hesperus-start-4,hesperus-4-goal}.log`) —
+first run captured with the `[WS-ACK]` instrumentation in place, against a
+repeat of the same scenario (15 runs no spammer, 15 with one spammer, then
+a period with two spammers where the link drops, second spammer off and
+link recovers, first spammer off; this run also had an accidental brief
+reactivation of the second spammer near the end, ~T=240826777, which only
+produced two harmless retries, no drop). Race outcome this run: 45
+`RUNNING` entries, 44 committed — only 1 loss (~2%), the best of the three
+stress runs so far (vs. ~7% and ~5% previously); not a controlled
+comparison (different session/duration), but not evidence of a regression
+either.
+
+- **Cerberus's own ack dispatch is fast, unconditionally.** All 159
+  `[WS-ACK]` lines this run: `recv`→`dispatch` (JSON parse + dedup check)
+  mean 2.7ms, max 5ms; `client->text()` call itself mean 4.9ms, max 11ms;
+  total `recv`→`sent` mean 7.5ms, max 15ms — including samples taken during
+  the worst of the two-spammer outage. **This rules out "cerberus is slow
+  to compute/dispatch the ack" as a cause of the residual outliers**: even
+  under the heaviest congestion in this run, cerberus's application-level
+  path from receiving a DATA frame to calling `client->text()` never
+  exceeded 15ms.
+- **But that doesn't mean the ack reliably gets back.** Cross-referencing a
+  specific case: GOAL `tsf_us=240753368700` — hesperus sent attempt 1 at
+  T=240753371, resent through attempt 5 (T=240754584), and logged `Event
+  dropped after max retries` at T=240754884. Cerberus's `[WS-ACK]` log shows
+  it received and **application-acked this exact event four separate
+  times** in that same window — T=240753839, 240754621, 240754627,
+  240754632 (all `text_ms` 3-11) — every one of them *before* hesperus's own
+  754884 drop. hesperus-4-goal.log shows **no `[WS Pump] wsClient.loop()
+  blocked` line anywhere in this window** (the nearest is at T=240770419,
+  15+ seconds later) — if `wsPumpTask` had been mid-stall and simply not
+  polling for the incoming ack, that would show up as a logged block past
+  the 50ms threshold, and it doesn't. So the "hesperus's own client isn't
+  free to process an ack that arrived fine" theory doesn't fit this case
+  either: the pump task appears to have been running normally, yet none of
+  four independent, promptly-dispatched acks were recognised.
+- **Reading**: this narrows the field to two remaining explanations, neither
+  yet distinguished: (a) `client->text()` returning quickly only means
+  `AsyncTCP` accepted the write into its own outbound queue, not that the
+  frame left the radio promptly — the `[WS-ACK]` timestamps measure the
+  call, not the actual on-air transmission, so a backlog inside `AsyncTCP`'s
+  own send path (per next-step 4 above) is still untested and not ruled
+  out; or (b) genuine asymmetric loss on the return leg specifically — the
+  forward direction (hesperus→cerberus) has 5 retry attempts stacked in its
+  favour and got through repeatedly, while cerberus's dedup-driven repeat
+  acks, though numerous here, still each ride a single transmission with no
+  ack-specific retry of their own. Both remain open; distinguishing them
+  would need either instrumenting `AsyncTCP`'s write-completion callback
+  (not just the call to `client->text()`) on cerberus, or a packet capture
+  on the return leg specifically.
 
 ## Decision record: ESP-NOW alternative
 
