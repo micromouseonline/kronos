@@ -29,9 +29,21 @@ src/
 - Dynamic clock disciplining: EMA-weighted `clock_alpha` corrects processor drift against TSF
 - Events: `TRIGGER_A`, `TRIGGER_B`, `HEARTBEAT`
 - Gate identity resolved at boot from MAC address via `boards.h`
+- The persistent WS connection to cerberus (`wsClient`, a `WebSocketsClient`) is
+  pumped exclusively by a dedicated `wsPumpTask`, decoupled from
+  `uploadWorkerTask`'s ack-wait/retry deadline logic via `ws_client_mutex`
+  (guards every `wsClient` call) and `ws_ack_state_mutex` (guards the ack
+  flag/tsf pair) — see `NETWORK-TIMING-ISSUE.md`'s "`wsClient.loop()`
+  blocking under congestion" issue for why.
+- `feature_http` (`AsyncTCP`/`ESPAsyncWebServer`, `#if HAS_HTTP`) backs a
+  small on-demand diagnostics server only (`src/net/debug-http-server.h`,
+  `GET /logs` / `GET /status`) — it does not carry event-reporting traffic,
+  which stays on `feature_ws_client`'s `WebSocketsClient`.
 
 ## Libraries (managed by PlatformIO)
 
 - Adafruit NeoPixel
 - Adafruit SSD1306 / SH1106 / GFX
 - JC_Button
+- WebSockets (Links2004) — persistent WS client to cerberus
+- AsyncTCP / ESPAsyncWebServer — diagnostics-only HTTP server (`src/net/debug-http-server.h`)

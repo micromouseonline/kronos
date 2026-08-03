@@ -14,6 +14,13 @@
 //  or split a line. No queued/async variant like cerberus's
 //  debug_log_enqueue() -- nothing on hesperus is response-latency-sensitive
 //  to a blocking Serial write the way cerberus's HTTP handler was.
+//
+//  debug_log_line_hook, if set, is called with each fully-assembled
+//  "[T=...] message" line (no trailing newline) from inside the same
+//  serial_write_lock()/unlock() section used for the Serial write -- see
+//  net/debug-http-server.h, which registers it to capture recent lines into
+//  an in-RAM ring buffer for the /logs diagnostics endpoint. Null by
+//  default; this header has no dependency on that one.
 // ----------------------------------------------------------------------------
 #pragma once
 
@@ -37,12 +44,28 @@ inline uint64_t debug_timestamp_ms() {
   return esp_wifi_get_tsf_time(WIFI_IF_STA) / 1000;
 }
 
+inline void (*debug_log_line_hook)(const char *line) = nullptr;
+
+/// @brief Writes one already-timestamp-prefixed, newline-free line to
+/// Serial and forwards it to debug_log_line_hook if set. Shared by
+/// debug_println()/debug_printf() so both go through one Serial write and
+/// one hook call per line.
+inline void debug_log_emit(const char *line) {
+  serial_write_lock();
+  Serial.println(line);
+  serial_write_unlock();
+  if (debug_log_line_hook) {
+    debug_log_line_hook(line);
+  }
+}
+
 template <typename T>
 inline void debug_println(T value) {
-  serial_write_lock();
-  Serial.printf("[T=%llums] ", debug_timestamp_ms());
-  Serial.println(value);
-  serial_write_unlock();
+  char prefix[32];
+  snprintf(prefix, sizeof(prefix), "[T=%llums] ", debug_timestamp_ms());
+  String line = prefix;
+  line += value;
+  debug_log_emit(line.c_str());
 }
 
 inline void debug_printf(const char *fmt, ...) {
@@ -51,8 +74,13 @@ inline void debug_printf(const char *fmt, ...) {
   va_start(args, fmt);
   vsnprintf(buf, sizeof(buf), fmt, args);
   va_end(args);
-  serial_write_lock();
-  Serial.printf("[T=%llums] ", debug_timestamp_ms());
-  Serial.print(buf);
-  serial_write_unlock();
+  size_t len = strlen(buf);
+  if (len > 0 && buf[len - 1] == '\n') {
+    buf[len - 1] = '\0';  // debug_log_emit's println supplies the newline
+  }
+  char prefix[32];
+  snprintf(prefix, sizeof(prefix), "[T=%llums] ", debug_timestamp_ms());
+  String line = prefix;
+  line += buf;
+  debug_log_emit(line.c_str());
 }

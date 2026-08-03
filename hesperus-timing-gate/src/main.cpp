@@ -15,6 +15,10 @@
 #include "secrets.h"                // these are the network credentials neede to connect to the AP
 #include "wifi-credentials.h"       // NVS-persisted wifi creds from the `wifi` command
 
+#if HAS_HTTP
+#include "net/debug-http-server.h"  // on-demand /logs, /status diagnostics endpoint
+#endif
+
 // --- Hardware Pin Configuration ---
 // STATUS_LED and NEOPIXEL_COLOR_ORDER come from the per-board build_flags in
 // platformio.ini/boards.ini - do not hardcode a pin/order here, it varies
@@ -91,10 +95,31 @@ bool cerberus_ip_valid = false;
 // --- PERSISTENT CONNECTION TO CERBERUS (NETWORK-TIMING-ISSUE.md rec. 1) ---
 // One connection opened per boot (see loop()'s g_ready edge-detection) and
 // held open across every subsequent event, replacing the old per-event
-// HTTPClient connect+POST+close cycle. .loop() is pumped from
-// uploadWorkerTask (below) -- not safe to call into this from a second task
-// without a mutex, so socket-pump and event-send deliberately share one task.
+// HTTPClient connect+POST+close cycle.
+//
+// .loop() is pumped exclusively by wsPumpTask (below) -- confirmed via
+// NETWORK-TIMING-ISSUE.md's "wsClient.loop() blocking under congestion"
+// investigation that a single .loop() call can itself block for several
+// seconds (internal TCP reconnect under RF interference), which used to
+// silently blow past uploadWorkerTask's own 300ms/2000ms ack/retry bounds
+// since those were only checked *between* .loop() calls on the same task.
+// wsClient itself isn't safe to call from two tasks without a mutex, so
+// every call site (this task's .loop(), and uploadWorkerTask's/loop()'s
+// .sendTXT()/.isConnected()/.begin()/.enableHeartbeat()/.onEvent()) goes
+// through ws_client_mutex -- see the wsXxxBounded() helpers below.
 WebSocketsClient wsClient;
+
+// ws_client_mutex: guards every call into wsClient. wsPumpTask holds it for
+// the full duration of each .loop() call (the one place allowed to block for
+// however long a stall runs); every other caller takes it with a short
+// bounded timeout via the wsXxxBounded() helpers below and treats a failed
+// acquisition as "skip this attempt / not connected" rather than blocking --
+// the only way that timeout fires is wsPumpTask being mid-stall, which the
+// 2026-08-02 stress test showed coincides with a genuine outage anyway, so
+// "not connected" is the right conclusion, reached without blocking.
+SemaphoreHandle_t ws_client_mutex = xSemaphoreCreateMutex();
+const uint32_t WS_MUTEX_SEND_TIMEOUT_MS = 20;
+const uint32_t WS_MUTEX_SETUP_TIMEOUT_MS = 50;
 
 /// @brief Resolves cerberus.local via mDNS and caches the result. Safe to
 /// call repeatedly (e.g. retried from uploadWorkerTask) until it succeeds --
@@ -112,27 +137,91 @@ void resolveCerberus() {
 
 static int consecutive_audit_failures = 0;
 
-// Ack-tracking state for the WS retry mechanism -- plain, not volatile, since
-// both wsClient.onEvent()'s callback and uploadWorkerTask's wait loop run on
-// the same task (onEvent fires synchronously from inside wsClient.loop()).
+// Ack-tracking state for the WS retry mechanism, guarded by ws_ack_state_mutex
+// as one atomic (received flag, tsf) unit. Used to run on the assumption that
+// wsClient.onEvent()'s callback and uploadWorkerTask's wait loop shared a
+// task; now that .loop() (and so this callback) runs exclusively on
+// wsPumpTask while uploadWorkerTask reads it from a different task, that
+// assumption no longer holds -- g_ws_ack_tsf_us in particular is a uint64_t,
+// a non-atomic two-word read/write on this 32-bit hardware, so a torn read
+// is a real (if narrow-consequence) possibility without the mutex. Use
+// wsTakeAckIfReceived()/wsClearAck() (below) rather than touching these
+// directly.
 bool g_ws_ack_received = false;
 uint64_t g_ws_ack_tsf_us = 0;  // last acked tsf_us, compared by value against the pending send
+SemaphoreHandle_t ws_ack_state_mutex = xSemaphoreCreateMutex();
 
 /// @brief wsClient.onEvent() handler -- receives cerberus's per-event ack
 /// ({"ack_tsf_us": ...}, see net/http-server.h's ws_event_handler() on that
 /// repo) so uploadWorkerTask's send-and-wait loop knows an event landed.
 /// Also clears a stale ack flag on disconnect so a reconnect mid-wait can't
 /// leave old bookkeeping lying around into the next connection.
+///
+/// Fires synchronously nested inside wsPumpTask's wsClient.loop() call, which
+/// holds ws_client_mutex for the duration -- this handler must only ever take
+/// ws_ack_state_mutex, never ws_client_mutex (a non-recursive FreeRTOS mutex
+/// already held by the same task would deadlock). It has no reason to call
+/// back into wsClient, so keep it that way.
 void wsClientEventHandler(WStype_t type, uint8_t *payload, size_t length) {
   if (type == WStype_TEXT) {
     JsonDocument doc;
     if (deserializeJson(doc, payload, length) == DeserializationError::Ok) {
+      xSemaphoreTake(ws_ack_state_mutex, portMAX_DELAY);
       g_ws_ack_tsf_us = doc["ack_tsf_us"] | 0ULL;
       g_ws_ack_received = true;
+      xSemaphoreGive(ws_ack_state_mutex);
     }
   } else if (type == WStype_DISCONNECTED) {
+    xSemaphoreTake(ws_ack_state_mutex, portMAX_DELAY);
     g_ws_ack_received = false;
+    xSemaphoreGive(ws_ack_state_mutex);
   }
+}
+
+/// @brief Bounded-timeout wrapper around wsClient.isConnected(). Returns
+/// false (treated as "not connected") if ws_client_mutex can't be acquired
+/// within timeout_ms -- the only way that happens is wsPumpTask being
+/// mid-stall in .loop(), which the 2026-08-02 stress test showed coincides
+/// with a genuine outage, so this isn't a false negative, just an early one.
+bool wsIsConnectedBounded(uint32_t timeout_ms) {
+  if (xSemaphoreTake(ws_client_mutex, pdMS_TO_TICKS(timeout_ms)) != pdTRUE) {
+    return false;
+  }
+  bool connected = wsClient.isConnected();
+  xSemaphoreGive(ws_client_mutex);
+  return connected;
+}
+
+/// @brief Bounded-timeout wrapper around wsClient.sendTXT(). Returns false
+/// (attempt skipped, caller's own deadline bookkeeping is unaffected) if
+/// ws_client_mutex can't be acquired within timeout_ms.
+bool wsSendTxtBounded(String &payload, uint32_t timeout_ms) {
+  if (xSemaphoreTake(ws_client_mutex, pdMS_TO_TICKS(timeout_ms)) != pdTRUE) {
+    return false;
+  }
+  wsClient.sendTXT(payload);
+  xSemaphoreGive(ws_client_mutex);
+  return true;
+}
+
+/// @brief Atomically reads the pending ack, if one has arrived, into out_tsf.
+bool wsTakeAckIfReceived(uint64_t &out_tsf) {
+  bool got = false;
+  xSemaphoreTake(ws_ack_state_mutex, portMAX_DELAY);
+  if (g_ws_ack_received) {
+    out_tsf = g_ws_ack_tsf_us;
+    got = true;
+  }
+  xSemaphoreGive(ws_ack_state_mutex);
+  return got;
+}
+
+/// @brief Clears the ack flag (a fresh send starting, or a stale/mismatched
+/// ack that wasn't ours).
+void wsClearAck() {
+  xSemaphoreTake(ws_ack_state_mutex, portMAX_DELAY);
+  g_ws_ack_received = false;
+  xSemaphoreGive(ws_ack_state_mutex);
 }
 
 volatile uint32_t networkq_overflow_count = 0;  ///< Incremented by ISR/timer on dropped networkQueue send
@@ -147,6 +236,7 @@ QueueHandle_t ledQueue;      // stored neopixel commands
 // --- FreeRTOS Task Handles (for stack instrumentation) ---
 TaskHandle_t ledTaskHandle = NULL;
 TaskHandle_t uploadTaskHandle = NULL;
+TaskHandle_t wsPumpTaskHandle = NULL;
 
 enum LedPattern { FLASH_TRIGGER_1, FLASH_TRIGGER_2, SHOW_HEARTBEAT };
 
@@ -308,16 +398,41 @@ void heartbeatTimerCallback(TimerHandle_t xTimer) {
   //               uxTaskGetStackHighWaterMark(uploadTaskHandle) * 4);
 }
 
+// --- WS SOCKET PUMP TASK ---
+// Sole caller of wsClient.loop() (see the design note above wsClient's
+// declaration). Deliberately allowed to block on ws_client_mutex for as long
+// as a single .loop() call takes -- that's the point: whatever it stalls on,
+// uploadWorkerTask's own ack-wait deadline logic keeps running on schedule
+// on its own task instead of waiting on this one.
+void wsPumpTask(void *pvParameters) {
+  while (1) {
+    xSemaphoreTake(ws_client_mutex, portMAX_DELAY);
+    // Kept as a permanent low-cost canary (only logs above 50ms) rather than
+    // stripped once-fixed -- see NETWORK-TIMING-ISSUE.md's "wsClient.loop()
+    // blocking under congestion" issue for why this is worth watching for
+    // long-term, not just during the original investigation.
+    uint64_t loop_call_start = esp_timer_get_time();
+    wsClient.loop();
+    uint64_t loop_call_us = esp_timer_get_time() - loop_call_start;
+    if (loop_call_us > 50000) {
+      debug_printf("[WS Pump] wsClient.loop() blocked %llums (wifi_status=%d, ws_connected=%d)\n",
+                   loop_call_us / 1000, WiFi.status(), wsClient.isConnected());
+    }
+    xSemaphoreGive(ws_client_mutex);
+    vTaskDelay(pdMS_TO_TICKS(10));
+  }
+}
+
 // --- CORE NETWORK WORKER TASK WITH DISCIPLINED OSCILLATOR MATH ---
 void uploadWorkerTask(void *pvParameters) {
   GateEvent current_ev;
 
   while (1) {
-    // Bounded, not portMAX_DELAY -- wsClient.loop() must be pumped
-    // regularly (reconnect, ping/pong, disconnect detection) even when no
-    // event is waiting; 10ms is well under DEBOUNCE_US/event-spacing scales
-    // here, at negligible cost on an otherwise-idle core-1 task.
-    wsClient.loop();
+    // wsPumpTask now owns pumping wsClient.loop() -- this task only touches
+    // wsClient through the bounded wsXxxBounded() helpers below. The 10ms
+    // bound here (vs. portMAX_DELAY) is kept anyway: nothing else needs it
+    // today, but there's no reason to widen this wait as a side effect of an
+    // unrelated change.
     if (xQueueReceive(networkQueue, &current_ev, pdMS_TO_TICKS(10)) == pdPASS) {
       // TODO: Serial logging is unavailable in field deployment. Future options:
       //   - RGB LED pattern to signal overflow (extend LedPattern enum)
@@ -474,25 +589,33 @@ void uploadWorkerTask(void *pvParameters) {
       // handler() on cerberus for the ack this waits on, and
       // net/gate-event-dedup.h for why a resend after a lost ack is safe
       // (recognised as a duplicate there, not double-processed).
-      bool sent = wsClient.isConnected();
+      bool sent = wsIsConnectedBounded(WS_MUTEX_SEND_TIMEOUT_MS);
       if (sent) {
-        wsClient.sendTXT(payload);
+        wsClearAck();
+        wsSendTxtBounded(payload, WS_MUTEX_SEND_TIMEOUT_MS);
         debug_printf("[WS Worker] Sent %s (%s), attempt 1.\n", event_name, clock_mode.c_str());
 
-        g_ws_ack_received = false;
         uint64_t expected_ack = tsf_to_transmit;
         uint8_t attempt = 1;
         uint32_t attempt_start = millis();
         uint32_t wait_start = attempt_start;
+        bool acked = false;
 
-        while (!g_ws_ack_received) {
-          wsClient.loop();
-          if (g_ws_ack_received) {
-            if (g_ws_ack_tsf_us != expected_ack) {
-              g_ws_ack_received = false;  // stale/mismatched ack -- keep waiting for ours
-            } else {
+        // No wsClient.loop() call here -- wsPumpTask pumps the socket on its
+        // own task now, so this loop's millis()-based deadline checks below
+        // run on their own schedule regardless of how long a stall in that
+        // pump takes. This is the actual fix for the defeated-deadline bug:
+        // previously a single wsClient.loop() call in this loop could itself
+        // block for seconds, so the checks below never got a chance to fire
+        // on time.
+        while (!acked) {
+          uint64_t acked_tsf;
+          if (wsTakeAckIfReceived(acked_tsf)) {
+            if (acked_tsf == expected_ack) {
+              acked = true;
               break;
             }
+            wsClearAck();  // stale/mismatched ack -- keep waiting for ours
           }
 
           uint32_t now = millis();
@@ -505,16 +628,19 @@ void uploadWorkerTask(void *pvParameters) {
               debug_println("[WS Worker] Event dropped after max retries.");
               break;
             }
-            if (wsClient.isConnected()) {
-              wsClient.sendTXT(payload);
+            if (wsIsConnectedBounded(WS_MUTEX_SEND_TIMEOUT_MS) &&
+                wsSendTxtBounded(payload, WS_MUTEX_SEND_TIMEOUT_MS)) {
               attempt++;
               debug_printf("[WS Worker] Resent %s (%s), attempt %u.\n", event_name, clock_mode.c_str(), attempt);
             }
+            // else: ws_client_mutex busy (wsPumpTask mid-stall) or link
+            // down -- this resend is skipped, but the deadline checks above
+            // keep running on schedule regardless.
             attempt_start = now;
           }
-          // Real block, not a bare wsClient.loop()-only spin -- uploadWorkerTask
-          // runs at a higher FreeRTOS priority than ledDiagnosticTask/loop() on
-          // the same core, so without this LED feedback/cli.poll()/the Wi-Fi
+          // Real block, not a spin -- uploadWorkerTask runs at a higher
+          // FreeRTOS priority than ledDiagnosticTask/loop() on the same
+          // core, so without this LED feedback/cli.poll()/the Wi-Fi
           // watchdogs would starve for the whole wait.
           vTaskDelay(pdMS_TO_TICKS(WS_ACK_WAIT_TICK_MS));
         }
@@ -575,6 +701,10 @@ void setup() {
   networkQueue = xQueueCreate(10, sizeof(GateEvent));
   ledQueue = xQueueCreate(5, sizeof(LedPattern));
 
+#if HAS_HTTP
+  debug_http_server_register_status_sources(gate_id, networkQueue, &networkq_overflow_count);
+#endif
+
   if (wifi_credentials_load(stored_ssid, sizeof(stored_ssid), stored_pass, sizeof(stored_pass))) {
     connect_ssid = stored_ssid;
     connect_pass = stored_pass;
@@ -599,6 +729,7 @@ void setup() {
   }
 
   xTaskCreatePinnedToCore(ledDiagnosticTask, "LED_Task", 2048, NULL, 1, &ledTaskHandle, 1);
+  xTaskCreatePinnedToCore(wsPumpTask, "WsPump", 8192, NULL, 2, &wsPumpTaskHandle, 1);
   xTaskCreatePinnedToCore(uploadWorkerTask, "UploadWorker", 8192, NULL, 2, &uploadTaskHandle, 1);
 }
 
@@ -636,6 +767,11 @@ void loop() {
       if (!MDNS.begin(gate_id)) {
         debug_println("[MDNS] failed to start");
       }
+#if HAS_HTTP
+      MDNS.addService("http", "tcp", 80);
+      debug_http_server_init();  // idempotent route registration; .begin() re-issued every edge --
+                                  // see debug-http-server.h's AsyncServer::begin() note
+#endif
       cerberus_ip_valid = false;    // re-resolve on this connection
       last_cerberus_attempt = 0;  // force an immediate resolve attempt below
       was_connected = true;
@@ -663,10 +799,17 @@ void loop() {
       // reconnect loop internally once begun, so this doesn't need to be
       // re-called on every tick while already ready.
       if (!ws_was_ready) {
-        wsClient.begin(cerberus_ip.toString(), 80, "/ws");
-        wsClient.enableHeartbeat(5000, 3000, 2);  // 5s ping, 3s pong timeout, disconnect after 2 misses
-        wsClient.onEvent(wsClientEventHandler);   // receives cerberus's per-event ack
-        ws_was_ready = true;
+        // Bounded acquisition -- if wsPumpTask is mid-stall holding
+        // ws_client_mutex, ws_was_ready stays false and this is retried on
+        // the next loop() tick (10ms later, below) rather than blocking
+        // loop() itself for the stall's duration.
+        if (xSemaphoreTake(ws_client_mutex, pdMS_TO_TICKS(WS_MUTEX_SETUP_TIMEOUT_MS)) == pdTRUE) {
+          wsClient.begin(cerberus_ip.toString(), 80, "/ws");
+          wsClient.enableHeartbeat(5000, 3000, 2);  // 5s ping, 3s pong timeout, disconnect after 2 misses
+          wsClient.onEvent(wsClientEventHandler);   // receives cerberus's per-event ack
+          xSemaphoreGive(ws_client_mutex);
+          ws_was_ready = true;
+        }
       }
     }
   } else {
