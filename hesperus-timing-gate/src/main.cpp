@@ -47,6 +47,17 @@ struct GateEvent {
   uint64_t processor_clock;  // Monotonic internal 64-bit microsecond uptime
 };
 
+/// ISR-to-task handoff for a trigger edge (NETWORK-TIMING-ISSUE.md "ISR
+/// calling esp_wifi_get_tsf_time()" issue) -- carries only what's safe to
+/// capture directly in an ISR (the event type and the ISR-safe
+/// esp_timer_get_time() processor clock). The real TSF read happens in
+/// tsfCaptureTask(), in task context, where blocking briefly on the WiFi
+/// driver's internal lock is legal instead of fatal.
+struct PendingCapture {
+  EventType type;
+  uint64_t processor_clock;
+};
+
 // Tracking Memory Management
 GateEvent last_good_state = {HEARTBEAT, 0, 0};
 bool has_initial_baseline = false;
@@ -242,18 +253,21 @@ void wsClearAck() {
 }
 
 volatile uint32_t networkq_overflow_count = 0;  ///< Incremented by ISR/timer on dropped networkQueue send
+volatile uint32_t triggerCaptureq_overflow_count = 0;  ///< Incremented by ISR on dropped triggerCaptureQueue send
 
 // --- WATCHDOG STATE SHARING VARIABLES ---
 volatile bool global_is_stuck_in_syn = false;  // Shared flag to notify main loop
 
 // --- FreeRTOS Queues ---
-QueueHandle_t networkQueue;  // stores network activities - sending notifications
-QueueHandle_t ledQueue;      // stored neopixel commands
+QueueHandle_t networkQueue;        // stores network activities - sending notifications
+QueueHandle_t ledQueue;            // stored neopixel commands
+QueueHandle_t triggerCaptureQueue; // ISR-to-tsfCaptureTask handoff, see PendingCapture
 
 // --- FreeRTOS Task Handles (for stack instrumentation) ---
 TaskHandle_t ledTaskHandle = NULL;
 TaskHandle_t uploadTaskHandle = NULL;
 TaskHandle_t wsPumpTaskHandle = NULL;
+TaskHandle_t tsfCaptureTaskHandle = NULL;
 
 enum LedPattern { FLASH_TRIGGER_1, FLASH_TRIGGER_2, SHOW_HEARTBEAT };
 
@@ -353,14 +367,20 @@ void IRAM_ATTR handleSensor1() {
   }
   armed = false;
 
+  // esp_wifi_get_tsf_time() is NOT called here -- see PendingCapture and
+  // tsfCaptureTask(): it takes an internal WiFi-driver lock that can block,
+  // which is illegal (and, under heavy WiFi-stack load, fatal -- an
+  // Interrupt WDT panic, confirmed via crash backtrace 2026-08-03) from ISR
+  // context. Only the ISR-safe esp_timer_get_time() processor clock is
+  // captured here; the real TSF read happens one task-context hop later,
+  // as close to this instant as the scheduler allows.
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-  GateEvent ev;
-  ev.type = TRIGGER_A;
-  ev.tsf_observed = esp_wifi_get_tsf_time(WIFI_IF_STA);
-  ev.processor_clock = current_time;
-  BaseType_t sent = xQueueSendFromISR(networkQueue, &ev, &xHigherPriorityTaskWoken);
+  PendingCapture pc;
+  pc.type = TRIGGER_A;
+  pc.processor_clock = current_time;
+  BaseType_t sent = xQueueSendFromISR(triggerCaptureQueue, &pc, &xHigherPriorityTaskWoken);
   if (sent != pdTRUE) {
-    networkq_overflow_count++;
+    triggerCaptureq_overflow_count++;
   }
   if (xHigherPriorityTaskWoken) {
     portYIELD_FROM_ISR();
@@ -386,17 +406,43 @@ void IRAM_ATTR handleSensor2() {
   }
   armed = false;
 
+  // esp_wifi_get_tsf_time() is NOT called here -- see handleSensor1()'s
+  // comment and tsfCaptureTask() below.
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-  GateEvent ev;
-  ev.type = TRIGGER_B;
-  ev.tsf_observed = esp_wifi_get_tsf_time(WIFI_IF_STA);
-  ev.processor_clock = current_time;
-  BaseType_t sent = xQueueSendFromISR(networkQueue, &ev, &xHigherPriorityTaskWoken);
+  PendingCapture pc;
+  pc.type = TRIGGER_B;
+  pc.processor_clock = current_time;
+  BaseType_t sent = xQueueSendFromISR(triggerCaptureQueue, &pc, &xHigherPriorityTaskWoken);
   if (sent != pdTRUE) {
-    networkq_overflow_count++;
+    triggerCaptureq_overflow_count++;
   }
   if (xHigherPriorityTaskWoken) {
     portYIELD_FROM_ISR();
+  }
+}
+
+/// @brief Sole task-context consumer of triggerCaptureQueue -- the other
+/// half of the ISR-safety fix described in handleSensor1()/handleSensor2().
+/// Performs the actual esp_wifi_get_tsf_time() read (safe here: blocking
+/// briefly on the WiFi driver's internal lock is legal in task context)
+/// as close to the original ISR instant as the scheduler allows, then hands
+/// the completed GateEvent to networkQueue exactly as the ISRs used to do
+/// directly. Highest priority in the app (above uploadWorkerTask/wsPumpTask)
+/// so it's scheduled immediately off the ISR's portYIELD_FROM_ISR(), keeping
+/// the added latency to a task-switch (typically low microseconds) rather
+/// than trading precision away for safety.
+void tsfCaptureTask(void *pvParameters) {
+  PendingCapture pc;
+  while (1) {
+    if (xQueueReceive(triggerCaptureQueue, &pc, portMAX_DELAY) == pdPASS) {
+      GateEvent ev;
+      ev.type = pc.type;
+      ev.tsf_observed = esp_wifi_get_tsf_time(WIFI_IF_STA);
+      ev.processor_clock = pc.processor_clock;
+      if (xQueueSend(networkQueue, &ev, 0) != pdTRUE) {
+        networkq_overflow_count++;
+      }
+    }
   }
 }
 
@@ -723,6 +769,7 @@ void setup() {
 
   networkQueue = xQueueCreate(10, sizeof(GateEvent));
   ledQueue = xQueueCreate(5, sizeof(LedPattern));
+  triggerCaptureQueue = xQueueCreate(10, sizeof(PendingCapture));
 
 #if HAS_HTTP
   debug_http_server_register_status_sources(gate_id, networkQueue, &networkq_overflow_count);
@@ -754,6 +801,11 @@ void setup() {
   xTaskCreatePinnedToCore(ledDiagnosticTask, "LED_Task", 2048, NULL, 1, &ledTaskHandle, 1);
   xTaskCreatePinnedToCore(wsPumpTask, "WsPump", 8192, NULL, 2, &wsPumpTaskHandle, 1);
   xTaskCreatePinnedToCore(uploadWorkerTask, "UploadWorker", 8192, NULL, 2, &uploadTaskHandle, 1);
+  // Highest priority in the app -- see tsfCaptureTask()'s own comment for
+  // why: it needs to be scheduled immediately off the ISRs'
+  // portYIELD_FROM_ISR() to keep the TSF read as close to the true trigger
+  // instant as possible.
+  xTaskCreatePinnedToCore(tsfCaptureTask, "TsfCapture", 4096, NULL, 3, &tsfCaptureTaskHandle, 1);
 }
 
 // --- MAIN LOOP EXECUTION TASK ---

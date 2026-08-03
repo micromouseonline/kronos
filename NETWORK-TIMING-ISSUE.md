@@ -31,19 +31,26 @@ because the stress-test protocol (15 runs no spammer, 15 with one spammer,
 then a second spammer added) exercises two very different threat levels in
 one script:
 
-- **One beacon spammer is a realistic-but-heavy load** — plausibly at the
-  high end of what a busy exhibition hall could produce, but not something
-  a contest would rarely or never see. **This is the pass/fail bar.**
-- **Two simultaneous spammers (~1000 beacon frames/sec combined) is an
-  extreme adversarial scenario** — far beyond anything a real venue's own
-  traffic would generate; every radio on the channel has to process each
-  beacon frame at the hardware/MAC level regardless of payload, which is why
-  it hits the ESP32's software WiFi stack disproportionately hard (see the
-  `wsClient.loop()`-blocking issue below) even though a laptop on the same
-  air noticed nothing. Treated as a **smoke test** (does the system degrade
-  gracefully and recover automatically, without crashing or corrupting a
-  result) rather than a pass/fail gate — zero-loss under deliberate,
-  sustained ~1000fps beacon flooding is not a requirement.
+- **One beacon spammer is extreme, but not adversarial.** The tool itself is
+  nominally an attack device, but the load one produces is plausibly in the
+  same range a busy exhibition hall's own ordinary infrastructure could
+  generate organically (dozens of exhibitor/vendor APs each beaconing at the
+  standard rate — see the SSID-density estimate under the outstanding-work
+  item below). It's a severe environment, not a hostile one: nothing about
+  it requires a deliberate actor. **This is the pass/fail bar.**
+- **Two simultaneous spammers (~1000 beacon frames/sec combined) is
+  adversarial** — that combination of severity *and* deliberate placement
+  (both devices parked right next to the gate at full signal strength) is
+  well beyond what a venue's own organic traffic would reproduce; it
+  requires someone deliberately trying to disrupt the system. Every radio on
+  the channel still has to process each beacon frame at the hardware/MAC
+  level regardless of payload, which is why it hits the ESP32's software
+  WiFi stack disproportionately hard (see the `wsClient.loop()`-blocking
+  issue below) even though a laptop on the same air noticed nothing. Treated
+  as a **smoke test** (does the system degrade gracefully and recover
+  automatically, without crashing or corrupting a result) rather than a
+  pass/fail gate — zero-loss under deliberate, sustained ~1000fps beacon
+  flooding is not a requirement.
 
 **Single-spammer result so far: passes cleanly.** Isolating each stress
 session's no-spammer + single-spammer phase (everything before the first
@@ -80,10 +87,101 @@ against once it's run. (Session did produce one unrelated curiosity ~64-84
 minutes after the last logged race, well outside the trial itself — see the
 "AP radio interruption" issue's 2026-08-03 addendum below.)
 
+**Planned next steps, 2026-08-03.** The AP has been deliberately placed some
+distance from the gates for this round of testing — typical reported `rssi`
+sits around -70 to -80dBm, a genuinely weak-to-marginal link (rough rule of
+thumb: -50 to -60dBm is good, -60 to -70 usable, -70 to -80 is where 802.11
+MAC-layer retransmission rates start climbing on their own, independent of
+any beacon-storm software overhead). `rssi` is already carried in every
+event payload, so no new instrumentation is needed:
+
+1. Once the current single-spammer 5000-run trial (session 6's counterpart)
+   finishes, cross-reference retry/drop occurrences against the `rssi`
+   values of the events involved, to check whether failures cluster at the
+   low end of the -70/-80dBm range (pointing at marginal signal margin as a
+   contributing factor) or look independent of it (supporting the
+   beacon-frame-count-overhead theory on its own, per the `wsClient.loop()`
+   issue above).
+   - **Unconfirmed hunch to check alongside this**: the user suspects their
+     own physical position near the test rig during the first ~1000 or so
+     runs may itself have been attenuating `rssi` (body blocking
+     line-of-sight to the AP), an effect that would fade once they stepped
+     away for the remainder of the multi-hour unattended run. Flagged as
+     possibly fanciful, not asserted — the way to check it is the plot
+     below, not assumption.
+   - **Known extra confound, same window**: for this specific trial, the
+     user's own BT headphones were also streaming audio within a couple of
+     feet of the rig during roughly that same first ~1000 runs, on top of
+     the body-proximity hunch above. Mechanistically different from the
+     beacon-spam issue this doc otherwise tracks — BT interference would
+     show up as ordinary co-channel RF collision/corruption (raised noise
+     floor, standard 802.11 MAC retransmissions), not the CPU/management-
+     frame-processing overhead the beacon-storm issues are about — so if the
+     first ~1000 runs do look worse, it's confounded between body position
+     and BT and not attributable to either alone. The following ~2 hours of
+     the same trial should be free of both. Noted for the record because
+     good experiment hygiene means tracking every condition in play, even
+     ones that turn out not to matter.
+   - **Curiosity plot, not a formal requirement**: average `rssi` vs. time
+     (or run index) across the trial, per board, to see whether there's a
+     visible early-run dip/trend consistent with the hunch above, independent
+     of the retry/drop correlation in point 1.
+2. Afterwards, the AP will be moved to give an `rssi` more representative of
+   the planned deployment environment, and the **exact same trial protocol
+   re-run** for a direct comparison against the current (deliberately weak
+   signal) baseline.
+
+**Results, session 7 (2026-08-03)** — from the single-spammer 5000-run trial
+before it was cut short by the ISR/TSF crash bug above (~2882 armed+started
+runs completed, 2881 committed, only 1 true loss — see that issue for the
+crash itself):
+
+- **RSSI level does not predict retries.** Joining each hesperus-side send
+  record to its cerberus-side `rssi` (ordered join per board/event-type,
+  tolerant of the one dropped `GOAL`): mean `rssi` for events that needed a
+  retry is statistically indistinguishable from events that didn't (ARM:
+  -74.9 vs -75.0dBm; START: -75.3 vs -75.0; GOAL: -72.8 vs -73.0). Within
+  the -66 to -82dBm range actually seen, `rssi` level itself isn't
+  predictive of which specific events fail.
+- **Time is a much stronger predictor.** Binning retries by run index:
+  ARM retries ran 2.75% in runs 0-800 vs. 0.14% in runs 800-3000 (~20x
+  lower); GOAL retries ran 4.5% vs. 0.55% (~8x lower). Essentially all
+  retry activity — and the one genuine drop, at run 252 (~20.6 minutes in)
+  — falls inside the first ~800-1000 runs (~1-1.2 hours), matching the
+  body-position/BT-headphones confound window flagged before this trial.
+  The remaining ~2000 runs were close to flawless.
+- **This actually points more at the BT headphones specifically than body
+  position.** Average `rssi` stayed flat through the early window (no dip)
+  — `rssi` measures the WiFi AP signal's own strength, not ambient
+  interference, so a body attenuating line-of-sight *would* show up as
+  reduced `rssi`; BT co-channel interference degrades packet success
+  *without* touching the `rssi` reading at all. Retries elevated with
+  `rssi` flat fits "something interfering" better than "something
+  attenuating." Not proven (no confound-free control run to compare
+  against directly), but a coherent, self-consistent reading of the data.
+- Curiosity plot (average `rssi` vs. run index) done as part of the above
+  rather than as a separate artifact — see the binned figures; no visible
+  early-run dip, per the point above.
+
 ## Outstanding work, prioritized
 
-1. **[Acks not arriving back at hesperus in time](#issue-acks-not-arriving-back-at-hesperus-in-time-despite-cerberus-receiving-the-event)**
-   — **START HERE.** Found 2026-08-03 while reviewing item 3's verification
+1. **[ISR calling `esp_wifi_get_tsf_time()` causes an Interrupt WDT panic under heavy WiFi load](#issue-isr-calling-esp_wifi_get_tsf_time-causes-an-interrupt-wdt-panic-under-heavy-wifi-load)**
+   — **START HERE.** Found 2026-08-03: the start-board hesperus unit hit a
+   genuine crash-reboot loop (12 consecutive panics captured) ~3190 runs into
+   a single-spammer 5000-run trial, self-recovering a couple of minutes
+   later. Root-caused via a symbolized crash backtrace to `handleSensor1()`/
+   `handleSensor2()` (the trigger ISRs) calling `esp_wifi_get_tsf_time()`
+   directly from interrupt context — that API takes an internal WiFi-driver
+   lock, illegal (and, under heavy WiFi-stack load, fatal) to block on from
+   an ISR. Pre-existing bug, unrelated to anything else changed this
+   session — just needed enough sustained trigger volume under enough WiFi
+   contention to hit the unlucky timing window. **Fix implemented and
+   build-verified 2026-08-03** (moves the TSF read into a new dedicated
+   `tsfCaptureTask`, same decouple-the-unsafe-call pattern as the
+   `wsClient.loop()` fix below); not yet hardware-verified. Full detail in
+   the issue below.
+2. **[Acks not arriving back at hesperus in time](#issue-acks-not-arriving-back-at-hesperus-in-time-despite-cerberus-receiving-the-event)**
+   — Found 2026-08-03 while reviewing item 3's verification
    data: cerberus received the retried event multiple times, well inside
    hesperus's own wait window, in both residual outlier cases — yet no ack
    ever got back to hesperus in time. Same-day session 3, with new
@@ -99,12 +197,12 @@ minutes after the last logged race, well outside the trial itself — see the
    genuine asymmetric packet loss on the return leg specifically. Next
    step: instrument `AsyncTCP`'s write-completion callback, or a return-leg
    packet capture. Full detail in the issue below.
-2. **[Wi-Fi power-save vs. battery budget](#issue-wi-fi-power-save-vs-battery-budget)**
+3. **[Wi-Fi power-save vs. battery budget](#issue-wi-fi-power-save-vs-battery-budget)**
    — measure current draw across `WIFI_PS_NONE`/`MIN_MODEM`/`MAX_MODEM` with
    persistent connections in place. Real, measured 110mA cost today; the
    thing this was explicitly deferred pending (persistent connections) has
    now landed, so this is unblocked.
-3. **[`wsClient.loop()` blocking under congestion](#issue-wsclientloop-blocking-under-congestion-defeats-the-ackretry-deadline-bound)**
+4. **[`wsClient.loop()` blocking under congestion](#issue-wsclientloop-blocking-under-congestion-defeats-the-ackretry-deadline-bound)**
    — confirmed via instrumentation + cross-board log correlation: beacon
    spam causes real TCP-level WS disconnects (up to ~18s outages seen) on
    the hesperus side, with `wsClient.loop()` blocking up to ~9.5s per call,
@@ -116,34 +214,34 @@ minutes after the last logged race, well outside the trial itself — see the
    2026-08-03** (dedicated `wsPumpTask` + mutexes decouple the socket pump
    from the retry deadline logic) — 5/6 verification deltas landed within
    ~500ms of the 2000ms target, down from the original bug's 7.6s+
-   untethered stalls. The two residual outliers are now tracked as item 1
+   untethered stalls. The two residual outliers are now tracked as item 2
    above, not here. Root RF-level cause (why the outages happen at all)
-   remains open too, folded into item 5 below.
-4. **[Duplicate triggers from gapped robot structure](#issue-duplicate-triggers-from-gapped-robot-structure)**
+   remains open too, folded into item 6 below.
+5. **[Duplicate triggers from gapped robot structure](#issue-duplicate-triggers-from-gapped-robot-structure)**
    — the proposed ~300ms post-trigger lock-out window is arbitrary and its
    failure mode (silently dropping a genuine second crossing, rather than
    today's harmless ignore-once-out-of-`RUNNING`) hasn't been worked out.
    Cheap once resolved, but resolve the design questions first.
-5. **Congested-airtime stress testing** (cross-cutting, not tied to one
+6. **Congested-airtime stress testing** (cross-cutting, not tied to one
    issue) — the four stressor layers sketched in
    `hesperus-timing-gate/review.md` (airtime saturation, bulk throughput,
    channel interference, broadband noise; see `docs/TEST-TOOLING.md`) have
-   runs behind items 1 and 3 above are informal data points in that
+   runs behind items 2 and 4 above are informal data points in that
    direction, and are how both were found. Would validate several of the
    already-shipped fixes (dedup, retry, TSF trust-on-reconnect) under
    realistic contest-venue conditions, not just the quiet-network bench
    tests done so far.
-6. **[Hedged burst sends](#issue-hedged-burst-sends-for-tail-latency)** —
+7. **[Hedged burst sends](#issue-hedged-burst-sends-for-tail-latency)** —
    deprioritized; watch real-world retry counts/rate from the now-shipped
    ack/retry mechanism before building this. No action needed unless that
    telemetry shows frequent retries.
-7. **[Unexplained minor WS jitter / reconnect blip](#issue-unexplained-minor-ws-jitter--reconnect-blip)**
+8. **[Unexplained minor WS jitter / reconnect blip](#issue-unexplained-minor-ws-jitter--reconnect-blip)**
    — low-priority curiosity, self-healing, doesn't touch committed times.
    Proposed long steady-state (10,000-message) characterization test not
    yet run. Its own leading candidate cause (`wsClient.loop()` occasionally
-   blocking) is the same one item 3 now has direct evidence for, just at
+   blocking) is the same one item 4 now has direct evidence for, just at
    millisecond rather than multi-second scale — worth re-reading together
-   now that item 3's instrumentation exists.
+   now that item 4's instrumentation exists.
 
 Everything else below this list is either resolved or has no further action
 planned. (Explicit HTTP connect/read timeouts, formerly tracked here, turned
@@ -1373,6 +1471,140 @@ either.
   would need either instrumenting `AsyncTCP`'s write-completion callback
   (not just the call to `client->text()`) on cerberus, or a packet capture
   on the return leg specifically.
+
+**Candidate further mitigations, 2026-08-03 — not yet tried.** Discussed
+while waiting on the large-N single-spammer trial; deliberately held until
+there's a disrupted-trial baseline to compare against, rather than tried
+speculatively. None of these are a radical change to the existing scheme
+(small packets, low connection overhead, persistent WS, up to 10 jittered
+retries, auto-reconnect) — they're incremental additions on top of it. In
+rough priority order:
+
+1. **Redundant ack bursts on cerberus** (top pick). `ws_event_handler()`
+   currently sends the ack exactly once per received DATA frame (even a
+   duplicate delivery only triggers one re-ack). Since the ack-dispatch
+   path is proven fast (<15ms, see above), sending the same ack payload 2-3
+   times back-to-back costs almost nothing and directly targets the
+   still-open "asymmetric loss on the return leg" candidate, without
+   touching the retry/backoff design at all.
+2. **Task/core placement — checked, already correct, nothing to gain.**
+   Confirmed `wsPumpTask`, `uploadWorkerTask`, and `ledDiagnosticTask`
+   (`hesperus-timing-gate/src/main.cpp`'s `xTaskCreatePinnedToCore` calls)
+   are all pinned to core 1, same as Arduino's own `loop()`; WiFi/LWIP
+   internals run on core 0. They're not fighting the WiFi stack for CPU
+   time during a beacon storm. Recorded here so this isn't re-checked
+   fruitlessly in a future session.
+3. **LWIP/TCP buffer tuning via sdkconfig/build flags on cerberus** —
+   addresses the other open item-1 candidate (`AsyncTCP`'s actual on-air
+   flush lagging behind `client->text()` returning). Doesn't touch vendor
+   source, just its configuration (send buffer/window sizes). Harder to
+   isolate cleanly than #1 and payoff is genuinely uncertain — try second,
+   only if #1 doesn't move the needle.
+4. **Physical/RF, not code at all** — antenna placement/orientation and
+   AP proximity/channel selection. Given the root cause is RF/hardware-level
+   (ESP32 stack overhead from beacon volume), this is arguably the single
+   biggest lever available, and free — but it's a per-venue operational
+   practice, not something that ships in firmware.
+5. **Hedged sends** — already on record as deprioritized (see that issue
+   below); the 5000-run no-spammer baseline and single-spammer results so
+   far show retries are rare-to-nonexistent under the actual pass bar, so
+   there's no signal yet to justify it. Only worth revisiting if a large-N
+   single-spammer trial shows a meaningful retry rate.
+
+### Issue: ISR calling `esp_wifi_get_tsf_time()` causes an Interrupt WDT panic under heavy WiFi load
+
+**[FIX IMPLEMENTED, build-verified 2026-08-03 — not yet hardware-verified]**
+*(new, found 2026-08-03 during the single-spammer 5000-run trial, session 6's
+counterpart)*
+
+**Observation.** ~3190 runs into the trial, the start-board hesperus unit
+entered a genuine crash-reboot loop — 12 consecutive panics captured in the
+log before the capture was stopped, all `rst:0xc (RTC_SW_CPU_RST)` (a
+software-triggered reset, i.e. the panic handler's own reboot, not a power
+issue). The board self-recovered a couple of minutes after the captured
+window ended (confirmed by the user; cerberus's own log independently shows
+no further disconnect/reconnect churn afterward, consistent with a clean
+recovery). The goal board was unaffected throughout (0 reboots).
+
+**Confirmation.** Every captured panic reads `Guru Meditation Error: Core
+N panic'ed (Interrupt wdt timeout on CPUn)`, one instance explicitly `Core 1
+was running in ISR context` at the moment of panic, and one occurrence shows
+`Re-entered core dump! Exception happened during core dump!` — both cores
+panicking in close succession, consistent with interrupts being stuck
+system-wide rather than one task on one core alone. Symbolizing the crash
+backtrace against the exact firmware build in `.pio/build/` (via
+`xtensa-esp32s3-elf-addr2line`) gives an unambiguous call chain:
+
+```
+prvIdleTask -> esp_vApplicationIdleHook -> cpu_ll_waiti (CPU idle, waiting for interrupt)
+  -> _xt_lowint1 -> gpio_intr_service -> gpio_isr_loop -> __onPinInterrupt   (GPIO ISR fires)
+    -> handleSensor1()  [hesperus-timing-gate/src/main.cpp:359]
+      -> esp_wifi_get_tsf_time() -> wifi_get_tsf_time_process -> esp_wifi_get_mode
+        -> wifi_init_completed -> wifi_api_lock -> mutex_lock_wrapper
+          -> xQueueTakeMutexRecursive -> xQueueSemaphoreTake -> vTaskPlaceOnEventList
+            -> vListInsert   [panic PC]
+```
+
+`handleSensor1()`/`handleSensor2()` — the `IRAM_ATTR` GPIO trigger ISRs,
+attached via `attachInterrupt(..., CHANGE)` — call `esp_wifi_get_tsf_time()`
+directly to capture the TSF timestamp at the exact trigger instant. That
+API takes an internal WiFi-driver mutex (`wifi_api_lock`). Blocking on a
+mutex from ISR context is illegal (there's no task context for FreeRTOS to
+suspend/resume around); normally the lock is uncontended and the call
+returns instantly, so this has silently "worked" since the ISR/debounce code
+was first written. Under sustained heavy WiFi-stack load — exactly what a
+many-hour single-spammer beacon flood produces — the lock can occasionally
+be held by the driver's own internal processing for long enough that a
+GPIO ISR blocked on it starves interrupt servicing long enough to trip the
+Interrupt Watchdog Timer. This is a **pre-existing bug**, unrelated to
+anything else changed this session (the `wsPumpTask`/retry-schedule work)
+— it just needed enough sustained trigger volume under enough WiFi
+contention to hit the unlucky timing window, which is why it took ~3190
+runs to surface despite the code being unchanged since well before this
+investigation began.
+
+One encouraging structural note that shaped the fix: the ISRs already
+capture `processor_clock` via `esp_timer_get_time()` alongside the unsafe
+TSF call — and that API *is* ISR-safe. The codebase also already has a
+working mechanism (the `clock_alpha`-driven `DISCIPLINED SYN` extrapolation
+used for holdover) for deriving a trustworthy TSF-equivalent timestamp from
+the processor clock when a live TSF read isn't available.
+
+**Resolution.** Implemented 2026-08-03
+(`hesperus-timing-gate/src/main.cpp`), following the same decouple-the-
+unsafe-call pattern already used for the `wsClient.loop()` fix above,
+rather than falling back to always-extrapolated timestamps (which would
+have traded away precision on every single trigger, not just rare
+contention cases):
+
+- New `PendingCapture` struct carries only what's ISR-safe (`EventType` +
+  `processor_clock`) from the ISRs to a new dedicated task.
+- `handleSensor1()`/`handleSensor2()` no longer call
+  `esp_wifi_get_tsf_time()` at all — they push a `PendingCapture` onto a new
+  `triggerCaptureQueue` (`xQueueSendFromISR`, same pattern as the existing
+  `networkQueue` send, with its own `triggerCaptureq_overflow_count`) and
+  `portYIELD_FROM_ISR()` as before.
+- New `tsfCaptureTask` is the sole consumer of `triggerCaptureQueue`: it
+  performs the actual `esp_wifi_get_tsf_time()` read — safe here, since
+  blocking briefly on the WiFi driver's lock in task context is legal, not
+  fatal — pairs it with the ISR-captured `processor_clock`, and forwards the
+  completed `GateEvent` to `networkQueue` exactly as the ISRs used to do
+  directly.
+- `tsfCaptureTask` is created at **priority 3, the highest in the app**
+  (above `uploadWorkerTask`/`wsPumpTask` at 2), specifically so it's
+  scheduled immediately off the ISR's `portYIELD_FROM_ISR()` — this keeps
+  the added latency between the true trigger instant and the TSF read down
+  to a task-switch (typically low microseconds), preserving precision
+  rather than trading it away for safety.
+- `heartbeatTimerCallback()` was left unchanged — it already calls
+  `esp_wifi_get_tsf_time()` from the FreeRTOS Timer Service task, not ISR
+  context, so it was never affected by this bug.
+
+All 4 hesperus envs (`pio run`) build clean.
+
+**Verification.** Build-verified only so far. Not yet hardware-verified —
+next step is re-running the same style of long, sustained single-spammer
+trial and confirming no further Interrupt WDT panics occur.
 
 ## Decision record: ESP-NOW alternative
 
