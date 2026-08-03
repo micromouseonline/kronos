@@ -1,0 +1,632 @@
+#[240600597] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240600589959,"gate_us":1320701882,"rssi":-77}
+#[240600604] [WS-ACK] tsf_us=240600589959 recv=240600595 dispatch=240600598 sent=240600603 text_ms=5
+<30,0>
+<4,2> #
+#[240616876] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240616869026,"gate_us":1336980836,"rssi":-74}
+#[240616883] [WS-ACK] tsf_us=240616869026 recv=240616874 dispatch=240616876 sent=240616882 text_ms=6
+#[240617075] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240617068897,"gate_us":1337180713,"rssi":-76}
+#[240617079] [WS-ACK] tsf_us=240617068897 recv=240617073 dispatch=240617075 sent=240617079 text_ms=4
+<4,4> #
+<12,0>
+#[240620083] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240620068903,"gate_us":1337900451,"rssi":-71}
+#[240620088] [WS-ACK] tsf_us=240620068903 recv=240620081 dispatch=240620084 sent=240620088 text_ms=4
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240621176] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240621169017,"gate_us":1341280799,"rssi":-73}
+#[240621183] [WS-ACK] tsf_us=240621169017 recv=240621174 dispatch=240621177 sent=240621183 text_ms=6
+<4,2> #
+#[240621375] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240621368899,"gate_us":1341480683,"rssi":-73}
+#[240621382] [WS-ACK] tsf_us=240621368899 recv=240621373 dispatch=240621376 sent=240621381 text_ms=5
+<4,4> #
+<12,0>
+#[240624384] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240624368894,"gate_us":1342200426,"rssi":-72}
+#[240624390] [WS-ACK] tsf_us=240624368894 recv=240624382 dispatch=240624384 sent=240624390 text_ms=6
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240625478] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240625469013,"gate_us":1345580767,"rssi":-77}
+<4,2> #
+#[240625485] [WS-ACK] tsf_us=240625469013 recv=240625476 dispatch=240625479 sent=240625485 text_ms=6
+#[240625675] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240625668895,"gate_us":1345780650,"rssi":-74}
+#[240625681] [WS-ACK] tsf_us=240625668895 recv=240625673 dispatch=240625675 sent=240625681 text_ms=6
+<4,4> #
+<12,0>
+#[240628684] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240628668888,"gate_us":1346500399,"rssi":-71}
+#[240628689] [WS-ACK] tsf_us=240628668888 recv=240628682 dispatch=240628685 sent=240628689 text_ms=4
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240629775] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240629769001,"gate_us":1349880728,"rssi":-77}
+#[240629780] [WS-ACK] tsf_us=240629769001 recv=240629773 dispatch=240629776 sent=240629780 text_ms=4
+<4,2> #
+#[240629977] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240629968886,"gate_us":1350080615,"rssi":-77}
+#[240629983] [WS-ACK] tsf_us=240629968886 recv=240629975 dispatch=240629978 sent=240629983 text_ms=5
+<4,4> #
+<12,0>
+#[240632979] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240632968885,"gate_us":1350800373,"rssi":-71}
+#[240632985] [WS-ACK] tsf_us=240632968885 recv=240632977 dispatch=240632979 sent=240632985 text_ms=6
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240634075] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240634069004,"gate_us":1354180700,"rssi":-74}
+#[240634079] [WS-ACK] tsf_us=240634069004 recv=240634073 dispatch=240634075 sent=240634079 text_ms=4
+<4,2> #
+#[240634275] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240634268879,"gate_us":1354380581,"rssi":-74}
+#[240634281] [WS-ACK] tsf_us=240634268879 recv=240634273 dispatch=240634275 sent=240634281 text_ms=6
+<4,4> #
+<12,0>
+#[240637276] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240637268881,"gate_us":1355100346,"rssi":-72}
+#[240637281] [WS-ACK] tsf_us=240637268881 recv=240637273 dispatch=240637276 sent=240637281 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240638375] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240638368997,"gate_us":1358480667,"rssi":-76}
+<4,2> #
+#[240638380] [WS-ACK] tsf_us=240638368997 recv=240638373 dispatch=240638375 sent=240638380 text_ms=5
+#[240638580] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240638568877,"gate_us":1358680549,"rssi":-76}
+#[240638585] [WS-ACK] tsf_us=240638568877 recv=240638578 dispatch=240638581 sent=240638585 text_ms=4
+<4,4> #
+<12,0>
+#[240641577] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240641568876,"gate_us":1359400320,"rssi":-71}
+#[240641584] [WS-ACK] tsf_us=240641568876 recv=240641575 dispatch=240641577 sent=240641584 text_ms=7
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240642676] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240642668991,"gate_us":1362780633,"rssi":-75}
+#[240642683] [WS-ACK] tsf_us=240642668991 recv=240642674 dispatch=240642676 sent=240642683 text_ms=7
+<4,2> #
+#[240642875] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240642868873,"gate_us":1362980515,"rssi":-75}
+#[240642881] [WS-ACK] tsf_us=240642868873 recv=240642873 dispatch=240642875 sent=240642881 text_ms=6
+<4,4> #
+<12,0>
+#[240645928] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240645868870,"gate_us":1363700293,"rssi":-71}
+<4,5> #
+<13,3000>
+#[240645935] [WS-ACK] tsf_us=240645868870 recv=240645926 dispatch=240645929 sent=240645935 text_ms=6
+<13,3000>
+<13,3000>
+#[240646975] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240646968983,"gate_us":1367080599,"rssi":-74}
+#[240646982] [WS-ACK] tsf_us=240646968983 recv=240646973 dispatch=240646975 sent=240646981 text_ms=6
+<4,2> #
+#[240647177] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240647168863,"gate_us":1367280481,"rssi":-74}
+#[240647183] [WS-ACK] tsf_us=240647168863 recv=240647174 dispatch=240647177 sent=240647183 text_ms=6
+<4,4> #
+<12,0>
+#[240650176] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240650168864,"gate_us":1368000265,"rssi":-71}
+#[240650183] [WS-ACK] tsf_us=240650168864 recv=240650174 dispatch=240650177 sent=240650183 text_ms=6
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240651277] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240651268985,"gate_us":1371380571,"rssi":-77}
+#[240651284] [WS-ACK] tsf_us=240651268985 recv=240651275 dispatch=240651277 sent=240651284 text_ms=7
+<4,2> #
+#[240651475] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240651468843,"gate_us":1371580447,"rssi":-77}
+#[240651483] [WS-ACK] tsf_us=240651468843 recv=240651473 dispatch=240651476 sent=240651482 text_ms=6
+<4,4> #
+<12,0>
+#[240654475] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240654468852,"gate_us":1372300238,"rssi":-73}
+#[240654481] [WS-ACK] tsf_us=240654468852 recv=240654473 dispatch=240654475 sent=240654480 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240655577] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240655568972,"gate_us":1375680530,"rssi":-79}
+#[240655584] [WS-ACK] tsf_us=240655568972 recv=240655575 dispatch=240655577 sent=240655584 text_ms=7
+<4,2> #
+#[240655776] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240655768848,"gate_us":1375880411,"rssi":-79}
+#[240655784] [WS-ACK] tsf_us=240655768848 recv=240655774 dispatch=240655777 sent=240655783 text_ms=6
+<4,4> #
+<12,0>
+#[240658774] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240658768853,"gate_us":1376600211,"rssi":-74}
+#[240658780] [WS-ACK] tsf_us=240658768853 recv=240658772 dispatch=240658775 sent=240658780 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240659876] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240659868967,"gate_us":1379980496,"rssi":-79}
+#[240659883] [WS-ACK] tsf_us=240659868967 recv=240659874 dispatch=240659877 sent=240659883 text_ms=6
+<4,2> #
+#[240660077] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240660068843,"gate_us":1380180377,"rssi":-79}
+#[240660084] [WS-ACK] tsf_us=240660068843 recv=240660075 dispatch=240660078 sent=240660084 text_ms=6
+<4,4> #
+<12,0>
+#[240663077] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240663068845,"gate_us":1380900183,"rssi":-73}
+#[240663083] [WS-ACK] tsf_us=240663068845 recv=240663075 dispatch=240663077 sent=240663082 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240664175] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240664168959,"gate_us":1384280462,"rssi":-79}
+#[240664182] [WS-ACK] tsf_us=240664168959 recv=240664173 dispatch=240664176 sent=240664182 text_ms=6
+<4,2> #
+#[240664379] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240664368844,"gate_us":1384480344,"rssi":-77}
+#[240664385] [WS-ACK] tsf_us=240664368844 recv=240664377 dispatch=240664380 sent=240664385 text_ms=5
+<4,4> #
+<12,0>
+#[240667378] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240667368832,"gate_us":1385200156,"rssi":-72}
+#[240667384] [WS-ACK] tsf_us=240667368832 recv=240667376 dispatch=240667378 sent=240667383 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240668475] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240668468951,"gate_us":1388580427,"rssi":-78}
+#[240668483] [WS-ACK] tsf_us=240668468951 recv=240668473 dispatch=240668476 sent=240668483 text_ms=7
+<4,2> #
+#[240668678] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240668668836,"gate_us":1388780310,"rssi":-78}
+#[240668686] [WS-ACK] tsf_us=240668668836 recv=240668676 dispatch=240668679 sent=240668686 text_ms=7
+<4,4> #
+<12,0>
+#[240671677] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240671668827,"gate_us":1389500128,"rssi":-72}
+#[240671683] [WS-ACK] tsf_us=240671668827 recv=240671675 dispatch=240671678 sent=240671683 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240672775] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240672768948,"gate_us":1392880394,"rssi":-77}
+#[240672782] [WS-ACK] tsf_us=240672768948 recv=240672773 dispatch=240672776 sent=240672782 text_ms=6
+<4,2> #
+#[240672976] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240672968825,"gate_us":1393080273,"rssi":-77}
+#[240672981] [WS-ACK] tsf_us=240672968825 recv=240672973 dispatch=240672976 sent=240672981 text_ms=5
+<4,4> #
+<12,0>
+#[240675975] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240675968826,"gate_us":1393800101,"rssi":-74}
+#[240675982] [WS-ACK] tsf_us=240675968826 recv=240675973 dispatch=240675976 sent=240675982 text_ms=6
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240677075] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240677068939,"gate_us":1397180358,"rssi":-79}
+#[240677083] [WS-ACK] tsf_us=240677068939 recv=240677073 dispatch=240677076 sent=240677083 text_ms=7
+<4,2> #
+#[240677276] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240677268813,"gate_us":1397380240,"rssi":-79}
+#[240677283] [WS-ACK] tsf_us=240677268813 recv=240677273 dispatch=240677277 sent=240677283 text_ms=6
+<4,4> #
+<12,0>
+#[240680277] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240680268818,"gate_us":1398100073,"rssi":-72}
+#[240680285] [WS-ACK] tsf_us=240680268818 recv=240680275 dispatch=240680278 sent=240680284 text_ms=6
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240681376] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240681368933,"gate_us":1401480323,"rssi":-77}
+#[240681383] [WS-ACK] tsf_us=240681368933 recv=240681374 dispatch=240681376 sent=240681383 text_ms=7
+<4,2> #
+#[240681576] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240681568811,"gate_us":1401680204,"rssi":-77}
+#[240681584] [WS-ACK] tsf_us=240681568811 recv=240681574 dispatch=240681578 sent=240681584 text_ms=6
+<4,4> #
+<12,0>
+#[240684599] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240684568811,"gate_us":1402400045,"rssi":-72}
+#[240684605] [WS-ACK] tsf_us=240684568811 recv=240684597 dispatch=240684599 sent=240684604 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240685685] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240685668924,"gate_us":1405780287,"rssi":-74}
+#[240685691] [WS-ACK] tsf_us=240685668924 recv=240685683 dispatch=240685686 sent=240685691 text_ms=5
+<4,2> #
+#[240685910] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240685868812,"gate_us":1405980171,"rssi":-74}
+#[240685916] [WS-ACK] tsf_us=240685868812 recv=240685908 dispatch=240685911 sent=240685916 text_ms=5
+<4,4> #
+<12,0>
+#[240688877] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240688868806,"gate_us":1406700017,"rssi":-72}
+#[240688881] [WS-ACK] tsf_us=240688868806 recv=240688875 dispatch=240688878 sent=240688881 text_ms=3
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240689988] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240689968918,"gate_us":1410080254,"rssi":-74}
+#[240689992] [WS-ACK] tsf_us=240689968918 recv=240689986 dispatch=240689988 sent=240689992 text_ms=4
+<4,2> #
+#[240690179] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240690168804,"gate_us":1410280136,"rssi":-74}
+#[240690186] [WS-ACK] tsf_us=240690168804 recv=240690176 dispatch=240690180 sent=240690185 text_ms=5
+<4,4> #
+<12,0>
+#[240693177] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240693168794,"gate_us":1410999989,"rssi":-72}
+#[240693183] [WS-ACK] tsf_us=240693168794 recv=240693175 dispatch=240693177 sent=240693183 text_ms=6
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240694298] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240694268912,"gate_us":1414380219,"rssi":-76}
+#[240694304] [WS-ACK] tsf_us=240694268912 recv=240694296 dispatch=240694299 sent=240694304 text_ms=5
+<4,2> #
+#[240694489] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240694468792,"gate_us":1414580101,"rssi":-76}
+#[240694495] [WS-ACK] tsf_us=240694468792 recv=240694487 dispatch=240694490 sent=240694495 text_ms=5
+<4,4> #
+<12,0>
+#[240697505] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240697468787,"gate_us":1415299962,"rssi":-72}
+#[240697512] [WS-ACK] tsf_us=240697468787 recv=240697503 dispatch=240697506 sent=240697512 text_ms=6
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240698583] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240698568899,"gate_us":1418680184,"rssi":-76}
+#[240698589] [WS-ACK] tsf_us=240698568899 recv=240698581 dispatch=240698584 sent=240698589 text_ms=5
+<4,2> #
+#[240698778] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240698768791,"gate_us":1418880066,"rssi":-76}
+#[240698786] [WS-ACK] tsf_us=240698768791 recv=240698776 dispatch=240698778 sent=240698786 text_ms=8
+<4,4> #
+<12,0>
+#[240701781] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240701768783,"gate_us":1419599934,"rssi":-71}
+#[240701787] [WS-ACK] tsf_us=240701768783 recv=240701779 dispatch=240701781 sent=240701787 text_ms=6
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240702927] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240702868898,"gate_us":1422980148,"rssi":-74}
+#[240702933] [WS-ACK] tsf_us=240702868898 recv=240702925 dispatch=240702928 sent=240702933 text_ms=5
+<4,2> #
+#[240703098] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240703068782,"gate_us":1423180031,"rssi":-74}
+#[240703104] [WS-ACK] tsf_us=240703068782 recv=240703096 dispatch=240703098 sent=240703103 text_ms=5
+<4,4> #
+<12,0>
+#[240706125] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240706068779,"gate_us":1423899906,"rssi":-70}
+#[240706131] [WS-ACK] tsf_us=240706068779 recv=240706123 dispatch=240706126 sent=240706131 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240707185] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240707168890,"gate_us":1427280114,"rssi":-76}
+#[240707191] [WS-ACK] tsf_us=240707168890 recv=240707183 dispatch=240707185 sent=240707190 text_ms=5
+<4,2> #
+#[240707383] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240707368776,"gate_us":1427479996,"rssi":-76}
+#[240707390] [WS-ACK] tsf_us=240707368776 recv=240707379 dispatch=240707384 sent=240707389 text_ms=5
+<4,4> #
+<12,0>
+#[240710376] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240710368744,"gate_us":1428199876,"rssi":-70}
+#[240710382] [WS-ACK] tsf_us=240710368744 recv=240710374 dispatch=240710377 sent=240710382 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240711479] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240711468887,"gate_us":1431580080,"rssi":-74}
+#[240711485] [WS-ACK] tsf_us=240711468887 recv=240711477 dispatch=240711479 sent=240711485 text_ms=6
+<4,2> #
+#[240711676] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240711668769,"gate_us":1431779961,"rssi":-74}
+#[240711682] [WS-ACK] tsf_us=240711668769 recv=240711674 dispatch=240711676 sent=240711681 text_ms=5
+<4,4> #
+<12,0>
+#[240714678] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240714668759,"gate_us":1432499850,"rssi":-70}
+#[240714683] [WS-ACK] tsf_us=240714668759 recv=240714676 dispatch=240714678 sent=240714682 text_ms=4
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240715777] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240715768877,"gate_us":1435880043,"rssi":-77}
+#[240715784] [WS-ACK] tsf_us=240715768877 recv=240715775 dispatch=240715779 sent=240715784 text_ms=5
+<4,2> #
+#[240716073] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240715968761,"gate_us":1436079926,"rssi":-75}
+#[240716077] [WS-ACK] tsf_us=240715968761 recv=240716070 dispatch=240716073 sent=240716077 text_ms=4
+<4,4> #
+<12,0>
+#[240718986] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240718968757,"gate_us":1436799822,"rssi":-71}
+#[240718992] [WS-ACK] tsf_us=240718968757 recv=240718984 dispatch=240718987 sent=240718992 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240720077] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240720068870,"gate_us":1440180010,"rssi":-78}
+#[240720082] [WS-ACK] tsf_us=240720068870 recv=240720075 dispatch=240720077 sent=240720082 text_ms=5
+<4,2> #
+#[240720296] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240720268747,"gate_us":1440379889,"rssi":-78}
+#[240720302] [WS-ACK] tsf_us=240720268747 recv=240720294 dispatch=240720297 sent=240720302 text_ms=5
+<4,4> #
+<12,0>
+#[240723277] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240723268747,"gate_us":1441099795,"rssi":-71}
+#[240723283] [WS-ACK] tsf_us=240723268747 recv=240723275 dispatch=240723277 sent=240723282 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240724377] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240724368863,"gate_us":1444479973,"rssi":-73}
+#[240724385] [WS-ACK] tsf_us=240724368863 recv=240724376 dispatch=240724378 sent=240724385 text_ms=7
+<4,2> #
+#[240724579] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240724568740,"gate_us":1444679854,"rssi":-73}
+#[240724588] [WS-ACK] tsf_us=240724568740 recv=240724577 dispatch=240724580 sent=240724588 text_ms=8
+<4,4> #
+<12,0>
+#[240727577] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240727568737,"gate_us":1445399765,"rssi":-72}
+#[240727583] [WS-ACK] tsf_us=240727568737 recv=240727575 dispatch=240727578 sent=240727582 text_ms=4
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240728680] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240728668855,"gate_us":1448779937,"rssi":-75}
+#[240728687] [WS-ACK] tsf_us=240728668855 recv=240728678 dispatch=240728682 sent=240728687 text_ms=5
+<4,2> #
+#[240728908] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240728868741,"gate_us":1448979820,"rssi":-76}
+#[240728914] [WS-ACK] tsf_us=240728868741 recv=240728906 dispatch=240728909 sent=240728914 text_ms=5
+<4,4> #
+<12,0>
+#[240731876] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240731868731,"gate_us":1449699737,"rssi":-71}
+#[240731880] [WS-ACK] tsf_us=240731868731 recv=240731874 dispatch=240731876 sent=240731880 text_ms=4
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240732990] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240732968848,"gate_us":1453079902,"rssi":-78}
+#[240732995] [WS-ACK] tsf_us=240732968848 recv=240732988 dispatch=240732991 sent=240732994 text_ms=3
+<4,2> #
+#[240733178] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240733168733,"gate_us":1453279785,"rssi":-78}
+<4,4> #
+<12,0>
+#[240733184] [WS-ACK] tsf_us=240733168733 recv=240733176 dispatch=240733178 sent=240733184 text_ms=6
+#[240736177] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240736168718,"gate_us":1453999709,"rssi":-71}
+<4,5> #
+<13,3000>
+#[240736181] [WS-ACK] tsf_us=240736168718 recv=240736175 dispatch=240736177 sent=240736181 text_ms=4
+<13,3000>
+<13,3000>
+#[240737275] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240737268842,"gate_us":1457379867,"rssi":-77}
+#[240737279] [WS-ACK] tsf_us=240737268842 recv=240737273 dispatch=240737275 sent=240737279 text_ms=4
+<4,2> #
+#[240737479] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240737468717,"gate_us":1457579748,"rssi":-77}
+#[240737483] [WS-ACK] tsf_us=240737468717 recv=240737477 dispatch=240737480 sent=240737483 text_ms=3
+<4,4> #
+<12,0>
+#[240740512] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240740468715,"gate_us":1458299681,"rssi":-71}
+#[240740517] [WS-ACK] tsf_us=240740468715 recv=240740510 dispatch=240740513 sent=240740517 text_ms=4
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240741578] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240741568837,"gate_us":1461679832,"rssi":-77}
+#[240741587] [WS-ACK] tsf_us=240741568837 recv=240741576 dispatch=240741579 sent=240741587 text_ms=8
+<4,2> #
+#[240741776] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240741768712,"gate_us":1461879713,"rssi":-77}
+#[240741782] [WS-ACK] tsf_us=240741768712 recv=240741774 dispatch=240741777 sent=240741782 text_ms=5
+<4,4> #
+<12,0>
+#[240744792] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240744768709,"gate_us":1462599653,"rssi":-71}
+#[240744800] [WS-ACK] tsf_us=240744768709 recv=240744790 dispatch=240744795 sent=240744800 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240745885] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240745868826,"gate_us":1465979796,"rssi":-77}
+#[240745892] [WS-ACK] tsf_us=240745868826 recv=240745882 dispatch=240745886 sent=240745891 text_ms=5
+<4,2> #
+#[240746228] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240746068704,"gate_us":1466179677,"rssi":-77}
+#[240746233] [WS-ACK] tsf_us=240746068704 recv=240746226 dispatch=240746228 sent=240746233 text_ms=5
+<4,4> #
+<12,0>
+#[240749336] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240749068715,"gate_us":1466899625,"rssi":-70}
+#[240749341] [WS-ACK] tsf_us=240749068715 recv=240749334 dispatch=240749337 sent=240749340 text_ms=3
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240749642] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240749068715,"gate_us":1466899625,"rssi":-70}
+#[240749647] [WS-ACK] tsf_us=240749068715 recv=240749640 dispatch=240749642 sent=240749647 text_ms=5
+#[240749745] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240749068715,"gate_us":1466899625,"rssi":-70}
+#[240749750] [WS-ACK] tsf_us=240749068715 recv=240749743 dispatch=240749746 sent=240749749 text_ms=3
+#[240750455] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240749068715,"gate_us":1466899625,"rssi":-70}
+#[240750459] [WS-ACK] tsf_us=240749068715 recv=240750453 dispatch=240750455 sent=240750459 text_ms=4
+#[240751138] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240749068715,"gate_us":1466899625,"rssi":-70}
+#[240751143] [WS-ACK] tsf_us=240749068715 recv=240751135 dispatch=240751139 sent=240751142 text_ms=3
+#[240753836] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240753368700,"gate_us":1471199596,"rssi":-71}
+#[240753839] [WS-ACK] tsf_us=240753368700 recv=240753834 dispatch=240753836 sent=240753839 text_ms=3
+#[240754608] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240753368700,"gate_us":1471199596,"rssi":-71}
+#[240754621] [WS-ACK] tsf_us=240753368700 recv=240754605 dispatch=240754609 sent=240754620 text_ms=11
+#[240754624] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240753368700,"gate_us":1471199596,"rssi":-71}
+#[240754627] [WS-ACK] tsf_us=240753368700 recv=240754622 dispatch=240754624 sent=240754627 text_ms=3
+#[240754629] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240753368700,"gate_us":1471199596,"rssi":-71}
+#[240754632] [WS-ACK] tsf_us=240753368700 recv=240754628 dispatch=240754629 sent=240754632 text_ms=3
+#[240754654] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240750168815,"gate_us":1470279762,"rssi":-73}
+#[240754658] [WS-ACK] tsf_us=240750168815 recv=240754653 dispatch=240754655 sent=240754658 text_ms=3
+#[240755012] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240753368700,"gate_us":1471199596,"rssi":-71}
+#[240755016] [WS-ACK] tsf_us=240753368700 recv=240755010 dispatch=240755012 sent=240755016 text_ms=4
+<4,2> #
+#[240757632] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240750168815,"gate_us":1470279762,"rssi":-73}
+#[240757637] [WS-ACK] tsf_us=240750168815 recv=240757630 dispatch=240757633 sent=240757636 text_ms=3
+#[240757639] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240750168815,"gate_us":1470279762,"rssi":-73}
+#[240757642] [WS-ACK] tsf_us=240750168815 recv=240757638 dispatch=240757639 sent=240757642 text_ms=3
+#[240757644] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240750168815,"gate_us":1470279762,"rssi":-73}
+#[240757647] [WS-ACK] tsf_us=240750168815 recv=240757643 dispatch=240757644 sent=240757647 text_ms=3
+#[240757649] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240750168815,"gate_us":1470279762,"rssi":-73}
+<4,4> #
+<12,0>
+#[240757652] [WS-ACK] tsf_us=240750168815 recv=240757648 dispatch=240757650 sent=240757652 text_ms=2
+#[240757693] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240757668662,"gate_us":1475499568,"rssi":-72}
+#[240757697] [WS-ACK] tsf_us=240757668662 recv=240757691 dispatch=240757694 sent=240757697 text_ms=3
+#[240757711] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240750368691,"gate_us":1470479643,"rssi":-74}
+#[240757715] [WS-ACK] tsf_us=240750368691 recv=240757709 dispatch=240757712 sent=240757715 text_ms=3
+#[240757726] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240750368691,"gate_us":1470479643,"rssi":-74}
+#[240757729] [WS-ACK] tsf_us=240750368691 recv=240757724 dispatch=240757726 sent=240757729 text_ms=3
+#[240758060] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240757668662,"gate_us":1475499568,"rssi":-72}
+#[240758064] [WS-ACK] tsf_us=240757668662 recv=240758059 dispatch=240758061 sent=240758064 text_ms=3
+#[240758323] [WS] client #2 disconnected
+#[240761676] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240757668662,"gate_us":1475499568,"rssi":-72}
+#[240761680] [WS-ACK] tsf_us=240757668662 recv=240761674 dispatch=240761677 sent=240761680 text_ms=3
+#[240761754] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240757668662,"gate_us":1475499568,"rssi":-72}
+#[240761761] [WS-ACK] tsf_us=240757668662 recv=240761752 dispatch=240761754 sent=240761761 text_ms=7
+#[240762138] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240757668662,"gate_us":1475499568,"rssi":-72}
+#[240762142] [WS-ACK] tsf_us=240757668662 recv=240762135 dispatch=240762138 sent=240762141 text_ms=3
+#[240762329] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240761968685,"gate_us":1479799540,"rssi":-71}
+#[240762332] [WS-ACK] tsf_us=240761968685 recv=240762327 dispatch=240762329 sent=240762332 text_ms=3
+<4,5> #
+<13,11600>
+<13,11600>
+<13,11600>
+#[240765531] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240761968685,"gate_us":1479799540,"rssi":-71}
+#[240765534] [WS-ACK] tsf_us=240761968685 recv=240765529 dispatch=240765532 sent=240765534 text_ms=2
+#[240765714] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240761968685,"gate_us":1479799540,"rssi":-71}
+#[240765715] [WS-ACK] tsf_us=240761968685 recv=240765711 dispatch=240765714 sent=240765715 text_ms=1
+#[240765717] [WS] client #1 disconnected
+#[240780781] [WS] client #3 connected from 192.168.0.189
+#[240780831] [WS] client #4 connected from 192.168.0.6
+#[240783491] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240783468644,"gate_us":1501299398,"rssi":-71}
+#[240783496] [WS-ACK] tsf_us=240783468644 recv=240783488 dispatch=240783491 sent=240783496 text_ms=5
+#[240784577] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240784568760,"gate_us":1504679477,"rssi":-77}
+#[240784581] [WS-ACK] tsf_us=240784568760 recv=240784575 dispatch=240784577 sent=240784581 text_ms=4
+<4,2> #
+#[240784778] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240784768638,"gate_us":1504879357,"rssi":-77}
+#[240784783] [WS-ACK] tsf_us=240784768638 recv=240784776 dispatch=240784779 sent=240784783 text_ms=4
+<4,4> #
+<12,0>
+#[240787775] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240787768634,"gate_us":1505599370,"rssi":-71}
+#[240787781] [WS-ACK] tsf_us=240787768634 recv=240787773 dispatch=240787776 sent=240787781 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240788885] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240788868655,"gate_us":1508979437,"rssi":-76}
+#[240788891] [WS-ACK] tsf_us=240788868655 recv=240788883 dispatch=240788886 sent=240788891 text_ms=5
+<4,2> #
+#[240789079] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240789068535,"gate_us":1509179322,"rssi":-76}
+#[240789084] [WS-ACK] tsf_us=240789068535 recv=240789077 dispatch=240789080 sent=240789084 text_ms=4
+<4,4> #
+<12,0>
+#[240792081] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240792068627,"gate_us":1509899342,"rssi":-71}
+#[240792087] [WS-ACK] tsf_us=240792068627 recv=240792079 dispatch=240792082 sent=240792087 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240793176] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240793168744,"gate_us":1513279405,"rssi":-74}
+#[240793182] [WS-ACK] tsf_us=240793168744 recv=240793174 dispatch=240793177 sent=240793182 text_ms=5
+<4,2> #
+#[240793378] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240793368627,"gate_us":1513479288,"rssi":-74}
+#[240793383] [WS-ACK] tsf_us=240793368627 recv=240793376 dispatch=240793379 sent=240793383 text_ms=4
+<4,4> #
+<12,0>
+#[240796385] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240796368640,"gate_us":1514199313,"rssi":-71}
+#[240796390] [WS-ACK] tsf_us=240796368640 recv=240796383 dispatch=240796385 sent=240796390 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240797481] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240797468739,"gate_us":1517579370,"rssi":-74}
+#[240797488] [WS-ACK] tsf_us=240797468739 recv=240797479 dispatch=240797482 sent=240797487 text_ms=5
+<4,2> #
+#[240797680] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240797668622,"gate_us":1517779252,"rssi":-74}
+#[240797685] [WS-ACK] tsf_us=240797668622 recv=240797678 dispatch=240797681 sent=240797685 text_ms=4
+<4,4> #
+<12,0>
+#[240800676] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240800668609,"gate_us":1518499285,"rssi":-71}
+#[240800681] [WS-ACK] tsf_us=240800668609 recv=240800674 dispatch=240800676 sent=240800681 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240801776] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240801768731,"gate_us":1521879334,"rssi":-76}
+#[240801782] [WS-ACK] tsf_us=240801768731 recv=240801774 dispatch=240801777 sent=240801782 text_ms=5
+<4,2> #
+#[240801976] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240801968609,"gate_us":1522079215,"rssi":-76}
+#[240801982] [WS-ACK] tsf_us=240801968609 recv=240801974 dispatch=240801977 sent=240801982 text_ms=5
+<4,4> #
+<12,0>
+#[240804990] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240804968606,"gate_us":1522799257,"rssi":-71}
+#[240804996] [WS-ACK] tsf_us=240804968606 recv=240804988 dispatch=240804991 sent=240804996 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240806085] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240806068622,"gate_us":1526179298,"rssi":-75}
+#[240806091] [WS-ACK] tsf_us=240806068622 recv=240806083 dispatch=240806086 sent=240806091 text_ms=5
+<4,2> #
+#[240806277] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240806268503,"gate_us":1526379179,"rssi":-75}
+#[240806282] [WS-ACK] tsf_us=240806268503 recv=240806275 dispatch=240806278 sent=240806282 text_ms=4
+<4,4> #
+<12,0>
+#[240809282] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240809268606,"gate_us":1527099228,"rssi":-71}
+#[240809288] [WS-ACK] tsf_us=240809268606 recv=240809280 dispatch=240809283 sent=240809288 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240810384] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240810368718,"gate_us":1530479263,"rssi":-74}
+#[240810389] [WS-ACK] tsf_us=240810368718 recv=240810382 dispatch=240810384 sent=240810389 text_ms=5
+<4,2> #
+#[240810581] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240810568594,"gate_us":1530679144,"rssi":-74}
+#[240810587] [WS-ACK] tsf_us=240810568594 recv=240810579 dispatch=240810582 sent=240810587 text_ms=5
+<4,4> #
+<12,0>
+#[240813583] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240813568585,"gate_us":1531399200,"rssi":-72}
+#[240813588] [WS-ACK] tsf_us=240813568585 recv=240813581 dispatch=240813584 sent=240813588 text_ms=4
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240814676] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240814668709,"gate_us":1534779226,"rssi":-73}
+#[240814681] [WS-ACK] tsf_us=240814668709 recv=240814674 dispatch=240814677 sent=240814681 text_ms=4
+<4,2> #
+#[240814875] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240814868593,"gate_us":1534979110,"rssi":-73}
+#[240814881] [WS-ACK] tsf_us=240814868593 recv=240814873 dispatch=240814875 sent=240814880 text_ms=5
+<4,4> #
+<12,0>
+#[240817884] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240817868571,"gate_us":1535699172,"rssi":-72}
+#[240817889] [WS-ACK] tsf_us=240817868571 recv=240817882 dispatch=240817884 sent=240817889 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240818983] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240818968695,"gate_us":1539079185,"rssi":-75}
+#[240818989] [WS-ACK] tsf_us=240818968695 recv=240818981 dispatch=240818983 sent=240818988 text_ms=5
+<4,2> #
+#[240819176] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240819168585,"gate_us":1539279074,"rssi":-75}
+#[240819181] [WS-ACK] tsf_us=240819168585 recv=240819174 dispatch=240819176 sent=240819181 text_ms=5
+<4,4> #
+<12,0>
+#[240822184] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240822168576,"gate_us":1539999143,"rssi":-71}
+#[240822190] [WS-ACK] tsf_us=240822168576 recv=240822182 dispatch=240822184 sent=240822189 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240823277] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240823268695,"gate_us":1543379157,"rssi":-75}
+#[240823283] [WS-ACK] tsf_us=240823268695 recv=240823275 dispatch=240823278 sent=240823283 text_ms=5
+<4,2> #
+#[240823566] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240823468575,"gate_us":1543579038,"rssi":-75}
+#[240823570] [WS-ACK] tsf_us=240823468575 recv=240823564 dispatch=240823566 sent=240823570 text_ms=4
+<4,4> #
+<12,0>
+#[240827187] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240826468574,"gate_us":1544299115,"rssi":-72}
+#[240827194] [WS-ACK] tsf_us=240826468574 recv=240827184 dispatch=240827189 sent=240827194 text_ms=5
+#[240827196] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240826468574,"gate_us":1544299115,"rssi":-72}
+#[240827199] [WS-ACK] tsf_us=240826468574 recv=240827195 dispatch=240827197 sent=240827199 text_ms=2
+#[240827202] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240826468574,"gate_us":1544299115,"rssi":-72}
+#[240827204] [WS-ACK] tsf_us=240826468574 recv=240827201 dispatch=240827202 sent=240827204 text_ms=2
+#[240827575] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240827568680,"gate_us":1547679113,"rssi":-77}
+#[240827578] [WS-ACK] tsf_us=240827568680 recv=240827573 dispatch=240827575 sent=240827578 text_ms=3
+#[240827775] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240827768565,"gate_us":1547879001,"rssi":-77}
+#[240827778] [WS-ACK] tsf_us=240827768565 recv=240827773 dispatch=240827775 sent=240827778 text_ms=3
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+<4,4> #
+#[240830777] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240830768566,"gate_us":1548599087,"rssi":-71}
+#[240830784] [WS-ACK] tsf_us=240830768566 recv=240830775 dispatch=240830778 sent=240830784 text_ms=6
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240831876] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240831868677,"gate_us":1551979084,"rssi":-76}
+#[240831880] [WS-ACK] tsf_us=240831868677 recv=240831872 dispatch=240831876 sent=240831879 text_ms=3
+<4,2> #
+#[240832076] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240832068559,"gate_us":1552178965,"rssi":-76}
+#[240832082] [WS-ACK] tsf_us=240832068559 recv=240832074 dispatch=240832077 sent=240832082 text_ms=5
+<4,4> #
+<12,0>
+#[240835076] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":240835068559,"gate_us":1552899058,"rssi":-73}
+#[240835082] [WS-ACK] tsf_us=240835068559 recv=240835074 dispatch=240835077 sent=240835082 text_ms=5
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[240836175] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":240836168677,"gate_us":1556279051,"rssi":-78}
+#[240836181] [WS-ACK] tsf_us=240836168677 recv=240836173 dispatch=240836175 sent=240836181 text_ms=6
+<4,2> #
+#[240836375] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":240836368560,"gate_us":1556478931,"rssi":-78}
+#[240836385] [WS-ACK] tsf_us=240836368560 recv=240836373 dispatch=240836376 sent=240836385 text_ms=9
+<4,4> #
+<12,0>

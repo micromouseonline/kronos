@@ -1,0 +1,443 @@
+#[239284705] [WS] client #1 disconnected
+#[239284717] [WS] client #3 connected from 192.168.0.6
+#[239285462] [WS] client #4 connected from 192.168.0.189
+#[239287208] [WS] client #2 disconnected
+#[239329833] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239329826276,"gate_us":49945640,"rssi":-77}
+#[239329840] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239329826337,"gate_us":47663467,"rssi":-70}
+#[239329861] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239329826297,"gate_us":49945687,"rssi":-77}
+<30,0>
+<4,4> #
+#[239362441] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239362435284,"gate_us":82554513,"rssi":-75}
+<4,2> #
+#[239362644] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239362635159,"gate_us":82754392,"rssi":-75}
+<4,4> #
+<12,0>
+#[239365648] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239365635155,"gate_us":83472192,"rssi":-70}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239366744] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239366735267,"gate_us":86854477,"rssi":-73}
+<4,2> #
+#[239366944] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239366935150,"gate_us":87054365,"rssi":-73}
+<4,4> #
+<12,0>
+#[239369947] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239369935151,"gate_us":87772170,"rssi":-70}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239371042] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239371035259,"gate_us":91154454,"rssi":-74}
+<4,2> #
+#[239371241] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239371235149,"gate_us":91354338,"rssi":-74}
+<4,4> #
+<12,0>
+#[239374241] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239374235135,"gate_us":92072148,"rssi":-70}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239375342] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239375335242,"gate_us":95454416,"rssi":-75}
+<4,2> #
+#[239375540] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239375535135,"gate_us":95654310,"rssi":-75}
+<4,4> #
+<12,0>
+#[239378543] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239378535129,"gate_us":96372126,"rssi":-70}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239379640] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239379635238,"gate_us":99754394,"rssi":-73}
+<4,2> #
+#[239379864] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239379835118,"gate_us":99954279,"rssi":-72}
+<4,4> #
+<12,0>
+#[239382844] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239382835117,"gate_us":100672103,"rssi":-70}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239383943] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239383935233,"gate_us":104054369,"rssi":-75}
+<4,2> #
+#[239384141] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239384135110,"gate_us":104254250,"rssi":-75}
+<4,4> #
+<12,0>
+#[239387142] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239387135105,"gate_us":104972080,"rssi":-70}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239388241] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239388235224,"gate_us":108354342,"rssi":-75}
+<4,2> #
+#[239388442] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239388435109,"gate_us":108554223,"rssi":-73}
+<4,4> #
+<12,0>
+#[239391444] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239391435092,"gate_us":109272056,"rssi":-70}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239392544] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239392535205,"gate_us":112654304,"rssi":-73}
+<4,2> #
+#[239392741] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239392735097,"gate_us":112854193,"rssi":-73}
+<4,4> #
+<12,0>
+#[239395745] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239395735084,"gate_us":113572033,"rssi":-71}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239396842] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239396835202,"gate_us":116954281,"rssi":-74}
+<4,2> #
+#[239397041] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239397035086,"gate_us":117154163,"rssi":-74}
+<4,4> #
+<12,0>
+#[239400045] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239400035073,"gate_us":117872009,"rssi":-71}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239401143] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239401135189,"gate_us":121254250,"rssi":-74}
+<4,2> #
+#[239401342] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239401335074,"gate_us":121454133,"rssi":-72}
+<4,4> #
+<12,0>
+#[239404345] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239404335068,"gate_us":122171985,"rssi":-66}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239405441] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239405435180,"gate_us":125554220,"rssi":-72}
+<4,2> #
+#[239405641] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239405635057,"gate_us":125754101,"rssi":-72}
+<4,4> #
+<12,0>
+#[239408643] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239408635052,"gate_us":126471961,"rssi":-70}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239409740] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239409735168,"gate_us":129854190,"rssi":-74}
+<4,2> #
+#[239409950] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239409935042,"gate_us":130054071,"rssi":-74}
+<4,4> #
+<12,0>
+#[239412943] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239412935041,"gate_us":130771937,"rssi":-70}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239414041] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239414035158,"gate_us":134154160,"rssi":-75}
+<4,2> #
+#[239414242] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239414235044,"gate_us":134354042,"rssi":-75}
+<4,4> #
+<12,0>
+#[239417241] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239417235030,"gate_us":135071913,"rssi":-72}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239418345] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239418335149,"gate_us":138454128,"rssi":-79}
+<4,2> #
+#[239418543] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239418535031,"gate_us":138654012,"rssi":-76}
+<4,4> #
+<12,0>
+#[239421541] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239421535024,"gate_us":139371888,"rssi":-73}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239422648] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239422635134,"gate_us":142754098,"rssi":-76}
+<4,2> #
+#[239422846] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239422835013,"gate_us":142953979,"rssi":-76}
+<4,4> #
+<12,0>
+#[239425845] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239425835015,"gate_us":143671864,"rssi":-70}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239426944] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239426935125,"gate_us":147054067,"rssi":-75}
+<4,2> #
+#[239427176] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239427135002,"gate_us":147253948,"rssi":-75}
+<4,4> #
+<12,0>
+#[239430146] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239430135000,"gate_us":147971839,"rssi":-70}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239431244] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239431235117,"gate_us":151354036,"rssi":-75}
+<4,2> #
+#[239431444] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239431434992,"gate_us":151553917,"rssi":-75}
+<4,4> #
+<12,0>
+#[239434463] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239434434985,"gate_us":152271813,"rssi":-71}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239435542] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239435535105,"gate_us":155654005,"rssi":-73}
+<4,2> #
+#[239435759] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239435734987,"gate_us":155853888,"rssi":-73}
+<4,4> #
+<12,0>
+#[239438746] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239438734981,"gate_us":156571789,"rssi":-70}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239439855] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239439835089,"gate_us":159953968,"rssi":-76}
+<4,2> #
+#[239440044] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239440034978,"gate_us":160153857,"rssi":-76}
+<4,4> #
+<12,0>
+#[239443063] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239443034970,"gate_us":160871764,"rssi":-72}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239444142] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239444135084,"gate_us":164253943,"rssi":-73}
+<4,2> #
+#[239444354] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239444334960,"gate_us":164453823,"rssi":-73}
+<4,4> #
+<12,0>
+#[239447343] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239447334960,"gate_us":165171739,"rssi":-71}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239448458] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239448435074,"gate_us":168553911,"rssi":-75}
+<4,2> #
+#[239448644] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239448634956,"gate_us":168753794,"rssi":-75}
+<4,4> #
+<12,0>
+#[239451646] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239451634948,"gate_us":169471714,"rssi":-71}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239452768] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239452735058,"gate_us":172853880,"rssi":-75}
+<4,2> #
+#[239452942] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239452934939,"gate_us":173053760,"rssi":-73}
+<4,4> #
+<12,0>
+#[239455944] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239455934934,"gate_us":173771689,"rssi":-70}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239457052] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239457035050,"gate_us":177153848,"rssi":-73}
+<4,2> #
+#[239457245] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239457234935,"gate_us":177353730,"rssi":-73}
+<4,4> #
+<12,0>
+#[239460249] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239460234924,"gate_us":178071664,"rssi":-71}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239461347] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239461335035,"gate_us":181453810,"rssi":-73}
+<4,2> #
+#[239461547] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239461534925,"gate_us":181653699,"rssi":-74}
+<4,4> #
+<12,0>
+#[239464549] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239464534913,"gate_us":182371639,"rssi":-70}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239465645] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239465635029,"gate_us":185753784,"rssi":-74}
+<4,2> #
+#[239465869] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239465834906,"gate_us":185953665,"rssi":-76}
+<4,4> #
+<12,0>
+#[239468847] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239468834905,"gate_us":186671614,"rssi":-71}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239469942] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239469935018,"gate_us":190053752,"rssi":-75}
+<4,2> #
+#[239470151] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239470134895,"gate_us":190253633,"rssi":-75}
+<4,4> #
+<12,0>
+#[239473145] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239473134894,"gate_us":190971588,"rssi":-71}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239474255] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239474235009,"gate_us":194353722,"rssi":-73}
+<4,2> #
+#[239474444] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239474434886,"gate_us":194553602,"rssi":-73}
+<4,4> #
+<12,0>
+#[239477472] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239477434880,"gate_us":195271563,"rssi":-72}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239478547] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239478534998,"gate_us":198653688,"rssi":-75}
+<4,2> #
+#[239478765] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239478734880,"gate_us":198853571,"rssi":-75}
+<4,4> #
+<12,0>
+#[239481745] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239481734873,"gate_us":199571538,"rssi":-71}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239482858] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239482834986,"gate_us":202953656,"rssi":-74}
+<4,2> #
+#[239483057] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239483034870,"gate_us":203153539,"rssi":-73}
+<4,4> #
+<12,0>
+#[239486047] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239486034864,"gate_us":203871512,"rssi":-70}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239487619] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239487134978,"gate_us":207253626,"rssi":-74}
+#[239487744] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239487134978,"gate_us":207253626,"rssi":-74}
+<4,2> #
+#[239488334] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239487134978,"gate_us":207253626,"rssi":-74}
+#[239488339] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239487134978,"gate_us":207253626,"rssi":-74}
+#[239488531] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239487134978,"gate_us":207253626,"rssi":-74}
+#[239489444] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239487334856,"gate_us":207453506,"rssi":-74}
+#[239489449] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239487334856,"gate_us":207453506,"rssi":-74}
+#[239489454] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239487334856,"gate_us":207453506,"rssi":-74}
+<4,4> #
+<12,0>
+#[239489842] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239487334856,"gate_us":207453506,"rssi":-74}
+#[239489938] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239487334856,"gate_us":207453506,"rssi":-74}
+#[239490583] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239490334846,"gate_us":208171486,"rssi":-71}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239490941] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239490334846,"gate_us":208171486,"rssi":-71}
+#[239491242] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239490334846,"gate_us":208171486,"rssi":-71}
+#[239491395] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239490334846,"gate_us":208171486,"rssi":-71}
+#[239494577] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239491434966,"gate_us":211553592,"rssi":-75}
+<4,2> #
+#[239495023] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239491434966,"gate_us":211553592,"rssi":-75}
+#[239495029] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239491434966,"gate_us":211553592,"rssi":-75}
+#[239495033] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239491434966,"gate_us":211553592,"rssi":-75}
+#[239495683] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239491434966,"gate_us":211553592,"rssi":-75}
+#[239496369] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239491634846,"gate_us":211753474,"rssi":-73}
+#[239496379] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239491634846,"gate_us":211753474,"rssi":-73}
+<4,4> #
+<12,0>
+#[239496925] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239494634838,"gate_us":212471461,"rssi":-71}
+#[239496930] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239494634838,"gate_us":212471461,"rssi":-71}
+#[239496933] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239494634838,"gate_us":212471461,"rssi":-71}
+<4,5> #
+<13,3000>
+#[239496936] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239494634838,"gate_us":212471461,"rssi":-71}
+<13,3000>
+<13,3000>
+#[239497839] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239491634846,"gate_us":211753474,"rssi":-73}
+#[239497975] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239495934836,"gate_us":216053442,"rssi":-75}
+#[239498004] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239495934836,"gate_us":216053442,"rssi":-75}
+#[239499340] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239495934836,"gate_us":216053442,"rssi":-75}
+#[239499345] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239495934836,"gate_us":216053442,"rssi":-75}
+#[239499433] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239495934836,"gate_us":216053442,"rssi":-75}
+#[239499727] [WS] client #3 disconnected
+#[239502033] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239494634838,"gate_us":212471461,"rssi":-71}
+#[239502047] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239498934825,"gate_us":216771435,"rssi":-69}
+#[239502051] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239498934825,"gate_us":216771435,"rssi":-69}
+#[239502055] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239498934825,"gate_us":216771435,"rssi":-69}
+#[239502061] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239498934825,"gate_us":216771435,"rssi":-69}
+#[239502065] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239498934825,"gate_us":216771435,"rssi":-69}
+#[239503285] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239503234817,"gate_us":221071409,"rssi":-71}
+#[239503567] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239503234817,"gate_us":221071409,"rssi":-71}
+#[239505021] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239503234817,"gate_us":221071409,"rssi":-71}
+#[239505024] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239503234817,"gate_us":221071409,"rssi":-71}
+#[239505026] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239503234817,"gate_us":221071409,"rssi":-71}
+#[239505029] [WS] client #4 disconnected
+#[239520226] [WS] client #5 connected from 192.168.0.6
+#[239520246] [WS] client #6 connected from 192.168.0.189
+#[239520440] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239520434779,"gate_us":238271305,"rssi":-71}
+#[239521543] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239521534889,"gate_us":241653364,"rssi":-73}
+<4,2> #
+#[239521747] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239521734775,"gate_us":241853246,"rssi":-73}
+<4,4> #
+<12,0>
+#[239524741] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239524734764,"gate_us":242571278,"rssi":-70}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239525844] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239525834881,"gate_us":245953331,"rssi":-76}
+<4,2> #
+#[239526046] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239526034765,"gate_us":246153214,"rssi":-76}
+<4,4> #
+<12,0>
+#[239529043] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239529034753,"gate_us":246871252,"rssi":-71}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239530144] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239530134875,"gate_us":250253301,"rssi":-75}
+<4,2> #
+#[239530348] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239530334757,"gate_us":250453181,"rssi":-75}
+<4,4> #
+<12,0>
+#[239533349] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239533334750,"gate_us":251171226,"rssi":-71}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239534451] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239534434861,"gate_us":254553265,"rssi":-76}
+<4,2> #
+#[239534648] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239534634738,"gate_us":254753148,"rssi":-76}
+<4,4> #
+<12,0>
+#[239537642] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239537634731,"gate_us":255471199,"rssi":-71}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239538743] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239538734849,"gate_us":258853232,"rssi":-73}
+<4,2> #
+#[239538949] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239538934736,"gate_us":259053114,"rssi":-71}
+<4,4> #
+<12,0>
+#[239541942] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239541934722,"gate_us":259771173,"rssi":-71}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239543171] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239543034840,"gate_us":263153199,"rssi":-76}
+#[239543250] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239543234722,"gate_us":263353082,"rssi":-76}
+<4,4> #
+#[239546256] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239546234715,"gate_us":264071146,"rssi":-71}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239547342] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239547334830,"gate_us":267453167,"rssi":-75}
+<4,2> #
+#[239547546] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239547534712,"gate_us":267653049,"rssi":-77}
+<4,4> #
+<12,0>
+#[239550541] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239550534701,"gate_us":268371120,"rssi":-71}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239551643] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239551634824,"gate_us":271753139,"rssi":-76}
+<4,2> #
+#[239551847] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239551834696,"gate_us":271953014,"rssi":-76}
+<4,4> #
+<12,0>
+#[239554845] [WS] DATA from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":239554834697,"gate_us":272671093,"rssi":-72}
+<4,5> #
+<13,3000>
+<13,3000>
+<13,3000>
+#[239555943] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"ARM","tsf_us":239555934816,"gate_us":276053106,"rssi":-79}
+<4,2> #
+#[239556148] [WS] DATA from 192.168.0.6 body={"gate_id":"UNKNOWN","event":"START","tsf_us":239556134686,"gate_us":276252981,"rssi":-79}
+<4,4> #
+<12,0>

@@ -1,0 +1,82 @@
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x29 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4209e30e
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce3808,len:0x4bc
+load:0x403c9700,len:0xbd8
+load:0x403cc700,len:0x2a0c
+entry 0x403c98d0
+[T=0ms] [SYSTEM] Board role (jumper): goal
+[T=0ms] [NETWORK] Link Active! IP: 192.168.0.189
+[T=239284997ms] [MDNS] cerberus.local -> 192.168.0.208
+[T=239285367ms] [WS Pump] wsClient.loop() blocked 356ms (wifi_status=3, ws_connected=0)
+[T=239289787ms] [INITIALIZED] Valid Baseline Coordinates Locked: 239289787121
+[T=239329829ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239365637ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239369937ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239374237ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239378537ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239382837ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239387137ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239391437ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239395737ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239400037ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239404337ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239408637ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239412937ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239417237ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239421537ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239425837ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239430137ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239434437ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239438737ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239443037ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239447337ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239451637ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239455937ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239460237ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239464537ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239468837ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239473137ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239477437ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239481737ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239486037ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239490337ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239490644ms] [WS Worker] Resent GOAL (TSF), attempt 2.
+[T=239490946ms] [WS Worker] Resent GOAL (TSF), attempt 3.
+[T=239491248ms] [WS Worker] Resent GOAL (TSF), attempt 4.
+[T=239494637ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239494944ms] [WS Worker] Resent GOAL (TSF), attempt 2.
+[T=239495246ms] [WS Worker] Resent GOAL (TSF), attempt 3.
+[T=239495548ms] [WS Worker] Resent GOAL (TSF), attempt 4.
+[T=239495850ms] [WS Worker] Resent GOAL (TSF), attempt 5.
+[T=239496151ms] [WS Worker] Event dropped after max retries.
+[T=239498937ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239499243ms] [WS Worker] Resent GOAL (TSF), attempt 2.
+[T=239499545ms] [WS Worker] Resent GOAL (TSF), attempt 3.
+[T=239499847ms] [WS Worker] Resent GOAL (TSF), attempt 4.
+[T=239500149ms] [WS Worker] Resent GOAL (TSF), attempt 5.
+[T=239500450ms] [WS Worker] Event dropped after max retries.
+[T=239503237ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239503544ms] [WS Worker] Resent GOAL (TSF), attempt 2.
+[T=239503846ms] [WS Worker] Resent GOAL (TSF), attempt 3.
+[T=239504148ms] [WS Worker] Resent GOAL (TSF), attempt 4.
+[T=239504450ms] [WS Worker] Resent GOAL (TSF), attempt 5.
+[T=239504751ms] [WS Worker] Event dropped after max retries.
+[T=239507555ms] [WS Worker] Link down. Event dropped.
+[T=239510362ms] [WS Pump] wsClient.loop() blocked 5002ms (wifi_status=3, ws_connected=0)
+[T=239511855ms] [WS Worker] Link down. Event dropped.
+[T=239515875ms] [WS Pump] wsClient.loop() blocked 5002ms (wifi_status=3, ws_connected=0)
+[T=239516135ms] [WS Worker] Link down. Event dropped.
+[T=239520079ms] [WS Pump] wsClient.loop() blocked 3692ms (wifi_status=3, ws_connected=0)
+[T=239520437ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239524737ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239529037ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239533337ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239537637ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239541937ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239546237ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239550537ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=239554837ms] [WS Worker] Sent GOAL (TSF), attempt 1.
