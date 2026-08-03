@@ -69,6 +69,17 @@ and the more realistic congested-airtime conditions sketched in outstanding-
 work item 5 below, rather than continuing to optimize against a scenario
 this system isn't required to survive losslessly.
 
+**Large-N no-spammer baseline, 2026-08-03** (`test-data/spam-tests/
+{cerberus-6,hesperus-start-6,hesperus-goal-6}.log`, 5000-run trial, no
+spammer — the first of a planned pair, single-spammer counterpart still to
+come): **5000/5000 ARM, START, and GOAL, zero retries, zero drops, zero
+queue overflow, one single WS disconnect/reconnect across the entire
+~6-hour test.** A perfect result, as expected for the no-spammer condition,
+and a clean baseline to compare the equivalent single-spammer 5000-run trial
+against once it's run. (Session did produce one unrelated curiosity ~64-84
+minutes after the last logged race, well outside the trial itself — see the
+"AP radio interruption" issue's 2026-08-03 addendum below.)
+
 ## Outstanding work, prioritized
 
 1. **[Acks not arriving back at hesperus in time](#issue-acks-not-arriving-back-at-hesperus-in-time-despite-cerberus-receiving-the-event)**
@@ -711,6 +722,26 @@ unexplained data point from this same test: cerberus logged
 immediately after reconnecting (non-fatal, mDNS started cleanly the very
 next line) — see the WS-jitter issue below, flagged not investigated
 further.
+
+**Unexplained recurrence, 2026-08-03** (`test-data/spam-tests/{cerberus-6,
+hesperus-start-6,hesperus-goal-6}.log`, the 5000-run no-spammer baseline
+trial — see the acceptance-criteria section's results). The 5000 runs
+themselves were flawless (5000/5000 ARM/START/GOAL, zero retries, zero
+drops, one single WS disconnect/reconnect in the entire ~6-hour test). But
+~64-84 minutes *after* the last logged race — no triggers in flight, both
+boards just sitting connected and idle — both hesperus boards independently
+logged `[AUDIT ALERT] Temporal Disruption!` (drift 515-814us) and dropped
+into `[DISCIPLINED SYN]` extrapolated-TSF mode; the goal board's persisted
+past 10s and tripped the same `[ROLLOVER FAULT]` reboot watchdog described
+above, recovering cleanly within seconds (fresh boot, reconnect, valid
+baseline re-locked). Same mechanism as the resolved bug above, but the
+*trigger* this time is unidentified: confirmed with the user that the AP
+showed nothing amiss and the beacon spammer was not running at the time.
+Whatever caused the AP's TSF to hiccup (or caused hesperus's own reading of
+it to) is unknown — logged here as an open, low-priority, self-healing
+curiosity rather than investigated further, consistent with how the
+WS-jitter issue below treats similarly rare, non-committed-time-affecting
+blips. Worth re-checking if it recurs.
 
 ### Issue: Reliable delivery over persistent WS connection
 
