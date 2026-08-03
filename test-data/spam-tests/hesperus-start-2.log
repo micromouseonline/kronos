@@ -1,0 +1,144 @@
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x2b (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4209e30e
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce3808,len:0x4bc
+load:0x403c9700,len:0xbd8
+load:0x403cc700,len:0x2a0c
+entry 0x403c98d0
+[T=0ms] [SYSTEM] Board role (jumper): start
+[T=209787467ms] [NETWORK] Link Active! IP: 192.168.0.6
+[T=209787910ms] [MDNS] cerberus.local -> 192.168.0.208
+[T=209791094ms] [INITIALIZED] Valid Baseline Coordinates Locked: 209791094076
+[T=209843071ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209843270ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209847370ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209847570ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209847877ms] [WS Worker] Resent START (TSF), attempt 2.
+[T=209848179ms] [WS Worker] Resent START (TSF), attempt 3.
+[T=209848481ms] [WS Worker] Resent START (TSF), attempt 4.
+[T=209851670ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209851870ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209855970ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209856170ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209860270ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209860470ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209864570ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209864770ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209868870ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209869070ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209873170ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209873370ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209877470ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209877670ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209881770ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209881970ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209886070ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209886270ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209890370ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209890570ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209894670ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209894870ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209898970ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209899170ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209903270ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209903470ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209907570ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209907770ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209911870ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209912070ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209916170ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209916370ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209920470ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209920670ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209924770ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209924970ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209929070ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209929270ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209933370ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209933570ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209937670ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209937870ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209941970ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209942170ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209946270ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209946470ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209950570ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209950770ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209954870ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209955070ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209959170ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209959370ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209963470ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209963670ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209967770ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209967970ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209972070ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209972377ms] [WS Worker] Resent ARM (TSF), attempt 2.
+[T=209972679ms] [WS Worker] Resent ARM (TSF), attempt 3.
+[T=209972981ms] [WS Worker] Resent ARM (TSF), attempt 4.
+[T=209973283ms] [WS Worker] Resent ARM (TSF), attempt 5.
+[T=209973583ms] [WS Worker] Event dropped after max retries.
+[T=209973586ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=209973893ms] [WS Worker] Resent START (TSF), attempt 2.
+[T=209974195ms] [WS Worker] Resent START (TSF), attempt 3.
+[T=209975368ms] [WS Worker] Resent START (TSF), attempt 4.
+[T=209975376ms] [WS Worker] Resent START (TSF), attempt 5.
+[T=209975591ms] [WS Worker] Event dropped after ack deadline.
+[T=209976370ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209977423ms] [WS Worker] Resent ARM (TSF), attempt 2.
+[T=209977430ms] [WS Worker] Resent ARM (TSF), attempt 3.
+[T=209982975ms] [WS Worker] Resent ARM (TSF), attempt 4.
+[T=209982981ms] [WS Worker] Event dropped after ack deadline.
+[T=209983002ms] [WS Worker] Link down. Event dropped.
+[T=209983023ms] [WS Worker] Link down. Event dropped.
+[T=209983044ms] [WS Worker] Link down. Event dropped.
+[T=209984988ms] [WS Worker] Link down. Event dropped.
+[T=209985188ms] [WS Worker] Link down. Event dropped.
+[T=209986552ms] [WS Pump] wsClient.loop() blocked 3576ms (wifi_status=3, ws_connected=1)
+[T=209989270ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=209989577ms] [WS Worker] Resent ARM (TSF), attempt 2.
+[T=209990699ms] [WS Worker] Resent ARM (TSF), attempt 3.
+[T=209990706ms] [WS Worker] Resent ARM (TSF), attempt 4.
+[T=209991008ms] [WS Worker] Resent ARM (TSF), attempt 5.
+[T=209991273ms] [WS Worker] Event dropped after ack deadline.
+[T=210001281ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=210003282ms] [WS Worker] Event dropped after ack deadline.
+[T=210003302ms] [WS Worker] Link down. Event dropped.
+[T=210003323ms] [WS Worker] Link down. Event dropped.
+[T=210003344ms] [WS Worker] Link down. Event dropped.
+[T=210003365ms] [WS Worker] Link down. Event dropped.
+[T=210003386ms] [WS Worker] Link down. Event dropped.
+[T=210003387ms] [QUEUE OVERFLOW] ledQueue full; LED feedback dropped.
+[T=210003407ms] [WS Worker] Link down. Event dropped.
+[T=210006488ms] [WS Worker] Link down. Event dropped.
+[T=210006688ms] [WS Worker] Link down. Event dropped.
+[T=210007836ms] [WS Pump] wsClient.loop() blocked 6554ms (wifi_status=3, ws_connected=0)
+[T=210010788ms] [WS Worker] Link down. Event dropped.
+[T=210010987ms] [WS Worker] Link down. Event dropped.
+[T=210013339ms] [WS Pump] wsClient.loop() blocked 5002ms (wifi_status=3, ws_connected=0)
+[T=210015088ms] [WS Worker] Link down. Event dropped.
+[T=210015287ms] [WS Worker] Link down. Event dropped.
+[T=210018852ms] [WS Pump] wsClient.loop() blocked 5002ms (wifi_status=3, ws_connected=0)
+[T=210019377ms] [WS Worker] Link down. Event dropped.
+[T=210019570ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=210023670ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=210023870ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=210027970ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=210028170ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=210032270ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=210032470ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=210036570ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=210036770ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=210040870ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=210041070ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=210045170ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=210045370ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=210049470ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=210049670ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=210053770ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=210053970ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=210058070ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=210058270ms] [WS Worker] Sent START (TSF), attempt 1.

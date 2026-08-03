@@ -1,0 +1,86 @@
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x28 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4209e30e
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce3808,len:0x4bc
+load:0x403c9700,len:0xbd8
+load:0x403cc700,len:0x2a0c
+entry 0x403c98d0
+[T=0ms] [SYSTEM] Board role (jumper): goal
+[T=209791871ms] [NETWORK] Link Active! IP: 192.168.0.189
+[T=209793266ms] [MDNS] cerberus.local -> 192.168.0.208
+[T=209793659ms] [WS Pump] wsClient.loop() blocked 378ms (wifi_status=3, ws_connected=0)
+[T=209796937ms] [INITIALIZED] Valid Baseline Coordinates Locked: 209796936756
+[T=209846270ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209850570ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209854870ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209859170ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209863470ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209867771ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209872070ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209876370ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209880670ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209884970ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209889270ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209893570ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209897870ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209902170ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209906470ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209910770ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209915070ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209919370ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209923670ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209925613ms] [AUDIT ALERT] Temporal Disruption! Drift: 913 us. Rejecting stack value.
+[T=209925613ms] [DISCIPLINED SYN] Extrapolated TSF: 209925613263 (Alpha: 1.00000666)
+[T=209927970ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209932270ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209936570ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209940870ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209945170ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209949470ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209953770ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209958070ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209962370ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209966670ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209970970ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209971277ms] [WS Worker] Resent GOAL (TSF), attempt 2.
+[T=209971579ms] [WS Worker] Resent GOAL (TSF), attempt 3.
+[T=209971881ms] [WS Worker] Resent GOAL (TSF), attempt 4.
+[T=209972183ms] [WS Worker] Resent GOAL (TSF), attempt 5.
+[T=209972484ms] [WS Worker] Event dropped after max retries.
+[T=209975270ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209975577ms] [WS Worker] Resent GOAL (TSF), attempt 2.
+[T=209977328ms] [WS Worker] Resent GOAL (TSF), attempt 3.
+[T=209977334ms] [WS Worker] Event dropped after ack deadline.
+[T=209979588ms] [WS Worker] Link down. Event dropped.
+[T=209983888ms] [WS Worker] Link down. Event dropped.
+[T=209987787ms] [WS Pump] wsClient.loop() blocked 9058ms (wifi_status=3, ws_connected=1)
+[T=209988170ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=209988477ms] [WS Worker] Resent GOAL (TSF), attempt 2.
+[T=209988779ms] [WS Worker] Resent GOAL (TSF), attempt 3.
+[T=209990700ms] [WS Worker] Resent GOAL (TSF), attempt 4.
+[T=209990706ms] [WS Worker] Event dropped after ack deadline.
+[T=209992488ms] [WS Worker] Link down. Event dropped.
+[T=209996294ms] [WS Pump] wsClient.loop() blocked 5002ms (wifi_status=3, ws_connected=0)
+[T=209996768ms] [WS Worker] Link down. Event dropped.
+[T=210001088ms] [WS Worker] Link down. Event dropped.
+[T=210001807ms] [WS Pump] wsClient.loop() blocked 5002ms (wifi_status=3, ws_connected=0)
+[T=210005389ms] [WS Worker] Link down. Event dropped.
+[T=210007320ms] [WS Pump] wsClient.loop() blocked 5002ms (wifi_status=3, ws_connected=0)
+[T=210009688ms] [WS Worker] Link down. Event dropped.
+[T=210012833ms] [WS Pump] wsClient.loop() blocked 5002ms (wifi_status=3, ws_connected=0)
+[T=210013988ms] [WS Worker] Link down. Event dropped.
+[T=210017709ms] [WS Pump] wsClient.loop() blocked 4364ms (wifi_status=3, ws_connected=0)
+[T=210018269ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=210022570ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=210026870ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=210031170ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=210035470ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=210039770ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=210040076ms] [WS Worker] Resent GOAL (TSF), attempt 2.
+[T=210044070ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=210048370ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=210052670ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=210056970ms] [WS Worker] Sent GOAL (TSF), attempt 1.
