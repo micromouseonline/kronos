@@ -163,25 +163,69 @@ crash itself):
   rather than as a separate artifact — see the binned figures; no visible
   early-run dip, per the point above.
 
+**Results, session 8 (2026-08-04)** — the AP-repositioned, confound-free
+single-spammer 5000-run trial planned above
+(`test-data/spam-tests/{cerberus-8,hesperus-start-8,hesperus-goal-8}.log`),
+run to completion (no crash cutoff this time):
+
+- **ISR/TSF crash fix hardware-verified.** Zero panics, zero reboots, on
+  both boards, across the full ~6.53-hour, ~5346-run trial under the same
+  sustained single-spammer load that surfaced the bug in session 7. See the
+  issue below — now marked resolved.
+- **Realistic-deployment RSSI, as intended.** Mean `rssi` -65.8dBm (range
+  -56 to -76dBm), a clear improvement over session 7's deliberately-weak
+  -66 to -82dBm/mean ~-75dBm baseline, confirming the AP repositioning
+  worked.
+- **Retries near-zero, and — the key check — no longer front-loaded.** Only
+  5 distinct events needed a retry out of 16,034 total (0.03%), identified
+  via cerberus-side duplicate receipts of the same `tsf_us`. Binned across
+  the full trial: **zero retries in the first ~2 hours**, the few that
+  occurred fall in hours ~2-4.4, none after. This is the confound-free
+  control session 7 lacked: with the body-position/BT-headphones confound
+  genuinely absent this time, retries do not show the ~20x/~8x early-window
+  spike session 7 saw — supporting the session-7 reading that that spike
+  was confound-driven, not RSSI- or time-of-trial-driven. RSSI level still
+  isn't predictive of which events retry (e.g. ARM: -67.0dBm retried vs.
+  -66.8dBm clean, statistically indistinguishable).
+- **Item 1 (ack-path) recurred once, same signature as before.** A burst at
+  T≈14.09-14.13M ms: three ARM events needed retries within a 40-second
+  window, one needing 9 attempts before succeeding. Cerberus's `[WS-ACK]`
+  fired within 3-8ms on every single delivery (again ruling out "cerberus
+  is slow"), yet hesperus didn't recognise the ack in time — consistent
+  with item 1's still-open two candidate causes, not yet distinguished
+  further by this session.
+- **Race outcome, once one operator-caused artifact is excluded (confirmed
+  with the user, see below): effectively lossless.** Start board
+  armed+started 5346 runs; cerberus received 5345 of the ARM+START pairs
+  over the network (the one gap lines up exactly with the artifact below);
+  goal board sent 5344 GOALs (2 runs left incomplete by the same artifact),
+  and cerberus received all 5344 of them — **zero GOAL-side network loss**.
+- **Explained anomaly, not a bug.** At T≈2.6M ms (~43 minutes in), both
+  hesperus boards and cerberus went completely silent simultaneously for
+  ~8.7 minutes (no sends, no receipts, no crash/reboot/disconnect logged by
+  any of the three) before resuming cleanly — 2 runs left incomplete (armed
+  and started, no GOAL), one of which also never reached cerberus at all.
+  **Confirmed with the user**: this was a deliberate mid-trial adjustment,
+  with the log not reset before resuming — which also explains the run
+  count landing at ~5346 rather than the nominal 5000. Excluded as an
+  operator artifact, same treatment as the cold-start/cutoff artifacts
+  excluded in sessions 3-5; not a system fault. One of the goal board's
+  `[AUDIT ALERT] Temporal Disruption!` self-corrections (see the "AP radio
+  interruption" issue's recurrence note) lands at the exact resume instant
+  and is fully explained by it (a large TSF gap after 8+ minutes without a
+  fresh sample). The other 6 (5 goal-board, 1 start-board) occur during
+  otherwise-normal running with no nearby gap — each a single rejected
+  sample, immediately self-corrected, no operational impact — extending the
+  session-6 recurrence note: this now happens during active running too,
+  not just post-trial idle. Still unexplained, still low-priority and
+  self-healing.
+
 ## Outstanding work, prioritized
 
-1. **[ISR calling `esp_wifi_get_tsf_time()` causes an Interrupt WDT panic under heavy WiFi load](#issue-isr-calling-esp_wifi_get_tsf_time-causes-an-interrupt-wdt-panic-under-heavy-wifi-load)**
-   — **START HERE.** Found 2026-08-03: the start-board hesperus unit hit a
-   genuine crash-reboot loop (12 consecutive panics captured) ~3190 runs into
-   a single-spammer 5000-run trial, self-recovering a couple of minutes
-   later. Root-caused via a symbolized crash backtrace to `handleSensor1()`/
-   `handleSensor2()` (the trigger ISRs) calling `esp_wifi_get_tsf_time()`
-   directly from interrupt context — that API takes an internal WiFi-driver
-   lock, illegal (and, under heavy WiFi-stack load, fatal) to block on from
-   an ISR. Pre-existing bug, unrelated to anything else changed this
-   session — just needed enough sustained trigger volume under enough WiFi
-   contention to hit the unlucky timing window. **Fix implemented and
-   build-verified 2026-08-03** (moves the TSF read into a new dedicated
-   `tsfCaptureTask`, same decouple-the-unsafe-call pattern as the
-   `wsClient.loop()` fix below); not yet hardware-verified. Full detail in
-   the issue below.
-2. **[Acks not arriving back at hesperus in time](#issue-acks-not-arriving-back-at-hesperus-in-time-despite-cerberus-receiving-the-event)**
-   — Found 2026-08-03 while reviewing item 3's verification
+1. **[Acks not arriving back at hesperus in time](#issue-acks-not-arriving-back-at-hesperus-in-time-despite-cerberus-receiving-the-event)**
+   — **START HERE.** (Was item 2; promoted 2026-08-04 now that the ISR/TSF
+   crash fix below is hardware-verified and fully resolved.) Found
+   2026-08-03 while reviewing the `wsClient.loop()` fix's verification
    data: cerberus received the retried event multiple times, well inside
    hesperus's own wait window, in both residual outlier cases — yet no ack
    ever got back to hesperus in time. Same-day session 3, with new
@@ -194,15 +238,18 @@ crash itself):
    an ack and dropped after max retries. Narrows to two undistinguished
    candidates: `AsyncTCP`'s actual on-air write completion (vs. just
    accepting the call) lagging behind `client->text()` returning, or
-   genuine asymmetric packet loss on the return leg specifically. Next
-   step: instrument `AsyncTCP`'s write-completion callback, or a return-leg
+   genuine asymmetric packet loss on the return leg specifically. Recurred
+   again in session 8 (2026-08-04, a 3-event/9-attempt burst) with the same
+   signature — cerberus fast every time, hesperus still missing the ack —
+   without narrowing which of the two candidates is at fault. Next step:
+   instrument `AsyncTCP`'s write-completion callback, or a return-leg
    packet capture. Full detail in the issue below.
-3. **[Wi-Fi power-save vs. battery budget](#issue-wi-fi-power-save-vs-battery-budget)**
+2. **[Wi-Fi power-save vs. battery budget](#issue-wi-fi-power-save-vs-battery-budget)**
    — measure current draw across `WIFI_PS_NONE`/`MIN_MODEM`/`MAX_MODEM` with
    persistent connections in place. Real, measured 110mA cost today; the
    thing this was explicitly deferred pending (persistent connections) has
    now landed, so this is unblocked.
-4. **[`wsClient.loop()` blocking under congestion](#issue-wsclientloop-blocking-under-congestion-defeats-the-ackretry-deadline-bound)**
+3. **[`wsClient.loop()` blocking under congestion](#issue-wsclientloop-blocking-under-congestion-defeats-the-ackretry-deadline-bound)**
    — confirmed via instrumentation + cross-board log correlation: beacon
    spam causes real TCP-level WS disconnects (up to ~18s outages seen) on
    the hesperus side, with `wsClient.loop()` blocking up to ~9.5s per call,
@@ -214,34 +261,34 @@ crash itself):
    2026-08-03** (dedicated `wsPumpTask` + mutexes decouple the socket pump
    from the retry deadline logic) — 5/6 verification deltas landed within
    ~500ms of the 2000ms target, down from the original bug's 7.6s+
-   untethered stalls. The two residual outliers are now tracked as item 2
+   untethered stalls. The two residual outliers are now tracked as item 1
    above, not here. Root RF-level cause (why the outages happen at all)
-   remains open too, folded into item 6 below.
-5. **[Duplicate triggers from gapped robot structure](#issue-duplicate-triggers-from-gapped-robot-structure)**
+   remains open too, folded into item 5 below.
+4. **[Duplicate triggers from gapped robot structure](#issue-duplicate-triggers-from-gapped-robot-structure)**
    — the proposed ~300ms post-trigger lock-out window is arbitrary and its
    failure mode (silently dropping a genuine second crossing, rather than
    today's harmless ignore-once-out-of-`RUNNING`) hasn't been worked out.
    Cheap once resolved, but resolve the design questions first.
-6. **Congested-airtime stress testing** (cross-cutting, not tied to one
+5. **Congested-airtime stress testing** (cross-cutting, not tied to one
    issue) — the four stressor layers sketched in
    `hesperus-timing-gate/review.md` (airtime saturation, bulk throughput,
    channel interference, broadband noise; see `docs/TEST-TOOLING.md`) have
-   runs behind items 2 and 4 above are informal data points in that
+   runs behind items 1 and 3 above are informal data points in that
    direction, and are how both were found. Would validate several of the
    already-shipped fixes (dedup, retry, TSF trust-on-reconnect) under
    realistic contest-venue conditions, not just the quiet-network bench
    tests done so far.
-7. **[Hedged burst sends](#issue-hedged-burst-sends-for-tail-latency)** —
+6. **[Hedged burst sends](#issue-hedged-burst-sends-for-tail-latency)** —
    deprioritized; watch real-world retry counts/rate from the now-shipped
    ack/retry mechanism before building this. No action needed unless that
    telemetry shows frequent retries.
-8. **[Unexplained minor WS jitter / reconnect blip](#issue-unexplained-minor-ws-jitter--reconnect-blip)**
+7. **[Unexplained minor WS jitter / reconnect blip](#issue-unexplained-minor-ws-jitter--reconnect-blip)**
    — low-priority curiosity, self-healing, doesn't touch committed times.
    Proposed long steady-state (10,000-message) characterization test not
    yet run. Its own leading candidate cause (`wsClient.loop()` occasionally
-   blocking) is the same one item 4 now has direct evidence for, just at
+   blocking) is the same one item 3 now has direct evidence for, just at
    millisecond rather than multi-second scale — worth re-reading together
-   now that item 4's instrumentation exists.
+   now that item 3's instrumentation exists.
 
 Everything else below this list is either resolved or has no further action
 planned. (Explicit HTTP connect/read timeouts, formerly tracked here, turned
@@ -840,6 +887,18 @@ it to) is unknown — logged here as an open, low-priority, self-healing
 curiosity rather than investigated further, consistent with how the
 WS-jitter issue below treats similarly rare, non-committed-time-affecting
 blips. Worth re-checking if it recurs.
+
+**Recurred, 2026-08-04** (session 8's single-spammer 5000-run trial, see
+the acceptance-criteria section's "Results, session 8") — same idle-only
+signature, ~65 minutes after the last race this time, goal board only. New
+this session: `[AUDIT ALERT] Temporal Disruption!` also fired 6 further
+times *during* active running (5 goal-board, 1 start-board), each a single
+rejected sample with immediate self-correction and no reboot or operational
+impact — one of the six is fully explained by an 8.7-minute operator pause
+mid-trial (confirmed with the user; see "Results, session 8"), but the
+other five occur with no identified trigger nearby. Still self-healing and
+still not investigated further, but now established as something that
+happens during normal operation too, not just post-trial idle.
 
 ### Issue: Reliable delivery over persistent WS connection
 
@@ -1513,7 +1572,7 @@ rough priority order:
 
 ### Issue: ISR calling `esp_wifi_get_tsf_time()` causes an Interrupt WDT panic under heavy WiFi load
 
-**[FIX IMPLEMENTED, build-verified 2026-08-03 — not yet hardware-verified]**
+**[RESOLVED, hardware-verified 2026-08-04]**
 *(new, found 2026-08-03 during the single-spammer 5000-run trial, session 6's
 counterpart)*
 
@@ -1602,9 +1661,12 @@ contention cases):
 
 All 4 hesperus envs (`pio run`) build clean.
 
-**Verification.** Build-verified only so far. Not yet hardware-verified —
-next step is re-running the same style of long, sustained single-spammer
-trial and confirming no further Interrupt WDT panics occur.
+**Verification.** Hardware-verified 2026-08-04: a full ~6.53-hour,
+~5346-run single-spammer trial (`test-data/spam-tests/{cerberus-8,
+hesperus-start-8,hesperus-goal-8}.log`) under the same sustained load that
+originally surfaced the bug produced zero Interrupt WDT panics on either
+board. See the acceptance-criteria section's "Results, session 8" for the
+full trial writeup.
 
 ## Decision record: ESP-NOW alternative
 
