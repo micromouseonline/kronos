@@ -833,14 +833,18 @@ void setup() {
   WiFi.persistent(false);
   WiFi.disconnect(true);
   WiFi.begin(connect_ssid, connect_pass);
-  // No modem sleep -- WIFI_PS_MAX_MODEM was traced to a 2.9s first-packet
-  // wake-up latency spike on real hardware (radio asleep between sparse
-  // events, exactly the gap pattern between ARM/START/GOAL in a real race).
-  // Matches cerberus's own net/wifi-manager.h, which disables power-save
-  // for the same reason. Trades idle power for rapid, consistent response;
-  // an adaptive "sleep after N idle seconds" scheme is a possible future
-  // enhancement, not built here.
-  esp_wifi_set_ps(WIFI_PS_NONE);
+  // NETWORK-TIMING-ISSUE.md "Wi-Fi power-save vs. battery budget" --
+  // testing WIFI_PS_MIN_MODEM (wakes every beacon interval, ~100ms
+  // typically) 2026-08-04 against the WIFI_PS_NONE baseline (measured
+  // ~110mA), now that persistent connections exist -- the original
+  // problem WIFI_PS_NONE was adopted to fix (WIFI_PS_MAX_MODEM's 2.9s
+  // wake-up latency spike, radio asleep between sparse ARM/START/GOAL
+  // events) was under the old per-event-connection model; MIN_MODEM's much
+  // shorter, more frequent wake cycle is expected to avoid that, but
+  // hasn't been measured on this hardware. Swap back to WIFI_PS_NONE
+  // (matches cerberus's own net/wifi-manager.h) if current-draw/latency
+  // testing doesn't support keeping this.
+  esp_wifi_set_ps(WIFI_PS_MIN_MODEM);
 
   TimerHandle_t hbTimer = xTimerCreate("HB_Timer", pdMS_TO_TICKS(5147), pdTRUE, (void *)0, heartbeatTimerCallback);
   if (hbTimer != NULL) {

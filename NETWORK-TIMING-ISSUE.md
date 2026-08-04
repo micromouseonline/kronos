@@ -536,6 +536,23 @@ proposed: run the existing multi-run trial suite under `MIN_MODEM` and
 check retry counts/rate against the `NONE` baseline, not just whether runs
 complete — a real regression (missed beacon wake windows delaying sends)
 would show up as elevated retries before it shows up as a visible fault.
+`MAX_MODEM` is not part of this round of testing — already ruled out (see
+Observation above).
+
+**`WIFI_PS_MIN_MODEM` enabled for testing, 2026-08-04**
+(`hesperus-timing-gate/src/main.cpp`, one-line change from the existing
+`esp_wifi_set_ps(WIFI_PS_NONE)`). Build-verified (`pio run -e
+hesperus-gate-s3-zero`); not yet hardware-verified. Plan: (1) current-draw
+comparison against the 110mA `NONE` baseline (user, physical measurement);
+(2) a single-spammer trial — deliberately the established pass-bar
+condition (session 8's confound-free baseline: 0.03% retry rate), not a
+harsher one, since the question here is specifically whether `MIN_MODEM`
+regresses the already-accepted baseline, not a fresh stress
+characterization — checking retry rate for a regression signal. **Both
+hesperus units (start and goal) need reflashing** — this line is in the
+shared `main.cpp`, not board-role-specific code. Revert to
+`esp_wifi_set_ps(WIFI_PS_NONE)` if either measurement doesn't support
+keeping it.
 
 ### Issue: Displayed race time vs. true TSF time
 
