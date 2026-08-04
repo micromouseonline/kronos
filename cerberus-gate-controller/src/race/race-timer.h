@@ -110,6 +110,21 @@ constexpr size_t MAX_RUNS_PER_MOUSE = 5;
 inline RaceRun race_runs[MAX_RESULTS];
 inline size_t race_run_count = 0;
 
+// The exact value most recently passed to race_timer_commit_run(), tracked
+// independently of race_runs[]/race_run_count -- see race_timer_last_run_
+// time_ms() below for why host telemetry and the display must read this
+// instead of "the last array slot" once that array wraps.
+inline uint32_t g_last_run_time_ms = 0;
+
+// Next slot race_timer_commit_run() writes to, wraps mod MAX_RESULTS once
+// the array fills -- for testing (leaderboard/run-history display) only,
+// so oldest entries get overwritten rather than every commit past
+// MAX_RESULTS silently doing nothing. Independent of race_run_count, which
+// stays capped at MAX_RESULTS (it's the loop bound for iterating valid
+// entries elsewhere) and can't itself be used as the wrapping write
+// position once full.
+inline size_t race_run_write_cursor = 0;
+
 // Index into race_runs[] where the current mouse's block of runs begins.
 // Runs for a given mouse are always contiguous (no interleaving between
 // mice), so this plus race_run_count is enough to slice out "this mouse's
@@ -272,16 +287,21 @@ inline void (*race_timer_on_run_committed)() = nullptr;
  * This is the main interface where a new run time is recorded
  */
 inline void race_timer_commit_run(uint32_t time_ms) {
+  RaceRun &r = race_runs[race_run_write_cursor];
+  r.mouse_id = mouse_id;
+  r.run_number = mouse_run_count;
+  r.time_ms = time_ms;
+  strncpy(r.name, current_mouse_name, sizeof(r.name) - 1);
+  r.name[sizeof(r.name) - 1] = '\0';
+
+  race_run_write_cursor = (race_run_write_cursor + 1) % MAX_RESULTS;
   if (race_run_count < MAX_RESULTS) {
-    RaceRun &r = race_runs[race_run_count++];
-    r.mouse_id = mouse_id;
-    r.run_number = mouse_run_count;
-    r.time_ms = time_ms;
-    strncpy(r.name, current_mouse_name, sizeof(r.name) - 1);
-    r.name[sizeof(r.name) - 1] = '\0';
-    if (race_timer_on_run_committed != nullptr) {
-      race_timer_on_run_committed();
-    }
+    race_run_count++;
+  }
+  g_last_run_time_ms = time_ms;
+
+  if (race_timer_on_run_committed != nullptr) {
+    race_timer_on_run_committed();
   }
 }
 
@@ -290,8 +310,13 @@ inline void race_timer_commit_run(uint32_t time_ms) {
 // list) once a run ends, rather than run_sw.time()'s own receipt-time-based
 // reading, which can differ by the return-leg network jitter still present
 // even after the tsf-exact commit fix (see race-timer-display.h's GOAL case).
+//
+// Backed by g_last_run_time_ms, NOT race_runs[]/race_run_count -- once
+// race_runs wraps (race_run_write_cursor above), "the last array slot" no
+// longer means "the most recent run", so host telemetry and this getter
+// must not derive from array position at all.
 inline uint32_t race_timer_last_run_time_ms() {
-  return race_run_count > 0 ? race_runs[race_run_count - 1].time_ms : 0;
+  return g_last_run_time_ms;
 }
 
 //============================================================================

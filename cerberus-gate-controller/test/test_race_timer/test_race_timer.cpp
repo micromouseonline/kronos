@@ -6,6 +6,7 @@ namespace {
 
 void reset_race_timer_state() {
   race_run_count = 0;
+  race_run_write_cursor = 0;
   mouse_run_count = 0;
   mouse_id = 0;
   mouse_first_run_index = 0;

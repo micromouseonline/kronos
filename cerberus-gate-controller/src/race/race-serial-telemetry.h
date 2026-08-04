@@ -74,10 +74,12 @@ inline void race_serial_telemetry_tick() {
     if (previous_state == RaceState::ARMED && race_state == RaceState::RUNNING) {
       serial_send_message(MSG_C1_SPLIT_TIME, 0);
     } else if (previous_state == RaceState::RUNNING && race_state == RaceState::GOAL) {
-      // Read the just-committed value, not run_sw.time() directly -- avoids
-      // any ordering ambiguity between commit and telemetry.
-      unsigned long time_ms = (race_run_count > 0) ? race_runs[race_run_count - 1].time_ms : 0;
-      serial_send_run_time(time_ms);
+      // Read the just-committed value via race_timer_last_run_time_ms(), not
+      // run_sw.time() directly (avoids any ordering ambiguity between commit
+      // and telemetry) and not race_runs[] by index (that array wraps once
+      // full -- see race-timer.h's race_run_write_cursor -- so "last slot"
+      // no longer means "most recent run" once it does).
+      serial_send_run_time(race_timer_last_run_time_ms());
     }
   }
 
