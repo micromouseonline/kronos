@@ -248,12 +248,21 @@ run to completion (no crash cutoff this time):
    trial confirming the retry count drops. Full detail, including the
    per-event round-trip breakdown, in the issue below.
 2. **[Wi-Fi power-save vs. battery budget](#issue-wi-fi-power-save-vs-battery-budget)**
-   — **START HERE** (promoted 2026-08-04 now that item 1 above is
-   understood and no longer needs active investigation). Measure current
-   draw across `WIFI_PS_NONE`/`MIN_MODEM`/`MAX_MODEM` with persistent
-   connections in place. Real, measured 110mA cost today; the thing this
-   was explicitly deferred pending (persistent connections) has now
-   landed, so this is unblocked.
+   — Measure current draw across `WIFI_PS_NONE`/`MIN_MODEM`/`MAX_MODEM`
+   with persistent connections in place. Real, measured 110mA cost today;
+   the thing this was explicitly deferred pending (persistent connections)
+   has now landed, so this is unblocked. **Decision, 2026-08-04: `NONE`
+   stays the shipped default regardless of what the overnight trial
+   below shows.** Session 11 found a real, if not-yet-fully-explained,
+   `MIN_MODEM` reliability regression (see the issue below); a clean
+   overnight repeat wouldn't be enough to overturn that — absence of a
+   recurrence in one more trial is not evidence of absence of a rare tail
+   risk, and the asymmetry between "run `NONE` at higher power
+   indefinitely" and "have an outage during a real contest" clearly favours
+   caution. The overnight trial is now diagnostic-only (does the mechanism
+   recur, at what rate), not a pass/fail gate for adoption — `MIN_MODEM`
+   would need to be root-caused, fixed, and *then* re-verified extensively
+   before this decision would be revisited.
 3. **[`wsClient.loop()` blocking under congestion](#issue-wsclientloop-blocking-under-congestion-defeats-the-ackretry-deadline-bound)**
    — confirmed via instrumentation + cross-board log correlation: beacon
    spam causes real TCP-level WS disconnects (up to ~18s outages seen) on
@@ -553,6 +562,99 @@ hesperus units (start and goal) need reflashing** — this line is in the
 shared `main.cpp`, not board-role-specific code. Revert to
 `esp_wifi_set_ps(WIFI_PS_NONE)` if either measurement doesn't support
 keeping it.
+
+**Session 11 results (2026-08-04)** (`test-data/spam-tests/{cerberus-11,
+hesperus-start-11,hesperus-goal-11}.log`) — single-spammer, `MIN_MODEM`,
+~5h active + ~90min idle (~6h34m total, 14,968 total ARM+START+GOAL
+events):
+
+- **Current draw: 480mAh / 6h34m ≈ 73mA average** — a real ~34% reduction
+  from the 110mA `NONE` baseline. Blended across active + idle time, not a
+  clean single-condition number — a dedicated idle-only baseline is the
+  planned next measurement.
+- **Ordinary retry rate elevated ~47x.** Excluding the acute episode below,
+  210/14,968 events (1.4%) needed a retry, vs. session 8's confound-free
+  `NONE` baseline of 0.03% under the same single-spammer condition. All
+  still succeeded (same harmless jitter-vs-timeout mechanism session 10
+  characterized) — consistent with modem sleep adding latency to most wake
+  cycles, not just rare outliers, so more events graze the timeout even
+  though `WS_ACK_TIMEOUT_MS` was already widened.
+- **One acute ~2-minute episode broke the single-spammer zero-loss bar.**
+  At T≈50.66M-50.79M ms, both boards simultaneously logged repeated
+  `wsClient.loop()` stalls from 217ms up to **7.6 seconds**
+  (`wifi_status=3`/WiFi-associated, `ws_connected=0`), 6 WS disconnects,
+  and **8 genuine event drops** (`"dropped after ack deadline"`/`"after
+  max retries"`). This exact `wsClient.loop()`-blocking signature (the
+  same one from the original congestion investigation) occurred **zero
+  times** in session 8's equivalent-length `NONE` single-spammer baseline.
+  Every single-spammer trial to date has been zero-loss until this one.
+  Not proven causal from a single trial (can't fully rule out an
+  unrelated environmental event coinciding with this run), but the
+  contrast with session 8 makes `MIN_MODEM` the leading suspect, not a
+  coincidence, pending a repeat trial.
+- **Reading**: `MIN_MODEM`'s ~34% power saving currently comes with a real
+  reliability cost that breaks the established single-spammer pass bar —
+  not yet a case for adopting it as-is. Next steps before any decision:
+  the clean idle-only current-draw baseline (in progress), and ideally a
+  second single-spammer `MIN_MODEM` trial to see whether the acute-episode
+  pattern recurs (systematic problem) or was a one-off (still concerning
+  given the elevated ordinary retry rate regardless, but a different
+  severity picture).
+- **Mechanism, on closer look — not just "channel congestion."** The 17
+  stall durations aren't uniformly random: 8 of them land within 2ms of
+  exactly **5000ms** (5001-5002ms, one outlier at 4880ms). Checked the
+  actual `links2004/WebSockets` library source (pinned `^2.4.1`, resolved
+  to 2.7.x) rather than guessing: `WEBSOCKETS_TCP_TIMEOUT = 5000`
+  (`WebSockets.h`) is the library's own hardcoded TCP socket timeout,
+  applied during connect/reconnect. Combined with hesperus's own heartbeat
+  config (`main.cpp:936`, `enableHeartbeat(5000ms ping, 3000ms pong
+  timeout, disconnect after 2 misses)`), a coherent chain emerges: (1)
+  **trigger** — `MIN_MODEM`'s sleep window is a liability only if it
+  happens to coincide with a burst of missed/corrupted real-AP beacons
+  severe enough to blow through the 3s pong timeout twice in a row (a rare
+  probabilistic coincidence with the already-documented beacon-processing-
+  overhead effect, not a standing condition — `WIFI_PS_NONE` is never
+  exposed to this since it's always listening); (2) **cascade** — once
+  disconnected, several consecutive *reconnect* attempts can each
+  independently hit the library's fixed 5s TCP timeout if conditions are
+  still degraded, chaining into the observed ~2-minute total outage — a
+  `WebSockets`-library property, not firmware-specific; (3) **why it
+  doesn't recur** — it needs that specific rare coincidence, so going
+  quiet for the remaining hours is consistent with a low-probability tail
+  event, not evidence against the mechanism. Still a hypothesis, not
+  proof — the overnight repeat trial is the actual test: recurrence at
+  some low rate supports it, continued absence over a much longer run
+  weakens it.
+
+**Decision: `NONE` stays the shipped default, 2026-08-04.** Decided
+*before* running the overnight trial, deliberately, to avoid rationalizing
+a marginal result after the fact: given the asymmetric stakes (extra
+~35-55mA running `NONE` indefinitely vs. a genuine outage during a real
+contest), a clean overnight trial would not be sufficient evidence to
+adopt `MIN_MODEM` — absence of a recurrence in one more trial is not
+evidence of absence of a rare tail risk, especially given the mechanism
+above is understood well enough to predict occasional low-probability
+recurrence, not ruled out entirely. The overnight trial's role from here
+is diagnostic only (does it recur, at roughly what rate, does the
+5000ms-timeout signature repeat) — not a pass/fail gate for production
+adoption. `MIN_MODEM` would need the mechanism actually fixed (e.g. a
+widened heartbeat pong-timeout/miss-count, discussed but deliberately not
+yet applied so as not to confound this trial) and then re-verified
+extensively before this decision would be revisited.
+
+**Idle-only current draw, 2026-08-04**: 17mAh over 18 minutes ≈ **56mA**
+average idle draw under `MIN_MODEM` (short sample, but a real number, and
+cleaner than the blended 73mA above since no spammer or events were
+active). Of that, the status NeoPixel (solid green when `READY`, `main.cpp`'s
+`ledDiagnosticTask`) accounts for ~20mA — over a third of total idle draw.
+**Considered and declined, 2026-08-04**: reducing it via a duty-cycled
+flash (e.g. 100ms on/900ms off, ~10% duty, ~2mA) instead of solid-on.
+Decision: keep it solid — the LED is the operator's at-a-glance
+"gate alive" signal, and a brief once-a-second flash trades real
+visibility (especially in bright outdoor daylight at an actual contest)
+for a comparatively small (~18mA) saving next to the larger open question
+above (the `MIN_MODEM` reliability regression). Not revisited unless the
+power budget becomes tight enough that every mA matters.
 
 ### Issue: Displayed race time vs. true TSF time
 
