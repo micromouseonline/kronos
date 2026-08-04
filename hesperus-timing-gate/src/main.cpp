@@ -79,9 +79,24 @@ const uint64_t MIN_PLAUSIBLE_TSF = 300000000;
 // table needed). WS_ACK_TIMEOUT_MS is comfortably above the ~5-15ms typical
 // WS round trip measured during rec. 1's bring-up, generous against the
 // occasional ~40ms single-event jitter spike also seen there.
-const uint32_t WS_ACK_TIMEOUT_MS = 300;         // per-attempt base: resend if no ack within this
-const uint32_t WS_ACK_TIMEOUT_JITTER_MS = 60;   // +/- randomised against the base above (see below) --
-                                                 // 2026-08-03 beacon-spam stress testing (session 3)
+const uint32_t WS_ACK_TIMEOUT_MS = 500;         // per-attempt base: resend if no ack within this --
+                                                 // raised from 300, 2026-08-04 session 10: end-to-end
+                                                 // instrumentation on both boards (cerberus's
+                                                 // pending/space, hesperus's [WS-ACK-RECV]) traced every
+                                                 // retry in a two-spammer+BT trial and found none were
+                                                 // lost -- each was the original ack arriving fine on a
+                                                 // round trip (258-458ms) that simply outran the old
+                                                 // 240-360ms window under heavy channel congestion
+                                                 // (neither board's own processing was slow -- cerberus's
+                                                 // dispatch stayed <15ms and wsPumpTask's own
+                                                 // wsClient.loop() canary logged only one >50ms stall in
+                                                 // the whole trial, uncorrelated with these events -- so
+                                                 // the time is most likely spent on-air/at the WiFi MAC
+                                                 // layer itself, not in either board's software). 500ms
+                                                 // clears the observed 458ms worst case with margin.
+const uint32_t WS_ACK_TIMEOUT_JITTER_MS = 100;  // +/- randomised against the base above (see below) --
+                                                 // kept at the same ~20% of base as before (was 60/300)
+                                                 // -- 2026-08-03 beacon-spam stress testing (session 3)
                                                  // found cerberus's own ack dispatch reliably fast
                                                  // (<15ms) even under heavy congestion, yet acks still
                                                  // failed to arrive back in time; a fixed retry schedule
@@ -96,14 +111,21 @@ const uint8_t WS_MAX_SEND_ATTEMPTS = 10;        // raised from 5, 2026-08-03 ses
                                                  // normal case) pays none of this cost; only the tail
                                                  // under congestion gets more chances
 const uint32_t WS_ACK_WAIT_TICK_MS = 5;         // real vTaskDelay between poll iterations -- see below
-const uint32_t WS_ACK_OVERALL_DEADLINE_MS = 3200;  // hard wall-clock cap, applies even while disconnected
+const uint32_t WS_ACK_OVERALL_DEADLINE_MS = 5200;  // hard wall-clock cap, applies even while disconnected
                                                     // -- without this a real Wi-Fi outage would park
                                                     // uploadWorkerTask on one stale event for the whole
                                                     // outage while fresh events overflow-drop from
-                                                    // networkQueue behind it. Raised from 2000 alongside
-                                                    // WS_MAX_SEND_ATTEMPTS: at ~300ms/attempt, 10 attempts
-                                                    // need ~2700-3000ms of room to actually occur before
-                                                    // this cap would otherwise cut them off first.
+                                                    // networkQueue behind it. Raised from 3200 to 5200,
+                                                    // 2026-08-04, alongside WS_ACK_TIMEOUT_MS's 300->500 --
+                                                    // scaled proportionally so WS_MAX_SEND_ATTEMPTS's 10
+                                                    // attempts still fit inside the deadline (10x500=5000,
+                                                    // +200ms margin, same margin the original 3200 left
+                                                    // over 10x300=3000) rather than quietly shrinking to
+                                                    // ~7 attempts' worth of real-loss recovery depth as a
+                                                    // side effect of the per-attempt timeout increase.
+                                                    // Real-race events are sparse (one every 20+ seconds)
+                                                    // and networkQueue is depth 10, so this remains
+                                                    // comfortably inside that budget.
 
 // ISR debounce guard for both trigger pins -- one place to tune. 50ms
 // comfortably absorbs mechanical switch bounce (bench-testing with a
@@ -177,6 +199,18 @@ static int consecutive_audit_failures = 0;
 // directly.
 bool g_ws_ack_received = false;
 uint64_t g_ws_ack_tsf_us = 0;  // last acked tsf_us, compared by value against the pending send
+// TSF-timeline (debug_timestamp_ms(), same clock cerberus's own [WS-ACK]
+// recv/dispatch/sent timestamps use) capture time of the ack above --
+// NETWORK-TIMING-ISSUE.md "acks not arriving back at hesperus in time"
+// issue, added 2026-08-04 once cerberus-side instrumentation ruled out
+// AsyncTCP write-completion lag on cerberus's own end: this is the
+// matching receive-side timestamp needed to see where the remaining time
+// actually goes, directly comparable to cerberus's sent= with no NTP/offset
+// needed. debug_timestamp_ms() itself is a cheap esp_wifi_get_tsf_time()
+// read, not I/O, so it's safe to call here despite the latency-sensitive
+// context below -- unlike a debug_printf/Serial write, which is
+// deliberately NOT done in this handler (see its own comment).
+uint64_t g_ws_ack_recv_t_ms = 0;
 SemaphoreHandle_t ws_ack_state_mutex = xSemaphoreCreateMutex();
 
 /// @brief wsClient.onEvent() handler -- receives cerberus's per-event ack
@@ -189,13 +223,22 @@ SemaphoreHandle_t ws_ack_state_mutex = xSemaphoreCreateMutex();
 /// holds ws_client_mutex for the duration -- this handler must only ever take
 /// ws_ack_state_mutex, never ws_client_mutex (a non-recursive FreeRTOS mutex
 /// already held by the same task would deadlock). It has no reason to call
-/// back into wsClient, so keep it that way.
+/// back into wsClient, so keep it that way. Deliberately does no logging of
+/// its own for the same reason: a debug_printf() here would add a
+/// serial_write_mutex take + blocking Serial write directly into
+/// wsPumpTask's call stack, the exact latency-critical path the
+/// wsClient.loop()-blocking fix exists to protect -- the receive timestamp
+/// captured below is cheap to take here, but its logging is deferred to
+/// uploadWorkerTask (see wsTakeAckIfReceived()'s call site), which already
+/// does its own unhurried Serial I/O for "[WS Worker] Sent/Resent" today.
 void wsClientEventHandler(WStype_t type, uint8_t *payload, size_t length) {
   if (type == WStype_TEXT) {
     JsonDocument doc;
     if (deserializeJson(doc, payload, length) == DeserializationError::Ok) {
+      uint64_t recv_t_ms = debug_timestamp_ms();
       xSemaphoreTake(ws_ack_state_mutex, portMAX_DELAY);
       g_ws_ack_tsf_us = doc["ack_tsf_us"] | 0ULL;
+      g_ws_ack_recv_t_ms = recv_t_ms;
       g_ws_ack_received = true;
       xSemaphoreGive(ws_ack_state_mutex);
     }
@@ -232,12 +275,15 @@ bool wsSendTxtBounded(String &payload, uint32_t timeout_ms) {
   return true;
 }
 
-/// @brief Atomically reads the pending ack, if one has arrived, into out_tsf.
-bool wsTakeAckIfReceived(uint64_t &out_tsf) {
+/// @brief Atomically reads the pending ack, if one has arrived, into out_tsf
+/// and out_recv_t_ms (the TSF-timeline timestamp wsClientEventHandler()
+/// captured it at -- directly comparable to cerberus's own [WS-ACK] sent=).
+bool wsTakeAckIfReceived(uint64_t &out_tsf, uint64_t &out_recv_t_ms) {
   bool got = false;
   xSemaphoreTake(ws_ack_state_mutex, portMAX_DELAY);
   if (g_ws_ack_received) {
     out_tsf = g_ws_ack_tsf_us;
+    out_recv_t_ms = g_ws_ack_recv_t_ms;
     got = true;
   }
   xSemaphoreGive(ws_ack_state_mutex);
@@ -677,9 +723,12 @@ void uploadWorkerTask(void *pvParameters) {
         // on time.
         while (!acked) {
           uint64_t acked_tsf;
-          if (wsTakeAckIfReceived(acked_tsf)) {
+          uint64_t acked_recv_t_ms;
+          if (wsTakeAckIfReceived(acked_tsf, acked_recv_t_ms)) {
             if (acked_tsf == expected_ack) {
               acked = true;
+              debug_printf("[WS-ACK-RECV] tsf_us=%llu recv_t=%llu attempt=%u\n", acked_tsf, acked_recv_t_ms,
+                           attempt);
               break;
             }
             wsClearAck();  // stale/mismatched ack -- keep waiting for ours

@@ -223,32 +223,37 @@ run to completion (no crash cutoff this time):
 ## Outstanding work, prioritized
 
 1. **[Acks not arriving back at hesperus in time](#issue-acks-not-arriving-back-at-hesperus-in-time-despite-cerberus-receiving-the-event)**
-   — **START HERE.** (Was item 2; promoted 2026-08-04 now that the ISR/TSF
-   crash fix below is hardware-verified and fully resolved.) Found
-   2026-08-03 while reviewing the `wsClient.loop()` fix's verification
-   data: cerberus received the retried event multiple times, well inside
-   hesperus's own wait window, in both residual outlier cases — yet no ack
-   ever got back to hesperus in time. Same-day session 3, with new
-   `[WS-ACK]` timing instrumentation hardware-verified: **cerberus's own
-   ack dispatch is confirmed fast** (max 15ms, `recv`→`client->text()`
-   return, even under the worst congestion) — rules out "cerberus is slow"
-   as a cause. But a specific case shows cerberus application-acked the
-   same event 4 times, all well inside hesperus's window, with no
-   `wsPumpTask` stall logged either — yet hesperus still never recognised
-   an ack and dropped after max retries. Narrows to two undistinguished
-   candidates: `AsyncTCP`'s actual on-air write completion (vs. just
-   accepting the call) lagging behind `client->text()` returning, or
-   genuine asymmetric packet loss on the return leg specifically. Recurred
-   again in session 8 (2026-08-04, a 3-event/9-attempt burst) with the same
-   signature — cerberus fast every time, hesperus still missing the ack —
-   without narrowing which of the two candidates is at fault. Next step:
-   instrument `AsyncTCP`'s write-completion callback, or a return-leg
-   packet capture. Full detail in the issue below.
+   — **[RESOLVED, tuning applied 2026-08-04, not yet hardware-verified.]**
+   End-to-end instrumentation on both boards (cerberus's `pending`/`space`,
+   hesperus's `[WS-ACK-RECV]` receive timestamp, both on the shared TSF
+   clock) traced all 10 retried events in a two-spammer+BT marginal trial
+   start to finish: **every one of them was the original ack arriving
+   fine, just with a round trip (258-458ms) that happened to exceed
+   hesperus's fixed ~300ms per-attempt timeout.** Not loss, not a stack
+   stall on either side (ruled out via `wsPumpTask`'s own blocking canary,
+   which fired only once in the whole trial and didn't line up with any of
+   the 10), not asymmetric (both legs contribute comparably) — ordinary
+   bidirectional jitter under heavy interference, occasionally summing
+   past a fixed timeout, most likely at the WiFi MAC layer itself given
+   both boards' software was cleared. Retry/dedup already handled it
+   correctly throughout (zero data loss in any session this showed up in),
+   and it only ever appeared under the explicitly-adversarial two-spammer
+   smoke test, not the single-spammer pass bar (0.03% retry rate there).
+   **`WS_ACK_TIMEOUT_MS` raised 300→500ms** (jitter and
+   `WS_ACK_OVERALL_DEADLINE_MS` scaled proportionally alongside it, so
+   `WS_MAX_SEND_ATTEMPTS`'s retry depth for genuine loss isn't quietly
+   reduced) rather than the previously-considered redundant-ack-burst
+   mitigation, which was built around a loss model this data doesn't
+   support. Build-verified; next step is a session-9/10-style marginal
+   trial confirming the retry count drops. Full detail, including the
+   per-event round-trip breakdown, in the issue below.
 2. **[Wi-Fi power-save vs. battery budget](#issue-wi-fi-power-save-vs-battery-budget)**
-   — measure current draw across `WIFI_PS_NONE`/`MIN_MODEM`/`MAX_MODEM` with
-   persistent connections in place. Real, measured 110mA cost today; the
-   thing this was explicitly deferred pending (persistent connections) has
-   now landed, so this is unblocked.
+   — **START HERE** (promoted 2026-08-04 now that item 1 above is
+   understood and no longer needs active investigation). Measure current
+   draw across `WIFI_PS_NONE`/`MIN_MODEM`/`MAX_MODEM` with persistent
+   connections in place. Real, measured 110mA cost today; the thing this
+   was explicitly deferred pending (persistent connections) has now
+   landed, so this is unblocked.
 3. **[`wsClient.loop()` blocking under congestion](#issue-wsclientloop-blocking-under-congestion-defeats-the-ackretry-deadline-bound)**
    — confirmed via instrumentation + cross-board log correlation: beacon
    spam causes real TCP-level WS disconnects (up to ~18s outages seen) on
@@ -1530,6 +1535,214 @@ either.
   would need either instrumenting `AsyncTCP`'s write-completion callback
   (not just the call to `client->text()`) on cerberus, or a packet capture
   on the return leg specifically.
+
+**TCP-level ack-pending instrumentation added, 2026-08-04**
+(`cerberus-gate-controller/src/net/http-server.h`, `ws_event_handler()`'s
+`WS_EVT_DATA` branch) — aimed at candidate (a) above. Deliberately does
+**not** use `AsyncClient::onAck()`: checked the actual vendored library
+source at the pinned versions (`esp32async/AsyncTCP` v3.5.0,
+`esp32async/ESPAsyncWebServer` v3.11.2) first, since `AsyncClient::onAck()`
+only holds a single callback slot, and `AsyncWebSocketClient`'s own
+constructor already binds *its* `_onAck` handler onto the same underlying
+`AsyncClient` to drive its outgoing message-queue (`_runQueue()`) —
+registering our own handler there would silently replace theirs and break
+queued-message delivery after the first frame per client, a much worse bug
+than the one being investigated, and one `pio run` wouldn't catch. Instead,
+right before each ack dispatch, two plain read-only getters on the
+underlying `AsyncClient` (`client->client()`) are logged: `canSend()`
+(`false` means a *previous* write on this connection hasn't been TCP-acked
+by hesperus yet — i.e. genuinely still in flight below the WS layer, not
+just unprocessed by hesperus's app code) and `space()` (remaining TCP send
+buffer headroom). New `[WS-ACK]` fields: `pending=<0/1> space=<bytes>`.
+Captured unconditionally on every ack (not just retried ones) to build a
+normal-operation baseline to compare congested-window readings against.
+Since hesperus retries roughly every 250-350ms during a stall, each retry's
+arrival is itself an extra free sample of this state during exactly the
+window that matters. Build-verified (`pio run -e
+cerberus-cyd2usb-diymalls-ili9341`); not yet hardware-verified. **Next
+step, per the session-8 conversation**: rather than another multi-hour
+trial (session 8's realistic-RSSI retry rate was 0.03%, too rare to
+efficiently distinguish causes), run a short (15-30 minute) deliberately
+marginal trial — two-spammer congestion or the earlier weak-RSSI AP
+placement — to reliably reproduce enough ack-path retries to read: if
+`pending=1`/`space` near-zero shows up repeatedly during retry bursts, that
+confirms candidate (a) (backlog inside AsyncTCP/lwIP, not yet on the air);
+if `pending=0`/`space` healthy throughout even while hesperus keeps
+retrying, that rules (a) out and points at (b) or a hesperus-side handling
+delay instead.
+
+**Hardware-verified, session 9 (2026-08-04)** (`test-data/spam-tests/
+{cerberus-9,hesperus-start-9,hesperus-goal-9}.log`) — the short marginal
+trial above, run as planned: ~28.6 minutes, 399 runs, spammer(s) and BT
+streaming both active together and the AP moved physically closer than
+session 8. This deliberately harsher combination worked as a retry
+generator: 62 of 1197 distinct events needed at least one retry (5.2%,
+~170x session 8's confound-free 0.03%), including bursts up to 7 receipts
+for a single event — and **candidate (a) is ruled out, cleanly**:
+
+- **`pending=0` on every single one of the 1272 `[WS-ACK]` lines this
+  trial** — including all 62 retried events' acks, checked individually,
+  not just in aggregate. Never once did cerberus have an unacked write
+  outstanding on a client's connection at the moment it needed to dispatch
+  another ack.
+- **`space` (TCP send-buffer headroom) stayed within 2% of its max (5760)
+  throughout** — min 5648 across the whole trial, including during the
+  worst retry bursts. No sign of a growing backlog inside `AsyncTCP`/lwIP
+  under this load.
+- **`client->text()` itself stayed fast** — max 8ms even across the
+  retried-event acks, consistent with session 3's original finding.
+- **Race outcome: 399/399/399 ARM/START/GOAL, zero drops** — every one of
+  the 62 retry situations eventually succeeded; the retry/dedup mechanism
+  did its job even under this much heavier load than the pass-bar
+  single-spammer scenario. Zero panics, zero WS disconnects, zero `[AUDIT
+  ALERT]` recurrences.
+- **Reading**: with cerberus's TCP-level write path this thoroughly cleared
+  — no backlog, no pending acks, fast dispatch, even under conditions that
+  produced 170x session 8's retry rate — candidate (a) (`AsyncTCP` write
+  completion lagging behind `client->text()`) is no longer a plausible
+  explanation. The remaining live candidate is (b): something on the
+  return leg or hesperus's own receive-side handling is where the event
+  needs to be traced next — this instrumentation has done what it can from
+  cerberus's side alone. (Note: hesperus's WS client is the Links2004
+  `WebSocketsClient` library, not `AsyncTCP` — a different stack from
+  cerberus's server side, so this session's `AsyncTCP`-specific finding
+  says nothing about hesperus's own library internals one way or another.)
+- Incidentally reinforces the standing beacon-volume-not-RSSI theory: mean
+  `rssi` this session (-65.9dBm) was statistically the same as session 8's
+  clean-baseline reading (-65.8dBm) despite the AP being moved closer —
+  yet the retry rate exploded, because what changed was beacon/interference
+  *volume* (spammers + BT), not link quality.
+
+**Hesperus-side receive timestamp added, 2026-08-04**
+(`hesperus-timing-gate/src/main.cpp`) — the natural next step once
+cerberus's side was cleared: `wsClientEventHandler()` (the
+`WebSocketsClient` callback that receives cerberus's ack) now captures
+`debug_timestamp_ms()` (same shared Wi-Fi-TSF clock cerberus's own
+timestamps use, so directly comparable with no offset/NTP needed) at the
+instant an ack arrives, alongside the existing `g_ws_ack_tsf_us`. New field
+`g_ws_ack_recv_t_ms`, threaded through `wsTakeAckIfReceived()`'s existing
+out-param pattern (now `(uint64_t &out_tsf, uint64_t &out_recv_t_ms)`, one
+call site). Deliberately does **not** log from inside
+`wsClientEventHandler()` itself: that handler runs synchronously nested
+inside `wsPumpTask`'s `wsClient.loop()` call — the single most
+latency-sensitive path in the app, the exact one the `wsClient.loop()`-
+blocking fix exists to protect — and a `debug_printf()` there would add a
+`serial_write_mutex` take plus a blocking `Serial` write directly into that
+path. Capturing the timestamp is cheap (a plain `esp_wifi_get_tsf_time()`
+read, no I/O) so it's safe to do inline; logging it is deferred to
+`uploadWorkerTask`'s existing ack-wait loop (new `[WS-ACK-RECV]
+tsf_us=... recv_t=... attempt=...` line, right where a matching ack is
+recognised) — that task already does its own unhurried Serial I/O for
+`[WS Worker] Sent/Resent` today, so this adds no new risk there. Once run
+against a marginal trial like session 9's, `[WS-ACK-RECV] recv_t=...` on
+hesperus can be lined up directly against cerberus's `[WS-ACK] sent=...`
+for the same `tsf_us`, giving a true one-way return-leg latency instead of
+an inference. Build-verified (`pio run -e hesperus-gate-s3-zero`); not yet
+hardware-verified.
+
+**Mitigation timing, decided 2026-08-04**: discussed jumping straight to
+mitigation 1 below (redundant ack bursts) now that candidate (a) is ruled
+out, given the suspicion has shifted toward hesperus's own stack — decided
+against it for now, in favour of running the instrumentation above first.
+Two reasons: the extra 2-3 small (~30-50 byte) frames are negligible next
+to beacon-storm traffic volume, so "would it make things worse" isn't
+really the concern; the real issue is that trying the mitigation now would
+show *whether* it helped without showing *why*, and there's already a
+suggestive data point against "redundant acks alone will fix this" —
+session 3's specific case had cerberus's own dedup-triggered re-acks
+already deliver the same ack **four separate times** (once per hesperus
+resend, ~250-350ms apart) and hesperus missed all four, which looks more
+like a hesperus-side handling gap than simple independent packet loss that
+redundancy would fix. Get the one-way latency data first, then pick the
+mitigation with evidence in hand.
+
+**Root cause identified, session 10 (2026-08-04)** (`test-data/spam-tests/
+{cerberus-10,hesperus-start-10,hesperus-goal-10}.log`) — the marginal
+trial above, this time with two spammers plus BT streaming together
+(harsher than session 9's setup), run against both new instrumentation
+sets at once. 400 runs, 28.6 minutes, mean rssi -66.3dBm. Race outcome:
+399/399/399, zero drops, zero panics, zero disconnects, zero `[AUDIT
+ALERT]`s — the system handled the adversarial two-spammer case cleanly
+despite the ack-path activity below. Only 10 of 1197 distinct events
+needed a retry (0.84%) — every one of which was cross-referenced end to
+end using both boards' timestamps (all on the same shared TSF clock, so
+directly comparable with no offset correction):
+
+- **Every single one of the 10 "retried" events' original ack was actually
+  received and recognised by hesperus — none were lost.** For each, the
+  full round trip was reconstructed: hesperus's own send time (`[WS
+  Worker] Sent ...]`) → cerberus's `DATA` receipt → cerberus's ack
+  `sent=` → hesperus's `[WS-ACK-RECV] recv_t=`. Forward leg (hesperus send
+  → cerberus receipt) ranged 93-386ms; cerberus's own processing stayed
+  fast as always (3-6ms); return leg (cerberus ack sent → hesperus
+  recognises) ranged 30-322ms. **Total round trip for all 10: 258-458ms**
+  — every one landing at or beyond hesperus's own jittered per-attempt
+  timeout window (`WS_ACK_TIMEOUT_MS` 300ms ± 60ms, i.e. 240-360ms).
+- **Compare against the 1187 clean (non-retried) events' return-leg
+  latency alone: mean 44ms, p50 35ms, p90 80ms, p99 143ms, max 257ms —
+  only 1 of 1187 exceeded 240ms.** The 10 retried events' return-leg
+  latencies (30-322ms) mostly sit inside or just past that same
+  distribution's tail, not in some separate, qualitatively different
+  regime. Nothing points at loss, a stuck queue, or a hesperus-side stall:
+  cerberus's dispatch is fast, hesperus's own `[WS-ACK-RECV]` fires
+  promptly once the packet is actually there.
+- **Conclusion: this isn't packet loss (candidate b) or a stack stall on
+  either side — it's ordinary bidirectional network jitter, occasionally
+  summing past a fixed ~300ms timeout under heavy interference.** Both
+  legs contribute roughly symmetrically (forward-leg range 93-386ms is if
+  anything wider than the return-leg's 30-322ms), so "asymmetric return-leg
+  loss" specifically is not what's happening. The retry/dedup mechanism
+  already handles this exactly as designed — every one of these 10 events
+  still completed with zero data loss — so in practice this is a harmless
+  "spurious resend under heavy interference" phenomenon, not a bug with a
+  hidden failure mode. This also retroactively reframes session 3's
+  original finding (cerberus re-acked the same event 4 times, "well inside
+  hesperus's own wait window") — that analysis compared cerberus-side
+  times against hesperus's own window without a directly-measured return
+  transit time; today's instrumentation shows that transit time is exactly
+  the piece that was missing, and is enough on its own to explain it.
+- **Practical implication for the mitigations below**: redundant ack
+  bursts (mitigation 1) were designed around a loss model and would only
+  help here by chance (marginally raising the odds one of 2-3 copies beats
+  the timeout, not by fixing anything structural). A better-targeted fix,
+  if this is worth addressing at all, is **loosening `WS_ACK_TIMEOUT_MS`**
+  to comfortably clear the round-trip tail actually observed under
+  adversarial interference (session 10's worst case: 458ms) — a pure
+  tuning change with no correctness downside, since a resend is always
+  safe (dedup already handles it) and simply costs a little extra airtime.
+  Whether it's worth doing at all is a judgement call: this only showed up
+  under the explicitly-adversarial two-spammer+BT smoke-test scenario, not
+  the single-spammer pass bar (session 8's confound-free single-spammer
+  retry rate was 0.03%, essentially never), so the honest framing is
+  "understood and harmless," not "must fix."
+- **Before tuning it, checked whether the delay was hesperus's own
+  software rather than the network**: `wsPumpTask`'s permanent
+  `wsClient.loop()` blocking canary (logs any single call over 50ms) fired
+  only once in the entire session-10 trial, and that one instance doesn't
+  line up in time with any of the 10 retried events (nearest is 4.5s+
+  away). So hesperus wasn't sitting on an already-arrived packet — the
+  pump was polling normally throughout. Combined with cerberus's own
+  dispatch staying under 15ms (confirmed since session 3), the delay is by
+  elimination most likely happening on-air / at the WiFi MAC layer itself
+  under two-spammer channel saturation (matching the "every radio on the
+  channel pays a beacon-processing tax" mechanism already described in
+  the acceptance-criteria section) — not directly instrumented, inferred
+  by ruling out both boards' software.
+
+**`WS_ACK_TIMEOUT_MS` tuned, 2026-08-04** (`hesperus-timing-gate/src/main.cpp`)
+— raised 300→500ms (jitter scaled proportionally, 60→100ms, keeping the
+same ~20% ratio), comfortably clearing session 10's 458ms worst case with
+margin. `WS_ACK_OVERALL_DEADLINE_MS` raised 3200→5200ms alongside it,
+proportional to the same 1.5-1.6x change, so `WS_MAX_SEND_ATTEMPTS`'s 10
+attempts still fit inside the overall deadline (10×500=5000, +200ms
+margin, matching the original's 3200 vs. 10×300=3000) rather than quietly
+losing ~3 attempts of real-loss recovery depth as a side effect of loosening
+the per-attempt timeout. Real-race events are sparse (one every 20+
+seconds) and `networkQueue` is depth 10, so the larger worst-case
+per-event stall remains comfortably inside budget there. Build-verified
+(`pio run -e hesperus-gate-s3-zero`); not yet hardware-verified — next
+step is re-running a session-9/10-style marginal trial and confirming the
+retry count drops.
 
 **Candidate further mitigations, 2026-08-03 — not yet tried.** Discussed
 while waiting on the large-N single-spammer trial; deliberately held until

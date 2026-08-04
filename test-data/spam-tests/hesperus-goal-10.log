@@ -1,0 +1,807 @@
+[T=43606101ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43606307ms] [WS-ACK-RECV] tsf_us=43606098968 recv_t=43606302 attempt=1
+[T=43610401ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43610496ms] [WS-ACK-RECV] tsf_us=43610398961 recv_t=43610495 attempt=1
+[T=43614701ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43614947ms] [WS Worker] Resent GOAL (TSF), attempt 2.
+[T=43614963ms] [WS-ACK-RECV] tsf_us=43614698952 recv_t=43614959 attempt=2
+[T=43619001ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43619176ms] [WS-ACK-RECV] tsf_us=43618998938 recv_t=43619172 attempt=1
+[T=43623301ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43623547ms] [WS Worker] Resent GOAL (TSF), attempt 2.
+[T=43623648ms] [WS-ACK-RECV] tsf_us=43623298941 recv_t=43623644 attempt=2
+[T=43627600ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43627781ms] [WS-ACK-RECV] tsf_us=43627598915 recv_t=43627777 attempt=1
+[T=43631901ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43631951ms] [WS-ACK-RECV] tsf_us=43631898937 recv_t=43631949 attempt=1
+[T=43636201ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43636301ms] [WS-ACK-RECV] tsf_us=43636198923 recv_t=43636300 attempt=1
+[T=43640501ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43640576ms] [WS-ACK-RECV] tsf_us=43640498922 recv_t=43640573 attempt=1
+[T=43644801ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43644976ms] [WS-ACK-RECV] tsf_us=43644798909 recv_t=43644975 attempt=1
+[T=43649101ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43649201ms] [WS-ACK-RECV] tsf_us=43649098900 recv_t=43649198 attempt=1
+[T=43653401ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43653576ms] [WS-ACK-RECV] tsf_us=43653398886 recv_t=43653572 attempt=1
+[T=43657701ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43657836ms] [WS-ACK-RECV] tsf_us=43657698902 recv_t=43657834 attempt=1
+[T=43662001ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43662211ms] [WS-ACK-RECV] tsf_us=43661998884 recv_t=43662206 attempt=1
+[T=43666301ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43666481ms] [WS-ACK-RECV] tsf_us=43666298879 recv_t=43666477 attempt=1
+[T=43670601ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43670691ms] [WS-ACK-RECV] tsf_us=43670598881 recv_t=43670689 attempt=1
+[T=43674901ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43675016ms] [WS-ACK-RECV] tsf_us=43674898870 recv_t=43675012 attempt=1
+[T=43679201ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43679346ms] [WS-ACK-RECV] tsf_us=43679198848 recv_t=43679344 attempt=1
+[T=43683501ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43683581ms] [WS-ACK-RECV] tsf_us=43683498873 recv_t=43683576 attempt=1
+[T=43687801ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43687911ms] [WS-ACK-RECV] tsf_us=43687798848 recv_t=43687909 attempt=1
+[T=43692101ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43692156ms] [WS-ACK-RECV] tsf_us=43692098849 recv_t=43692152 attempt=1
+[T=43696401ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43696576ms] [WS-ACK-RECV] tsf_us=43696398834 recv_t=43696573 attempt=1
+[T=43700701ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43700816ms] [WS-ACK-RECV] tsf_us=43700698833 recv_t=43700815 attempt=1
+[T=43705001ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43705081ms] [WS-ACK-RECV] tsf_us=43704998826 recv_t=43705078 attempt=1
+[T=43709301ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43709466ms] [WS-ACK-RECV] tsf_us=43709298819 recv_t=43709462 attempt=1
+[T=43713601ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43713696ms] [WS-ACK-RECV] tsf_us=43713598826 recv_t=43713694 attempt=1
+[T=43717901ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43718051ms] [WS-ACK-RECV] tsf_us=43717898807 recv_t=43718046 attempt=1
+[T=43722201ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43722251ms] [WS-ACK-RECV] tsf_us=43722198800 recv_t=43722248 attempt=1
+[T=43726501ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43726581ms] [WS-ACK-RECV] tsf_us=43726498787 recv_t=43726579 attempt=1
+[T=43730801ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43730957ms] [WS-ACK-RECV] tsf_us=43730798775 recv_t=43730953 attempt=1
+[T=43735101ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43735177ms] [WS-ACK-RECV] tsf_us=43735098783 recv_t=43735175 attempt=1
+[T=43739401ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43739442ms] [WS-ACK-RECV] tsf_us=43739398770 recv_t=43739437 attempt=1
+[T=43743701ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43743802ms] [WS-ACK-RECV] tsf_us=43743698778 recv_t=43743799 attempt=1
+[T=43748001ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43748087ms] [WS-ACK-RECV] tsf_us=43747998754 recv_t=43748082 attempt=1
+[T=43752301ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43752486ms] [WS-ACK-RECV] tsf_us=43752298744 recv_t=43752484 attempt=1
+[T=43756601ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43756691ms] [WS-ACK-RECV] tsf_us=43756598736 recv_t=43756685 attempt=1
+[T=43760901ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43760951ms] [WS-ACK-RECV] tsf_us=43760898734 recv_t=43760947 attempt=1
+[T=43765201ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43765387ms] [WS-ACK-RECV] tsf_us=43765198730 recv_t=43765382 attempt=1
+[T=43769501ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43769587ms] [WS-ACK-RECV] tsf_us=43769498722 recv_t=43769585 attempt=1
+[T=43773801ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43773881ms] [WS-ACK-RECV] tsf_us=43773798717 recv_t=43773877 attempt=1
+[T=43778101ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43778231ms] [WS-ACK-RECV] tsf_us=43778098710 recv_t=43778229 attempt=1
+[T=43782401ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43782596ms] [WS-ACK-RECV] tsf_us=43782398706 recv_t=43782592 attempt=1
+[T=43786701ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43786806ms] [WS-ACK-RECV] tsf_us=43786698699 recv_t=43786803 attempt=1
+[T=43791001ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43791131ms] [WS-ACK-RECV] tsf_us=43790998687 recv_t=43791126 attempt=1
+[T=43795301ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43795391ms] [WS-ACK-RECV] tsf_us=43795298686 recv_t=43795389 attempt=1
+[T=43799601ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43799696ms] [WS-ACK-RECV] tsf_us=43799598678 recv_t=43799692 attempt=1
+[T=43803901ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43804031ms] [WS-ACK-RECV] tsf_us=43803898668 recv_t=43804025 attempt=1
+[T=43808201ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43808291ms] [WS-ACK-RECV] tsf_us=43808198652 recv_t=43808287 attempt=1
+[T=43812501ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43812566ms] [WS-ACK-RECV] tsf_us=43812498651 recv_t=43812562 attempt=1
+[T=43816801ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43816896ms] [WS-ACK-RECV] tsf_us=43816798641 recv_t=43816892 attempt=1
+[T=43821101ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43821266ms] [WS-ACK-RECV] tsf_us=43821098643 recv_t=43821265 attempt=1
+[T=43825401ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43825501ms] [WS-ACK-RECV] tsf_us=43825398630 recv_t=43825498 attempt=1
+[T=43829701ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43829771ms] [WS-ACK-RECV] tsf_us=43829698622 recv_t=43829770 attempt=1
+[T=43834001ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43834136ms] [WS-ACK-RECV] tsf_us=43833998619 recv_t=43834133 attempt=1
+[T=43838301ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43838406ms] [WS-ACK-RECV] tsf_us=43838298610 recv_t=43838405 attempt=1
+[T=43842601ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43842651ms] [WS-ACK-RECV] tsf_us=43842598607 recv_t=43842648 attempt=1
+[T=43846901ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43847071ms] [WS-ACK-RECV] tsf_us=43846898592 recv_t=43847070 attempt=1
+[T=43851201ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43851306ms] [WS-ACK-RECV] tsf_us=43851198591 recv_t=43851302 attempt=1
+[T=43855501ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43855576ms] [WS-ACK-RECV] tsf_us=43855498584 recv_t=43855575 attempt=1
+[T=43859801ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43859851ms] [WS-ACK-RECV] tsf_us=43859798575 recv_t=43859849 attempt=1
+[T=43864101ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43864316ms] [WS-ACK-RECV] tsf_us=43864098566 recv_t=43864312 attempt=1
+[T=43868401ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43868466ms] [WS-ACK-RECV] tsf_us=43868398567 recv_t=43868464 attempt=1
+[T=43872700ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43872771ms] [WS-ACK-RECV] tsf_us=43872698556 recv_t=43872766 attempt=1
+[T=43877000ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43877081ms] [WS-ACK-RECV] tsf_us=43876998554 recv_t=43877078 attempt=1
+[T=43881301ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43881461ms] [WS-ACK-RECV] tsf_us=43881298543 recv_t=43881460 attempt=1
+[T=43885600ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43885636ms] [WS-ACK-RECV] tsf_us=43885598534 recv_t=43885633 attempt=1
+[T=43889901ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43889981ms] [WS-ACK-RECV] tsf_us=43889898524 recv_t=43889976 attempt=1
+[T=43894201ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43894311ms] [WS-ACK-RECV] tsf_us=43894198520 recv_t=43894309 attempt=1
+[T=43898501ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43898596ms] [WS-ACK-RECV] tsf_us=43898498512 recv_t=43898592 attempt=1
+[T=43902800ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43902876ms] [WS-ACK-RECV] tsf_us=43902798501 recv_t=43902874 attempt=1
+[T=43907100ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43907250ms] [WS-ACK-RECV] tsf_us=43907098498 recv_t=43907247 attempt=1
+[T=43911400ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43911550ms] [WS-ACK-RECV] tsf_us=43911398485 recv_t=43911548 attempt=1
+[T=43915701ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43915926ms] [WS-ACK-RECV] tsf_us=43915698478 recv_t=43915922 attempt=1
+[T=43920000ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43920085ms] [WS-ACK-RECV] tsf_us=43919998472 recv_t=43920084 attempt=1
+[T=43924300ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43924400ms] [WS-ACK-RECV] tsf_us=43924298469 recv_t=43924396 attempt=1
+[T=43928600ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43928650ms] [WS-ACK-RECV] tsf_us=43928598462 recv_t=43928648 attempt=1
+[T=43932901ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43933056ms] [WS-ACK-RECV] tsf_us=43932898450 recv_t=43933052 attempt=1
+[T=43937200ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43937331ms] [WS-ACK-RECV] tsf_us=43937198442 recv_t=43937325 attempt=1
+[T=43941500ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43941661ms] [WS-ACK-RECV] tsf_us=43941498436 recv_t=43941656 attempt=1
+[T=43945800ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43945981ms] [WS-ACK-RECV] tsf_us=43945798435 recv_t=43945978 attempt=1
+[T=43950100ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43950156ms] [WS-ACK-RECV] tsf_us=43950098424 recv_t=43950151 attempt=1
+[T=43954400ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43954556ms] [WS-ACK-RECV] tsf_us=43954398417 recv_t=43954553 attempt=1
+[T=43958700ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43958831ms] [WS-ACK-RECV] tsf_us=43958698405 recv_t=43958826 attempt=1
+[T=43963000ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43963091ms] [WS-ACK-RECV] tsf_us=43962998401 recv_t=43963089 attempt=1
+[T=43967300ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43967516ms] [WS-ACK-RECV] tsf_us=43967298356 recv_t=43967512 attempt=1
+[T=43971600ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43971656ms] [WS-ACK-RECV] tsf_us=43971598384 recv_t=43971653 attempt=1
+[T=43975900ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43975941ms] [WS-ACK-RECV] tsf_us=43975898376 recv_t=43975936 attempt=1
+[T=43980200ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43980250ms] [WS-ACK-RECV] tsf_us=43980198371 recv_t=43980248 attempt=1
+[T=43984500ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43984566ms] [WS-ACK-RECV] tsf_us=43984498360 recv_t=43984561 attempt=1
+[T=43988800ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43988926ms] [WS-ACK-RECV] tsf_us=43988798353 recv_t=43988924 attempt=1
+[T=43993100ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43993231ms] [WS-ACK-RECV] tsf_us=43993098331 recv_t=43993227 attempt=1
+[T=43997400ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=43997496ms] [WS-ACK-RECV] tsf_us=43997398339 recv_t=43997491 attempt=1
+[T=44001700ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44001756ms] [WS-ACK-RECV] tsf_us=44001698334 recv_t=44001752 attempt=1
+[T=44006000ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44006096ms] [WS-ACK-RECV] tsf_us=44005998321 recv_t=44006094 attempt=1
+[T=44010300ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44010371ms] [WS-ACK-RECV] tsf_us=44010298317 recv_t=44010367 attempt=1
+[T=44014600ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44014676ms] [WS-ACK-RECV] tsf_us=44014598308 recv_t=44014671 attempt=1
+[T=44018900ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44018996ms] [WS-ACK-RECV] tsf_us=44018898297 recv_t=44018993 attempt=1
+[T=44023200ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44023371ms] [WS-ACK-RECV] tsf_us=44023198298 recv_t=44023366 attempt=1
+[T=44027500ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44027621ms] [WS-ACK-RECV] tsf_us=44027498284 recv_t=44027618 attempt=1
+[T=44031800ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44031901ms] [WS-ACK-RECV] tsf_us=44031798286 recv_t=44031899 attempt=1
+[T=44036100ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44036276ms] [WS-ACK-RECV] tsf_us=44036098269 recv_t=44036272 attempt=1
+[T=44040400ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44040506ms] [WS-ACK-RECV] tsf_us=44040398260 recv_t=44040504 attempt=1
+[T=44044700ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44044841ms] [WS-ACK-RECV] tsf_us=44044698254 recv_t=44044837 attempt=1
+[T=44049000ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44049146ms] [WS-ACK-RECV] tsf_us=44048998247 recv_t=44049142 attempt=1
+[T=44053300ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44053476ms] [WS-ACK-RECV] tsf_us=44053298239 recv_t=44053474 attempt=1
+[T=44057600ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44057810ms] [WS-ACK-RECV] tsf_us=44057598237 recv_t=44057806 attempt=1
+[T=44061900ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44062011ms] [WS-ACK-RECV] tsf_us=44061898226 recv_t=44062007 attempt=1
+[T=44066200ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44066341ms] [WS-ACK-RECV] tsf_us=44066198228 recv_t=44066339 attempt=1
+[T=44070500ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44070575ms] [WS-ACK-RECV] tsf_us=44070498200 recv_t=44070573 attempt=1
+[T=44074800ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44074906ms] [WS-ACK-RECV] tsf_us=44074798204 recv_t=44074905 attempt=1
+[T=44079100ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44079180ms] [WS-ACK-RECV] tsf_us=44079098208 recv_t=44079177 attempt=1
+[T=44083400ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44083430ms] [WS-ACK-RECV] tsf_us=44083398193 recv_t=44083429 attempt=1
+[T=44087700ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44087765ms] [WS-ACK-RECV] tsf_us=44087698183 recv_t=44087762 attempt=1
+[T=44092000ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44092075ms] [WS-ACK-RECV] tsf_us=44091998174 recv_t=44092073 attempt=1
+[T=44096300ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44096370ms] [WS-ACK-RECV] tsf_us=44096298157 recv_t=44096365 attempt=1
+[T=44100600ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44100680ms] [WS-ACK-RECV] tsf_us=44100598164 recv_t=44100677 attempt=1
+[T=44104900ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44105175ms] [WS-ACK-RECV] tsf_us=44104898159 recv_t=44105171 attempt=1
+[T=44109200ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44109375ms] [WS-ACK-RECV] tsf_us=44109198146 recv_t=44109374 attempt=1
+[T=44113500ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44113720ms] [WS-ACK-RECV] tsf_us=44113498142 recv_t=44113716 attempt=1
+[T=44117800ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44117910ms] [WS-ACK-RECV] tsf_us=44117798131 recv_t=44117908 attempt=1
+[T=44122100ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44122210ms] [WS-ACK-RECV] tsf_us=44122098139 recv_t=44122209 attempt=1
+[T=44126400ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44126555ms] [WS-ACK-RECV] tsf_us=44126398120 recv_t=44126552 attempt=1
+[T=44130700ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44131020ms] [WS-ACK-RECV] tsf_us=44130698104 recv_t=44131015 attempt=1
+[T=44135000ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44135090ms] [WS-ACK-RECV] tsf_us=44134998096 recv_t=44135087 attempt=1
+[T=44139300ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44139351ms] [WS-ACK-RECV] tsf_us=44139298089 recv_t=44139349 attempt=1
+[T=44143600ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44143686ms] [WS-ACK-RECV] tsf_us=44143598094 recv_t=44143681 attempt=1
+[T=44147900ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44147986ms] [WS-ACK-RECV] tsf_us=44147898075 recv_t=44147984 attempt=1
+[T=44152200ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44152261ms] [WS-ACK-RECV] tsf_us=44152198071 recv_t=44152255 attempt=1
+[T=44156500ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44156571ms] [WS-ACK-RECV] tsf_us=44156498060 recv_t=44156567 attempt=1
+[T=44160800ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44160926ms] [WS-ACK-RECV] tsf_us=44160798052 recv_t=44160921 attempt=1
+[T=44165100ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44165146ms] [WS-ACK-RECV] tsf_us=44165098042 recv_t=44165143 attempt=1
+[T=44169400ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44169551ms] [WS-ACK-RECV] tsf_us=44169398021 recv_t=44169545 attempt=1
+[T=44173700ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44173901ms] [WS-ACK-RECV] tsf_us=44173698034 recv_t=44173898 attempt=1
+[T=44178000ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44178126ms] [WS-ACK-RECV] tsf_us=44177998026 recv_t=44178121 attempt=1
+[T=44182300ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44182366ms] [WS-ACK-RECV] tsf_us=44182298023 recv_t=44182362 attempt=1
+[T=44186600ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44186691ms] [WS-ACK-RECV] tsf_us=44186598002 recv_t=44186685 attempt=1
+[T=44190900ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44191001ms] [WS-ACK-RECV] tsf_us=44190898004 recv_t=44190997 attempt=1
+[T=44195200ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44195266ms] [WS-ACK-RECV] tsf_us=44195197993 recv_t=44195261 attempt=1
+[T=44199500ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44199596ms] [WS-ACK-RECV] tsf_us=44199497976 recv_t=44199593 attempt=1
+[T=44203800ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44203931ms] [WS-ACK-RECV] tsf_us=44203797975 recv_t=44203925 attempt=1
+[T=44208100ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44208171ms] [WS-ACK-RECV] tsf_us=44208097966 recv_t=44208167 attempt=1
+[T=44212400ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44212461ms] [WS-ACK-RECV] tsf_us=44212397960 recv_t=44212458 attempt=1
+[T=44216700ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44216836ms] [WS-ACK-RECV] tsf_us=44216697951 recv_t=44216831 attempt=1
+[T=44221000ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44221100ms] [WS-ACK-RECV] tsf_us=44220997940 recv_t=44221094 attempt=1
+[T=44225300ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44225570ms] [WS-ACK-RECV] tsf_us=44225297931 recv_t=44225567 attempt=1
+[T=44229600ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44229706ms] [WS-ACK-RECV] tsf_us=44229597942 recv_t=44229701 attempt=1
+[T=44233900ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44234035ms] [WS-ACK-RECV] tsf_us=44233897919 recv_t=44234034 attempt=1
+[T=44238200ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44238260ms] [WS-ACK-RECV] tsf_us=44238197909 recv_t=44238256 attempt=1
+[T=44242500ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44242761ms] [WS Worker] Resent GOAL (TSF), attempt 2.
+[T=44242812ms] [WS-ACK-RECV] tsf_us=44242497903 recv_t=44242808 attempt=2
+[T=44246800ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44247056ms] [WS-ACK-RECV] tsf_us=44246797899 recv_t=44247052 attempt=1
+[T=44251100ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44251255ms] [WS-ACK-RECV] tsf_us=44251097882 recv_t=44251254 attempt=1
+[T=44255400ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44255470ms] [WS-ACK-RECV] tsf_us=44255397887 recv_t=44255467 attempt=1
+[T=44259700ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44259780ms] [WS-ACK-RECV] tsf_us=44259697881 recv_t=44259779 attempt=1
+[T=44264000ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44264075ms] [WS-ACK-RECV] tsf_us=44263997870 recv_t=44264071 attempt=1
+[T=44268300ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44268375ms] [WS-ACK-RECV] tsf_us=44268297870 recv_t=44268373 attempt=1
+[T=44272600ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44272740ms] [WS-ACK-RECV] tsf_us=44272597851 recv_t=44272735 attempt=1
+[T=44276900ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44276980ms] [WS-ACK-RECV] tsf_us=44276897840 recv_t=44276976 attempt=1
+[T=44281200ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44281310ms] [WS-ACK-RECV] tsf_us=44281197834 recv_t=44281308 attempt=1
+[T=44285500ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44285645ms] [WS-ACK-RECV] tsf_us=44285497826 recv_t=44285641 attempt=1
+[T=44289800ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44289835ms] [WS-ACK-RECV] tsf_us=44289797824 recv_t=44289833 attempt=1
+[T=44294100ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44294150ms] [WS-ACK-RECV] tsf_us=44294097811 recv_t=44294146 attempt=1
+[T=44298400ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44298450ms] [WS-ACK-RECV] tsf_us=44298397799 recv_t=44298449 attempt=1
+[T=44302700ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44302805ms] [WS-ACK-RECV] tsf_us=44302697792 recv_t=44302802 attempt=1
+[T=44306999ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44307054ms] [WS-ACK-RECV] tsf_us=44306997736 recv_t=44307053 attempt=1
+[T=44311300ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44311420ms] [WS-ACK-RECV] tsf_us=44311297783 recv_t=44311416 attempt=1
+[T=44315600ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44315655ms] [WS-ACK-RECV] tsf_us=44315597771 recv_t=44315651 attempt=1
+[T=44319900ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44319955ms] [WS-ACK-RECV] tsf_us=44319897763 recv_t=44319954 attempt=1
+[T=44324200ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44324270ms] [WS-ACK-RECV] tsf_us=44324197760 recv_t=44324266 attempt=1
+[T=44328500ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44328585ms] [WS-ACK-RECV] tsf_us=44328497757 recv_t=44328581 attempt=1
+[T=44332800ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44332885ms] [WS-ACK-RECV] tsf_us=44332797743 recv_t=44332883 attempt=1
+[T=44337100ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44337185ms] [WS-ACK-RECV] tsf_us=44337097740 recv_t=44337184 attempt=1
+[T=44341400ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44341520ms] [WS-ACK-RECV] tsf_us=44341397724 recv_t=44341517 attempt=1
+[T=44345700ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44345895ms] [WS-ACK-RECV] tsf_us=44345697716 recv_t=44345891 attempt=1
+[T=44350000ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44350155ms] [WS-ACK-RECV] tsf_us=44349997705 recv_t=44350153 attempt=1
+[T=44354300ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44354350ms] [WS-ACK-RECV] tsf_us=44354297690 recv_t=44354345 attempt=1
+[T=44358600ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44358650ms] [WS-ACK-RECV] tsf_us=44358597686 recv_t=44358647 attempt=1
+[T=44362900ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44362956ms] [WS-ACK-RECV] tsf_us=44362897680 recv_t=44362951 attempt=1
+[T=44367200ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44367306ms] [WS-ACK-RECV] tsf_us=44367197675 recv_t=44367302 attempt=1
+[T=44371500ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44371656ms] [WS-ACK-RECV] tsf_us=44371497672 recv_t=44371654 attempt=1
+[T=44375800ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44375900ms] [WS-ACK-RECV] tsf_us=44375797659 recv_t=44375896 attempt=1
+[T=44380100ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44380196ms] [WS-ACK-RECV] tsf_us=44380097654 recv_t=44380191 attempt=1
+[T=44384400ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44384490ms] [WS-ACK-RECV] tsf_us=44384397637 recv_t=44384484 attempt=1
+[T=44388700ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44388830ms] [WS-ACK-RECV] tsf_us=44388697636 recv_t=44388826 attempt=1
+[T=44393000ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44393100ms] [WS-ACK-RECV] tsf_us=44392997638 recv_t=44393098 attempt=1
+[T=44397300ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44397396ms] [WS-ACK-RECV] tsf_us=44397297628 recv_t=44397391 attempt=1
+[T=44401600ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44401695ms] [WS-ACK-RECV] tsf_us=44401597606 recv_t=44401693 attempt=1
+[T=44405900ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44405970ms] [WS-ACK-RECV] tsf_us=44405897611 recv_t=44405966 attempt=1
+[T=44410200ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44410370ms] [WS-ACK-RECV] tsf_us=44410197586 recv_t=44410368 attempt=1
+[T=44414500ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44414605ms] [WS-ACK-RECV] tsf_us=44414497589 recv_t=44414601 attempt=1
+[T=44418800ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44418900ms] [WS-ACK-RECV] tsf_us=44418797582 recv_t=44418894 attempt=1
+[T=44423100ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44423240ms] [WS-ACK-RECV] tsf_us=44423097577 recv_t=44423236 attempt=1
+[T=44427400ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44427500ms] [WS-ACK-RECV] tsf_us=44427397566 recv_t=44427497 attempt=1
+[T=44431700ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44431785ms] [WS-ACK-RECV] tsf_us=44431697563 recv_t=44431780 attempt=1
+[T=44435999ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44436045ms] [WS-ACK-RECV] tsf_us=44435997540 recv_t=44436042 attempt=1
+[T=44440300ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44440440ms] [WS-ACK-RECV] tsf_us=44440297546 recv_t=44440435 attempt=1
+[T=44444599ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44444690ms] [WS-ACK-RECV] tsf_us=44444597534 recv_t=44444688 attempt=1
+[T=44448899ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44449005ms] [WS-ACK-RECV] tsf_us=44448897518 recv_t=44449001 attempt=1
+[T=44453199ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44453405ms] [WS-ACK-RECV] tsf_us=44453197519 recv_t=44453404 attempt=1
+[T=44457499ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44457680ms] [WS-ACK-RECV] tsf_us=44457497535 recv_t=44457675 attempt=1
+[T=44461800ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44461880ms] [WS-ACK-RECV] tsf_us=44461797498 recv_t=44461878 attempt=1
+[T=44466099ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44466165ms] [WS-ACK-RECV] tsf_us=44466097497 recv_t=44466161 attempt=1
+[T=44470399ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44470475ms] [WS-ACK-RECV] tsf_us=44470397493 recv_t=44470473 attempt=1
+[T=44474699ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44474770ms] [WS-ACK-RECV] tsf_us=44474697487 recv_t=44474766 attempt=1
+[T=44479000ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44479030ms] [WS-ACK-RECV] tsf_us=44478997493 recv_t=44479028 attempt=1
+[T=44483299ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44483415ms] [WS-ACK-RECV] tsf_us=44483297462 recv_t=44483411 attempt=1
+[T=44487599ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44487745ms] [WS-ACK-RECV] tsf_us=44487597458 recv_t=44487743 attempt=1
+[T=44491899ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44491980ms] [WS-ACK-RECV] tsf_us=44491897443 recv_t=44491975 attempt=1
+[T=44496199ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44496250ms] [WS-ACK-RECV] tsf_us=44496197444 recv_t=44496248 attempt=1
+[T=44500499ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44500625ms] [WS-ACK-RECV] tsf_us=44500497437 recv_t=44500621 attempt=1
+[T=44504799ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44504920ms] [WS-ACK-RECV] tsf_us=44504797422 recv_t=44504915 attempt=1
+[T=44509099ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44509220ms] [WS-ACK-RECV] tsf_us=44509097421 recv_t=44509217 attempt=1
+[T=44513399ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44513455ms] [WS-ACK-RECV] tsf_us=44513397404 recv_t=44513451 attempt=1
+[T=44517699ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44517884ms] [WS-ACK-RECV] tsf_us=44517697401 recv_t=44517882 attempt=1
+[T=44521999ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44522159ms] [WS-ACK-RECV] tsf_us=44521997391 recv_t=44522154 attempt=1
+[T=44526299ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44526449ms] [WS-ACK-RECV] tsf_us=44526297383 recv_t=44526446 attempt=1
+[T=44530599ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44530669ms] [WS-ACK-RECV] tsf_us=44530597376 recv_t=44530668 attempt=1
+[T=44534899ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44535054ms] [WS-ACK-RECV] tsf_us=44534897367 recv_t=44535051 attempt=1
+[T=44539199ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44539284ms] [WS-ACK-RECV] tsf_us=44539197354 recv_t=44539283 attempt=1
+[T=44543499ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44543659ms] [WS-ACK-RECV] tsf_us=44543497352 recv_t=44543656 attempt=1
+[T=44547799ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44548019ms] [WS-ACK-RECV] tsf_us=44547797343 recv_t=44548018 attempt=1
+[T=44552099ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44552224ms] [WS-ACK-RECV] tsf_us=44552097345 recv_t=44552220 attempt=1
+[T=44556399ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44556494ms] [WS-ACK-RECV] tsf_us=44556397336 recv_t=44556492 attempt=1
+[T=44560699ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44560760ms] [WS-ACK-RECV] tsf_us=44560697321 recv_t=44560754 attempt=1
+[T=44564999ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44565130ms] [WS-ACK-RECV] tsf_us=44564997311 recv_t=44565127 attempt=1
+[T=44569299ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44569435ms] [WS-ACK-RECV] tsf_us=44569297304 recv_t=44569430 attempt=1
+[T=44573599ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44573695ms] [WS-ACK-RECV] tsf_us=44573597298 recv_t=44573692 attempt=1
+[T=44577899ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44578025ms] [WS-ACK-RECV] tsf_us=44577897287 recv_t=44578023 attempt=1
+[T=44582199ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44582310ms] [WS-ACK-RECV] tsf_us=44582197281 recv_t=44582306 attempt=1
+[T=44586499ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44586540ms] [WS-ACK-RECV] tsf_us=44586497274 recv_t=44586538 attempt=1
+[T=44590799ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44590935ms] [WS-ACK-RECV] tsf_us=44590797263 recv_t=44590931 attempt=1
+[T=44595099ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44595195ms] [WS-ACK-RECV] tsf_us=44595097257 recv_t=44595193 attempt=1
+[T=44599399ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44599570ms] [WS-ACK-RECV] tsf_us=44599397249 recv_t=44599565 attempt=1
+[T=44603699ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44603800ms] [WS-ACK-RECV] tsf_us=44603697244 recv_t=44603798 attempt=1
+[T=44607999ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44608065ms] [WS-ACK-RECV] tsf_us=44607997234 recv_t=44608060 attempt=1
+[T=44612299ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44612405ms] [WS-ACK-RECV] tsf_us=44612297230 recv_t=44612402 attempt=1
+[T=44616599ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44616740ms] [WS-ACK-RECV] tsf_us=44616597217 recv_t=44616734 attempt=1
+[T=44620899ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44621040ms] [WS-ACK-RECV] tsf_us=44620897221 recv_t=44621036 attempt=1
+[T=44625199ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44625285ms] [WS-ACK-RECV] tsf_us=44625197212 recv_t=44625280 attempt=1
+[T=44629499ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44629605ms] [WS-ACK-RECV] tsf_us=44629497206 recv_t=44629603 attempt=1
+[T=44633799ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44633870ms] [WS-ACK-RECV] tsf_us=44633797187 recv_t=44633865 attempt=1
+[T=44638099ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44638240ms] [WS-ACK-RECV] tsf_us=44638097183 recv_t=44638237 attempt=1
+[T=44642399ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44642505ms] [WS-ACK-RECV] tsf_us=44642397164 recv_t=44642500 attempt=1
+[T=44646699ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44646775ms] [WS-ACK-RECV] tsf_us=44646697171 recv_t=44646772 attempt=1
+[T=44650999ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44651240ms] [WS-ACK-RECV] tsf_us=44650997156 recv_t=44651235 attempt=1
+[T=44655299ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44655390ms] [WS-ACK-RECV] tsf_us=44655297147 recv_t=44655387 attempt=1
+[T=44659599ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44659745ms] [WS-ACK-RECV] tsf_us=44659597142 recv_t=44659741 attempt=1
+[T=44663899ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44664145ms] [WS-ACK-RECV] tsf_us=44663897135 recv_t=44664143 attempt=1
+[T=44668199ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44668439ms] [WS-ACK-RECV] tsf_us=44668197122 recv_t=44668436 attempt=1
+[T=44672499ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44672549ms] [WS-ACK-RECV] tsf_us=44672497107 recv_t=44672547 attempt=1
+[T=44676799ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44676915ms] [WS-ACK-RECV] tsf_us=44676797118 recv_t=44676911 attempt=1
+[T=44681099ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44681219ms] [WS-ACK-RECV] tsf_us=44681097100 recv_t=44681214 attempt=1
+[T=44685399ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44685469ms] [WS-ACK-RECV] tsf_us=44685397092 recv_t=44685466 attempt=1
+[T=44689699ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44689805ms] [WS-ACK-RECV] tsf_us=44689697087 recv_t=44689801 attempt=1
+[T=44693999ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44694044ms] [WS-ACK-RECV] tsf_us=44693997078 recv_t=44694043 attempt=1
+[T=44698299ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44698389ms] [WS-ACK-RECV] tsf_us=44698297065 recv_t=44698387 attempt=1
+[T=44702599ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44702649ms] [WS-ACK-RECV] tsf_us=44702597060 recv_t=44702648 attempt=1
+[T=44706899ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44707114ms] [WS-ACK-RECV] tsf_us=44706897057 recv_t=44707110 attempt=1
+[T=44711199ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44711354ms] [WS-ACK-RECV] tsf_us=44711197043 recv_t=44711352 attempt=1
+[T=44715499ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44715649ms] [WS-ACK-RECV] tsf_us=44715497047 recv_t=44715644 attempt=1
+[T=44719799ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44720019ms] [WS-ACK-RECV] tsf_us=44719797027 recv_t=44720016 attempt=1
+[T=44724099ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44724391ms] [WS Worker] Resent GOAL (TSF), attempt 2.
+[T=44724421ms] [WS-ACK-RECV] tsf_us=44724097012 recv_t=44724418 attempt=2
+[T=44728399ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44728594ms] [WS-ACK-RECV] tsf_us=44728397018 recv_t=44728591 attempt=1
+[T=44732699ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44732754ms] [WS-ACK-RECV] tsf_us=44732697014 recv_t=44732752 attempt=1
+[T=44736999ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44737119ms] [WS-ACK-RECV] tsf_us=44736996997 recv_t=44737114 attempt=1
+[T=44741299ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44741489ms] [WS-ACK-RECV] tsf_us=44741296990 recv_t=44741487 attempt=1
+[T=44745599ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44745794ms] [WS-ACK-RECV] tsf_us=44745596980 recv_t=44745790 attempt=1
+[T=44749899ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44750024ms] [WS-ACK-RECV] tsf_us=44749896964 recv_t=44750022 attempt=1
+[T=44754199ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44754359ms] [WS-ACK-RECV] tsf_us=44754196971 recv_t=44754355 attempt=1
+[T=44758499ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44758629ms] [WS-ACK-RECV] tsf_us=44758496964 recv_t=44758628 attempt=1
+[T=44762799ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44762894ms] [WS-ACK-RECV] tsf_us=44762796945 recv_t=44762890 attempt=1
+[T=44767099ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44767224ms] [WS-ACK-RECV] tsf_us=44767096937 recv_t=44767222 attempt=1
+[T=44771399ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44771480ms] [WS-ACK-RECV] tsf_us=44771396930 recv_t=44771474 attempt=1
+[T=44775699ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44775790ms] [WS-ACK-RECV] tsf_us=44775696926 recv_t=44775786 attempt=1
+[T=44779999ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44780065ms] [WS-ACK-RECV] tsf_us=44779996924 recv_t=44780060 attempt=1
+[T=44784299ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44784385ms] [WS-ACK-RECV] tsf_us=44784296905 recv_t=44784383 attempt=1
+[T=44788599ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44788770ms] [WS-ACK-RECV] tsf_us=44788596899 recv_t=44788766 attempt=1
+[T=44792899ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44793070ms] [WS-ACK-RECV] tsf_us=44792896889 recv_t=44793067 attempt=1
+[T=44797199ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44797265ms] [WS-ACK-RECV] tsf_us=44797196888 recv_t=44797261 attempt=1
+[T=44801499ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44801565ms] [WS-ACK-RECV] tsf_us=44801496883 recv_t=44801563 attempt=1
+[T=44805799ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44805940ms] [WS-ACK-RECV] tsf_us=44805796868 recv_t=44805936 attempt=1
+[T=44810099ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44810275ms] [WS-ACK-RECV] tsf_us=44810096859 recv_t=44810270 attempt=1
+[T=44814399ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44814545ms] [WS-ACK-RECV] tsf_us=44814396852 recv_t=44814542 attempt=1
+[T=44818699ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44818769ms] [WS-ACK-RECV] tsf_us=44818696842 recv_t=44818765 attempt=1
+[T=44822999ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44823069ms] [WS-ACK-RECV] tsf_us=44822996835 recv_t=44823066 attempt=1
+[T=44827299ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44827505ms] [WS-ACK-RECV] tsf_us=44827296829 recv_t=44827500 attempt=1
+[T=44831599ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44831674ms] [WS-ACK-RECV] tsf_us=44831596823 recv_t=44831672 attempt=1
+[T=44835899ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44836139ms] [WS-ACK-RECV] tsf_us=44835896810 recv_t=44836135 attempt=1
+[T=44840199ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44840279ms] [WS-ACK-RECV] tsf_us=44840196814 recv_t=44840277 attempt=1
+[T=44844499ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44844644ms] [WS-ACK-RECV] tsf_us=44844496791 recv_t=44844640 attempt=1
+[T=44848799ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44849106ms] [WS Worker] Resent GOAL (TSF), attempt 2.
+[T=44849187ms] [WS-ACK-RECV] tsf_us=44848796785 recv_t=44849182 attempt=2
+[T=44853099ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44853199ms] [WS-ACK-RECV] tsf_us=44853096780 recv_t=44853194 attempt=1
+[T=44857399ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44857549ms] [WS-ACK-RECV] tsf_us=44857396776 recv_t=44857547 attempt=1
+[T=44861699ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44861734ms] [WS-ACK-RECV] tsf_us=44861696761 recv_t=44861730 attempt=1
+[T=44865999ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44866094ms] [WS-ACK-RECV] tsf_us=44865996755 recv_t=44866093 attempt=1
+[T=44870299ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44870369ms] [WS-ACK-RECV] tsf_us=44870296748 recv_t=44870366 attempt=1
+[T=44874599ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44874749ms] [WS-ACK-RECV] tsf_us=44874596741 recv_t=44874748 attempt=1
+[T=44878899ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44879084ms] [WS-ACK-RECV] tsf_us=44878896730 recv_t=44879080 attempt=1
+[T=44883199ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44883284ms] [WS-ACK-RECV] tsf_us=44883196728 recv_t=44883281 attempt=1
+[T=44887499ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44887579ms] [WS-ACK-RECV] tsf_us=44887496716 recv_t=44887575 attempt=1
+[T=44891799ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44891879ms] [WS-ACK-RECV] tsf_us=44891796707 recv_t=44891877 attempt=1
+[T=44896099ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44896184ms] [WS-ACK-RECV] tsf_us=44896096698 recv_t=44896180 attempt=1
+[T=44900399ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44900454ms] [WS-ACK-RECV] tsf_us=44900396688 recv_t=44900453 attempt=1
+[T=44904699ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44904779ms] [WS-ACK-RECV] tsf_us=44904696684 recv_t=44904776 attempt=1
+[T=44908999ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44909114ms] [WS-ACK-RECV] tsf_us=44908996680 recv_t=44909110 attempt=1
+[T=44913299ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44913484ms] [WS-ACK-RECV] tsf_us=44913296667 recv_t=44913481 attempt=1
+[T=44917599ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44917754ms] [WS-ACK-RECV] tsf_us=44917596659 recv_t=44917753 attempt=1
+[T=44921899ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44921959ms] [WS-ACK-RECV] tsf_us=44921896659 recv_t=44921956 attempt=1
+[T=44926199ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44926284ms] [WS-ACK-RECV] tsf_us=44926196651 recv_t=44926280 attempt=1
+[T=44930499ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44930554ms] [WS-ACK-RECV] tsf_us=44930496632 recv_t=44930553 attempt=1
+[T=44934799ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44934959ms] [WS-ACK-RECV] tsf_us=44934796631 recv_t=44934956 attempt=1
+[T=44939099ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44939264ms] [WS-ACK-RECV] tsf_us=44939096619 recv_t=44939260 attempt=1
+[T=44943399ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44943589ms] [WS-ACK-RECV] tsf_us=44943396612 recv_t=44943584 attempt=1
+[T=44947699ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44947759ms] [WS-ACK-RECV] tsf_us=44947696604 recv_t=44947755 attempt=1
+[T=44951999ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44952189ms] [WS-ACK-RECV] tsf_us=44951996595 recv_t=44952187 attempt=1
+[T=44956299ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44956434ms] [WS-ACK-RECV] tsf_us=44956296583 recv_t=44956430 attempt=1
+[T=44960599ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44960764ms] [WS-ACK-RECV] tsf_us=44960596575 recv_t=44960762 attempt=1
+[T=44964899ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44964968ms] [WS-ACK-RECV] tsf_us=44964896572 recv_t=44964964 attempt=1
+[T=44969199ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44969259ms] [WS-ACK-RECV] tsf_us=44969196564 recv_t=44969257 attempt=1
+[T=44973499ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44973664ms] [WS-ACK-RECV] tsf_us=44973496554 recv_t=44973661 attempt=1
+[T=44977799ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44977894ms] [WS-ACK-RECV] tsf_us=44977796547 recv_t=44977892 attempt=1
+[T=44982099ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44982159ms] [WS-ACK-RECV] tsf_us=44982096539 recv_t=44982155 attempt=1
+[T=44986399ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44986569ms] [WS-ACK-RECV] tsf_us=44986396533 recv_t=44986567 attempt=1
+[T=44990698ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44990764ms] [WS-ACK-RECV] tsf_us=44990696523 recv_t=44990760 attempt=1
+[T=44994998ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44995099ms] [WS-ACK-RECV] tsf_us=44994996516 recv_t=44995093 attempt=1
+[T=44999298ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=44999399ms] [WS-ACK-RECV] tsf_us=44999296513 recv_t=44999395 attempt=1
+[T=45003598ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45003920ms] [WS Worker] Resent GOAL (TSF), attempt 2.
+[T=45003941ms] [WS-ACK-RECV] tsf_us=45003596503 recv_t=45003937 attempt=2
+[T=45007898ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45008145ms] [WS Pump] wsClient.loop() blocked 115ms (wifi_status=3, ws_connected=1)
+[T=45008149ms] [WS-ACK-RECV] tsf_us=45007896493 recv_t=45008145 attempt=1
+[T=45012198ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45012299ms] [WS-ACK-RECV] tsf_us=45012196476 recv_t=45012297 attempt=1
+[T=45016498ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45016654ms] [WS-ACK-RECV] tsf_us=45016496476 recv_t=45016650 attempt=1
+[T=45020798ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45020969ms] [WS-ACK-RECV] tsf_us=45020796468 recv_t=45020963 attempt=1
+[T=45025098ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45025269ms] [WS-ACK-RECV] tsf_us=45025096464 recv_t=45025266 attempt=1
+[T=45029398ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45029720ms] [WS Worker] Resent GOAL (TSF), attempt 2.
+[T=45029781ms] [WS-ACK-RECV] tsf_us=45029396452 recv_t=45029779 attempt=2
+[T=45033698ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45033809ms] [WS-ACK-RECV] tsf_us=45033696449 recv_t=45033803 attempt=1
+[T=45037998ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45038109ms] [WS-ACK-RECV] tsf_us=45037996420 recv_t=45038104 attempt=1
+[T=45042298ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45042379ms] [WS-ACK-RECV] tsf_us=45042296428 recv_t=45042376 attempt=1
+[T=45046598ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45046784ms] [WS-ACK-RECV] tsf_us=45046596420 recv_t=45046779 attempt=1
+[T=45050898ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45051074ms] [WS-ACK-RECV] tsf_us=45050896411 recv_t=45051071 attempt=1
+[T=45055198ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45055279ms] [WS-ACK-RECV] tsf_us=45055196410 recv_t=45055275 attempt=1
+[T=45059498ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45059714ms] [WS-ACK-RECV] tsf_us=45059496398 recv_t=45059710 attempt=1
+[T=45063798ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45064014ms] [WS-ACK-RECV] tsf_us=45063796386 recv_t=45064012 attempt=1
+[T=45068098ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45068174ms] [WS-ACK-RECV] tsf_us=45068096385 recv_t=45068173 attempt=1
+[T=45072398ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45072479ms] [WS-ACK-RECV] tsf_us=45072396377 recv_t=45072475 attempt=1
+[T=45076698ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45076789ms] [WS-ACK-RECV] tsf_us=45076696372 recv_t=45076788 attempt=1
+[T=45080998ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45081074ms] [WS-ACK-RECV] tsf_us=45080996355 recv_t=45081071 attempt=1
+[T=45085298ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45085384ms] [WS-ACK-RECV] tsf_us=45085296347 recv_t=45085383 attempt=1
+[T=45089598ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45089719ms] [WS-ACK-RECV] tsf_us=45089596334 recv_t=45089716 attempt=1
+[T=45093898ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45093984ms] [WS-ACK-RECV] tsf_us=45093896339 recv_t=45093981 attempt=1
+[T=45098198ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45098454ms] [WS-ACK-RECV] tsf_us=45098196324 recv_t=45098452 attempt=1
+[T=45102498ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45102619ms] [WS-ACK-RECV] tsf_us=45102496316 recv_t=45102616 attempt=1
+[T=45106798ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45106834ms] [WS-ACK-RECV] tsf_us=45106796308 recv_t=45106830 attempt=1
+[T=45111098ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45111174ms] [WS-ACK-RECV] tsf_us=45111096299 recv_t=45111172 attempt=1
+[T=45115398ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45115519ms] [WS-ACK-RECV] tsf_us=45115396289 recv_t=45115514 attempt=1
+[T=45119698ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45119789ms] [WS-ACK-RECV] tsf_us=45119696284 recv_t=45119786 attempt=1
+[T=45123998ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45124094ms] [WS-ACK-RECV] tsf_us=45123996272 recv_t=45124090 attempt=1
+[T=45128298ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45128393ms] [WS-ACK-RECV] tsf_us=45128296267 recv_t=45128391 attempt=1
+[T=45132598ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45132688ms] [WS-ACK-RECV] tsf_us=45132596262 recv_t=45132683 attempt=1
+[T=45136898ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45137028ms] [WS-ACK-RECV] tsf_us=45136896251 recv_t=45137025 attempt=1
+[T=45141198ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45141248ms] [WS-ACK-RECV] tsf_us=45141196244 recv_t=45141247 attempt=1
+[T=45145498ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45145593ms] [WS-ACK-RECV] tsf_us=45145496237 recv_t=45145590 attempt=1
+[T=45149798ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45149838ms] [WS-ACK-RECV] tsf_us=45149796228 recv_t=45149833 attempt=1
+[T=45154098ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45154298ms] [WS-ACK-RECV] tsf_us=45154096227 recv_t=45154295 attempt=1
+[T=45158398ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45158528ms] [WS-ACK-RECV] tsf_us=45158396221 recv_t=45158526 attempt=1
+[T=45162698ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45162833ms] [WS-ACK-RECV] tsf_us=45162696214 recv_t=45162829 attempt=1
+[T=45166998ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45167133ms] [WS-ACK-RECV] tsf_us=45166996191 recv_t=45167131 attempt=1
+[T=45171298ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45171358ms] [WS-ACK-RECV] tsf_us=45171296193 recv_t=45171354 attempt=1
+[T=45175598ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45175900ms] [WS Worker] Resent GOAL (TSF), attempt 2.
+[T=45176060ms] [WS-ACK-RECV] tsf_us=45175596182 recv_t=45176056 attempt=2
+[T=45179898ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45180103ms] [WS-ACK-RECV] tsf_us=45179896176 recv_t=45180099 attempt=1
+[T=45184198ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45184304ms] [WS-ACK-RECV] tsf_us=45184196172 recv_t=45184302 attempt=1
+[T=45188498ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45188599ms] [WS-ACK-RECV] tsf_us=45188496158 recv_t=45188593 attempt=1
+[T=45192798ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45192999ms] [WS-ACK-RECV] tsf_us=45192796154 recv_t=45192996 attempt=1
+[T=45197098ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45197174ms] [WS-ACK-RECV] tsf_us=45197096141 recv_t=45197169 attempt=1
+[T=45201398ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45201604ms] [WS-ACK-RECV] tsf_us=45201396143 recv_t=45201602 attempt=1
+[T=45205698ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45205809ms] [WS-ACK-RECV] tsf_us=45205696128 recv_t=45205804 attempt=1
+[T=45209998ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45210054ms] [WS-ACK-RECV] tsf_us=45209996116 recv_t=45210049 attempt=1
+[T=45214298ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45214364ms] [WS-ACK-RECV] tsf_us=45214296105 recv_t=45214361 attempt=1
+[T=45218598ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45218654ms] [WS-ACK-RECV] tsf_us=45218596100 recv_t=45218652 attempt=1
+[T=45222898ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45223039ms] [WS-ACK-RECV] tsf_us=45222896110 recv_t=45223035 attempt=1
+[T=45227198ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45227404ms] [WS-ACK-RECV] tsf_us=45227196092 recv_t=45227399 attempt=1
+[T=45231498ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45231644ms] [WS-ACK-RECV] tsf_us=45231496078 recv_t=45231641 attempt=1
+[T=45235798ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45235909ms] [WS-ACK-RECV] tsf_us=45235796069 recv_t=45235904 attempt=1
+[T=45240098ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45240239ms] [WS-ACK-RECV] tsf_us=45240096063 recv_t=45240237 attempt=1
+[T=45244398ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45244534ms] [WS-ACK-RECV] tsf_us=45244396060 recv_t=45244530 attempt=1
+[T=45248698ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45248744ms] [WS-ACK-RECV] tsf_us=45248696055 recv_t=45248741 attempt=1
+[T=45252998ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45253109ms] [WS-ACK-RECV] tsf_us=45252996034 recv_t=45253104 attempt=1
+[T=45257298ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45257409ms] [WS-ACK-RECV] tsf_us=45257296029 recv_t=45257406 attempt=1
+[T=45261598ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45261644ms] [WS-ACK-RECV] tsf_us=45261596020 recv_t=45261639 attempt=1
+[T=45265898ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45266183ms] [WS-ACK-RECV] tsf_us=45265896013 recv_t=45266181 attempt=1
+[T=45270198ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45270348ms] [WS-ACK-RECV] tsf_us=45270196010 recv_t=45270345 attempt=1
+[T=45274498ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45274679ms] [WS-ACK-RECV] tsf_us=45274495989 recv_t=45274677 attempt=1
+[T=45278798ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45278824ms] [WS-ACK-RECV] tsf_us=45278795987 recv_t=45278820 attempt=1
+[T=45283098ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45283258ms] [WS-ACK-RECV] tsf_us=45283095976 recv_t=45283253 attempt=1
+[T=45287398ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45287458ms] [WS-ACK-RECV] tsf_us=45287395975 recv_t=45287455 attempt=1
+[T=45291698ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45291728ms] [WS-ACK-RECV] tsf_us=45291695965 recv_t=45291727 attempt=1
+[T=45295998ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45296053ms] [WS-ACK-RECV] tsf_us=45295995961 recv_t=45296049 attempt=1
+[T=45300298ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45300353ms] [WS-ACK-RECV] tsf_us=45300295955 recv_t=45300352 attempt=1
+[T=45304598ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45304648ms] [WS-ACK-RECV] tsf_us=45304595946 recv_t=45304645 attempt=1
+[T=45308898ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45308948ms] [WS-ACK-RECV] tsf_us=45308895936 recv_t=45308947 attempt=1
+[T=45313198ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45313323ms] [WS-ACK-RECV] tsf_us=45313195930 recv_t=45313320 attempt=1
+[T=45317498ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=45317763ms] [WS-ACK-RECV] tsf_us=45317495915 recv_t=45317762 attempt=1

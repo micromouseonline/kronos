@@ -1,0 +1,1598 @@
+[T=43602901ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43603021ms] [WS-ACK-RECV] tsf_us=43602899083 recv_t=43603018 attempt=1
+[T=43603101ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43603152ms] [WS-ACK-RECV] tsf_us=43603098956 recv_t=43603149 attempt=1
+[T=43607201ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43607276ms] [WS-ACK-RECV] tsf_us=43607199066 recv_t=43607272 attempt=1
+[T=43607401ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43607476ms] [WS-ACK-RECV] tsf_us=43607398952 recv_t=43607473 attempt=1
+[T=43611501ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43611617ms] [WS-ACK-RECV] tsf_us=43611499064 recv_t=43611615 attempt=1
+[T=43611701ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43611832ms] [WS-ACK-RECV] tsf_us=43611698924 recv_t=43611826 attempt=1
+[T=43615801ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43615882ms] [WS-ACK-RECV] tsf_us=43615799050 recv_t=43615879 attempt=1
+[T=43616001ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43616087ms] [WS-ACK-RECV] tsf_us=43615998923 recv_t=43616082 attempt=1
+[T=43620101ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43620227ms] [WS-ACK-RECV] tsf_us=43620099061 recv_t=43620223 attempt=1
+[T=43620301ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43620417ms] [WS-ACK-RECV] tsf_us=43620298951 recv_t=43620415 attempt=1
+[T=43624401ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43624502ms] [WS-ACK-RECV] tsf_us=43624399044 recv_t=43624496 attempt=1
+[T=43624601ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43624672ms] [WS-ACK-RECV] tsf_us=43624598931 recv_t=43624667 attempt=1
+[T=43628701ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43628792ms] [WS-ACK-RECV] tsf_us=43628699057 recv_t=43628789 attempt=1
+[T=43628901ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43629107ms] [WS-ACK-RECV] tsf_us=43628898928 recv_t=43629102 attempt=1
+[T=43633001ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43633057ms] [WS-ACK-RECV] tsf_us=43632999053 recv_t=43633055 attempt=1
+[T=43633201ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43633342ms] [WS-ACK-RECV] tsf_us=43633198928 recv_t=43633336 attempt=1
+[T=43637301ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43637362ms] [WS-ACK-RECV] tsf_us=43637299039 recv_t=43637359 attempt=1
+[T=43637501ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43637707ms] [WS-ACK-RECV] tsf_us=43637498886 recv_t=43637702 attempt=1
+[T=43641601ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43641667ms] [WS-ACK-RECV] tsf_us=43641599030 recv_t=43641664 attempt=1
+[T=43641801ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43641897ms] [WS-ACK-RECV] tsf_us=43641798881 recv_t=43641895 attempt=1
+[T=43645901ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43645982ms] [WS-ACK-RECV] tsf_us=43645899020 recv_t=43645978 attempt=1
+[T=43646101ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43646162ms] [WS-ACK-RECV] tsf_us=43646098914 recv_t=43646159 attempt=1
+[T=43650201ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43650327ms] [WS-ACK-RECV] tsf_us=43650199016 recv_t=43650323 attempt=1
+[T=43650401ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43650607ms] [WS-ACK-RECV] tsf_us=43650398910 recv_t=43650604 attempt=1
+[T=43654501ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43654637ms] [WS-ACK-RECV] tsf_us=43654499003 recv_t=43654635 attempt=1
+[T=43654701ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43654781ms] [WS-ACK-RECV] tsf_us=43654698870 recv_t=43654776 attempt=1
+[T=43658801ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43658862ms] [WS-ACK-RECV] tsf_us=43658798998 recv_t=43658858 attempt=1
+[T=43659001ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43659102ms] [WS-ACK-RECV] tsf_us=43658998857 recv_t=43659099 attempt=1
+[T=43663101ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43663207ms] [WS-ACK-RECV] tsf_us=43663098999 recv_t=43663202 attempt=1
+[T=43663301ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43663406ms] [WS-ACK-RECV] tsf_us=43663298882 recv_t=43663403 attempt=1
+[T=43667401ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43667541ms] [WS-ACK-RECV] tsf_us=43667398986 recv_t=43667535 attempt=1
+[T=43667601ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43667711ms] [WS-ACK-RECV] tsf_us=43667598876 recv_t=43667706 attempt=1
+[T=43671701ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43671771ms] [WS-ACK-RECV] tsf_us=43671698985 recv_t=43671768 attempt=1
+[T=43671901ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43672031ms] [WS-ACK-RECV] tsf_us=43671898873 recv_t=43672030 attempt=1
+[T=43676001ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43676196ms] [WS-ACK-RECV] tsf_us=43675998970 recv_t=43676193 attempt=1
+[T=43676201ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43676256ms] [WS-ACK-RECV] tsf_us=43676198819 recv_t=43676254 attempt=1
+[T=43680301ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43680441ms] [WS-ACK-RECV] tsf_us=43680298973 recv_t=43680436 attempt=1
+[T=43680501ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43680711ms] [WS-ACK-RECV] tsf_us=43680498830 recv_t=43680707 attempt=1
+[T=43684601ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43684701ms] [WS-ACK-RECV] tsf_us=43684598964 recv_t=43684698 attempt=1
+[T=43684801ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43684911ms] [WS-ACK-RECV] tsf_us=43684798851 recv_t=43684910 attempt=1
+[T=43688901ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43688976ms] [WS-ACK-RECV] tsf_us=43688898966 recv_t=43688973 attempt=1
+[T=43689101ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43689176ms] [WS-ACK-RECV] tsf_us=43689098853 recv_t=43689174 attempt=1
+[T=43693201ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43693281ms] [WS-ACK-RECV] tsf_us=43693198960 recv_t=43693277 attempt=1
+[T=43693401ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43693511ms] [WS-ACK-RECV] tsf_us=43693398835 recv_t=43693508 attempt=1
+[T=43697501ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43697536ms] [WS-ACK-RECV] tsf_us=43697498956 recv_t=43697532 attempt=1
+[T=43697701ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43697726ms] [WS-ACK-RECV] tsf_us=43697698827 recv_t=43697723 attempt=1
+[T=43701801ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43701841ms] [WS-ACK-RECV] tsf_us=43701798955 recv_t=43701836 attempt=1
+[T=43702001ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43702111ms] [WS-ACK-RECV] tsf_us=43701998818 recv_t=43702107 attempt=1
+[T=43706101ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43706161ms] [WS-ACK-RECV] tsf_us=43706098942 recv_t=43706159 attempt=1
+[T=43706301ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43706411ms] [WS-ACK-RECV] tsf_us=43706298796 recv_t=43706410 attempt=1
+[T=43710401ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43710596ms] [WS-ACK-RECV] tsf_us=43710398938 recv_t=43710593 attempt=1
+[T=43710600ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43710716ms] [WS-ACK-RECV] tsf_us=43710598817 recv_t=43710714 attempt=1
+[T=43714701ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43714806ms] [WS-ACK-RECV] tsf_us=43714698926 recv_t=43714805 attempt=1
+[T=43714901ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43714941ms] [WS-ACK-RECV] tsf_us=43714898810 recv_t=43714936 attempt=1
+[T=43719001ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43719171ms] [WS-ACK-RECV] tsf_us=43718998916 recv_t=43719168 attempt=1
+[T=43719201ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43719301ms] [WS-ACK-RECV] tsf_us=43719198768 recv_t=43719299 attempt=1
+[T=43723301ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43723496ms] [WS-ACK-RECV] tsf_us=43723298908 recv_t=43723492 attempt=1
+[T=43723501ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43723576ms] [WS-ACK-RECV] tsf_us=43723498745 recv_t=43723573 attempt=1
+[T=43727601ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43727666ms] [WS-ACK-RECV] tsf_us=43727598902 recv_t=43727665 attempt=1
+[T=43727801ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43727851ms] [WS-ACK-RECV] tsf_us=43727798752 recv_t=43727846 attempt=1
+[T=43731901ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43731941ms] [WS-ACK-RECV] tsf_us=43731898892 recv_t=43731938 attempt=1
+[T=43732101ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43732191ms] [WS-ACK-RECV] tsf_us=43732098783 recv_t=43732189 attempt=1
+[T=43736201ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43736226ms] [WS-ACK-RECV] tsf_us=43736198894 recv_t=43736222 attempt=1
+[T=43736401ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43736556ms] [WS-ACK-RECV] tsf_us=43736398773 recv_t=43736553 attempt=1
+[T=43740501ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43740616ms] [WS-ACK-RECV] tsf_us=43740498880 recv_t=43740615 attempt=1
+[T=43740701ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43740751ms] [WS-ACK-RECV] tsf_us=43740698741 recv_t=43740746 attempt=1
+[T=43744801ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43744851ms] [WS-ACK-RECV] tsf_us=43744798874 recv_t=43744847 attempt=1
+[T=43745001ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43745081ms] [WS-ACK-RECV] tsf_us=43744998733 recv_t=43745078 attempt=1
+[T=43749101ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43749176ms] [WS-ACK-RECV] tsf_us=43749098868 recv_t=43749172 attempt=1
+[T=43749301ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43749356ms] [WS-ACK-RECV] tsf_us=43749298720 recv_t=43749353 attempt=1
+[T=43753401ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43753516ms] [WS-ACK-RECV] tsf_us=43753398852 recv_t=43753515 attempt=1
+[T=43753601ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43753651ms] [WS-ACK-RECV] tsf_us=43753598744 recv_t=43753646 attempt=1
+[T=43757701ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43757851ms] [WS-ACK-RECV] tsf_us=43757698862 recv_t=43757848 attempt=1
+[T=43757901ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43758021ms] [WS-ACK-RECV] tsf_us=43757898709 recv_t=43758019 attempt=1
+[T=43762001ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43762046ms] [WS-ACK-RECV] tsf_us=43761998864 recv_t=43762042 attempt=1
+[T=43762201ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43762286ms] [WS-ACK-RECV] tsf_us=43762198723 recv_t=43762283 attempt=1
+[T=43766301ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43766357ms] [WS-ACK-RECV] tsf_us=43766298839 recv_t=43766355 attempt=1
+[T=43766501ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43766662ms] [WS-ACK-RECV] tsf_us=43766498691 recv_t=43766656 attempt=1
+[T=43770601ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43770672ms] [WS-ACK-RECV] tsf_us=43770598831 recv_t=43770668 attempt=1
+[T=43770801ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43770882ms] [WS-ACK-RECV] tsf_us=43770798686 recv_t=43770879 attempt=1
+[T=43774901ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43774957ms] [WS-ACK-RECV] tsf_us=43774898829 recv_t=43774952 attempt=1
+[T=43775101ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43775227ms] [WS-ACK-RECV] tsf_us=43775098705 recv_t=43775223 attempt=1
+[T=43779201ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43779277ms] [WS-ACK-RECV] tsf_us=43779198820 recv_t=43779275 attempt=1
+[T=43779401ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43779462ms] [WS-ACK-RECV] tsf_us=43779398714 recv_t=43779456 attempt=1
+[T=43783501ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43783551ms] [WS-ACK-RECV] tsf_us=43783498814 recv_t=43783548 attempt=1
+[T=43783701ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43783792ms] [WS-ACK-RECV] tsf_us=43783698697 recv_t=43783789 attempt=1
+[T=43787800ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43787896ms] [WS-ACK-RECV] tsf_us=43787798801 recv_t=43787891 attempt=1
+[T=43788001ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43788076ms] [WS-ACK-RECV] tsf_us=43787998665 recv_t=43788072 attempt=1
+[T=43792101ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43792185ms] [WS-ACK-RECV] tsf_us=43792098800 recv_t=43792185 attempt=1
+[T=43792301ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43792341ms] [WS-ACK-RECV] tsf_us=43792298679 recv_t=43792336 attempt=1
+[T=43796401ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43796482ms] [WS-ACK-RECV] tsf_us=43796398793 recv_t=43796479 attempt=1
+[T=43796601ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43796667ms] [WS-ACK-RECV] tsf_us=43796598676 recv_t=43796662 attempt=1
+[T=43800701ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43800766ms] [WS-ACK-RECV] tsf_us=43800698787 recv_t=43800764 attempt=1
+[T=43800901ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43800931ms] [WS-ACK-RECV] tsf_us=43800898665 recv_t=43800925 attempt=1
+[T=43805001ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43805061ms] [WS-ACK-RECV] tsf_us=43804998784 recv_t=43805057 attempt=1
+[T=43805201ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43805261ms] [WS-ACK-RECV] tsf_us=43805198655 recv_t=43805257 attempt=1
+[T=43809301ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43809361ms] [WS-ACK-RECV] tsf_us=43809298775 recv_t=43809359 attempt=1
+[T=43809501ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43809636ms] [WS-ACK-RECV] tsf_us=43809498628 recv_t=43809631 attempt=1
+[T=43813601ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43813726ms] [WS-ACK-RECV] tsf_us=43813598751 recv_t=43813723 attempt=1
+[T=43813801ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43813926ms] [WS-ACK-RECV] tsf_us=43813798621 recv_t=43813924 attempt=1
+[T=43817901ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43818061ms] [WS-ACK-RECV] tsf_us=43817898764 recv_t=43818057 attempt=1
+[T=43818101ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43818371ms] [WS-ACK-RECV] tsf_us=43818098629 recv_t=43818368 attempt=1
+[T=43822201ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43822296ms] [WS-ACK-RECV] tsf_us=43822198752 recv_t=43822291 attempt=1
+[T=43822401ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43822436ms] [WS-ACK-RECV] tsf_us=43822398634 recv_t=43822432 attempt=1
+[T=43826501ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43826556ms] [WS-ACK-RECV] tsf_us=43826498747 recv_t=43826555 attempt=1
+[T=43826701ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43826861ms] [WS-ACK-RECV] tsf_us=43826698615 recv_t=43826855 attempt=1
+[T=43830801ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43830861ms] [WS-ACK-RECV] tsf_us=43830798744 recv_t=43830858 attempt=1
+[T=43831001ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43831061ms] [WS-ACK-RECV] tsf_us=43830998586 recv_t=43831059 attempt=1
+[T=43835101ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43835161ms] [WS-ACK-RECV] tsf_us=43835098730 recv_t=43835160 attempt=1
+[T=43835301ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43835376ms] [WS-ACK-RECV] tsf_us=43835298589 recv_t=43835372 attempt=1
+[T=43839401ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43839456ms] [WS-ACK-RECV] tsf_us=43839398709 recv_t=43839454 attempt=1
+[T=43839601ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43839636ms] [WS-ACK-RECV] tsf_us=43839598613 recv_t=43839635 attempt=1
+[T=43843701ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43843731ms] [WS-ACK-RECV] tsf_us=43843698722 recv_t=43843728 attempt=1
+[T=43843901ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43843931ms] [WS-ACK-RECV] tsf_us=43843898598 recv_t=43843929 attempt=1
+[T=43848001ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43848066ms] [WS-ACK-RECV] tsf_us=43847998707 recv_t=43848062 attempt=1
+[T=43848201ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43848306ms] [WS-ACK-RECV] tsf_us=43848198581 recv_t=43848303 attempt=1
+[T=43852301ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43852466ms] [WS-ACK-RECV] tsf_us=43852298626 recv_t=43852465 attempt=1
+[T=43852500ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43852601ms] [WS-ACK-RECV] tsf_us=43852498553 recv_t=43852596 attempt=1
+[T=43856601ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43856771ms] [WS-ACK-RECV] tsf_us=43856598700 recv_t=43856768 attempt=1
+[T=43856801ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43856901ms] [WS-ACK-RECV] tsf_us=43856798551 recv_t=43856899 attempt=1
+[T=43860901ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43861036ms] [WS-ACK-RECV] tsf_us=43860898685 recv_t=43861032 attempt=1
+[T=43861101ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43861136ms] [WS-ACK-RECV] tsf_us=43861098567 recv_t=43861133 attempt=1
+[T=43865201ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43865336ms] [WS-ACK-RECV] tsf_us=43865198671 recv_t=43865334 attempt=1
+[T=43865400ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43865471ms] [WS-ACK-RECV] tsf_us=43865398540 recv_t=43865467 attempt=1
+[T=43869501ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43869631ms] [WS-ACK-RECV] tsf_us=43869498671 recv_t=43869628 attempt=1
+[T=43869701ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43869741ms] [WS-ACK-RECV] tsf_us=43869698535 recv_t=43869740 attempt=1
+[T=43873801ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43873896ms] [WS-ACK-RECV] tsf_us=43873798664 recv_t=43873892 attempt=1
+[T=43874000ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43874076ms] [WS-ACK-RECV] tsf_us=43873998516 recv_t=43874073 attempt=1
+[T=43878101ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43878206ms] [WS-ACK-RECV] tsf_us=43878098662 recv_t=43878205 attempt=1
+[T=43878300ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43878411ms] [WS-ACK-RECV] tsf_us=43878298517 recv_t=43878406 attempt=1
+[T=43882401ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43882531ms] [WS-ACK-RECV] tsf_us=43882398657 recv_t=43882528 attempt=1
+[T=43882601ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43882691ms] [WS-ACK-RECV] tsf_us=43882598536 recv_t=43882690 attempt=1
+[T=43886701ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43886736ms] [WS-ACK-RECV] tsf_us=43886698636 recv_t=43886732 attempt=1
+[T=43886900ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43886976ms] [WS-ACK-RECV] tsf_us=43886898525 recv_t=43886973 attempt=1
+[T=43891001ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43891226ms] [WS-ACK-RECV] tsf_us=43890998628 recv_t=43891225 attempt=1
+[T=43891229ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43891279ms] [WS-ACK-RECV] tsf_us=43891198514 recv_t=43891276 attempt=1
+[T=43895301ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43895481ms] [WS-ACK-RECV] tsf_us=43895298633 recv_t=43895477 attempt=1
+[T=43895501ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43895641ms] [WS-ACK-RECV] tsf_us=43895498484 recv_t=43895640 attempt=1
+[T=43899601ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43899666ms] [WS-ACK-RECV] tsf_us=43899598620 recv_t=43899663 attempt=1
+[T=43899800ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43899876ms] [WS-ACK-RECV] tsf_us=43899798503 recv_t=43899874 attempt=1
+[T=43903901ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43903951ms] [WS-ACK-RECV] tsf_us=43903898614 recv_t=43903947 attempt=1
+[T=43904100ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43904180ms] [WS-ACK-RECV] tsf_us=43904098497 recv_t=43904178 attempt=1
+[T=43908201ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43908346ms] [WS-ACK-RECV] tsf_us=43908198611 recv_t=43908342 attempt=1
+[T=43908400ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43908445ms] [WS-ACK-RECV] tsf_us=43908398466 recv_t=43908443 attempt=1
+[T=43912501ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43912686ms] [WS-ACK-RECV] tsf_us=43912498604 recv_t=43912685 attempt=1
+[T=43912700ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43912750ms] [WS-ACK-RECV] tsf_us=43912698459 recv_t=43912746 attempt=1
+[T=43916801ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43916882ms] [WS-ACK-RECV] tsf_us=43916798593 recv_t=43916878 attempt=1
+[T=43917000ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43917111ms] [WS-ACK-RECV] tsf_us=43916998448 recv_t=43917109 attempt=1
+[T=43921101ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43921236ms] [WS-ACK-RECV] tsf_us=43921098583 recv_t=43921232 attempt=1
+[T=43921300ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43921336ms] [WS-ACK-RECV] tsf_us=43921298474 recv_t=43921333 attempt=1
+[T=43925401ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43925426ms] [WS-ACK-RECV] tsf_us=43925398586 recv_t=43925424 attempt=1
+[T=43925600ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43925721ms] [WS-ACK-RECV] tsf_us=43925598462 recv_t=43925717 attempt=1
+[T=43929701ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43929781ms] [WS-ACK-RECV] tsf_us=43929698574 recv_t=43929778 attempt=1
+[T=43929901ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43930051ms] [WS-ACK-RECV] tsf_us=43929898460 recv_t=43930049 attempt=1
+[T=43934001ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43934046ms] [WS-ACK-RECV] tsf_us=43933998568 recv_t=43934042 attempt=1
+[T=43934200ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43934276ms] [WS-ACK-RECV] tsf_us=43934198458 recv_t=43934273 attempt=1
+[T=43938301ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43938421ms] [WS-ACK-RECV] tsf_us=43938298571 recv_t=43938416 attempt=1
+[T=43938500ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43938581ms] [WS-ACK-RECV] tsf_us=43938498415 recv_t=43938577 attempt=1
+[T=43942601ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43942676ms] [WS-ACK-RECV] tsf_us=43942598549 recv_t=43942671 attempt=1
+[T=43942800ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43942926ms] [WS-ACK-RECV] tsf_us=43942798404 recv_t=43942922 attempt=1
+[T=43946901ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43946946ms] [WS-ACK-RECV] tsf_us=43946898550 recv_t=43946944 attempt=1
+[T=43947100ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43947191ms] [WS-ACK-RECV] tsf_us=43947098421 recv_t=43947185 attempt=1
+[T=43951201ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43951241ms] [WS-ACK-RECV] tsf_us=43951198545 recv_t=43951237 attempt=1
+[T=43951400ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43951521ms] [WS-ACK-RECV] tsf_us=43951398418 recv_t=43951518 attempt=1
+[T=43955501ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43955546ms] [WS-ACK-RECV] tsf_us=43955498532 recv_t=43955540 attempt=1
+[T=43955700ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43955756ms] [WS-ACK-RECV] tsf_us=43955698409 recv_t=43955752 attempt=1
+[T=43959800ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43959876ms] [WS-ACK-RECV] tsf_us=43959798529 recv_t=43959873 attempt=1
+[T=43960000ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43960056ms] [WS-ACK-RECV] tsf_us=43959998373 recv_t=43960054 attempt=1
+[T=43964100ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43964131ms] [WS-ACK-RECV] tsf_us=43964098525 recv_t=43964128 attempt=1
+[T=43964300ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43964331ms] [WS-ACK-RECV] tsf_us=43964298390 recv_t=43964329 attempt=1
+[T=43968400ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43968506ms] [WS-ACK-RECV] tsf_us=43968398508 recv_t=43968502 attempt=1
+[T=43968600ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43968646ms] [WS-ACK-RECV] tsf_us=43968598387 recv_t=43968643 attempt=1
+[T=43972700ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43972791ms] [WS-ACK-RECV] tsf_us=43972698504 recv_t=43972785 attempt=1
+[T=43972900ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43972961ms] [WS-ACK-RECV] tsf_us=43972898384 recv_t=43972957 attempt=1
+[T=43977001ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43977061ms] [WS-ACK-RECV] tsf_us=43976998490 recv_t=43977060 attempt=1
+[T=43977200ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43977226ms] [WS-ACK-RECV] tsf_us=43977198372 recv_t=43977222 attempt=1
+[T=43981300ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43981366ms] [WS-ACK-RECV] tsf_us=43981298487 recv_t=43981363 attempt=1
+[T=43981500ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43981556ms] [WS-ACK-RECV] tsf_us=43981498337 recv_t=43981555 attempt=1
+[T=43985600ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43985651ms] [WS-ACK-RECV] tsf_us=43985598475 recv_t=43985648 attempt=1
+[T=43985800ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43985891ms] [WS-ACK-RECV] tsf_us=43985798362 recv_t=43985889 attempt=1
+[T=43989901ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43989966ms] [WS-ACK-RECV] tsf_us=43989898474 recv_t=43989962 attempt=1
+[T=43990100ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43990226ms] [WS-ACK-RECV] tsf_us=43990098355 recv_t=43990223 attempt=1
+[T=43994200ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43994456ms] [WS-ACK-RECV] tsf_us=43994198453 recv_t=43994455 attempt=1
+[T=43994459ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43994529ms] [WS-ACK-RECV] tsf_us=43994398351 recv_t=43994526 attempt=1
+[T=43998500ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=43998561ms] [WS-ACK-RECV] tsf_us=43998498455 recv_t=43998558 attempt=1
+[T=43998700ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=43998761ms] [WS-ACK-RECV] tsf_us=43998698311 recv_t=43998759 attempt=1
+[T=44002800ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44002846ms] [WS-ACK-RECV] tsf_us=44002798462 recv_t=44002842 attempt=1
+[T=44003000ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44003026ms] [WS-ACK-RECV] tsf_us=44002998321 recv_t=44003023 attempt=1
+[T=44007100ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44007161ms] [WS-ACK-RECV] tsf_us=44007098438 recv_t=44007155 attempt=1
+[T=44007300ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44007361ms] [WS-ACK-RECV] tsf_us=44007298313 recv_t=44007357 attempt=1
+[T=44011400ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44011461ms] [WS-ACK-RECV] tsf_us=44011398443 recv_t=44011459 attempt=1
+[T=44011600ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44011676ms] [WS-ACK-RECV] tsf_us=44011598316 recv_t=44011672 attempt=1
+[T=44015700ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44015766ms] [WS-ACK-RECV] tsf_us=44015698433 recv_t=44015764 attempt=1
+[T=44015900ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44015996ms] [WS-ACK-RECV] tsf_us=44015898306 recv_t=44015995 attempt=1
+[T=44020000ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44020061ms] [WS-ACK-RECV] tsf_us=44019998417 recv_t=44020056 attempt=1
+[T=44020200ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44020261ms] [WS-ACK-RECV] tsf_us=44020198258 recv_t=44020257 attempt=1
+[T=44024300ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44024361ms] [WS-ACK-RECV] tsf_us=44024298412 recv_t=44024359 attempt=1
+[T=44024500ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44024566ms] [WS-ACK-RECV] tsf_us=44024498262 recv_t=44024562 attempt=1
+[T=44028600ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44028656ms] [WS-ACK-RECV] tsf_us=44028598403 recv_t=44028654 attempt=1
+[T=44028800ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44028870ms] [WS-ACK-RECV] tsf_us=44028798254 recv_t=44028865 attempt=1
+[T=44032900ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44032971ms] [WS-ACK-RECV] tsf_us=44032898398 recv_t=44032968 attempt=1
+[T=44033100ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44033151ms] [WS-ACK-RECV] tsf_us=44033098276 recv_t=44033149 attempt=1
+[T=44037200ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44037276ms] [WS-ACK-RECV] tsf_us=44037198390 recv_t=44037272 attempt=1
+[T=44037400ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44037465ms] [WS-ACK-RECV] tsf_us=44037398268 recv_t=44037463 attempt=1
+[T=44041500ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44041580ms] [WS-ACK-RECV] tsf_us=44041498382 recv_t=44041576 attempt=1
+[T=44041700ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44041730ms] [WS-ACK-RECV] tsf_us=44041698229 recv_t=44041727 attempt=1
+[T=44045800ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44045866ms] [WS-ACK-RECV] tsf_us=44045798377 recv_t=44045862 attempt=1
+[T=44046000ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44046065ms] [WS-ACK-RECV] tsf_us=44045998225 recv_t=44046063 attempt=1
+[T=44050100ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44050195ms] [WS-ACK-RECV] tsf_us=44050098373 recv_t=44050194 attempt=1
+[T=44050300ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44050370ms] [WS-ACK-RECV] tsf_us=44050298233 recv_t=44050365 attempt=1
+[T=44054400ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44054570ms] [WS-ACK-RECV] tsf_us=44054398351 recv_t=44054567 attempt=1
+[T=44054600ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44054700ms] [WS-ACK-RECV] tsf_us=44054598208 recv_t=44054698 attempt=1
+[T=44058700ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44058805ms] [WS-ACK-RECV] tsf_us=44058698354 recv_t=44058801 attempt=1
+[T=44058900ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44058935ms] [WS-ACK-RECV] tsf_us=44058898236 recv_t=44058932 attempt=1
+[T=44063000ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44063040ms] [WS-ACK-RECV] tsf_us=44062998347 recv_t=44063035 attempt=1
+[T=44063200ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44063240ms] [WS-ACK-RECV] tsf_us=44063198222 recv_t=44063236 attempt=1
+[T=44067300ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44067370ms] [WS-ACK-RECV] tsf_us=44067298343 recv_t=44067368 attempt=1
+[T=44067500ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44067540ms] [WS-ACK-RECV] tsf_us=44067498191 recv_t=44067539 attempt=1
+[T=44071600ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44071696ms] [WS-ACK-RECV] tsf_us=44071598333 recv_t=44071692 attempt=1
+[T=44071800ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44071876ms] [WS-ACK-RECV] tsf_us=44071798183 recv_t=44071873 attempt=1
+[T=44075900ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44076031ms] [WS-ACK-RECV] tsf_us=44075898314 recv_t=44076025 attempt=1
+[T=44076100ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44076181ms] [WS-ACK-RECV] tsf_us=44076098209 recv_t=44076176 attempt=1
+[T=44080200ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44080341ms] [WS-ACK-RECV] tsf_us=44080198314 recv_t=44080337 attempt=1
+[T=44080400ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44080471ms] [WS-ACK-RECV] tsf_us=44080398172 recv_t=44080468 attempt=1
+[T=44084500ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44084566ms] [WS-ACK-RECV] tsf_us=44084498308 recv_t=44084561 attempt=1
+[T=44084700ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44084756ms] [WS-ACK-RECV] tsf_us=44084698159 recv_t=44084752 attempt=1
+[T=44088800ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44088936ms] [WS-ACK-RECV] tsf_us=44088798309 recv_t=44088934 attempt=1
+[T=44089000ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44089081ms] [WS-ACK-RECV] tsf_us=44088998156 recv_t=44089075 attempt=1
+[T=44093100ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44093241ms] [WS-ACK-RECV] tsf_us=44093098290 recv_t=44093237 attempt=1
+[T=44093300ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44093321ms] [WS-ACK-RECV] tsf_us=44093298148 recv_t=44093318 attempt=1
+[T=44097400ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44097466ms] [WS-ACK-RECV] tsf_us=44097398290 recv_t=44097461 attempt=1
+[T=44097600ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44097676ms] [WS-ACK-RECV] tsf_us=44097598165 recv_t=44097672 attempt=1
+[T=44101700ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44101771ms] [WS-ACK-RECV] tsf_us=44101698282 recv_t=44101765 attempt=1
+[T=44101900ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44101981ms] [WS-ACK-RECV] tsf_us=44101898156 recv_t=44101976 attempt=1
+[T=44106000ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44106050ms] [WS-ACK-RECV] tsf_us=44105998277 recv_t=44106048 attempt=1
+[T=44106200ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44106246ms] [WS-ACK-RECV] tsf_us=44106198139 recv_t=44106241 attempt=1
+[T=44110300ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44110406ms] [WS-ACK-RECV] tsf_us=44110298267 recv_t=44110402 attempt=1
+[T=44110500ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44110546ms] [WS-ACK-RECV] tsf_us=44110498124 recv_t=44110543 attempt=1
+[T=44114600ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44114681ms] [WS-ACK-RECV] tsf_us=44114598257 recv_t=44114676 attempt=1
+[T=44114800ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44114921ms] [WS-ACK-RECV] tsf_us=44114798125 recv_t=44114917 attempt=1
+[T=44118900ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44118946ms] [WS-ACK-RECV] tsf_us=44118898245 recv_t=44118941 attempt=1
+[T=44119100ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44119146ms] [WS-ACK-RECV] tsf_us=44119098124 recv_t=44119142 attempt=1
+[T=44123200ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44123316ms] [WS-ACK-RECV] tsf_us=44123198243 recv_t=44123314 attempt=1
+[T=44123400ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44123481ms] [WS-ACK-RECV] tsf_us=44123398115 recv_t=44123475 attempt=1
+[T=44127500ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44127540ms] [WS-ACK-RECV] tsf_us=44127498211 recv_t=44127537 attempt=1
+[T=44127700ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44127871ms] [WS-ACK-RECV] tsf_us=44127698109 recv_t=44127868 attempt=1
+[T=44131800ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44131836ms] [WS-ACK-RECV] tsf_us=44131798220 recv_t=44131831 attempt=1
+[T=44132000ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44132026ms] [WS-ACK-RECV] tsf_us=44131998095 recv_t=44132022 attempt=1
+[T=44136100ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44136176ms] [WS-ACK-RECV] tsf_us=44136098215 recv_t=44136175 attempt=1
+[T=44136300ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44136330ms] [WS-ACK-RECV] tsf_us=44136298063 recv_t=44136326 attempt=1
+[T=44140400ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44140421ms] [WS-ACK-RECV] tsf_us=44140398212 recv_t=44140417 attempt=1
+[T=44140600ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44140641ms] [WS-ACK-RECV] tsf_us=44140598087 recv_t=44140638 attempt=1
+[T=44144700ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44144746ms] [WS-ACK-RECV] tsf_us=44144698208 recv_t=44144742 attempt=1
+[T=44144900ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44144955ms] [WS-ACK-RECV] tsf_us=44144898077 recv_t=44144953 attempt=1
+[T=44149000ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44149146ms] [WS-ACK-RECV] tsf_us=44148998194 recv_t=44149145 attempt=1
+[T=44149200ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44149290ms] [WS-ACK-RECV] tsf_us=44149198051 recv_t=44149286 attempt=1
+[T=44153300ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44153380ms] [WS-ACK-RECV] tsf_us=44153298179 recv_t=44153378 attempt=1
+[T=44153500ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44153680ms] [WS-ACK-RECV] tsf_us=44153498027 recv_t=44153679 attempt=1
+[T=44157600ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44157685ms] [WS-ACK-RECV] tsf_us=44157598177 recv_t=44157682 attempt=1
+[T=44157800ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44157855ms] [WS-ACK-RECV] tsf_us=44157798032 recv_t=44157853 attempt=1
+[T=44161900ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44161940ms] [WS-ACK-RECV] tsf_us=44161898169 recv_t=44161935 attempt=1
+[T=44162100ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44162352ms] [WS Worker] Resent START (TSF), attempt 2.
+[T=44162557ms] [WS-ACK-RECV] tsf_us=44162098049 recv_t=44162556 attempt=2
+[T=44166200ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44166251ms] [WS-ACK-RECV] tsf_us=44166198170 recv_t=44166249 attempt=1
+[T=44166400ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44166455ms] [WS-ACK-RECV] tsf_us=44166398050 recv_t=44166451 attempt=1
+[T=44170500ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44170545ms] [WS-ACK-RECV] tsf_us=44170498151 recv_t=44170542 attempt=1
+[T=44170700ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44170755ms] [WS-ACK-RECV] tsf_us=44170698022 recv_t=44170754 attempt=1
+[T=44174800ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44174890ms] [WS-ACK-RECV] tsf_us=44174798135 recv_t=44174886 attempt=1
+[T=44175000ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44175080ms] [WS-ACK-RECV] tsf_us=44174997992 recv_t=44175077 attempt=1
+[T=44179100ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44179350ms] [WS-ACK-RECV] tsf_us=44179098109 recv_t=44179349 attempt=1
+[T=44179353ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44179393ms] [WS-ACK-RECV] tsf_us=44179298009 recv_t=44179390 attempt=1
+[T=44183400ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44183515ms] [WS-ACK-RECV] tsf_us=44183398144 recv_t=44183512 attempt=1
+[T=44183600ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44183655ms] [WS-ACK-RECV] tsf_us=44183598006 recv_t=44183653 attempt=1
+[T=44187700ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44187800ms] [WS-ACK-RECV] tsf_us=44187698116 recv_t=44187795 attempt=1
+[T=44187900ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44188000ms] [WS-ACK-RECV] tsf_us=44187898005 recv_t=44187996 attempt=1
+[T=44192000ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44192150ms] [WS-ACK-RECV] tsf_us=44191998123 recv_t=44192148 attempt=1
+[T=44192200ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44192260ms] [WS-ACK-RECV] tsf_us=44192197981 recv_t=44192259 attempt=1
+[T=44196300ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44196425ms] [WS-ACK-RECV] tsf_us=44196298092 recv_t=44196421 attempt=1
+[T=44196500ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44196565ms] [WS-ACK-RECV] tsf_us=44196497964 recv_t=44196562 attempt=1
+[T=44200600ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44200655ms] [WS-ACK-RECV] tsf_us=44200598101 recv_t=44200653 attempt=1
+[T=44200800ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44200890ms] [WS-ACK-RECV] tsf_us=44200797992 recv_t=44200886 attempt=1
+[T=44204900ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44204990ms] [WS-ACK-RECV] tsf_us=44204898060 recv_t=44204987 attempt=1
+[T=44205100ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44205200ms] [WS-ACK-RECV] tsf_us=44205097983 recv_t=44205198 attempt=1
+[T=44209200ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44209255ms] [WS-ACK-RECV] tsf_us=44209198090 recv_t=44209251 attempt=1
+[T=44209400ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44209485ms] [WS-ACK-RECV] tsf_us=44209397960 recv_t=44209482 attempt=1
+[T=44213500ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44213630ms] [WS-ACK-RECV] tsf_us=44213498068 recv_t=44213625 attempt=1
+[T=44213700ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44213790ms] [WS-ACK-RECV] tsf_us=44213697930 recv_t=44213786 attempt=1
+[T=44217800ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44217870ms] [WS-ACK-RECV] tsf_us=44217798070 recv_t=44217869 attempt=1
+[T=44218000ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44218165ms] [WS-ACK-RECV] tsf_us=44217997915 recv_t=44218162 attempt=1
+[T=44222100ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44222155ms] [WS-ACK-RECV] tsf_us=44222098048 recv_t=44222154 attempt=1
+[T=44222300ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44222390ms] [WS-ACK-RECV] tsf_us=44222297918 recv_t=44222385 attempt=1
+[T=44226400ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44226481ms] [WS-ACK-RECV] tsf_us=44226398050 recv_t=44226477 attempt=1
+[T=44226600ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44226701ms] [WS-ACK-RECV] tsf_us=44226597927 recv_t=44226698 attempt=1
+[T=44230700ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44230766ms] [WS-ACK-RECV] tsf_us=44230698030 recv_t=44230762 attempt=1
+[T=44230900ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44231066ms] [WS-ACK-RECV] tsf_us=44230897930 recv_t=44231064 attempt=1
+[T=44235000ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44235091ms] [WS-ACK-RECV] tsf_us=44234998039 recv_t=44235085 attempt=1
+[T=44235200ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44235261ms] [WS-ACK-RECV] tsf_us=44235197891 recv_t=44235256 attempt=1
+[T=44239300ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44239361ms] [WS-ACK-RECV] tsf_us=44239298023 recv_t=44239358 attempt=1
+[T=44239500ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44239536ms] [WS-ACK-RECV] tsf_us=44239497876 recv_t=44239531 attempt=1
+[T=44243600ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44243666ms] [WS-ACK-RECV] tsf_us=44243598023 recv_t=44243664 attempt=1
+[T=44243800ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44243871ms] [WS-ACK-RECV] tsf_us=44243797868 recv_t=44243865 attempt=1
+[T=44247900ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44247991ms] [WS-ACK-RECV] tsf_us=44247898013 recv_t=44247987 attempt=1
+[T=44248100ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44248161ms] [WS-ACK-RECV] tsf_us=44248097894 recv_t=44248159 attempt=1
+[T=44252200ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44252296ms] [WS-ACK-RECV] tsf_us=44252198002 recv_t=44252292 attempt=1
+[T=44252400ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44252436ms] [WS-ACK-RECV] tsf_us=44252397885 recv_t=44252433 attempt=1
+[T=44256500ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44256631ms] [WS-ACK-RECV] tsf_us=44256497990 recv_t=44256626 attempt=1
+[T=44256700ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44256771ms] [WS-ACK-RECV] tsf_us=44256697852 recv_t=44256767 attempt=1
+[T=44260800ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44260966ms] [WS-ACK-RECV] tsf_us=44260797981 recv_t=44260962 attempt=1
+[T=44261000ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44261035ms] [WS-ACK-RECV] tsf_us=44260997840 recv_t=44261033 attempt=1
+[T=44265100ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44265166ms] [WS-ACK-RECV] tsf_us=44265097977 recv_t=44265164 attempt=1
+[T=44265300ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44265380ms] [WS-ACK-RECV] tsf_us=44265297841 recv_t=44265375 attempt=1
+[T=44269400ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44269461ms] [WS-ACK-RECV] tsf_us=44269397895 recv_t=44269457 attempt=1
+[T=44269600ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44269641ms] [WS-ACK-RECV] tsf_us=44269597848 recv_t=44269638 attempt=1
+[T=44273700ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44273766ms] [WS-ACK-RECV] tsf_us=44273697964 recv_t=44273762 attempt=1
+[T=44273900ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44274005ms] [WS-ACK-RECV] tsf_us=44273897850 recv_t=44274003 attempt=1
+[T=44278000ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44278071ms] [WS-ACK-RECV] tsf_us=44277997956 recv_t=44278066 attempt=1
+[T=44278200ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44278270ms] [WS-ACK-RECV] tsf_us=44278197815 recv_t=44278267 attempt=1
+[T=44282300ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44282346ms] [WS-ACK-RECV] tsf_us=44282297936 recv_t=44282341 attempt=1
+[T=44282500ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44282605ms] [WS-ACK-RECV] tsf_us=44282497828 recv_t=44282602 attempt=1
+[T=44286600ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44286666ms] [WS-ACK-RECV] tsf_us=44286597939 recv_t=44286664 attempt=1
+[T=44286800ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44286880ms] [WS-ACK-RECV] tsf_us=44286797796 recv_t=44286875 attempt=1
+[T=44290900ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44291040ms] [WS-ACK-RECV] tsf_us=44290897933 recv_t=44291038 attempt=1
+[T=44291100ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44291210ms] [WS-ACK-RECV] tsf_us=44291097819 recv_t=44291209 attempt=1
+[T=44295200ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44295266ms] [WS-ACK-RECV] tsf_us=44295197923 recv_t=44295262 attempt=1
+[T=44295400ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44295475ms] [WS-ACK-RECV] tsf_us=44295397815 recv_t=44295473 attempt=1
+[T=44299500ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44299580ms] [WS-ACK-RECV] tsf_us=44299497930 recv_t=44299575 attempt=1
+[T=44299700ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44299770ms] [WS-ACK-RECV] tsf_us=44299697771 recv_t=44299766 attempt=1
+[T=44303800ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44303870ms] [WS-ACK-RECV] tsf_us=44303797914 recv_t=44303868 attempt=1
+[T=44304000ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44304080ms] [WS-ACK-RECV] tsf_us=44303997703 recv_t=44304079 attempt=1
+[T=44308100ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44308235ms] [WS-ACK-RECV] tsf_us=44308097904 recv_t=44308232 attempt=1
+[T=44308300ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44308345ms] [WS-ACK-RECV] tsf_us=44308297763 recv_t=44308343 attempt=1
+[T=44312400ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44312480ms] [WS-ACK-RECV] tsf_us=44312397895 recv_t=44312475 attempt=1
+[T=44312600ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44312650ms] [WS-ACK-RECV] tsf_us=44312597780 recv_t=44312646 attempt=1
+[T=44316700ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44316840ms] [WS-ACK-RECV] tsf_us=44316697883 recv_t=44316839 attempt=1
+[T=44316900ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44317015ms] [WS-ACK-RECV] tsf_us=44316897743 recv_t=44317011 attempt=1
+[T=44321000ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44321075ms] [WS-ACK-RECV] tsf_us=44320997833 recv_t=44321073 attempt=1
+[T=44321200ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44321255ms] [WS-ACK-RECV] tsf_us=44321197747 recv_t=44321254 attempt=1
+[T=44325300ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44325410ms] [WS-ACK-RECV] tsf_us=44325297875 recv_t=44325405 attempt=1
+[T=44325500ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44325550ms] [WS-ACK-RECV] tsf_us=44325497725 recv_t=44325546 attempt=1
+[T=44329600ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44329640ms] [WS-ACK-RECV] tsf_us=44329597866 recv_t=44329639 attempt=1
+[T=44329800ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44329835ms] [WS-ACK-RECV] tsf_us=44329797738 recv_t=44329831 attempt=1
+[T=44333900ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44334015ms] [WS-ACK-RECV] tsf_us=44333897847 recv_t=44334013 attempt=1
+[T=44334100ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44334155ms] [WS-ACK-RECV] tsf_us=44334097742 recv_t=44334154 attempt=1
+[T=44338200ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44338320ms] [WS-ACK-RECV] tsf_us=44338197842 recv_t=44338316 attempt=1
+[T=44338400ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44338510ms] [WS-ACK-RECV] tsf_us=44338397736 recv_t=44338507 attempt=1
+[T=44342500ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44342610ms] [WS-ACK-RECV] tsf_us=44342497838 recv_t=44342609 attempt=1
+[T=44342700ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44342815ms] [WS-ACK-RECV] tsf_us=44342697693 recv_t=44342811 attempt=1
+[T=44346800ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44346845ms] [WS-ACK-RECV] tsf_us=44346797823 recv_t=44346843 attempt=1
+[T=44347000ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44347035ms] [WS-ACK-RECV] tsf_us=44346997713 recv_t=44347034 attempt=1
+[T=44351100ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44351150ms] [WS-ACK-RECV] tsf_us=44351097822 recv_t=44351146 attempt=1
+[T=44351300ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44351350ms] [WS-ACK-RECV] tsf_us=44351297681 recv_t=44351347 attempt=1
+[T=44355400ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44355450ms] [WS-ACK-RECV] tsf_us=44355397824 recv_t=44355448 attempt=1
+[T=44355600ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44355725ms] [WS-ACK-RECV] tsf_us=44355597692 recv_t=44355721 attempt=1
+[T=44359700ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44359785ms] [WS-ACK-RECV] tsf_us=44359697804 recv_t=44359783 attempt=1
+[T=44359900ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44359985ms] [WS-ACK-RECV] tsf_us=44359897697 recv_t=44359984 attempt=1
+[T=44364000ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44364080ms] [WS-ACK-RECV] tsf_us=44363997804 recv_t=44364077 attempt=1
+[T=44364200ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44364270ms] [WS-ACK-RECV] tsf_us=44364197658 recv_t=44364269 attempt=1
+[T=44368300ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44368355ms] [WS-ACK-RECV] tsf_us=44368297788 recv_t=44368352 attempt=1
+[T=44368500ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44368595ms] [WS-ACK-RECV] tsf_us=44368497646 recv_t=44368593 attempt=1
+[T=44372600ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44372660ms] [WS-ACK-RECV] tsf_us=44372597786 recv_t=44372656 attempt=1
+[T=44372800ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44372870ms] [WS-ACK-RECV] tsf_us=44372797634 recv_t=44372867 attempt=1
+[T=44376900ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44376955ms] [WS-ACK-RECV] tsf_us=44376897772 recv_t=44376951 attempt=1
+[T=44377100ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44377165ms] [WS-ACK-RECV] tsf_us=44377097661 recv_t=44377162 attempt=1
+[T=44381200ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44381246ms] [WS-ACK-RECV] tsf_us=44381197764 recv_t=44381244 attempt=1
+[T=44381400ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44381560ms] [WS-ACK-RECV] tsf_us=44381397645 recv_t=44381555 attempt=1
+[T=44385500ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44385551ms] [WS-ACK-RECV] tsf_us=44385497761 recv_t=44385546 attempt=1
+[T=44385700ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44385730ms] [WS-ACK-RECV] tsf_us=44385697635 recv_t=44385727 attempt=1
+[T=44389800ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44389886ms] [WS-ACK-RECV] tsf_us=44389797752 recv_t=44389881 attempt=1
+[T=44389999ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44390065ms] [WS-ACK-RECV] tsf_us=44389997624 recv_t=44390062 attempt=1
+[T=44394100ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44394136ms] [WS-ACK-RECV] tsf_us=44394097742 recv_t=44394134 attempt=1
+[T=44394300ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44394360ms] [WS-ACK-RECV] tsf_us=44394297625 recv_t=44394355 attempt=1
+[T=44398400ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44398461ms] [WS-ACK-RECV] tsf_us=44398397737 recv_t=44398458 attempt=1
+[T=44398600ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44398736ms] [WS-ACK-RECV] tsf_us=44398597616 recv_t=44398731 attempt=1
+[T=44402700ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44402785ms] [WS-ACK-RECV] tsf_us=44402697727 recv_t=44402783 attempt=1
+[T=44402900ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44402960ms] [WS-ACK-RECV] tsf_us=44402897607 recv_t=44402954 attempt=1
+[T=44407000ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44407090ms] [WS-ACK-RECV] tsf_us=44406997721 recv_t=44407086 attempt=1
+[T=44407200ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44407270ms] [WS-ACK-RECV] tsf_us=44407197586 recv_t=44407267 attempt=1
+[T=44411300ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44411356ms] [WS-ACK-RECV] tsf_us=44411297706 recv_t=44411351 attempt=1
+[T=44411500ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44411525ms] [WS-ACK-RECV] tsf_us=44411497578 recv_t=44411522 attempt=1
+[T=44415600ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44415685ms] [WS-ACK-RECV] tsf_us=44415597704 recv_t=44415683 attempt=1
+[T=44415800ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44415900ms] [WS-ACK-RECV] tsf_us=44415797583 recv_t=44415894 attempt=1
+[T=44419900ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44419950ms] [WS-ACK-RECV] tsf_us=44419897698 recv_t=44419946 attempt=1
+[T=44420100ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44420230ms] [WS-ACK-RECV] tsf_us=44420097575 recv_t=44420227 attempt=1
+[T=44424200ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44424255ms] [WS-ACK-RECV] tsf_us=44424197685 recv_t=44424250 attempt=1
+[T=44424400ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44424566ms] [WS-ACK-RECV] tsf_us=44424397570 recv_t=44424562 attempt=1
+[T=44428500ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44428535ms] [WS-ACK-RECV] tsf_us=44428497680 recv_t=44428533 attempt=1
+[T=44428700ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44428740ms] [WS-ACK-RECV] tsf_us=44428697556 recv_t=44428734 attempt=1
+[T=44432800ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44432880ms] [WS-ACK-RECV] tsf_us=44432797677 recv_t=44432877 attempt=1
+[T=44433000ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44433019ms] [WS-ACK-RECV] tsf_us=44432997522 recv_t=44433019 attempt=1
+[T=44437100ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44437135ms] [WS-ACK-RECV] tsf_us=44437097665 recv_t=44437131 attempt=1
+[T=44437299ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44437435ms] [WS-ACK-RECV] tsf_us=44437297544 recv_t=44437432 attempt=1
+[T=44441400ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44441500ms] [WS-ACK-RECV] tsf_us=44441397654 recv_t=44441496 attempt=1
+[T=44441599ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44441670ms] [WS-ACK-RECV] tsf_us=44441597535 recv_t=44441666 attempt=1
+[T=44445700ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44445770ms] [WS-ACK-RECV] tsf_us=44445697647 recv_t=44445768 attempt=1
+[T=44445900ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44446005ms] [WS-ACK-RECV] tsf_us=44445897530 recv_t=44446000 attempt=1
+[T=44450000ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44450095ms] [WS-ACK-RECV] tsf_us=44449997639 recv_t=44450091 attempt=1
+[T=44450199ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44450255ms] [WS-ACK-RECV] tsf_us=44450197501 recv_t=44450252 attempt=1
+[T=44454300ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44454345ms] [WS-ACK-RECV] tsf_us=44454297631 recv_t=44454344 attempt=1
+[T=44454500ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44454570ms] [WS-ACK-RECV] tsf_us=44454497510 recv_t=44454565 attempt=1
+[T=44458600ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44458670ms] [WS-ACK-RECV] tsf_us=44458597624 recv_t=44458668 attempt=1
+[T=44458799ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44458875ms] [WS-ACK-RECV] tsf_us=44458797478 recv_t=44458871 attempt=1
+[T=44462900ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44463005ms] [WS-ACK-RECV] tsf_us=44462897610 recv_t=44463003 attempt=1
+[T=44463099ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44463205ms] [WS-ACK-RECV] tsf_us=44463097504 recv_t=44463204 attempt=1
+[T=44467199ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44467330ms] [WS-ACK-RECV] tsf_us=44467197590 recv_t=44467327 attempt=1
+[T=44467399ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44467580ms] [WS-ACK-RECV] tsf_us=44467397474 recv_t=44467578 attempt=1
+[T=44471500ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44471635ms] [WS-ACK-RECV] tsf_us=44471497601 recv_t=44471631 attempt=1
+[T=44471699ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44471775ms] [WS-ACK-RECV] tsf_us=44471697458 recv_t=44471772 attempt=1
+[T=44475800ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44475885ms] [WS-ACK-RECV] tsf_us=44475797595 recv_t=44475883 attempt=1
+[T=44476000ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44476080ms] [WS-ACK-RECV] tsf_us=44475997472 recv_t=44476076 attempt=1
+[T=44480100ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44480170ms] [WS-ACK-RECV] tsf_us=44480097592 recv_t=44480167 attempt=1
+[T=44480300ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44480350ms] [WS-ACK-RECV] tsf_us=44480297449 recv_t=44480348 attempt=1
+[T=44484400ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44484465ms] [WS-ACK-RECV] tsf_us=44484397594 recv_t=44484461 attempt=1
+[T=44484599ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44484645ms] [WS-ACK-RECV] tsf_us=44484597467 recv_t=44484642 attempt=1
+[T=44488700ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44488735ms] [WS-ACK-RECV] tsf_us=44488697570 recv_t=44488734 attempt=1
+[T=44488900ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44488940ms] [WS-ACK-RECV] tsf_us=44488897452 recv_t=44488935 attempt=1
+[T=44493000ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44493180ms] [WS-ACK-RECV] tsf_us=44492997554 recv_t=44493179 attempt=1
+[T=44493199ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44493265ms] [WS-ACK-RECV] tsf_us=44493197416 recv_t=44493261 attempt=1
+[T=44497300ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44497405ms] [WS-ACK-RECV] tsf_us=44497297553 recv_t=44497403 attempt=1
+[T=44497499ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44497585ms] [WS-ACK-RECV] tsf_us=44497497410 recv_t=44497584 attempt=1
+[T=44501600ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44501660ms] [WS-ACK-RECV] tsf_us=44501597545 recv_t=44501656 attempt=1
+[T=44501799ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44501849ms] [WS-ACK-RECV] tsf_us=44501797402 recv_t=44501847 attempt=1
+[T=44505900ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44505970ms] [WS-ACK-RECV] tsf_us=44505897546 recv_t=44505968 attempt=1
+[T=44506099ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44506145ms] [WS-ACK-RECV] tsf_us=44506097420 recv_t=44506141 attempt=1
+[T=44510200ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44510285ms] [WS-ACK-RECV] tsf_us=44510197529 recv_t=44510282 attempt=1
+[T=44510399ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44510484ms] [WS-ACK-RECV] tsf_us=44510397421 recv_t=44510483 attempt=1
+[T=44514499ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44514610ms] [WS-ACK-RECV] tsf_us=44514497523 recv_t=44514606 attempt=1
+[T=44514699ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44514749ms] [WS-ACK-RECV] tsf_us=44514697380 recv_t=44514747 attempt=1
+[T=44518800ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44518895ms] [WS-ACK-RECV] tsf_us=44518797503 recv_t=44518891 attempt=1
+[T=44518999ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44519094ms] [WS-ACK-RECV] tsf_us=44518997366 recv_t=44519092 attempt=1
+[T=44523100ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44523219ms] [WS-ACK-RECV] tsf_us=44523097514 recv_t=44523214 attempt=1
+[T=44523299ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44523349ms] [WS-ACK-RECV] tsf_us=44523297368 recv_t=44523345 attempt=1
+[T=44527399ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44527449ms] [WS-ACK-RECV] tsf_us=44527397501 recv_t=44527447 attempt=1
+[T=44527599ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44527649ms] [WS-ACK-RECV] tsf_us=44527597371 recv_t=44527648 attempt=1
+[T=44531699ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44531785ms] [WS-ACK-RECV] tsf_us=44531697494 recv_t=44531781 attempt=1
+[T=44531899ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44531955ms] [WS-ACK-RECV] tsf_us=44531897377 recv_t=44531952 attempt=1
+[T=44535999ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44536150ms] [WS-ACK-RECV] tsf_us=44535997491 recv_t=44536144 attempt=1
+[T=44536199ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44536290ms] [WS-ACK-RECV] tsf_us=44536197347 recv_t=44536286 attempt=1
+[T=44540299ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44540350ms] [WS-ACK-RECV] tsf_us=44540297486 recv_t=44540347 attempt=1
+[T=44540499ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44540549ms] [WS-ACK-RECV] tsf_us=44540497357 recv_t=44540549 attempt=1
+[T=44544599ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44544715ms] [WS-ACK-RECV] tsf_us=44544597456 recv_t=44544711 attempt=1
+[T=44544799ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44544855ms] [WS-ACK-RECV] tsf_us=44544797327 recv_t=44544852 attempt=1
+[T=44548899ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44549020ms] [WS-ACK-RECV] tsf_us=44548897471 recv_t=44549014 attempt=1
+[T=44549099ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44549190ms] [WS-ACK-RECV] tsf_us=44549097345 recv_t=44549185 attempt=1
+[T=44553199ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44553260ms] [WS-ACK-RECV] tsf_us=44553197457 recv_t=44553257 attempt=1
+[T=44553399ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44553450ms] [WS-ACK-RECV] tsf_us=44553397339 recv_t=44553448 attempt=1
+[T=44557499ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44557545ms] [WS-ACK-RECV] tsf_us=44557497445 recv_t=44557541 attempt=1
+[T=44557699ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44557735ms] [WS-ACK-RECV] tsf_us=44557697317 recv_t=44557732 attempt=1
+[T=44561799ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44561950ms] [WS-ACK-RECV] tsf_us=44561797443 recv_t=44561944 attempt=1
+[T=44561999ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44562120ms] [WS-ACK-RECV] tsf_us=44561997287 recv_t=44562115 attempt=1
+[T=44566099ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44566170ms] [WS-ACK-RECV] tsf_us=44566097429 recv_t=44566167 attempt=1
+[T=44566299ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44566360ms] [WS-ACK-RECV] tsf_us=44566297277 recv_t=44566358 attempt=1
+[T=44570399ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44570485ms] [WS-ACK-RECV] tsf_us=44570397407 recv_t=44570480 attempt=1
+[T=44570599ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44570645ms] [WS-ACK-RECV] tsf_us=44570597299 recv_t=44570641 attempt=1
+[T=44574699ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44574755ms] [WS-ACK-RECV] tsf_us=44574697415 recv_t=44574753 attempt=1
+[T=44574899ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44574960ms] [WS-ACK-RECV] tsf_us=44574897300 recv_t=44574954 attempt=1
+[T=44578999ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44579060ms] [WS-ACK-RECV] tsf_us=44578997420 recv_t=44579056 attempt=1
+[T=44579199ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44579230ms] [WS-ACK-RECV] tsf_us=44579197281 recv_t=44579227 attempt=1
+[T=44583299ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44583395ms] [WS-ACK-RECV] tsf_us=44583297397 recv_t=44583390 attempt=1
+[T=44583499ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44583565ms] [WS-ACK-RECV] tsf_us=44583497249 recv_t=44583561 attempt=1
+[T=44587599ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44587700ms] [WS-ACK-RECV] tsf_us=44587597402 recv_t=44587694 attempt=1
+[T=44587799ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44587860ms] [WS-ACK-RECV] tsf_us=44587797249 recv_t=44587855 attempt=1
+[T=44591899ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44591949ms] [WS-ACK-RECV] tsf_us=44591897381 recv_t=44591947 attempt=1
+[T=44592099ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44592155ms] [WS-ACK-RECV] tsf_us=44592097266 recv_t=44592151 attempt=1
+[T=44596199ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44596255ms] [WS-ACK-RECV] tsf_us=44596197379 recv_t=44596253 attempt=1
+[T=44596399ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44596445ms] [WS-ACK-RECV] tsf_us=44596397256 recv_t=44596443 attempt=1
+[T=44600499ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44600600ms] [WS-ACK-RECV] tsf_us=44600497366 recv_t=44600595 attempt=1
+[T=44600699ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44600740ms] [WS-ACK-RECV] tsf_us=44600697216 recv_t=44600736 attempt=1
+[T=44604799ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44604965ms] [WS-ACK-RECV] tsf_us=44604797363 recv_t=44604961 attempt=1
+[T=44604999ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44605135ms] [WS-ACK-RECV] tsf_us=44604997206 recv_t=44605132 attempt=1
+[T=44609099ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44609155ms] [WS-ACK-RECV] tsf_us=44609097350 recv_t=44609154 attempt=1
+[T=44609299ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44609370ms] [WS-ACK-RECV] tsf_us=44609297217 recv_t=44609365 attempt=1
+[T=44613399ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44613460ms] [WS-ACK-RECV] tsf_us=44613397348 recv_t=44613457 attempt=1
+[T=44613599ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44613660ms] [WS-ACK-RECV] tsf_us=44613597219 recv_t=44613658 attempt=1
+[T=44617699ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44617765ms] [WS-ACK-RECV] tsf_us=44617697343 recv_t=44617761 attempt=1
+[T=44617899ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44617995ms] [WS-ACK-RECV] tsf_us=44617897221 recv_t=44617992 attempt=1
+[T=44621999ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44622090ms] [WS-ACK-RECV] tsf_us=44621997324 recv_t=44622085 attempt=1
+[T=44622199ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44622259ms] [WS-ACK-RECV] tsf_us=44622197215 recv_t=44622256 attempt=1
+[T=44626299ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44626425ms] [WS-ACK-RECV] tsf_us=44626297317 recv_t=44626421 attempt=1
+[T=44626499ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44626564ms] [WS-ACK-RECV] tsf_us=44626497173 recv_t=44626562 attempt=1
+[T=44630599ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44630645ms] [WS-ACK-RECV] tsf_us=44630597309 recv_t=44630643 attempt=1
+[T=44630799ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44630869ms] [WS-ACK-RECV] tsf_us=44630797185 recv_t=44630864 attempt=1
+[T=44634899ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44635030ms] [WS-ACK-RECV] tsf_us=44634897297 recv_t=44635026 attempt=1
+[T=44635099ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44635199ms] [WS-ACK-RECV] tsf_us=44635097179 recv_t=44635197 attempt=1
+[T=44639199ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44639265ms] [WS-ACK-RECV] tsf_us=44639197296 recv_t=44639261 attempt=1
+[T=44639399ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44639464ms] [WS-ACK-RECV] tsf_us=44639397176 recv_t=44639462 attempt=1
+[T=44643499ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44643569ms] [WS-ACK-RECV] tsf_us=44643497290 recv_t=44643564 attempt=1
+[T=44643699ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44643789ms] [WS-ACK-RECV] tsf_us=44643697140 recv_t=44643785 attempt=1
+[T=44647799ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44647869ms] [WS-ACK-RECV] tsf_us=44647797266 recv_t=44647867 attempt=1
+[T=44647999ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44648069ms] [WS-ACK-RECV] tsf_us=44647997136 recv_t=44648068 attempt=1
+[T=44652099ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44652164ms] [WS-ACK-RECV] tsf_us=44652097271 recv_t=44652161 attempt=1
+[T=44652299ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44652364ms] [WS-ACK-RECV] tsf_us=44652297124 recv_t=44652362 attempt=1
+[T=44656399ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44656469ms] [WS-ACK-RECV] tsf_us=44656397266 recv_t=44656465 attempt=1
+[T=44656599ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44656669ms] [WS-ACK-RECV] tsf_us=44656597152 recv_t=44656666 attempt=1
+[T=44660699ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44660769ms] [WS-ACK-RECV] tsf_us=44660697258 recv_t=44660767 attempt=1
+[T=44660899ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44660949ms] [WS-ACK-RECV] tsf_us=44660897138 recv_t=44660948 attempt=1
+[T=44664999ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44665064ms] [WS-ACK-RECV] tsf_us=44664997239 recv_t=44665061 attempt=1
+[T=44665199ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44665466ms] [WS Worker] Resent START (TSF), attempt 2.
+[T=44665476ms] [WS-ACK-RECV] tsf_us=44665197122 recv_t=44665472 attempt=2
+[T=44669299ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44669469ms] [WS-ACK-RECV] tsf_us=44669297252 recv_t=44669465 attempt=1
+[T=44669499ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44669579ms] [WS-ACK-RECV] tsf_us=44669497093 recv_t=44669576 attempt=1
+[T=44673599ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44673674ms] [WS-ACK-RECV] tsf_us=44673597224 recv_t=44673670 attempt=1
+[T=44673799ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44673874ms] [WS-ACK-RECV] tsf_us=44673797113 recv_t=44673871 attempt=1
+[T=44677899ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44678079ms] [WS-ACK-RECV] tsf_us=44677897218 recv_t=44678074 attempt=1
+[T=44678099ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44678179ms] [WS-ACK-RECV] tsf_us=44678097072 recv_t=44678175 attempt=1
+[T=44682199ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44682439ms] [WS-ACK-RECV] tsf_us=44682197202 recv_t=44682437 attempt=1
+[T=44682442ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44682542ms] [WS-ACK-RECV] tsf_us=44682397089 recv_t=44682538 attempt=1
+[T=44686499ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44686645ms] [WS-ACK-RECV] tsf_us=44686497205 recv_t=44686640 attempt=1
+[T=44686699ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44686785ms] [WS-ACK-RECV] tsf_us=44686697066 recv_t=44686781 attempt=1
+[T=44690799ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44690875ms] [WS-ACK-RECV] tsf_us=44690797181 recv_t=44690872 attempt=1
+[T=44690999ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44691065ms] [WS-ACK-RECV] tsf_us=44690997079 recv_t=44691063 attempt=1
+[T=44695099ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44695210ms] [WS-ACK-RECV] tsf_us=44695097199 recv_t=44695206 attempt=1
+[T=44695299ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44695370ms] [WS-ACK-RECV] tsf_us=44695297047 recv_t=44695367 attempt=1
+[T=44699399ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44699475ms] [WS-ACK-RECV] tsf_us=44699397176 recv_t=44699470 attempt=1
+[T=44699599ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44699745ms] [WS-ACK-RECV] tsf_us=44699596995 recv_t=44699741 attempt=1
+[T=44703699ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44703845ms] [WS-ACK-RECV] tsf_us=44703697193 recv_t=44703843 attempt=1
+[T=44703899ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44704050ms] [WS-ACK-RECV] tsf_us=44703897028 recv_t=44704044 attempt=1
+[T=44707999ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44708170ms] [WS-ACK-RECV] tsf_us=44707997170 recv_t=44708167 attempt=1
+[T=44708199ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44708355ms] [WS-ACK-RECV] tsf_us=44708197025 recv_t=44708350 attempt=1
+[T=44712299ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44712375ms] [WS-ACK-RECV] tsf_us=44712297166 recv_t=44712372 attempt=1
+[T=44712499ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44712645ms] [WS-ACK-RECV] tsf_us=44712497013 recv_t=44712643 attempt=1
+[T=44716599ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44716740ms] [WS-ACK-RECV] tsf_us=44716597154 recv_t=44716735 attempt=1
+[T=44716799ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44716880ms] [WS-ACK-RECV] tsf_us=44716797009 recv_t=44716876 attempt=1
+[T=44720899ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44720970ms] [WS-ACK-RECV] tsf_us=44720897164 recv_t=44720967 attempt=1
+[T=44721099ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44721265ms] [WS-ACK-RECV] tsf_us=44721097022 recv_t=44721261 attempt=1
+[T=44725199ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44725305ms] [WS-ACK-RECV] tsf_us=44725197137 recv_t=44725302 attempt=1
+[T=44725399ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44725515ms] [WS-ACK-RECV] tsf_us=44725397020 recv_t=44725513 attempt=1
+[T=44729499ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44729580ms] [WS-ACK-RECV] tsf_us=44729497131 recv_t=44729576 attempt=1
+[T=44729699ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44729829ms] [WS-ACK-RECV] tsf_us=44729696987 recv_t=44729827 attempt=1
+[T=44733799ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44734105ms] [WS-ACK-RECV] tsf_us=44733797122 recv_t=44734100 attempt=1
+[T=44734107ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44734183ms] [WS-ACK-RECV] tsf_us=44733996993 recv_t=44734181 attempt=1
+[T=44738099ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44738220ms] [WS-ACK-RECV] tsf_us=44738097103 recv_t=44738214 attempt=1
+[T=44738299ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44738349ms] [WS-ACK-RECV] tsf_us=44738296991 recv_t=44738345 attempt=1
+[T=44742399ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44742455ms] [WS-ACK-RECV] tsf_us=44742397099 recv_t=44742451 attempt=1
+[T=44742599ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44742695ms] [WS-ACK-RECV] tsf_us=44742596979 recv_t=44742691 attempt=1
+[T=44746699ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44746785ms] [WS-ACK-RECV] tsf_us=44746697108 recv_t=44746783 attempt=1
+[T=44746899ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44746960ms] [WS-ACK-RECV] tsf_us=44746896978 recv_t=44746955 attempt=1
+[T=44750999ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44751060ms] [WS-ACK-RECV] tsf_us=44750997096 recv_t=44751056 attempt=1
+[T=44751199ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44751319ms] [WS-ACK-RECV] tsf_us=44751196966 recv_t=44751318 attempt=1
+[T=44755299ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44755445ms] [WS-ACK-RECV] tsf_us=44755297079 recv_t=44755441 attempt=1
+[T=44755499ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44755624ms] [WS-ACK-RECV] tsf_us=44755496962 recv_t=44755623 attempt=1
+[T=44759599ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44759749ms] [WS-ACK-RECV] tsf_us=44759597071 recv_t=44759746 attempt=1
+[T=44759799ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44759889ms] [WS-ACK-RECV] tsf_us=44759796924 recv_t=44759887 attempt=1
+[T=44763899ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44764015ms] [WS-ACK-RECV] tsf_us=44763897060 recv_t=44764011 attempt=1
+[T=44764099ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44764224ms] [WS-ACK-RECV] tsf_us=44764096941 recv_t=44764222 attempt=1
+[T=44768199ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44768289ms] [WS-ACK-RECV] tsf_us=44768197056 recv_t=44768285 attempt=1
+[T=44768399ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44768439ms] [WS-ACK-RECV] tsf_us=44768396934 recv_t=44768436 attempt=1
+[T=44772499ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44772589ms] [WS-ACK-RECV] tsf_us=44772497043 recv_t=44772588 attempt=1
+[T=44772699ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44772784ms] [WS-ACK-RECV] tsf_us=44772696906 recv_t=44772780 attempt=1
+[T=44776799ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44776844ms] [WS-ACK-RECV] tsf_us=44776797033 recv_t=44776842 attempt=1
+[T=44776999ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44777084ms] [WS-ACK-RECV] tsf_us=44776996911 recv_t=44777083 attempt=1
+[T=44781099ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44781229ms] [WS-ACK-RECV] tsf_us=44781097027 recv_t=44781224 attempt=1
+[T=44781299ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44781409ms] [WS-ACK-RECV] tsf_us=44781296920 recv_t=44781408 attempt=1
+[T=44785399ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44785455ms] [WS-ACK-RECV] tsf_us=44785397019 recv_t=44785451 attempt=1
+[T=44785599ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44785794ms] [WS-ACK-RECV] tsf_us=44785596905 recv_t=44785792 attempt=1
+[T=44789699ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44789789ms] [WS-ACK-RECV] tsf_us=44789697013 recv_t=44789784 attempt=1
+[T=44789899ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44790029ms] [WS-ACK-RECV] tsf_us=44789896881 recv_t=44790025 attempt=1
+[T=44793999ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44794089ms] [WS-ACK-RECV] tsf_us=44793997003 recv_t=44794087 attempt=1
+[T=44794199ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44794469ms] [WS-ACK-RECV] tsf_us=44794196864 recv_t=44794468 attempt=1
+[T=44798299ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44798404ms] [WS-ACK-RECV] tsf_us=44798296989 recv_t=44798401 attempt=1
+[T=44798499ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44798564ms] [WS-ACK-RECV] tsf_us=44798496852 recv_t=44798562 attempt=1
+[T=44802599ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44802699ms] [WS-ACK-RECV] tsf_us=44802596986 recv_t=44802695 attempt=1
+[T=44802799ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44802859ms] [WS-ACK-RECV] tsf_us=44802796877 recv_t=44802856 attempt=1
+[T=44806899ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44807049ms] [WS-ACK-RECV] tsf_us=44806896975 recv_t=44807048 attempt=1
+[T=44807099ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44807204ms] [WS-ACK-RECV] tsf_us=44807096865 recv_t=44807200 attempt=1
+[T=44811199ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44811264ms] [WS-ACK-RECV] tsf_us=44811196979 recv_t=44811261 attempt=1
+[T=44811399ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44811414ms] [WS-ACK-RECV] tsf_us=44811396856 recv_t=44811413 attempt=1
+[T=44815499ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44815569ms] [WS-ACK-RECV] tsf_us=44815496962 recv_t=44815564 attempt=1
+[T=44815699ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44815839ms] [WS-ACK-RECV] tsf_us=44815696817 recv_t=44815835 attempt=1
+[T=44819799ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44819969ms] [WS-ACK-RECV] tsf_us=44819796957 recv_t=44819967 attempt=1
+[T=44819999ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44820094ms] [WS-ACK-RECV] tsf_us=44819996837 recv_t=44820090 attempt=1
+[T=44824099ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44824164ms] [WS-ACK-RECV] tsf_us=44824096949 recv_t=44824163 attempt=1
+[T=44824299ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44824369ms] [WS-ACK-RECV] tsf_us=44824296811 recv_t=44824364 attempt=1
+[T=44828399ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44828579ms] [WS-ACK-RECV] tsf_us=44828396944 recv_t=44828576 attempt=1
+[T=44828599ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44828669ms] [WS-ACK-RECV] tsf_us=44828596817 recv_t=44828667 attempt=1
+[T=44832699ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44832864ms] [WS-ACK-RECV] tsf_us=44832696928 recv_t=44832860 attempt=1
+[T=44832899ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44833034ms] [WS-ACK-RECV] tsf_us=44832896787 recv_t=44833031 attempt=1
+[T=44836999ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44837194ms] [WS-ACK-RECV] tsf_us=44836996931 recv_t=44837193 attempt=1
+[T=44837199ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44837369ms] [WS-ACK-RECV] tsf_us=44837196764 recv_t=44837364 attempt=1
+[T=44841299ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44841420ms] [WS-ACK-RECV] tsf_us=44841296925 recv_t=44841416 attempt=1
+[T=44841499ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44841520ms] [WS-ACK-RECV] tsf_us=44841496771 recv_t=44841517 attempt=1
+[T=44845599ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44845645ms] [WS-ACK-RECV] tsf_us=44845596913 recv_t=44845640 attempt=1
+[T=44845799ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44845835ms] [WS-ACK-RECV] tsf_us=44845796784 recv_t=44845831 attempt=1
+[T=44849899ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44849995ms] [WS-ACK-RECV] tsf_us=44849896905 recv_t=44849993 attempt=1
+[T=44850099ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44850220ms] [WS-ACK-RECV] tsf_us=44850096778 recv_t=44850214 attempt=1
+[T=44854199ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44854270ms] [WS-ACK-RECV] tsf_us=44854196895 recv_t=44854268 attempt=1
+[T=44854399ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44854505ms] [WS-ACK-RECV] tsf_us=44854396772 recv_t=44854500 attempt=1
+[T=44858499ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44858565ms] [WS-ACK-RECV] tsf_us=44858496869 recv_t=44858562 attempt=1
+[T=44858699ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44858735ms] [WS-ACK-RECV] tsf_us=44858696756 recv_t=44858733 attempt=1
+[T=44862799ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44863010ms] [WS-ACK-RECV] tsf_us=44862796889 recv_t=44863007 attempt=1
+[T=44863012ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44863113ms] [WS-ACK-RECV] tsf_us=44862996751 recv_t=44863108 attempt=1
+[T=44867099ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44867245ms] [WS-ACK-RECV] tsf_us=44867096862 recv_t=44867240 attempt=1
+[T=44867299ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44867404ms] [WS-ACK-RECV] tsf_us=44867296755 recv_t=44867401 attempt=1
+[T=44871399ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44871565ms] [WS-ACK-RECV] tsf_us=44871396858 recv_t=44871563 attempt=1
+[T=44871599ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44871679ms] [WS-ACK-RECV] tsf_us=44871596731 recv_t=44871674 attempt=1
+[T=44875699ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44875809ms] [WS-ACK-RECV] tsf_us=44875696856 recv_t=44875805 attempt=1
+[T=44875899ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44875979ms] [WS-ACK-RECV] tsf_us=44875896734 recv_t=44875976 attempt=1
+[T=44879999ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44880135ms] [WS-ACK-RECV] tsf_us=44879996842 recv_t=44880130 attempt=1
+[T=44880199ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44880385ms] [WS-ACK-RECV] tsf_us=44880196711 recv_t=44880381 attempt=1
+[T=44884299ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44884459ms] [WS-ACK-RECV] tsf_us=44884296834 recv_t=44884453 attempt=1
+[T=44884499ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44884579ms] [WS-ACK-RECV] tsf_us=44884496692 recv_t=44884574 attempt=1
+[T=44888599ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44888779ms] [WS-ACK-RECV] tsf_us=44888596823 recv_t=44888776 attempt=1
+[T=44888799ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44888939ms] [WS-ACK-RECV] tsf_us=44888796681 recv_t=44888937 attempt=1
+[T=44892899ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44892974ms] [WS-ACK-RECV] tsf_us=44892896830 recv_t=44892969 attempt=1
+[T=44893099ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44893214ms] [WS-ACK-RECV] tsf_us=44893096704 recv_t=44893210 attempt=1
+[T=44897199ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44897304ms] [WS-ACK-RECV] tsf_us=44897196803 recv_t=44897302 attempt=1
+[T=44897399ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44897479ms] [WS-ACK-RECV] tsf_us=44897396694 recv_t=44897473 attempt=1
+[T=44901499ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44901529ms] [WS-ACK-RECV] tsf_us=44901496797 recv_t=44901525 attempt=1
+[T=44901699ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44901739ms] [WS-ACK-RECV] tsf_us=44901696681 recv_t=44901736 attempt=1
+[T=44905799ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44905929ms] [WS-ACK-RECV] tsf_us=44905796798 recv_t=44905928 attempt=1
+[T=44905999ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44906144ms] [WS-ACK-RECV] tsf_us=44905996660 recv_t=44906140 attempt=1
+[T=44910099ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44910154ms] [WS-ACK-RECV] tsf_us=44910096785 recv_t=44910153 attempt=1
+[T=44910299ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44910449ms] [WS-ACK-RECV] tsf_us=44910296649 recv_t=44910444 attempt=1
+[T=44914399ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44914509ms] [WS-ACK-RECV] tsf_us=44914396772 recv_t=44914506 attempt=1
+[T=44914599ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44914759ms] [WS-ACK-RECV] tsf_us=44914596661 recv_t=44914757 attempt=1
+[T=44918699ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44918744ms] [WS-ACK-RECV] tsf_us=44918696773 recv_t=44918740 attempt=1
+[T=44918899ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44918984ms] [WS-ACK-RECV] tsf_us=44918896657 recv_t=44918981 attempt=1
+[T=44922999ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44923044ms] [WS-ACK-RECV] tsf_us=44922996763 recv_t=44923043 attempt=1
+[T=44923199ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44923259ms] [WS-ACK-RECV] tsf_us=44923196649 recv_t=44923254 attempt=1
+[T=44927299ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44927329ms] [WS-ACK-RECV] tsf_us=44927296748 recv_t=44927326 attempt=1
+[T=44927499ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44927589ms] [WS-ACK-RECV] tsf_us=44927496624 recv_t=44927587 attempt=1
+[T=44931599ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44931664ms] [WS-ACK-RECV] tsf_us=44931596747 recv_t=44931660 attempt=1
+[T=44931799ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44931884ms] [WS-ACK-RECV] tsf_us=44931796598 recv_t=44931881 attempt=1
+[T=44935899ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44936014ms] [WS-ACK-RECV] tsf_us=44935896741 recv_t=44936012 attempt=1
+[T=44936099ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44936184ms] [WS-ACK-RECV] tsf_us=44936096623 recv_t=44936183 attempt=1
+[T=44940199ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44940289ms] [WS-ACK-RECV] tsf_us=44940196733 recv_t=44940285 attempt=1
+[T=44940399ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44940439ms] [WS-ACK-RECV] tsf_us=44940396617 recv_t=44940436 attempt=1
+[T=44944499ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44944579ms] [WS-ACK-RECV] tsf_us=44944496728 recv_t=44944578 attempt=1
+[T=44944699ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44944834ms] [WS-ACK-RECV] tsf_us=44944696583 recv_t=44944830 attempt=1
+[T=44948799ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44948854ms] [WS-ACK-RECV] tsf_us=44948796716 recv_t=44948852 attempt=1
+[T=44948999ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44949124ms] [WS-ACK-RECV] tsf_us=44948996573 recv_t=44949123 attempt=1
+[T=44953099ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44953169ms] [WS-ACK-RECV] tsf_us=44953096710 recv_t=44953165 attempt=1
+[T=44953299ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44953369ms] [WS-ACK-RECV] tsf_us=44953296571 recv_t=44953366 attempt=1
+[T=44957399ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44957524ms] [WS-ACK-RECV] tsf_us=44957396709 recv_t=44957520 attempt=1
+[T=44957598ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44957704ms] [WS-ACK-RECV] tsf_us=44957596578 recv_t=44957701 attempt=1
+[T=44961699ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44961854ms] [WS-ACK-RECV] tsf_us=44961696708 recv_t=44961853 attempt=1
+[T=44961898ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44961929ms] [WS-ACK-RECV] tsf_us=44961896544 recv_t=44961924 attempt=1
+[T=44965999ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44966049ms] [WS-ACK-RECV] tsf_us=44965996695 recv_t=44966045 attempt=1
+[T=44966199ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44966259ms] [WS-ACK-RECV] tsf_us=44966196561 recv_t=44966256 attempt=1
+[T=44970299ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44970334ms] [WS-ACK-RECV] tsf_us=44970296677 recv_t=44970331 attempt=1
+[T=44970499ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44970554ms] [WS-ACK-RECV] tsf_us=44970496550 recv_t=44970552 attempt=1
+[T=44974599ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44974669ms] [WS-ACK-RECV] tsf_us=44974596667 recv_t=44974664 attempt=1
+[T=44974798ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44974858ms] [WS-ACK-RECV] tsf_us=44974796521 recv_t=44974855 attempt=1
+[T=44978899ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44978989ms] [WS-ACK-RECV] tsf_us=44978896664 recv_t=44978987 attempt=1
+[T=44979099ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44979134ms] [WS-ACK-RECV] tsf_us=44979096541 recv_t=44979130 attempt=1
+[T=44983199ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44983294ms] [WS-ACK-RECV] tsf_us=44983196654 recv_t=44983292 attempt=1
+[T=44983398ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44983528ms] [WS-ACK-RECV] tsf_us=44983396535 recv_t=44983523 attempt=1
+[T=44987499ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44987539ms] [WS-ACK-RECV] tsf_us=44987496645 recv_t=44987536 attempt=1
+[T=44987699ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44987759ms] [WS-ACK-RECV] tsf_us=44987696519 recv_t=44987757 attempt=1
+[T=44991799ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44991894ms] [WS-ACK-RECV] tsf_us=44991796629 recv_t=44991890 attempt=1
+[T=44991998ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44992034ms] [WS-ACK-RECV] tsf_us=44991996493 recv_t=44992031 attempt=1
+[T=44996099ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=44996224ms] [WS-ACK-RECV] tsf_us=44996096627 recv_t=44996222 attempt=1
+[T=44996298ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=44996329ms] [WS-ACK-RECV] tsf_us=44996296484 recv_t=44996323 attempt=1
+[T=45000399ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45000489ms] [WS-ACK-RECV] tsf_us=45000396615 recv_t=45000486 attempt=1
+[T=45000599ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45000699ms] [WS-ACK-RECV] tsf_us=45000596506 recv_t=45000697 attempt=1
+[T=45004699ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45004764ms] [WS-ACK-RECV] tsf_us=45004696617 recv_t=45004760 attempt=1
+[T=45004898ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45004964ms] [WS-ACK-RECV] tsf_us=45004896495 recv_t=45004961 attempt=1
+[T=45008999ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45009059ms] [WS-ACK-RECV] tsf_us=45008996601 recv_t=45009053 attempt=1
+[T=45009198ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45009269ms] [WS-ACK-RECV] tsf_us=45009196482 recv_t=45009264 attempt=1
+[T=45013299ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45013359ms] [WS-ACK-RECV] tsf_us=45013296593 recv_t=45013357 attempt=1
+[T=45013498ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45013564ms] [WS-ACK-RECV] tsf_us=45013496483 recv_t=45013559 attempt=1
+[T=45017599ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45017664ms] [WS-ACK-RECV] tsf_us=45017596592 recv_t=45017662 attempt=1
+[T=45017798ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45017869ms] [WS-ACK-RECV] tsf_us=45017796441 recv_t=45017863 attempt=1
+[T=45021899ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45022049ms] [WS-ACK-RECV] tsf_us=45021896589 recv_t=45022045 attempt=1
+[T=45022098ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45022199ms] [WS-ACK-RECV] tsf_us=45022096462 recv_t=45022196 attempt=1
+[T=45026199ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45026289ms] [WS-ACK-RECV] tsf_us=45026196594 recv_t=45026287 attempt=1
+[T=45026398ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45026534ms] [WS-ACK-RECV] tsf_us=45026396457 recv_t=45026530 attempt=1
+[T=45030499ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45030594ms] [WS-ACK-RECV] tsf_us=45030496574 recv_t=45030591 attempt=1
+[T=45030698ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45030834ms] [WS-ACK-RECV] tsf_us=45030696413 recv_t=45030832 attempt=1
+[T=45034799ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45034879ms] [WS-ACK-RECV] tsf_us=45034796557 recv_t=45034875 attempt=1
+[T=45034998ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45035099ms] [WS-ACK-RECV] tsf_us=45034996409 recv_t=45035096 attempt=1
+[T=45039099ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45039234ms] [WS-ACK-RECV] tsf_us=45039096545 recv_t=45039229 attempt=1
+[T=45039298ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45039404ms] [WS-ACK-RECV] tsf_us=45039296405 recv_t=45039400 attempt=1
+[T=45043399ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45043509ms] [WS-ACK-RECV] tsf_us=45043396545 recv_t=45043503 attempt=1
+[T=45043598ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45043719ms] [WS-ACK-RECV] tsf_us=45043596421 recv_t=45043714 attempt=1
+[T=45047698ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45047749ms] [WS-ACK-RECV] tsf_us=45047696542 recv_t=45047746 attempt=1
+[T=45047898ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45048009ms] [WS-ACK-RECV] tsf_us=45047896414 recv_t=45048007 attempt=1
+[T=45051999ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45052104ms] [WS-ACK-RECV] tsf_us=45051996527 recv_t=45052099 attempt=1
+[T=45052198ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45052294ms] [WS-ACK-RECV] tsf_us=45052196393 recv_t=45052290 attempt=1
+[T=45056299ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45056384ms] [WS-ACK-RECV] tsf_us=45056296515 recv_t=45056381 attempt=1
+[T=45056498ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45056609ms] [WS-ACK-RECV] tsf_us=45056496394 recv_t=45056603 attempt=1
+[T=45060599ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45060709ms] [WS-ACK-RECV] tsf_us=45060596516 recv_t=45060705 attempt=1
+[T=45060798ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45060909ms] [WS-ACK-RECV] tsf_us=45060796373 recv_t=45060906 attempt=1
+[T=45064899ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45064984ms] [WS-ACK-RECV] tsf_us=45064896500 recv_t=45064980 attempt=1
+[T=45065099ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45065214ms] [WS-ACK-RECV] tsf_us=45065096395 recv_t=45065211 attempt=1
+[T=45069199ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45069339ms] [WS-ACK-RECV] tsf_us=45069196499 recv_t=45069334 attempt=1
+[T=45069398ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45069479ms] [WS-ACK-RECV] tsf_us=45069396355 recv_t=45069475 attempt=1
+[T=45073498ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45073549ms] [WS-ACK-RECV] tsf_us=45073496493 recv_t=45073547 attempt=1
+[T=45073698ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45073744ms] [WS-ACK-RECV] tsf_us=45073696367 recv_t=45073740 attempt=1
+[T=45077798ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45077964ms] [WS-ACK-RECV] tsf_us=45077796484 recv_t=45077962 attempt=1
+[T=45077998ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45078149ms] [WS-ACK-RECV] tsf_us=45077996360 recv_t=45078144 attempt=1
+[T=45082098ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45082239ms] [WS-ACK-RECV] tsf_us=45082096477 recv_t=45082236 attempt=1
+[T=45082298ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45082449ms] [WS-ACK-RECV] tsf_us=45082296324 recv_t=45082447 attempt=1
+[T=45086399ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45086474ms] [WS-ACK-RECV] tsf_us=45086396466 recv_t=45086470 attempt=1
+[T=45086598ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45086744ms] [WS-ACK-RECV] tsf_us=45086596257 recv_t=45086742 attempt=1
+[T=45090698ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45090754ms] [WS-ACK-RECV] tsf_us=45090696456 recv_t=45090753 attempt=1
+[T=45090898ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45090929ms] [WS-ACK-RECV] tsf_us=45090896343 recv_t=45090924 attempt=1
+[T=45094999ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45095039ms] [WS-ACK-RECV] tsf_us=45094996457 recv_t=45095038 attempt=1
+[T=45095198ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45095244ms] [WS-ACK-RECV] tsf_us=45095196327 recv_t=45095240 attempt=1
+[T=45099298ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45099404ms] [WS-ACK-RECV] tsf_us=45099296438 recv_t=45099403 attempt=1
+[T=45099498ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45099548ms] [WS-ACK-RECV] tsf_us=45099496297 recv_t=45099544 attempt=1
+[T=45103598ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45103639ms] [WS-ACK-RECV] tsf_us=45103596356 recv_t=45103637 attempt=1
+[T=45103798ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45103854ms] [WS-ACK-RECV] tsf_us=45103796220 recv_t=45103849 attempt=1
+[T=45107898ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45108014ms] [WS-ACK-RECV] tsf_us=45107896428 recv_t=45108012 attempt=1
+[T=45108098ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45108218ms] [WS-ACK-RECV] tsf_us=45108096304 recv_t=45108213 attempt=1
+[T=45112198ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45112349ms] [WS-ACK-RECV] tsf_us=45112196415 recv_t=45112346 attempt=1
+[T=45112398ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45112528ms] [WS-ACK-RECV] tsf_us=45112396279 recv_t=45112527 attempt=1
+[T=45116498ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45116544ms] [WS-ACK-RECV] tsf_us=45116496405 recv_t=45116541 attempt=1
+[T=45116698ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45116743ms] [WS-ACK-RECV] tsf_us=45116696287 recv_t=45116742 attempt=1
+[T=45120798ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45120848ms] [WS-ACK-RECV] tsf_us=45120796401 recv_t=45120843 attempt=1
+[T=45120998ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45121069ms] [WS-ACK-RECV] tsf_us=45120996267 recv_t=45121064 attempt=1
+[T=45125098ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45125148ms] [WS-ACK-RECV] tsf_us=45125096395 recv_t=45125147 attempt=1
+[T=45125298ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45125363ms] [WS-ACK-RECV] tsf_us=45125296266 recv_t=45125359 attempt=1
+[T=45129398ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45129553ms] [WS-ACK-RECV] tsf_us=45129396386 recv_t=45129552 attempt=1
+[T=45129598ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45129658ms] [WS-ACK-RECV] tsf_us=45129596262 recv_t=45129653 attempt=1
+[T=45133698ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45133819ms] [WS-ACK-RECV] tsf_us=45133696374 recv_t=45133816 attempt=1
+[T=45133898ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45133948ms] [WS-ACK-RECV] tsf_us=45133896252 recv_t=45133947 attempt=1
+[T=45137998ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45138073ms] [WS-ACK-RECV] tsf_us=45137996370 recv_t=45138069 attempt=1
+[T=45138198ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45138323ms] [WS-ACK-RECV] tsf_us=45138196249 recv_t=45138320 attempt=1
+[T=45142298ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45142353ms] [WS-ACK-RECV] tsf_us=45142296352 recv_t=45142352 attempt=1
+[T=45142498ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45142588ms] [WS-ACK-RECV] tsf_us=45142496244 recv_t=45142583 attempt=1
+[T=45146598ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45146649ms] [WS-ACK-RECV] tsf_us=45146596357 recv_t=45146645 attempt=1
+[T=45146798ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45146889ms] [WS-ACK-RECV] tsf_us=45146796228 recv_t=45146886 attempt=1
+[T=45150898ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45150949ms] [WS-ACK-RECV] tsf_us=45150896337 recv_t=45150947 attempt=1
+[T=45151098ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45151164ms] [WS-ACK-RECV] tsf_us=45151096223 recv_t=45151159 attempt=1
+[T=45155198ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45155254ms] [WS-ACK-RECV] tsf_us=45155196337 recv_t=45155252 attempt=1
+[T=45155398ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45155459ms] [WS-ACK-RECV] tsf_us=45155396220 recv_t=45155453 attempt=1
+[T=45159498ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45159549ms] [WS-ACK-RECV] tsf_us=45159496316 recv_t=45159545 attempt=1
+[T=45159698ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45159759ms] [WS-ACK-RECV] tsf_us=45159696212 recv_t=45159756 attempt=1
+[T=45163798ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45163854ms] [WS-ACK-RECV] tsf_us=45163796318 recv_t=45163849 attempt=1
+[T=45163998ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45164064ms] [WS-ACK-RECV] tsf_us=45163996175 recv_t=45164059 attempt=1
+[T=45168098ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45168214ms] [WS-ACK-RECV] tsf_us=45168096297 recv_t=45168211 attempt=1
+[T=45168298ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45168424ms] [WS-ACK-RECV] tsf_us=45168296172 recv_t=45168422 attempt=1
+[T=45172398ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45172519ms] [WS-ACK-RECV] tsf_us=45172396288 recv_t=45172515 attempt=1
+[T=45172598ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45172729ms] [WS-ACK-RECV] tsf_us=45172596179 recv_t=45172726 attempt=1
+[T=45176698ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45176754ms] [WS-ACK-RECV] tsf_us=45176696289 recv_t=45176749 attempt=1
+[T=45176898ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45177024ms] [WS-ACK-RECV] tsf_us=45176896175 recv_t=45177020 attempt=1
+[T=45180998ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45181124ms] [WS-ACK-RECV] tsf_us=45180996293 recv_t=45181121 attempt=1
+[T=45181198ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45181364ms] [WS-ACK-RECV] tsf_us=45181196155 recv_t=45181362 attempt=1
+[T=45185298ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45185359ms] [WS-ACK-RECV] tsf_us=45185296277 recv_t=45185356 attempt=1
+[T=45185498ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45185664ms] [WS-ACK-RECV] tsf_us=45185496143 recv_t=45185659 attempt=1
+[T=45189598ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45189654ms] [WS-ACK-RECV] tsf_us=45189596279 recv_t=45189651 attempt=1
+[T=45189798ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45189934ms] [WS-ACK-RECV] tsf_us=45189796161 recv_t=45189932 attempt=1
+[T=45193898ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45194029ms] [WS-ACK-RECV] tsf_us=45193896270 recv_t=45194025 attempt=1
+[T=45194098ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45194169ms] [WS-ACK-RECV] tsf_us=45194096139 recv_t=45194166 attempt=1
+[T=45198198ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45198284ms] [WS-ACK-RECV] tsf_us=45198196245 recv_t=45198279 attempt=1
+[T=45198398ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45198434ms] [WS-ACK-RECV] tsf_us=45198396138 recv_t=45198430 attempt=1
+[T=45202498ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45202574ms] [WS-ACK-RECV] tsf_us=45202496254 recv_t=45202572 attempt=1
+[T=45202698ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45202769ms] [WS-ACK-RECV] tsf_us=45202696099 recv_t=45202763 attempt=1
+[T=45206798ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45206969ms] [WS-ACK-RECV] tsf_us=45206796246 recv_t=45206965 attempt=1
+[T=45206998ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45207069ms] [WS-ACK-RECV] tsf_us=45206996125 recv_t=45207066 attempt=1
+[T=45211098ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45211164ms] [WS-ACK-RECV] tsf_us=45211096233 recv_t=45211160 attempt=1
+[T=45211298ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45211434ms] [WS-ACK-RECV] tsf_us=45211296095 recv_t=45211430 attempt=1
+[T=45215398ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45215494ms] [WS-ACK-RECV] tsf_us=45215396234 recv_t=45215493 attempt=1
+[T=45215598ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45215668ms] [WS-ACK-RECV] tsf_us=45215596101 recv_t=45215664 attempt=1
+[T=45219698ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45219769ms] [WS-ACK-RECV] tsf_us=45219696222 recv_t=45219766 attempt=1
+[T=45219898ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45219959ms] [WS-ACK-RECV] tsf_us=45219896102 recv_t=45219957 attempt=1
+[T=45223998ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45224064ms] [WS-ACK-RECV] tsf_us=45223996199 recv_t=45224060 attempt=1
+[T=45224198ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45224233ms] [WS-ACK-RECV] tsf_us=45224196090 recv_t=45224231 attempt=1
+[T=45228298ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45228369ms] [WS-ACK-RECV] tsf_us=45228296206 recv_t=45228364 attempt=1
+[T=45228498ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45228538ms] [WS-ACK-RECV] tsf_us=45228496051 recv_t=45228535 attempt=1
+[T=45232598ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45232764ms] [WS-ACK-RECV] tsf_us=45232596200 recv_t=45232760 attempt=1
+[T=45232798ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45232893ms] [WS-ACK-RECV] tsf_us=45232796042 recv_t=45232891 attempt=1
+[T=45236898ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45237034ms] [WS-ACK-RECV] tsf_us=45236896176 recv_t=45237033 attempt=1
+[T=45237098ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45237168ms] [WS-ACK-RECV] tsf_us=45237096065 recv_t=45237164 attempt=1
+[T=45241198ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45241339ms] [WS-ACK-RECV] tsf_us=45241196178 recv_t=45241335 attempt=1
+[T=45241398ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45241438ms] [WS-ACK-RECV] tsf_us=45241396033 recv_t=45241436 attempt=1
+[T=45245498ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45245594ms] [WS-ACK-RECV] tsf_us=45245496175 recv_t=45245590 attempt=1
+[T=45245698ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45245773ms] [WS-ACK-RECV] tsf_us=45245696022 recv_t=45245771 attempt=1
+[T=45249798ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45249838ms] [WS-ACK-RECV] tsf_us=45249796148 recv_t=45249833 attempt=1
+[T=45249998ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45250148ms] [WS-ACK-RECV] tsf_us=45249996044 recv_t=45250144 attempt=1
+[T=45254098ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45254268ms] [WS-ACK-RECV] tsf_us=45254096143 recv_t=45254266 attempt=1
+[T=45254298ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45254383ms] [WS-ACK-RECV] tsf_us=45254296000 recv_t=45254378 attempt=1
+[T=45258398ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45258533ms] [WS-ACK-RECV] tsf_us=45258396143 recv_t=45258531 attempt=1
+[T=45258598ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45258803ms] [WS-ACK-RECV] tsf_us=45258596022 recv_t=45258802 attempt=1
+[T=45262698ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45262838ms] [WS-ACK-RECV] tsf_us=45262696136 recv_t=45262835 attempt=1
+[T=45262898ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45263078ms] [WS-ACK-RECV] tsf_us=45262895991 recv_t=45263076 attempt=1
+[T=45266998ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45267073ms] [WS-ACK-RECV] tsf_us=45266996123 recv_t=45267069 attempt=1
+[T=45267198ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45267273ms] [WS-ACK-RECV] tsf_us=45267195994 recv_t=45267270 attempt=1
+[T=45271298ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45271373ms] [WS-ACK-RECV] tsf_us=45271296119 recv_t=45271371 attempt=1
+[T=45271498ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45271718ms] [WS-ACK-RECV] tsf_us=45271495974 recv_t=45271713 attempt=1
+[T=45275598ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45275678ms] [WS-ACK-RECV] tsf_us=45275596107 recv_t=45275674 attempt=1
+[T=45275798ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45275918ms] [WS-ACK-RECV] tsf_us=45275795963 recv_t=45275915 attempt=1
+[T=45279898ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45280038ms] [WS-ACK-RECV] tsf_us=45279896105 recv_t=45280037 attempt=1
+[T=45280098ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45280203ms] [WS-ACK-RECV] tsf_us=45280095986 recv_t=45280199 attempt=1
+[T=45284198ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45284313ms] [WS-ACK-RECV] tsf_us=45284196100 recv_t=45284311 attempt=1
+[T=45284398ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45284543ms] [WS-ACK-RECV] tsf_us=45284395976 recv_t=45284542 attempt=1
+[T=45288498ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45288668ms] [WS-ACK-RECV] tsf_us=45288496091 recv_t=45288665 attempt=1
+[T=45288698ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45288778ms] [WS-ACK-RECV] tsf_us=45288695940 recv_t=45288776 attempt=1
+[T=45292798ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45292883ms] [WS-ACK-RECV] tsf_us=45292796079 recv_t=45292880 attempt=1
+[T=45292998ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45293043ms] [WS-ACK-RECV] tsf_us=45292995955 recv_t=45293041 attempt=1
+[T=45297098ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45297179ms] [WS-ACK-RECV] tsf_us=45297096070 recv_t=45297173 attempt=1
+[T=45297298ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45297408ms] [WS-ACK-RECV] tsf_us=45297295957 recv_t=45297404 attempt=1
+[T=45301398ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45301549ms] [WS-ACK-RECV] tsf_us=45301396056 recv_t=45301545 attempt=1
+[T=45301598ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45301749ms] [WS-ACK-RECV] tsf_us=45301595944 recv_t=45301747 attempt=1
+[T=45305698ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45305814ms] [WS-ACK-RECV] tsf_us=45305696066 recv_t=45305809 attempt=1
+[T=45305898ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45305964ms] [WS-ACK-RECV] tsf_us=45305895945 recv_t=45305960 attempt=1
+[T=45309998ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45310079ms] [WS-ACK-RECV] tsf_us=45309996050 recv_t=45310073 attempt=1
+[T=45310198ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45310249ms] [WS-ACK-RECV] tsf_us=45310195912 recv_t=45310244 attempt=1
+[T=45314298ms] [WS Worker] Sent ARM (TSF), attempt 1.
+[T=45314379ms] [WS-ACK-RECV] tsf_us=45314296044 recv_t=45314376 attempt=1
+[T=45314498ms] [WS Worker] Sent START (TSF), attempt 1.
+[T=45314624ms] [WS-ACK-RECV] tsf_us=45314495891 recv_t=45314619 attempt=1

@@ -384,12 +384,28 @@ inline void ws_event_handler(AsyncWebSocket *server, AsyncWebSocketClient *clien
         // the shared async_tcp task, doesn't need it.
         char ack[48];
         snprintf(ack, sizeof(ack), "{\"ack_tsf_us\":%llu}", (unsigned long long)tsf_us);
+        // Ack-path candidate-cause instrumentation (NETWORK-TIMING-ISSUE.md,
+        // "acks not arriving back at hesperus in time" issue, candidate a):
+        // read-only TCP-layer state on the underlying AsyncClient, captured
+        // right before dispatch. canSend()==false ("ack is not pending")
+        // means a previous write on this connection hasn't been TCP-acked by
+        // hesperus yet -- i.e. still queued/in-flight below the WS layer,
+        // not merely "not yet processed by hesperus's app code". Deliberately
+        // NOT using AsyncClient::onAck() for this: AsyncWebSocketClient
+        // already binds its own onAck handler on this same client for its
+        // outgoing message-queue bookkeeping (_runQueue()), and onAck() only
+        // holds one callback -- registering ours would silently replace
+        // theirs and break queued-message delivery after the first frame.
+        AsyncClient *raw_client = client->client();
+        bool ack_path_pending = !raw_client->canSend();
+        size_t ack_path_space = raw_client->space();
         uint32_t t_ack_dispatch_ms = debug_timestamp_ms();
         client->text(ack);
         uint32_t t_ack_sent_ms = debug_timestamp_ms();
-        debug_log_enqueue("[WS-ACK] tsf_us=%llu recv=%u dispatch=%u sent=%u text_ms=%u",
+        debug_log_enqueue("[WS-ACK] tsf_us=%llu recv=%u dispatch=%u sent=%u text_ms=%u pending=%d space=%u",
                            (unsigned long long)tsf_us, t_data_recv_ms, t_ack_dispatch_ms, t_ack_sent_ms,
-                           (unsigned)(t_ack_sent_ms - t_ack_dispatch_ms));
+                           (unsigned)(t_ack_sent_ms - t_ack_dispatch_ms), (int)ack_path_pending,
+                           (unsigned)ack_path_space);
       }
     }
   }
