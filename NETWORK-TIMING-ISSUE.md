@@ -275,25 +275,50 @@ run to completion (no crash cutoff this time):
    today's harmless ignore-once-out-of-`RUNNING`) hasn't been worked out.
    Cheap once resolved, but resolve the design questions first.
 5. **Congested-airtime stress testing** (cross-cutting, not tied to one
-   issue) — the four stressor layers sketched in
-   `hesperus-timing-gate/review.md` (airtime saturation, bulk throughput,
-   channel interference, broadband noise; see `docs/TEST-TOOLING.md`) have
-   runs behind items 1 and 3 above are informal data points in that
-   direction, and are how both were found. Would validate several of the
-   already-shipped fixes (dedup, retry, TSF trust-on-reconnect) under
-   realistic contest-venue conditions, not just the quiet-network bench
-   tests done so far.
+   issue) — **[Judged sufficient, 2026-08-04 — deprioritized, not
+   formally closed.]** The four stressor layers sketched in
+   `hesperus-timing-gate/review.md`: **airtime saturation** has extensive
+   coverage (beacon-spam sessions 2-10, up to two simultaneous spammers)
+   and **channel interference** partial coverage (BT streaming co-tested
+   alongside spammers, sessions 9-10); **bulk throughput contention** and
+   **broadband noise** remain genuinely untested. Decision: given the
+   system handled the harshest combination actually tested (two spammers +
+   BT streaming, deliberately parked next to the gate) with zero drops,
+   zero crashes, and the one real issue that surfaced (the ack-path
+   timeout mismatch) understood and fixed, further chasing the two
+   untested layers is diminishing returns relative to what a real contest
+   venue is actually likely to produce — other exhibitors' AP
+   beacon/management-frame overhead, not deliberate bulk-throughput
+   hogging or broadband jamming. Not pursuing further unless a specific
+   venue's known conditions give a concrete reason to.
 6. **[Hedged burst sends](#issue-hedged-burst-sends-for-tail-latency)** —
    deprioritized; watch real-world retry counts/rate from the now-shipped
    ack/retry mechanism before building this. No action needed unless that
    telemetry shows frequent retries.
 7. **[Unexplained minor WS jitter / reconnect blip](#issue-unexplained-minor-ws-jitter--reconnect-blip)**
-   — low-priority curiosity, self-healing, doesn't touch committed times.
-   Proposed long steady-state (10,000-message) characterization test not
-   yet run. Its own leading candidate cause (`wsClient.loop()` occasionally
-   blocking) is the same one item 3 now has direct evidence for, just at
-   millisecond rather than multi-second scale — worth re-reading together
-   now that item 3's instrumentation exists.
+   — **[Characterized and closed, 2026-08-04 — no periodic cause found.]**
+   Rather than running the proposed purpose-built 10,000-message GOAL-only
+   trial, used the existing confound-free 5000-run no-spammer baseline
+   (session 6, `test-data/spam-tests/cerberus-6.log`) instead — 5000 real
+   `GOAL` events at a uniform ~4.3s cadence, arguably a better substitute
+   than the synthetic proposal since it's real protocol traffic, not
+   synthetic pulses, and 5000 comfortably exceeds the proposed 10,000
+   *messages* once ARM/START are counted too (this pass used `GOAL` alone
+   to match the original single-event-type proposal). Latency: mean 8.8ms,
+   p90 12.0ms, p95 14.6ms, p99 19.0ms, max 63.8ms; 30/5000 (0.6%) exceeded
+   20ms. Checked those 30 outliers' index spacing for periodicity (the
+   original leading hypothesis — "a spike every N messages, pointing at a
+   fixed-period task like the heartbeat timer or a WS keepalive interval")
+   — spacing is irregular (1 to 697 events apart, no repeating interval),
+   ruling that out across a sample 25-50x larger than the n=100-200 that
+   originally flagged this. Consistent with ordinary non-periodic
+   scheduling/RF jitter, not a hidden periodic bug. The original issue's
+   own caveat ("would not on its own isolate which stage the delay happens
+   in") is now moot rather than resolved — sessions 8-10's ack-path work
+   has since added exactly the hesperus-side send/receive timestamp this
+   would have needed as a follow-up, but with no pattern found there's
+   nothing left to isolate. Closed as characterized-and-benign; watch for
+   recurrence rather than investigate further.
 
 Everything else below this list is either resolved or has no further action
 planned. (Explicit HTTP connect/read timeouts, formerly tracked here, turned
@@ -1038,7 +1063,7 @@ assumption the technique's benefit depends on.
 
 ### Issue: Unexplained minor WS jitter / reconnect blip
 
-**[OPEN, low priority]**
+**[CLOSED, characterized 2026-08-04 — no periodic cause found]**
 *(was WS-rerun notes under Observation #8/#9; Experiment 8)*
 
 **Observation.** The `trial_arm_then_start` and `trial_double_trigger` WS
@@ -1070,19 +1095,43 @@ mechanism as the connect/disconnect/reconnect blip, not confirmed.
 points — too small/rare/self-healing to matter yet, none touch committed
 times. Watch for recurrence rather than fix speculatively.
 
-**Verification / proposed test, not yet run.** A single-gate `GOAL`-only
-sequence, much longer and steadier than the existing trials — e.g. 10,000
-messages at a fixed 250ms interval (well clear of any queueing effect) —
-logged and run through `cerberus_log_stats.py --gaps`. At that volume,
-look for: periodicity (a spike every N messages, pointing at a fixed-period
-task like the heartbeat timer or a WS keepalive interval), clustering in
-time, or drift/rate correlation. Would need `ares-pulse-generator`'s
-`MAX_COUNT`/interval reconfigured (currently 100 at 1s spacing) — a
-10,000-message run at 250ms is ~42 minutes per pass, worth planning for.
-Would not, on its own, isolate *which* stage the delay happens in (hesperus
-pickup vs. network transit vs. cerberus processing) — the current log only
-has `tsf_us` (hesperus ISR time) and `recv_ms` (cerberus receipt time),
-which bundles all three. If the pattern-hunt doesn't point at an obvious
+**Characterized, 2026-08-04, using existing data instead of the proposed
+purpose-built test below.** Rather than reconfiguring
+`ares-pulse-generator` for a synthetic 10,000-message run, used the
+existing confound-free 5000-run no-spammer baseline (session 6,
+`test-data/spam-tests/cerberus-6.log`) — 5000 real `GOAL` events at a
+uniform ~4.3s cadence, arguably a better substitute since it's real
+protocol traffic rather than synthetic pulses (`python3
+tools/cerberus_log_stats.py test-data/spam-tests/cerberus-6.log --event
+GOAL --no-table`): mean 8.8ms, p90 12.0ms, p95 14.6ms, p99 19.0ms, max
+63.8ms. 30/5000 (0.6%) exceeded 20ms. Extracted those 30 outliers' event
+indices and checked the gaps between them for periodicity (the leading
+hypothesis below — a fixed-period task like the heartbeat timer or a WS
+keepalive interval): the gaps are irregular (1 to 697 events apart, no
+repeating interval), ruling that hypothesis out across a sample 25-50x
+larger than the n=100-200 that originally flagged this. Consistent with
+ordinary non-periodic scheduling/RF jitter, not a hidden periodic bug. The
+"would not on its own isolate which stage the delay happens in" caveat
+below is now moot rather than resolved — sessions 8-10's ack-path
+investigation has since added exactly the hesperus-side send/receive
+timestamp (`[WS-ACK-RECV]`) this would have needed as a follow-up, but
+with no periodic pattern found there's no specific lead left to chase with
+it. Closed as characterized-and-benign.
+
+**Original proposed test, superseded by the above rather than run as
+specified.** A single-gate `GOAL`-only sequence, much longer and steadier
+than the existing trials — e.g. 10,000 messages at a fixed 250ms interval
+(well clear of any queueing effect) — logged and run through
+`cerberus_log_stats.py --gaps`. At that volume, look for: periodicity (a
+spike every N messages, pointing at a fixed-period task like the heartbeat
+timer or a WS keepalive interval), clustering in time, or drift/rate
+correlation. Would need `ares-pulse-generator`'s `MAX_COUNT`/interval
+reconfigured (currently 100 at 1s spacing) — a 10,000-message run at 250ms
+is ~42 minutes per pass. Would not, on its own, isolate *which* stage the
+delay happens in (hesperus pickup vs. network transit vs. cerberus
+processing) — the current log only has `tsf_us` (hesperus ISR time) and
+`recv_ms` (cerberus receipt time), which bundles all three. If the
+pattern-hunt doesn't point at an obvious
 cause, the next step would be adding a hesperus-side send timestamp to
 split the latency into legs.
 
