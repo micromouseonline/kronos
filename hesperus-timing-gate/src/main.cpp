@@ -844,7 +844,7 @@ void setup() {
   // hasn't been measured on this hardware. Swap back to WIFI_PS_NONE
   // (matches cerberus's own net/wifi-manager.h) if current-draw/latency
   // testing doesn't support keeping this.
-  esp_wifi_set_ps(WIFI_PS_MIN_MODEM);
+  esp_wifi_set_ps(WIFI_PS_NONE);
 
   TimerHandle_t hbTimer = xTimerCreate("HB_Timer", pdMS_TO_TICKS(5147), pdTRUE, (void *)0, heartbeatTimerCallback);
   if (hbTimer != NULL) {
@@ -933,9 +933,10 @@ void loop() {
         // loop() itself for the stall's duration.
         if (xSemaphoreTake(ws_client_mutex, pdMS_TO_TICKS(WS_MUTEX_SETUP_TIMEOUT_MS)) == pdTRUE) {
           wsClient.begin(cerberus_ip.toString(), 80, "/ws");
-          wsClient.enableHeartbeat(5000, 5000, 3);  // 5s ping, 5s pong timeout, disconnect after 3 misses
-                                                     // (was 3000,2 -- widened 2026-08-05 per session 11/13's
-                                                     // MIN_MODEM stall/disconnect cascade, NETWORK-TIMING-ISSUE.md)
+          wsClient.enableHeartbeat(5000, 3000, 2);  // 5s ping, 3s pong timeout, disconnect after 2 misses
+                                                     // (widened to 5000,3 2026-08-05, reverted same day --
+                                                     // session 14 showed it makes the MIN_MODEM stall/disconnect
+                                                     // cascade dramatically worse, not better. NETWORK-TIMING-ISSUE.md)
           wsClient.onEvent(wsClientEventHandler);   // receives cerberus's per-event ack
           xSemaphoreGive(ws_client_mutex);
           ws_was_ready = true;

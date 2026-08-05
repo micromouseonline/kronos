@@ -272,11 +272,14 @@ run to completion (no crash cutoff this time):
    (two-spammer+BT smoke test) showed the mechanism recurring twice in one
    trial — occurrence count now tracks stress severity directly (0/1/2
    across sessions 12/11/13), which is itself evidence for a genuine
-   mechanism rather than coincidence. The previously-withheld candidate fix
-   (widen `enableHeartbeat()`'s pong-timeout/miss-count) is now the
-   recommended next step — apply it and re-verify with a comparable
-   two-spammer+BT trial, rather than continuing to collect unmodified
-   repeats.
+   mechanism rather than coincidence. **Update, same day**: the candidate
+   fix (widen `enableHeartbeat()`'s pong-timeout/miss-count) was applied
+   and tested (session 14) — it made every measure dramatically worse
+   (drops, stalls, disconnects, stale-GOALs, retry rates all 2-136x worse
+   per hour than session 13's unmodified baseline), not better. Reverted.
+   The mechanism remains unexplained and unmitigated; this specific
+   direction (widen tolerance) is now ruled out, not just untried — any
+   future attempt needs a different theory of the failure.
 3. **[`wsClient.loop()` blocking under congestion](#issue-wsclientloop-blocking-under-congestion-defeats-the-ackretry-deadline-bound)**
    — confirmed via instrumentation + cross-board log correlation: beacon
    spam causes real TCP-level WS disconnects (up to ~18s outages seen) on
@@ -344,11 +347,13 @@ run to completion (no crash cutoff this time):
    recurrence rather than investigate further.
 8. **[GOAL board retries far more than ARM/START board under heavy
    stress](#issue-goal-board-retries-far-more-than-armstart-board-under-heavy-stress)**
-   — **[OPEN, new 2026-08-05]** Session 13's two-spammer+BT smoke test
-   showed the GOAL board retrying 4.6x more often than the ARM/START board
-   (18.3% vs. 4.0%). Cause not yet distinguished between physical
-   placement and role/traffic-pattern. A start/goal position swap (wiring
-   only, same firmware both boards) is planned to narrow it down.
+   — **[OPEN, deferred 2026-08-05]** Session 13's two-spammer+BT smoke
+   test showed the GOAL board retrying 4.6x more often than the ARM/START
+   board (18.3% vs. 4.0%). Cause not yet distinguished between physical
+   placement and role/traffic-pattern. The planned start/goal position
+   swap is deferred to the production-board testing stage — the current
+   hand-wired breadboard rig has too many uncontrolled physical variables
+   for a swap result to be trustworthy.
 
 Everything else below this list is either resolved or has no further action
 planned. (Explicit HTTP connect/read timeouts, formerly tracked here, turned
@@ -677,6 +682,18 @@ for a comparatively small (~18mA) saving next to the larger open question
 above (the `MIN_MODEM` reliability regression). Not revisited unless the
 power budget becomes tight enough that every mA matters.
 
+**Scope note applying to every current-draw figure in this issue**
+(110mA `NONE` baseline, 73mA/63.6mA/62.8mA `MIN_MODEM` blended figures,
+56mA idle-only): each includes this same ~20mA constant for the single
+WS2812 status NeoPixel, held solid (green or red) continuously regardless
+of power-save mode or trial condition — it's gate electronics, not radio
+behaviour, so it's a fixed offset present in every measurement here, not
+something that varies with `NONE` vs. `MIN_MODEM` or with trial severity.
+The radio+MCU portion alone is therefore each headline figure minus ~20mA
+(e.g. `NONE`: ~90mA; `MIN_MODEM` idle-only: ~36mA) — worth keeping in mind
+before comparing these numbers to any other project's bare radio power
+figures.
+
 **Session 12 results (2026-08-05)** (`test-data/spam-tests/{cerberus-12,
 hesperus-start-12,hesperus-goal-12}.log`) — the planned second single-spammer
 `MIN_MODEM` repeat, checking whether session 11's acute episode recurs:
@@ -782,6 +799,54 @@ measured this run (reliability-only).
   pass bar (sessions 3/4/5/8/12, still the operative standard) or normal
   contest conditions. Treat as smoke-test diagnostics, not a reason to
   revisit the pass-bar conclusion.
+
+**Session 14 results (2026-08-05)** (`test-data/spam-tests/{cerberus-14,
+hesperus-start-14,hesperus-goal-14}.log`) — the heartbeat-widening fix
+proposed above (`enableHeartbeat` pong-timeout 3000ms→5000ms, miss-count
+2→3), tested under the same `MIN_MODEM` + two-spammer+BT smoke test as
+session 13, ~2900-3000 runs, 3.58 hours.
+
+- **The fix made things dramatically worse, not better — tested and
+  rejected.** Every measure moved the wrong way versus session 13's
+  unmodified baseline (normalized per-hour, since durations differ):
+  genuine drops 3.8→63.7/hour (16.8x), `wsClient.loop()` stalls
+  2.6→27.4/hour (10.4x, max single stall 5002ms→**15,968ms**), WS
+  disconnects 0.8→4.6/hour (5.5x), stale-GOAL rejections 0.5→67.3/hour
+  (136x), ARM/START retry rate 4.0%→9.9%, GOAL retry rate 18.3%→**42.6%**.
+  Live-observed by the user mid-trial before the full-log analysis
+  confirmed it at scale.
+- **Coherent mechanism, not noise**: widening the pong-timeout/miss-count
+  only changes how long hesperus tolerates silence before declaring the
+  link dead and forcing a reconnect — it doesn't improve connection
+  *quality*. Against a genuinely degraded (not merely jittery) connection,
+  a longer tolerance window means hesperus sits on a zombie connection
+  longer before tearing it down and recovering, which is consistent with
+  the 3x jump in max stall duration and the explosion in drops/stale-GOALs
+  (more retries and more late GOALs piling up during a now-longer
+  not-yet-recognized-as-dead window, instead of a faster clean reconnect).
+  The mitigation optimized for the wrong side of the tradeoff: it aimed to
+  stop a merely-jittery connection being killed unnecessarily, but this
+  stress condition is dominated by the opposite case (genuinely dead
+  connections recovering slower).
+- **Reverted, 2026-08-05** (`hesperus-timing-gate/src/main.cpp:936`), back
+  to `(5000, 3000, 2)`. Build-verified. Both boards need reflashing before
+  any further `MIN_MODEM` trial — session 14's build should not be reused.
+- **Where this leaves the `MIN_MODEM` mechanism**: still unexplained,
+  still unmitigated. The heartbeat-widening hypothesis is now
+  disconfirmed, not just unconfirmed — this was a real test of a real
+  candidate fix, and it failed clearly enough to rule out "just widen the
+  tolerance" as a viable direction. Any future mitigation attempt needs a
+  different theory of the failure, not a bigger version of this one.
+
+**25-hour blended current draw, 2026-08-06** (spanning sessions 11-14
+continuously, `MIN_MODEM`, gates never powered off between trials, mixed
+single-spammer/two-spammer+BT conditions plus idle gaps): **1569mAh over
+25h ≈ 62.8mA average.** Consistent with session 12's 63.6mA and the
+dedicated 56mA idle-only baseline — reinforces the ~55-65mA range as
+`MIN_MODEM`'s real-world draw regardless of stress condition, including
+across session 14's reconnect-heavy pathological period. Still a ~40%+
+reduction from the 110mA `NONE` baseline; the open question stays
+reliability, not power — power was never in doubt.
 
 ### Issue: Displayed race time vs. true TSF time
 
@@ -928,16 +993,24 @@ each one correctly, but the true result was still lost, not recovered.
 In every case the trigger was the trial protocol's unrealistically fast
 goal-to-rearm cycling (session 12: confirmed operator artifact,
 sub-1-second gap no real run can produce), not a normal-cadence failure.
-**Reading**: four real firings in two sessions is enough to promote the
-already-identified ring-buffer follow-on (noted above,
-"retroactively completing an abandoned run from a late `GOAL` instead of
-merely rejecting it") from a someday-enhancement to worth scoping
-properly — it's the structurally correct fix for exactly this scenario
-(recover the result instead of just detecting the staleness), and a more
-targeted answer than further widening the ack-retry deadline, which only
-trades the problem for a longer required goal-to-rearm gap rather than
-eliminating it. Not yet implemented or scheduled — recorded here as a
-candidate to prioritize, not a decision.
+**Decision, 2026-08-05: stay with reject-only scope, formally deferred.**
+The full attempt-id + ring-buffer mechanism (tag each attempt, retroactively
+attribute and commit a late GOAL to the superseded attempt it actually
+belongs to, rather than just reject it) is real added complexity — a
+payload schema change on both boards, a ring buffer of recent attempts on
+cerberus instead of a single scalar, multi-attempt-back matching, and an
+unresolved UX question (where does a retroactively-completed result even
+surface once the operator has moved on two attempts later). Weighed
+against that cost: **all four real firings to date trace to conditions
+outside the pass bar** — session 12's was a confirmed test-protocol
+artifact (sub-1-second goal-to-rearm, which no real run can produce), and
+session 13's three were under the deliberately-adversarial two-spammer+BT
+smoke test, not single-spammer. Zero occurrences under the actual accepted
+operating condition. Same "improbable, not impossible" reasoning that
+justified shipping reject-only scope over the full design in the first
+place — left documented as an option, revisited only if a real-world
+(non-artifact, single-spammer-or-milder) occurrence shows up, not
+otherwise.
 
 ### Issue: Duplicate triggers from gapped robot structure
 
@@ -2120,21 +2193,19 @@ distinguishable from noise) in any single-spammer trial to date.
   pattern. If something about that difference (not placement) drives it,
   the asymmetry would follow the *role*, not the physical spot.
 
-**Planned test**: swap which physical hesperus unit sits in the start vs.
-goal position (a wiring change, not a firmware change — both boards run
-the same image). If the high retry rate follows the new goal *position*
-regardless of which unit is there, that points at placement (mitigation:
-antenna orientation/positioning, already on record as a candidate above).
-If it stays with the specific unit that was previously "goal" even after
-moving to the start position, that points at a per-unit hardware
-difference. Caveat: role and position are coupled by the current rig's
-wiring, so this test can rule out "specific unit's hardware" as the sole
-cause either way, but can't fully separate placement from role on its own
-— a role-only test would need moving both boards to equidistant/symmetric
-positions while keeping their current roles, not yet planned.
+**Deferred, 2026-08-05.** The proposed diagnostic (swap which physical
+hesperus unit sits in the start vs. goal position, a wiring-only change)
+is sound in principle, but the current bench rig is hand-wired breadboards
+with too many uncontrolled physical variables (cable runs, ad hoc
+positioning relative to the spammers/BT source/AP, no fixed antenna
+orientation) to draw a clean conclusion from a swap right now — any result
+could as easily reflect breadboard-specific artifacts as either of the two
+hypotheses above. Deferred to the production-board testing stage, where
+the physical arrangement will be fixed and repeatable enough for a swap
+result to actually mean something.
 
-**Resolution.** Not yet — diagnostic only until the swap trial narrows
-the cause.
+**Resolution.** Not yet — diagnostic deferred until production hardware is
+available.
 
 ### Issue: ISR calling `esp_wifi_get_tsf_time()` causes an Interrupt WDT panic under heavy WiFi load
 
