@@ -933,7 +933,9 @@ void loop() {
         // loop() itself for the stall's duration.
         if (xSemaphoreTake(ws_client_mutex, pdMS_TO_TICKS(WS_MUTEX_SETUP_TIMEOUT_MS)) == pdTRUE) {
           wsClient.begin(cerberus_ip.toString(), 80, "/ws");
-          wsClient.enableHeartbeat(5000, 3000, 2);  // 5s ping, 3s pong timeout, disconnect after 2 misses
+          wsClient.enableHeartbeat(5000, 5000, 3);  // 5s ping, 5s pong timeout, disconnect after 3 misses
+                                                     // (was 3000,2 -- widened 2026-08-05 per session 11/13's
+                                                     // MIN_MODEM stall/disconnect cascade, NETWORK-TIMING-ISSUE.md)
           wsClient.onEvent(wsClientEventHandler);   // receives cerberus's per-event ack
           xSemaphoreGive(ws_client_mutex);
           ws_was_ready = true;
