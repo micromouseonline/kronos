@@ -1,10 +1,65 @@
 # Cerberus operator guide
 
-This is a guide for running a race session on a CERBERUS gate controller —
-what the physical buttons and LEDs do, what the screen shows, and how to
-work through a normal race day. For how the software implements any of
-this, see `docs/RACE-STATE-MACHINE.md` (state-by-state spec) and
-`docs/INPUT-SYSTEM.md` (input wiring).
+A guide for running a race session on a CERBERUS gate controller — what the
+main menu and Wi-Fi setup look like, what the physical buttons and LEDs do,
+what the screen shows, and how to work through a normal race day. For how
+the software implements any of this, see `docs/RACE-STATE-MACHINE.md`
+(state-by-state spec) and `docs/INPUT-SYSTEM.md` (input wiring).
+
+## Contents
+
+- [Cerberus operator guide](#cerberus-operator-guide)
+  - [Contents](#contents)
+  - [Startup and main menu](#startup-and-main-menu)
+  - [Connecting to a Wi-Fi network](#connecting-to-a-wi-fi-network)
+  - [Using the box from a PC or phone](#using-the-box-from-a-pc-or-phone)
+  - [The physical controls](#the-physical-controls)
+  - [What the LEDs mean](#what-the-leds-mean)
+  - [Power-on and Calibrating](#power-on-and-calibrating)
+  - [Running a race](#running-a-race)
+  - [Remote control](#remote-control)
+  - [Troubleshooting](#troubleshooting)
+
+## Startup and main menu
+
+On power-up the controller shows a main menu with a 2x3 grid of buttons
+(five are active; the sixth slot is currently unused):
+
+| Button | What it does |
+|---|---|
+| **WiFi SETUP** | Shows the network last joined and the controller's current IP address, and lets you join a different network (see below). |
+| **GATE TEST** | Lets you test that the gates respond, without running a full race. |
+| **MAZE TIMER** | Goes to the race timer, passing through Calibrating on the way (see "Power-on and Calibrating"). Long-press ARM, or have RATS send a New Mouse message, to get started. |
+| **RESET** | Resets the controller. |
+| **SETTINGS** | Toggles serial/debug **verbosity** and **watchdog** message output. |
+
+From any race screen, long-press key 3 (TOUCH) to return to this menu at
+any time.
+
+## Connecting to a Wi-Fi network
+
+1. From the main menu, press **WiFi SETUP**.
+2. Select **Join New Network**.
+3. The screen shows the name and password of a temporary access point
+   (`CERBERUS-SETUP`).
+4. On your phone or laptop, join that network, then browse to
+   `192.168.4.1/wifi`. This opens a page where you can enter the SSID and
+   password of the network you actually want the controller on.
+5. Submit the form. The controller reboots and attempts to join that
+   network — the screen flashes briefly while it connects.
+
+If the controller can't reach the saved network at all, key 3 (TOUCH)
+blinks cyan indefinitely rather than giving up — see
+[Troubleshooting](#troubleshooting).
+
+## Using the box from a PC or phone
+
+Once connected, the controller's IP address is shown on the WiFi Setup
+screen. From any device on the same network, browse to:
+
+- `http://<controller-ip>/` — a simple clock, synchronized to the box.
+- `http://<controller-ip>/leaderboard` — an automatically updated
+  leaderboard.
 
 ## The physical controls
 
@@ -25,7 +80,7 @@ Tapping the WiFi-status area on the main screen opens the setup menu.
 If the NeoKey module is unplugged or not detected, all four LEDs stay
 off and **none of the local buttons work** — the controller still responds
 to remote ARM/START/GOAL/new-mouse commands over serial or HTTP (see
-"Remote control" below) until the keypad is reconnected.
+[Remote control](#remote-control)) until the keypad is reconnected.
 
 ## What the LEDs mean
 
