@@ -10,6 +10,55 @@ per-project pieces, not new per-project features.
 
 ---
 
+## Priorities, in order
+
+Condensed cross-workspace list, reviewed 2026-08-06. Full detail/rationale
+for each is in the sections below — this is the fast-scan version.
+
+1. **A genuinely clean two-spammer+BT trial under `WIFI_PS_NONE`**
+   ([NETWORK-TIMING-ISSUE.md](NETWORK-TIMING-ISSUE.md)) — the
+   highest-leverage single action available right now. One clean run of
+   this trial is expected to settle #2 and #3 below as a side effect, not
+   just itself — no need to treat them as three separate pieces of work.
+   Sessions 15 and 15a were both compromised by unrelated equipment issues
+   (a spammer dropping out, BT found off partway through); re-run with the
+   setup double-checked before starting.
+2. **Wi-Fi power-save vs. battery budget** — [issue](NETWORK-TIMING-ISSUE.md#issue-wi-fi-power-save-vs-battery-budget).
+   `NONE` stays shipped default for now; waiting on #1 to know whether
+   it's genuinely safe from the `MIN_MODEM`-associated stall mechanism or
+   just less exposed to it.
+3. **Ack-path timeout fix confirmation** — [issue](NETWORK-TIMING-ISSUE.md#issue-acks-not-arriving-back-at-hesperus-in-time-despite-cerberus-receiving-the-event).
+   Tuning already applied and build-verified (`WS_ACK_TIMEOUT_MS`
+   300→500ms); just needs #1's clean trial to confirm the retry-rate drop
+   under `NONE`.
+4. **Duplicate-trigger lock-out window design** — [issue](NETWORK-TIMING-ISSUE.md#issue-duplicate-triggers-from-gapped-robot-structure).
+   Standalone design question, doesn't depend on #1-3 — pick up whenever.
+5. **Two small cerberus in-code items**, cheap and independent:
+   [`BUTTON_COMMAND_MAP` review](cerberus-gate-controller/src/race/race-command-source.h#L37),
+   [`send_run_time()` sent twice for unclear reasons](cerberus-gate-controller/src/messages-reference.h#L111-L115).
+6. **ARES reset-glitch investigation** (see
+   [ares-pulse-generator](#ares-pulse-generator) below) — both gates fire
+   when ARES resets while wired directly to a pair of hesperus boards.
+   Isolated, doesn't block running test trials.
+
+Deprioritized, not pursued right now (see the relevant sections below for
+why): GOAL-board retry asymmetry under heavy stress (deferred to
+production-board testing), congested-airtime stress testing (judged
+sufficient 2026-08-04), hedged burst sends for tail latency (watching
+telemetry only), and all net-new feature work — cerberus's supervisor
+state machine / SD-card logging / HTTP log streaming / `race_runs[]`
+concurrency guard, hesperus's NVS config store / OTA / SSD1306 display /
+stack telemetry / NVS event buffering / multi-AP BSSID fallback / standalone
+scoring, and ARGUS (not started at all).
+
+**After a few of these land: a thorough documentation review.**
+`NETWORK-TIMING-ISSUE.md` and this file have both grown complex and hard
+to follow — a long story told poorly, accumulated session by session.
+Deliberately deferred until after the trial above lands, so the rewrite
+happens once against settled results instead of mid-investigation.
+
+---
+
 ## Cross-project: interoperability & testing
 
 Primary tracker: **`NETWORK-TIMING-ISSUE.md`** (root) — its "Outstanding
@@ -73,14 +122,16 @@ dedicated bench method) — see `NETWORK-TIMING-ISSUE.md` for results.
 
 Full list: **`cerberus-gate-controller/docs/PLANNED-UPDATES.md`** (supervisor
 state machine, SD-card CSV logging, HTTP log streaming/MAINTENANCE mode,
-`race_runs[]` concurrency guard, touch calibration NVS escape hatch).
-(TSF-based drift compensation, formerly listed here, was removed
-2026-08-06 as superseded — hesperus's own dual-clock holdover already
-disciplines `tsf_us` before it's ever sent, and cerberus only ever diffs
-two already-trustworthy timestamps, never extrapolates one, so there was
-nothing left for cerberus-side compensation to do; `gate_us` had also sat
-unused in the codebase the whole time. See the PLANNED-UPDATES.md history
-for the reasoning if this is ever reconsidered.)
+`race_runs[]` concurrency guard). Two items formerly listed here are gone:
+TSF-based drift compensation was removed 2026-08-06 as superseded
+(hesperus's own dual-clock holdover already disciplines `tsf_us` before
+it's ever sent, and cerberus only ever diffs two already-trustworthy
+timestamps, never extrapolates one, so there was nothing left for
+cerberus-side compensation to do); the touch calibration NVS escape hatch
+was implemented the same day — long-press START on the main menu now
+re-runs the calibration wizard (`main.cpp`'s `input_event_handler`),
+recoverable even with badly-miscalibrated touch since it's a physical
+NeoKey gesture, not an on-screen button.
 
 Smaller items tracked only in-code, not in that doc:
 
