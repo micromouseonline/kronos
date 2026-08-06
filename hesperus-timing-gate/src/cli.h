@@ -27,6 +27,7 @@ class Cli {
     _aliasCount = aliasCount;
     _serial = &serial;
     _len = 0;
+    _lastTerminator = 0;
   }
 
   void poll() {
@@ -37,9 +38,17 @@ class Cli {
 
  private:
   void handleChar(char c) {
-    if (c == '\r') {
-      return;
-    } else if (c == '\n') {
+    if (c == '\r' || c == '\n') {
+      // Any of \r, \n, \r\n, \n\r ends a line -- the second byte of a pair
+      // is swallowed here (rather than treated as an empty second line) by
+      // only firing when c differs from the terminator that just ended the
+      // previous line. _lastTerminator is cleared below on every non-CR/LF
+      // byte, so it only ever suppresses the immediate pair partner.
+      bool isPairPartner = (_lastTerminator != 0) && (c != _lastTerminator);
+      _lastTerminator = c;
+      if (isPairPartner) {
+        return;
+      }
       _serial->write('\r');
       _serial->write('\n');
       _buf[_len] = '\0';
@@ -48,7 +57,9 @@ class Cli {
       }
       _len = 0;
       return;
-    } else if (c == '\b' || c == 0x7f) {
+    }
+    _lastTerminator = 0;
+    if (c == '\b' || c == 0x7f) {
       if (_len > 0) {
         _len--;
         _serial->write('\b');
@@ -122,4 +133,5 @@ class Cli {
   Stream *_serial = &Serial;
   char _buf[MAX_LINE];
   size_t _len = 0;
+  char _lastTerminator = 0;
 };
