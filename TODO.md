@@ -73,8 +73,14 @@ dedicated bench method) — see `NETWORK-TIMING-ISSUE.md` for results.
 
 Full list: **`cerberus-gate-controller/docs/PLANNED-UPDATES.md`** (supervisor
 state machine, SD-card CSV logging, HTTP log streaming/MAINTENANCE mode,
-TSF-based drift compensation, `race_runs[]` concurrency guard, touch
-calibration NVS escape hatch).
+`race_runs[]` concurrency guard, touch calibration NVS escape hatch).
+(TSF-based drift compensation, formerly listed here, was removed
+2026-08-06 as superseded — hesperus's own dual-clock holdover already
+disciplines `tsf_us` before it's ever sent, and cerberus only ever diffs
+two already-trustworthy timestamps, never extrapolates one, so there was
+nothing left for cerberus-side compensation to do; `gate_us` had also sat
+unused in the codebase the whole time. See the PLANNED-UPDATES.md history
+for the reasoning if this is ever reconsidered.)
 
 Smaller items tracked only in-code, not in that doc:
 
