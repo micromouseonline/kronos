@@ -69,13 +69,17 @@ its own LED, wired in a fixed order:
 | Key | Label | Short press | Long press (hold) |
 |---|---|---|---|
 | 0 | **ARM** | Arm — confirms a mouse is in the start cell, ready to run | **Restart** — abandon the current mouse and start a fresh entry from Calibrating/Waiting/Armed/Running/Goal |
-| 1 | **START** | Start — the mouse has left the start cell, begin timing | (no effect) |
+| 1 | **START** | Start — the mouse has left the start cell, begin timing | (no effect, except on the main menu screen — see below) |
 | 2 | **GOAL** | Goal — the mouse has reached the finish | (no effect) |
 | 3 | **TOUCH** | Currently has no effect on race progress | **Return to menu** (leaves the current race screen; does not affect race state) |
 
 The touchscreen itself is **not** used for ARM/START/GOAL during a race —
 it only navigates between the menu, main timer, and settings screens.
 Tapping the WiFi-status area on the main screen opens the setup menu.
+
+**On the main menu screen only**, long-pressing START launches the touch
+calibration wizard — see [Troubleshooting](#troubleshooting) if the
+touchscreen is misbehaving.
 
 If the NeoKey module is unplugged or not detected, all four LEDs stay
 off and **none of the local buttons work** — the controller still responds
@@ -160,6 +164,11 @@ a session; there's no mode switch to select between them.
 
 ## Troubleshooting
 
+- **Touchscreen taps land in the wrong place, or don't register at all:**
+  from the main menu screen, long-press START (key 1) to re-run the touch
+  calibration wizard. This is a physical NeoKey gesture deliberately, so
+  it works even when the touchscreen is too miscalibrated to use — no
+  flash erase needed.
 - **No LEDs at all, buttons don't respond:** the NeoKey module isn't
   detected (unplugged, bad I2C connection). The controller still runs
   and still accepts remote commands; reseat/reconnect the keypad to

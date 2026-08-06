@@ -139,6 +139,28 @@ void input_event_handler(const InputEvent &evt) {
     trigger_touch_lockout();
     loadScreen(SCREEN_ID_MENU);
   }
+#if HAS_TOUCH_INPUT && TOUCH_NEEDS_CALIBRATION
+  // START held, main menu only -- manual re-entry into the touch
+  // calibration wizard (display/touch-calibration.h's re_calibrate()),
+  // for recovering from a bad/stale NVS calibration without a full flash
+  // erase (see docs/PLANNED-UPDATES.md's "Touch Calibration NVS Escape
+  // Hatch"). Deliberately a physical NeoKey gesture, not an on-screen
+  // button -- the whole point is to still work when touch itself is
+  // miscalibrated. START's long-press is otherwise unused
+  // (BUTTON_COMMAND_MAP maps it to RaceCommand::NONE), and gating on the
+  // menu screen keeps this from ever competing with its meaning elsewhere.
+  if (evt.id == BTN_START && evt.type == InputEventType::HELD && lv_scr_act() == objects.menu) {
+    re_calibrate(lcd);
+    // re_calibrate() draws its wizard/"Calibration Saved!" message straight
+    // to the LCD, bypassing LVGL (same as wifi-provisioning.h's portal
+    // screen) -- LVGL still thinks objects.menu is the active screen
+    // throughout (we never left it), so loadScreen(SCREEN_ID_MENU) alone
+    // is a same-screen no-op that leaves those raw pixels on-screen with
+    // nothing to repaint over them. Force the invalidate explicitly so the
+    // next lvgl_task_handler() tick redraws the whole menu for real.
+    lv_obj_invalidate(lv_scr_act());
+  }
+#endif
   race_timer_handle_command(race_command_from_button(evt.id, evt.type));
   neokey_reflect_race_state();
   if (race_state == RaceState::CALIBRATE) {

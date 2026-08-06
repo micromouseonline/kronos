@@ -36,20 +36,6 @@ Not yet implemented. Once SD-card logging exists:
 
 ---
 
-## TSF-Based Drift Compensation
-
-Not yet implemented. Original design called for:
-
-* Gates include both `tsf_us` (WiFi AP's global TSF clock) and `gate_us` (gate's own free-running microsecond timer) in every event message (`/ws` or `/api/event`).
-* CERBERUS would track the relationship between its own `esp_timer_get_time()` and the incoming TSF values to model clock drift dynamically.
-* During WiFi beacon loss or AP time shifts, a gate's `gate_us` cross-reference would allow CERBERUS to compensate for the drift and maintain microsecond-level accuracy for up to ~5 minutes of independent operation.
-
-**Current state:** `gate_us` is parsed but not used (`handle_gate_event_json()` in `src/net/http-server.h`). TSF timestamps (`tsf_us`) are taken at face value. CERBERUS has no local TSF reader.
-
-**Rationale:** With an AP that stays online and stable, drift is negligible; this is forward-looking insurance for edge cases (transient AP reset, dynamic mesh topology, RF interference).
-
----
-
 ## `race_runs[]` Concurrency Guard (Optional)
 
 Not yet implemented. Currently, Core 1 (state machine) appends to `race_runs[]` while Core 0 (HTTP server) may read it simultaneously to compute the leaderboard.
@@ -62,8 +48,20 @@ Not yet implemented. Currently, Core 1 (state machine) appends to `race_runs[]` 
 
 ## Touch Calibration NVS Escape Hatch
 
-**Issue:** If NVS holds a `"calibrated"=true` entry with bad calibration data (e.g. leftover from earlier testing), `calibrate()` (`src/display/touch-calibration.h`) loads it and never re-launches the wizard. Since menu/settings navigation is touch-driven, bad calibration locks the user out of the menu (race commands via NeoKey are unaffected).
+**Resolved, 2026-08-06.** If NVS holds a `"calibrated"=true` entry with bad
+calibration data (e.g. leftover from earlier testing), `calibrate()`
+(`src/display/touch-calibration.h`) used to load it and never re-launch
+the wizard — since menu/settings navigation is touch-driven, bad
+calibration locked the user out of the menu (race commands via NeoKey were
+unaffected).
 
-**Current workaround:** Full flash erase (`pio run -e <env> -t erase`).
-
-**Possible fix:** A way to force re-calibration without working touch (e.g. hold a screen corner or other fixed physical action during boot, checked before `calibrate()` loads stored data in `app_setup()` / `main.cpp`).
+**Fix:** long-press START (key 1) while on the main menu screen now calls
+`re_calibrate(lcd)` directly (`main.cpp`'s `input_event_handler`) — a
+physical NeoKey gesture, not an on-screen button, since the whole point is
+to still work when touch itself is miscalibrated. START's long-press was
+otherwise unused (`BUTTON_COMMAND_MAP` maps it to `RaceCommand::NONE`), and
+gating it to the menu screen keeps it from ever competing with its
+in-race meaning. Chosen over a full flash erase (still works as a
+fallback) and over reusing the on-screen "unused" main-menu button slot,
+which would have made the escape hatch depend on the very thing it's meant
+to recover from.
