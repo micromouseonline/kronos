@@ -11,6 +11,7 @@
 #include "boards.h"                 // contains the board MAC addresses to look up the identifiers
 #include "cli.h"                    // serial command line interface
 #include "debug-log.h"              // TSF-timestamped debug_println/debug_printf
+#include "network-health-stats.h"   // NVS-persisted stall/drop/disconnect counters
 #include "provisioning-commands.h"  // `wifi`/`role` serial commands
 #include "secrets.h"                // these are the network credentials neede to connect to the AP
 #include "wifi-credentials.h"       // NVS-persisted wifi creds from the `wifi` command
@@ -246,6 +247,10 @@ void wsClientEventHandler(WStype_t type, uint8_t *payload, size_t length) {
     xSemaphoreTake(ws_ack_state_mutex, portMAX_DELAY);
     g_ws_ack_received = false;
     xSemaphoreGive(ws_ack_state_mutex);
+    // Plain RAM increment only, no I/O -- see network-health-stats.h's
+    // header comment for why NVS writes never happen at an increment site.
+    g_network_health.disconnect_count++;
+    g_network_health_dirty = true;
   }
 }
 
@@ -524,6 +529,15 @@ void wsPumpTask(void *pvParameters) {
     wsClient.loop();
     uint64_t loop_call_us = esp_timer_get_time() - loop_call_start;
     if (loop_call_us > 50000) {
+      uint32_t stall_ms = loop_call_us / 1000;
+      // Plain RAM increments only, no I/O -- still holding ws_client_mutex
+      // here, see network-health-stats.h's header comment for why the NVS
+      // write itself is deferred to loop().
+      g_network_health.stall_count++;
+      if (stall_ms > g_network_health.max_stall_ms) {
+        g_network_health.max_stall_ms = stall_ms;
+      }
+      g_network_health_dirty = true;
       debug_printf("[WS Pump] wsClient.loop() blocked %llums (wifi_status=%d, ws_connected=%d)\n",
                    loop_call_us / 1000, WiFi.status(), wsClient.isConnected());
     }
@@ -736,11 +750,15 @@ void uploadWorkerTask(void *pvParameters) {
 
           uint32_t now = millis();
           if (now - wait_start > WS_ACK_OVERALL_DEADLINE_MS) {
+            g_network_health.drop_ack_deadline++;
+            g_network_health_dirty = true;
             debug_println("[WS Worker] Event dropped after ack deadline.");
             break;
           }
           if (now - attempt_start > attempt_timeout_ms) {
             if (attempt >= WS_MAX_SEND_ATTEMPTS) {
+              g_network_health.drop_max_retries++;
+              g_network_health_dirty = true;
               debug_println("[WS Worker] Event dropped after max retries.");
               break;
             }
@@ -763,6 +781,8 @@ void uploadWorkerTask(void *pvParameters) {
           vTaskDelay(pdMS_TO_TICKS(WS_ACK_WAIT_TICK_MS));
         }
       } else {
+        g_network_health.drop_link_down++;
+        g_network_health_dirty = true;
         debug_println("[WS Worker] Link down. Event dropped.");
       }
 
@@ -800,6 +820,8 @@ void setup() {
   Serial.begin(115200);
 
   pinMode(LED_PIN, OUTPUT);
+
+  network_health_load();  // before wsPumpTask/uploadWorkerTask exist -- nothing can increment these yet
 
   strlcpy(gate_id, identifyBoard(), sizeof(gate_id));
   pinMode(GATE_PIN, INPUT_PULLUP);
@@ -871,6 +893,10 @@ void loop() {
   static bool ws_was_ready = false;  // g_ready edge-detection, opens wsClient once per readiness
 
   uint32_t current_time = millis();
+
+  // Ahead of the reboot-capable watchdog below, so a dirty counter from a
+  // stall/drop this same iteration is persisted before any possible restart.
+  network_health_flush_if_dirty();
 
   // --- PATCH 2: EXTENDED SYN-MODE WATCHDOG ---
   // If the gate is trapped in synthetic time for >10 s, the Wi-Fi

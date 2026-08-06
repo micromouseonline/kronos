@@ -4,14 +4,19 @@
 //  Purely additive: does not touch the event-reporting path (that stays on
 //  feature_ws_client's WebSocketsClient, see main.cpp). Backed by
 //  feature_http (esp32async/AsyncTCP + ESPAsyncWebServer, #if HAS_HTTP),
-//  the same stack already proven by cerberus/ares -- used here only for a
-//  small read-only diagnostics surface: GET /logs (recent debug-log lines,
-//  captured via debug-log.h's debug_log_line_hook) and GET /status (uptime,
-//  RSSI, queue depth, overflow count).
+//  the same stack already proven by cerberus/ares -- used here for a small
+//  diagnostics surface: GET /logs (recent debug-log lines, captured via
+//  debug-log.h's debug_log_line_hook), GET /status (uptime, RSSI, queue
+//  depth, overflow count, and the lifetime network-health counters from
+//  network-health-stats.h), and POST /status/reset (zeroes those counters
+//  -- the one write route, mirroring the serial `netstats clear` command;
+//  see network_health_clear()'s own comment for why a synchronous NVS
+//  write is fine there specifically).
 //
-//  No write/MAINTENANCE-mode routes -- unlike cerberus's still-unimplemented
-//  planned log-streaming feature (docs/PLANNED-UPDATES.md), hesperus has no
-//  SD card to protect, so there's nothing that needs locking out.
+//  Otherwise no write/MAINTENANCE-mode routes -- unlike cerberus's
+//  still-unimplemented planned log-streaming feature
+//  (docs/PLANNED-UPDATES.md), hesperus has no SD card to protect, so
+//  there's nothing else that needs locking out.
 // ----------------------------------------------------------------------------
 #pragma once
 
@@ -22,7 +27,8 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
 
-#include "debug-log.h"  // serial_write_lock/unlock, debug_log_line_hook
+#include "debug-log.h"             // serial_write_lock/unlock, debug_log_line_hook
+#include "network-health-stats.h"  // g_network_health -- lifetime stall/drop/disconnect counters
 
 constexpr size_t DEBUG_LOG_RING_LINES = 150;      // ~19KB at LINE_MAX below -- see
                                                    // platformio.ini's Track-2 RAM sizing note;
@@ -86,9 +92,28 @@ inline void handle_debug_status(AsyncWebServerRequest *request) {
   doc["rssi"] = WiFi.RSSI();
   doc["network_queue_depth"] = g_status_network_queue ? uxQueueMessagesWaiting(g_status_network_queue) : 0;
   doc["network_overflow_count"] = g_status_overflow_count ? *g_status_overflow_count : 0;
+  // Lifetime (NVS-persisted, survives reboot) counters -- see
+  // network-health-stats.h and NETWORK-TIMING-ISSUE.md's "wsClient.loop()
+  // blocking under congestion" / "Wi-Fi power-save vs. battery budget"
+  // issues. Lets a real deployment be checked after the fact for whether
+  // the adversarial-smoke-test-only failure modes ever actually fired.
+  doc["ws_stall_count"] = g_network_health.stall_count;
+  doc["ws_max_stall_ms"] = g_network_health.max_stall_ms;
+  doc["ws_disconnect_count"] = g_network_health.disconnect_count;
+  doc["event_drop_ack_deadline"] = g_network_health.drop_ack_deadline;
+  doc["event_drop_max_retries"] = g_network_health.drop_max_retries;
+  doc["event_drop_link_down"] = g_network_health.drop_link_down;
   String out;
   serializeJson(doc, out);
   request->send(200, "application/json", out);
+}
+
+/// @brief Zeroes the network-health counters (see network_health_clear()).
+/// No body/params -- deliberately a blunt all-or-nothing reset, matching
+/// the serial `netstats clear` command's own scope.
+inline void handle_debug_status_reset(AsyncWebServerRequest *request) {
+  network_health_clear();
+  request->send(200, "text/plain", "cleared");
 }
 
 inline AsyncWebServer debug_http_server(80);
@@ -102,8 +127,19 @@ inline AsyncWebServer debug_http_server(80);
 inline void debug_http_server_init() {
   static bool initialized = false;
   if (!initialized) {
+    // Exact matching, deliberately -- a plain string here defaults to
+    // ESPAsyncWebServer's Type::BackwardCompatible, which matches the exact
+    // path OR anything starting with "path/". That silently swallowed
+    // /status/reset into /status's handler (registered first, so checked
+    // first) regardless of HTTP method -- found 2026-08-06 when a real
+    // reset attempt did nothing. AsyncURIMatcher::exact() is immune to this
+    // regardless of what other routes get added later.
     debug_http_server.on("/logs", HTTP_GET, handle_debug_logs);
-    debug_http_server.on("/status", HTTP_GET, handle_debug_status);
+    debug_http_server.on(AsyncURIMatcher::exact("/status"), HTTP_GET, handle_debug_status);
+    // GET as well as POST -- a plain browser visit/URL bar send GET, and
+    // requiring curl -X POST is more friction than an accidental-reset risk
+    // is worth for a bench diagnostic route that only zeroes counters.
+    debug_http_server.on(AsyncURIMatcher::exact("/status/reset"), HTTP_GET | HTTP_POST, handle_debug_status_reset);
     initialized = true;
   }
   debug_http_server.begin();
