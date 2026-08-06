@@ -47,7 +47,13 @@ constexpr int DISPLAY_ROTATION = 1;
 // INVERT_COLORS or try PANEL_OFFSET_ROTATION values 2/4/6 (LovyanGFX
 // MADCTL mirror offset).
 constexpr bool INVERT_COLORS = false;
-constexpr bool BGR_ORDER = false;
+// BGR_ORDER=true confirmed on real hardware, 2026-08-06 -- the
+// maze-timer-cyd TFT_eSPI reference this file was originally checked
+// against implied false, but that produced visibly different (not just
+// slightly off) colours next to the ILI9341 variant. Same value as the
+// ILI9341 board despite the different panel chip; don't assume a
+// different panel driver means a different colour order without checking.
+constexpr bool BGR_ORDER = true;
 constexpr int PANEL_X_OFFSET = 0;
 constexpr int PANEL_Y_OFFSET = 0;
 constexpr int PANEL_OFFSET_ROTATION = 0;
