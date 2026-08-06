@@ -69,6 +69,17 @@ pairing over 60,000 events) validate the architecture.
 
 ## Possible stress tests:
 
+**Status update, 2026-08-06**: the beacon-spam campaign in
+`NETWORK-TIMING-ISSUE.md` (spam-test sessions 2-15a) has since exercised
+Layer 1 extensively — via deliberate beacon-frame flooding rather than the
+HTTP-GET-flood method sketched below, but the same airtime-saturation
+effect — and Layer 3 partially, via Bluetooth audio streaming co-tested
+alongside the spammers (sessions 9-10, 15a) as a stand-in for channel
+interference. Layers 2 (bulk throughput) and 4 (broadband noise) remain
+genuinely untested and are deprioritized (`TODO.md`'s "Congested-airtime
+stress testing" item) rather than actively planned. The sketches below are
+left as originally written for reference.
+
   ### Layer 1 — Airtime saturation (your idea, refined)
 
   20 ESP32s each running a tight loop of HTTP GETs to a local server (a Pi or laptop running a trivial HTTP responder). 
@@ -104,21 +115,27 @@ pairing over 60,000 events) validate the architecture.
 
 ## Future Development Path
 
-Updated 2026-08-02: removed two rows that shipped since this table was
-written (mDNS server discovery, HTTP keep-alive/WebSocket — see
-`docs/PROVISIONING.md` and `NETWORK-TIMING-ISSUE.md` respectively) and
-trimmed "server URL" from the NVS config store row for the same reason
-(cerberus's address is now resolved dynamically via mDNS, not a
-config-store override).
+Updated 2026-08-06: removed three rows that shipped since this table was
+written (mDNS server discovery, HTTP keep-alive/WebSocket, and a
+diagnostics HTTP server — see `docs/PROVISIONING.md`,
+`NETWORK-TIMING-ISSUE.md`, and `src/net/debug-http-server.h`/
+`network-health-stats.h` respectively) and trimmed "server URL" from the
+NVS config store row for the same reason (cerberus's address is now
+resolved dynamically via mDNS, not a config-store override). The
+diagnostics server (`GET /logs`, `GET /status`, `GET`/`POST /status/reset`)
+also covers part of what the old "field-deployable overflow-drop
+notification" gap needed — lifetime stall/drop/disconnect counters now
+persist across reboot (NVS) and are readable remotely, without a serial
+cable attached.
 
 | Phase | Feature | Notes |
 |-------|---------|-------|
-| Near | Wi-Fi Modem Sleep | Currently forced off (`esp_wifi_set_ps(WIFI_PS_NONE)`, `main.cpp:565`) after `WIFI_PS_MAX_MODEM` was traced to a 2.9s first-packet penalty; see `NETWORK-TIMING-ISSUE.md`'s "Wi-Fi power-save vs. battery budget" issue for the full investigation, now unblocked and the highest-priority open item there |
+| Near | Wi-Fi Modem Sleep | Extensively investigated, not just "unblocked" — see `NETWORK-TIMING-ISSUE.md`'s "Wi-Fi power-save vs. battery budget" issue (sessions 11-15a). `WIFI_PS_NONE` (`main.cpp:869`) stays the shipped default (decided 2026-08-04, ~110mA); `WIFI_PS_MIN_MODEM` saves ~35-40% power but has a real, still-unexplained stall/reliability regression under heavy congestion that got worse after one attempted mitigation. Still the highest-priority open item in that doc |
 | Near | NVS config store | gate_id override, debounce, DRIFT_MARGIN_US |
 | Near | Configurable debounce | Per-pin, loaded from NVS |
 | Medium | OTA firmware update | ArduinoOTA or ESP-IDF OTA; critical for field deployment |
 | Medium | SSD1306 display task | Gate ID, clock mode, last gap, queue depth (lib already in platformio.ini) |
-| Medium | Stack telemetry in heartbeat | Append `&stack=NNN` to HB URL for remote diagnostics; scaffolding exists but is commented out (`main.cpp:277-279`) |
+| Medium | Stack telemetry in heartbeat | Append `&stack=NNN` to HB URL for remote diagnostics; scaffolding exists but is commented out (`main.cpp:510-512`) |
 | Long | NVS event buffering | Survive power cycle with unsent events preserved in flash |
 | Long | Multi-AP BSSID fallback | Secondary AP list with explicit TSF-resync on AP switch |
 | Long | Local standalone scoring | Compute lap/split locally if server unreachable; display on SSD1306 |

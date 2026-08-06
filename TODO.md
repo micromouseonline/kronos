@@ -14,13 +14,35 @@ per-project pieces, not new per-project features.
 
 Primary tracker: **`NETWORK-TIMING-ISSUE.md`** (root) — its "Outstanding
 work, prioritized" section is the ranked list, kept up to date there rather
-than mirrored here. As of 2026-08-02, in priority order:
+than mirrored here. As of 2026-08-06, in priority order:
 
-1. Wi-Fi power-save vs. battery budget — unblocked, highest-value open item
-2. Duplicate triggers from gapped robot structure — lock-out window design unresolved
-3. Congested-airtime stress testing — sketched in `hesperus-timing-gate/review.md` / `docs/TEST-TOOLING.md`, never built
-4. Hedged burst sends for tail latency — deprioritized, watch retry telemetry first
-5. Unexplained minor WS jitter / reconnect blip — low-priority curiosity
+1. Wi-Fi power-save vs. battery budget — still open. `NONE` stays the
+   shipped default (decided 2026-08-04); `MIN_MODEM`'s stall/reliability
+   regression is real but unexplained (sessions 11/13, worse after a
+   reverted mitigation attempt in session 14). Sessions 15/15a
+   (2026-08-06) found the same severe stall signature also occurs under
+   `NONE`, just less often — so it's not `MIN_MODEM`-exclusive after all —
+   but both `NONE` confirmation trials were confound-compromised; a clean
+   run still hasn't happened.
+2. Ack-path timeout mismatch — tuning applied 2026-08-04
+   (`WS_ACK_TIMEOUT_MS` 300→500ms), build-verified, but still not
+   confirmed by a genuinely clean trial: two attempted two-spammer+BT
+   `NONE` re-runs (sessions 15, 15a) were each compromised by an
+   unrelated equipment issue.
+3. Duplicate triggers from gapped robot structure — lock-out window design unresolved
+4. GOAL board retries far more than ARM/START under heavy stress (session
+   13: 18.3% vs. 4.0%) — cause (physical position vs. role) not yet
+   distinguished; the planned start/goal swap is deferred to
+   production-board testing
+5. Congested-airtime stress testing — judged sufficient 2026-08-04 and
+   deprioritized (not formally closed); bulk-throughput contention and
+   broadband noise remain genuinely untested, not pursued without a
+   concrete reason to
+6. Hedged burst sends for tail latency — deprioritized, watch retry telemetry first
+
+Resolved/closed since the last pass: the `wsClient.loop()`-blocking
+congestion bug (hardware-verified 2026-08-03) and the unexplained WS
+jitter/reconnect blip (characterized as benign, closed 2026-08-04).
 
 Other cross-project items not tracked in that file:
 
@@ -30,10 +52,20 @@ Other cross-project items not tracked in that file:
 
 ### Testing gaps
 
-- 10,000-message steady-state WS jitter characterization test — proposed, never run (`NETWORK-TIMING-ISSUE.md`)
-- Power-save current-draw/latency measurement across PS modes — method proposed, not yet run (`NETWORK-TIMING-ISSUE.md`)
-- Congested-airtime stress harness (airtime saturation, bulk throughput, channel interference, broadband noise) — no tooling built, manual setup only (`docs/TEST-TOOLING.md`)
+- A genuinely confound-free two-spammer+BT trial under `WIFI_PS_NONE` —
+  sessions 15 and 15a (2026-08-06) both compromised by unrelated equipment
+  issues; this is what items 1 and 2 above are both waiting on
+  (`NETWORK-TIMING-ISSUE.md`)
+- Congested-airtime stress harness — airtime saturation has extensive
+  coverage (spam-test sessions 2-15a); bulk throughput contention and
+  broadband noise layers are untested and deprioritized, not tooled
+  (`docs/TEST-TOOLING.md`)
 - Duplicate-trigger lock-out re-test (`trial_double_trigger`) — blocked until the lock-out feature above is built
+
+Closed: the 10,000-message WS jitter test and the power-save
+current-draw/latency measurement were both completed (the latter via
+sessions 11-15a's spam-test trials rather than the originally-proposed
+dedicated bench method) — see `NETWORK-TIMING-ISSUE.md` for results.
 
 ---
 
@@ -47,20 +79,24 @@ calibration NVS escape hatch).
 Smaller items tracked only in-code, not in that doc:
 
 - `BUTTON_COMMAND_MAP` flagged as needing review against the state machine — `src/race/race-command-source.h:37`
-- Legacy serial sends `send_run_time()` twice for unclear reasons — `src/messages-reference.h:111-112`
+- Legacy serial sends `send_run_time()` twice for unclear reasons — `src/messages-reference.h:111-115`
 
 ## hesperus-timing-gate
 
 Full list: **`hesperus-timing-gate/review.md`**'s "Future Development Path"
 table (Wi-Fi modem sleep, NVS config store, configurable debounce, OTA
 update, SSD1306 display, stack telemetry, NVS event buffering, multi-AP
-BSSID fallback, local standalone scoring) — kept current as of 2026-08-02,
-the two rows that had shipped (mDNS discovery, WebSocket) were removed
-from it rather than left stale.
+BSSID fallback, local standalone scoring) — refreshed 2026-08-06 alongside
+this file (correct line numbers, Wi-Fi Modem Sleep row now reflects the
+sessions-11-through-15a investigation instead of just "unblocked", and the
+new diagnostics-HTTP-server row removed since it shipped).
 
-Smaller item tracked only in-code:
-
-- Field-deployable overflow-drop notification (LED pattern / SPIFFS log / HTTP flag) — currently serial-debug-only. `src/main.cpp:293-296`
+Resolved since the last pass: field-deployable overflow-drop notification
+(was serial-debug-only) now ships as both persistent NVS counters and an
+HTTP status flag — see `network-health-stats.h` and `GET /status` in
+`src/net/debug-http-server.h`. (`main.cpp`'s own `uploadWorkerTask` comment
+listing this as still-unaddressed, around line 561, is now itself stale
+and should be removed next time that function is touched.)
 
 ## ares-pulse-generator
 
