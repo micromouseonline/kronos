@@ -128,7 +128,21 @@ inline String generate_html_head(const char *title, const char *extra_head = "")
   return head;
 }
 
+// Set by wifi-provisioning.h once its config portal is up, so browsing to
+// the AP's root IP (192.168.4.1) lands on the setup form instead of the
+// clock page below. "/" is bound to http_handle_root here in
+// http_server_init(), before Wi-Fi ever attempts to connect -- by the time
+// provisioning is known to be needed, that binding already exists and
+// re-registering "/" wouldn't take priority over it (AsyncWebServer serves
+// the first-added handler that matches), so this checks a hook instead of
+// fighting the route table.
+inline void (*http_handle_root_override)(AsyncWebServerRequest *) = nullptr;
+
 inline void http_handle_root(AsyncWebServerRequest *request) {
+  if (http_handle_root_override != nullptr) {
+    http_handle_root_override(request);
+    return;
+  }
   http_log_request(request);
   // Page syncs offset with ESP32 and runs smooth 60 FPS clock locally
   String html;

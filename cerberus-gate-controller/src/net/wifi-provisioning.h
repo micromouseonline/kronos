@@ -86,14 +86,16 @@ inline void wifi_provisioning_start(LGFX& lcd) {
   lcd.fillScreen(TFT_BLACK);
   lcd.setTextColor(TFT_WHITE);
   lcd.setTextSize(2);
-  int y = lcd.height() / 2 - 40;
+  int y = lcd.height() / 2 - 65;
   lcd.drawCenterString("Wi-Fi Setup Needed", lcd.width() / 2, y);
   y += 30;
   lcd.drawCenterString(String("Join: ") + WIFI_PROVISIONING_AP_SSID, lcd.width() / 2, y);
   y += 25;
   lcd.drawCenterString(String("Pass: ") + WIFI_PROVISIONING_AP_PASSWORD, lcd.width() / 2, y);
+  y += 35;
+  lcd.drawCenterString("Then browse to:", lcd.width() / 2, y);
   y += 25;
-  lcd.drawCenterString("Then browse to 192.168.4.1", lcd.width() / 2, y);
+  lcd.drawCenterString("http://192.168.4.1/wifi", lcd.width() / 2, y);
   y += 35;
   lcd.setTextSize(1);
   lcd.drawCenterString("Hold TOUCH to cancel & reboot", lcd.width() / 2, y);
@@ -107,4 +109,9 @@ inline void wifi_provisioning_start(LGFX& lcd) {
   // rebind failed and nothing was left listening at all.
   http_server.on("/wifi", HTTP_GET, wifi_provisioning_handle_form);
   http_server.on("/wifi", HTTP_POST, wifi_provisioning_handle_save);
+
+  // "/" is already bound to the clock page (http_server_init(), before Wi-Fi
+  // ever connected) -- override it so browsing to the AP's root IP
+  // (192.168.4.1) lands on the setup form instead.
+  http_handle_root_override = wifi_provisioning_handle_form;
 }

@@ -871,9 +871,17 @@ single-spammer/two-spammer+BT conditions plus idle gaps): **1569mAh over
 25h ≈ 62.8mA average.** Consistent with session 12's 63.6mA and the
 dedicated 56mA idle-only baseline — reinforces the ~55-65mA range as
 `MIN_MODEM`'s real-world draw regardless of stress condition, including
-across session 14's reconnect-heavy pathological period. Still a ~40%+
-reduction from the 110mA `NONE` baseline; the open question stays
-reliability, not power — power was never in doubt.
+across session 14's reconnect-heavy pathological period.
+
+**`NONE` blended current draw, 2026-08-06** (spanning sessions 15/15a,
+`WIFI_PS_NONE`, two-spammer+BT stress): **1202mAh over 12h15m ≈ 98.1mA
+average.** A real-conditions `NONE` figure to set directly against the
+`MIN_MODEM` one above, both measured the same way (blended across actual
+stress trials, not a clean single-condition bench figure) — refines the
+power-saving estimate to **~36%** (98.1→62.8mA) under comparably harsh
+conditions, close to but a bit under the original ~40%+ figure derived
+from the 2026-07-31 110mA idle/light-load baseline. Either way, the
+open question stays reliability, not power — power was never in doubt.
 
 **Session 15 results (2026-08-06)** (`test-data/spam-tests/{cerberus-15,
 hesperus-start-15,hesperus-goal-15}.log`) — `WIFI_PS_NONE` (heartbeat
