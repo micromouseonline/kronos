@@ -250,8 +250,19 @@ run to completion (no crash cutoff this time):
    `MIN_MODEM`, so it doesn't isolate this fix cleanly (see item 2); the
    forward-leg delivery held up well there regardless (every genuinely
    transmitted event eventually reached cerberus), which is a good sign
-   but not the controlled re-run this item still needs. Full detail,
-   including the per-event round-trip breakdown, in the issue below.
+   but not the controlled re-run this item still needs. **Session 15**
+   (2026-08-06) attempted this under `NONE` but one spammer dropped out
+   ~30 minutes in (equipment issue, not a finding) — both segments'
+   retry rates looked healthy, but it's suggestive, not the clean
+   confirmation this item needs. **Session 15a** (2026-08-06, the planned
+   3000-run re-run) was *also* compromised — BT was found off partway
+   through, back on at a known timestamp — but showed sustained stress
+   throughout regardless, with overall retry rates (1.46%/9.47%) well
+   under session 13's `MIN_MODEM` baseline (4.0%/18.3%) over a comparable
+   exposure. Two compromised trials in a row is enough supportive signal
+   to lower this item's urgency, but a genuinely clean confound-free run
+   still hasn't happened. Full detail, including the per-event round-trip
+   breakdown, in the issue below.
 2. **[Wi-Fi power-save vs. battery budget](#issue-wi-fi-power-save-vs-battery-budget)**
    — Measure current draw across `WIFI_PS_NONE`/`MIN_MODEM`/`MAX_MODEM`
    with persistent connections in place. Real, measured 110mA cost today;
@@ -279,7 +290,23 @@ run to completion (no crash cutoff this time):
    per hour than session 13's unmodified baseline), not better. Reverted.
    The mechanism remains unexplained and unmitigated; this specific
    direction (widen tolerance) is now ruled out, not just untried — any
-   future attempt needs a different theory of the failure.
+   future attempt needs a different theory of the failure. **Update,
+   2026-08-06**: session 15 (`NONE`, same nominal two-spammer+BT stress)
+   compromised by a spammer dropping out ~30 minutes in, but the ~30
+   minutes of genuine exposure it did get showed no stall approaching the
+   5000ms signature that defines the `MIN_MODEM` mechanism — suggestive
+   that it's `MIN_MODEM`-specific, on weaker evidence (30min vs. 6h) than
+   the recurrence finding it's being weighed against. **Revised, same
+   day**: session 15a (the planned clean re-run, also compromised — BT
+   found off partway through) recorded one genuine **5002ms** stall under
+   `NONE` during its confirmed-no-BT period, hitting the exact
+   `WEBSOCKETS_TCP_TIMEOUT` signature. **The severe cascade is not
+   `MIN_MODEM`-exclusive after all** — it's a general two-spammer
+   WiFi-stack-overhead property `NONE` isn't immune to, just apparently
+   less frequent/severe under it (one occurrence in ~3.6h vs. repeated
+   occurrences per `MIN_MODEM` trial) rather than absent. Both `NONE`
+   trials to date have been confound-compromised; a genuinely clean run
+   under either power mode still hasn't happened.
 3. **[`wsClient.loop()` blocking under congestion](#issue-wsclientloop-blocking-under-congestion-defeats-the-ackretry-deadline-bound)**
    — confirmed via instrumentation + cross-board log correlation: beacon
    spam causes real TCP-level WS disconnects (up to ~18s outages seen) on
@@ -847,6 +874,88 @@ dedicated 56mA idle-only baseline — reinforces the ~55-65mA range as
 across session 14's reconnect-heavy pathological period. Still a ~40%+
 reduction from the 110mA `NONE` baseline; the open question stays
 reliability, not power — power was never in doubt.
+
+**Session 15 results (2026-08-06)** (`test-data/spam-tests/{cerberus-15,
+hesperus-start-15,hesperus-goal-15}.log`) — `WIFI_PS_NONE` (heartbeat
+reverted to `(5000,3000,2)`), intended two-spammer+BT, 5000 runs, ~5.97h.
+**Compromised trial: one spammer went offline partway through** (confirmed
+by the user; not caught until after the run). Written up anyway with the
+caveat stated plainly, per the same treatment past confounded sessions
+(5, 7, 8) got — a spotted, locatable confound doesn't make the data
+meaningless, it just changes what question it can answer. **A clean
+same-condition re-run (3000 runs) is planned.**
+
+- **The dropout is precisely locatable.** Nearly all problems (11/16 WS
+  disconnects, 13/18 drops, 4/5 stale-GOAL rejections) cluster into one
+  ~17.7-minute window, T≈13.5-31 minutes into the trial — matching the
+  user's own estimate ("possibly within the first 30 minutes") almost
+  exactly. Outside that window, the remaining ~5.7h has only two small
+  isolated blips, no clustering.
+- **Segmenting at that boundary gives two genuine (if unplanned) results**,
+  not one intended one:
+  - **First ~30min (genuine two-spammer+BT+`NONE`)**: ARM/START retry 4.20%
+    (n=858), GOAL retry 6.73% (n=431), max `wsClient.loop()` stall ~1.2s,
+    zero "dropped after max retries" (only ack-deadline/link-down). Against
+    session 13 (`MIN_MODEM`, full 6h, same nominal stress): ARM/START retry
+    is almost identical (4.20% vs 4.0%) — that side of the congestion hit
+    seems power-save-independent — but GOAL retry is much lower (6.73% vs
+    18.3%) and, most notably, **no stall ever approached the 5000ms
+    `WEBSOCKETS_TCP_TIMEOUT` signature** that defined sessions 11/13/14.
+    Supportive of the acute cascade being `MIN_MODEM`-specific (or at least
+    far less severe under `NONE`) — but resting on ~30 minutes of exposure
+    against sessions 13/14's full 6h+3.6h, so much weaker evidence than the
+    `MIN_MODEM`-recurs finding it's being compared against.
+  - **Remaining ~5.7h (one spammer + BT only, `NONE`)**: retry rates crash
+    to 0.02%/0.09% (n=9127/4566) — at or below the single-spammer `NONE`
+    pass-bar baseline (session 8: 0.03%). Not the intended two-spammer
+    condition, but a real, fairly large single-spammer+BT+`NONE` data
+    point that hadn't specifically been characterized at this scale before
+    (prior single-spammer pass-bar sessions didn't run BT alongside) —
+    incidental value, not wasted.
+- **Item 1 (ack-path fix) still not cleanly verified.** This was supposed
+  to be the controlled two-spammer+BT re-run confirming the retry-count
+  drop under `NONE`; the shortened hard-stress window means it's
+  suggestive (both segments' retry rates look healthy) rather than the
+  clean confirmation intended. Remains open pending the planned re-run.
+
+**Session 15a results (2026-08-06)** (`test-data/spam-tests/{cerberus-15a,
+hesperus-start-15a,hesperus-goal-15a}.log`) — the planned clean re-run,
+`WIFI_PS_NONE`, two spammers + BT, 3000 runs, ~3.58h. **Also compromised**:
+the BT stream was found not running partway through and switched back on
+at T=208430864 (user-confirmed); exact off-start time unknown, both
+WiFi spammers were verified operational from ~5 minutes in per the trial's
+own setup procedure. Written up anyway, same reasoning as session 15 — the
+confound is identified and bounded, so the data isn't meaningless, just
+answering a slightly different question than intended.
+
+- **Different character from session 15**: instead of one brief severe
+  cluster followed by calm, this trial shows **sustained, continuous
+  churn across nearly the entire run** — disconnects from ~5 minutes in
+  through to near the end, not a localized spike. Whole-session (~3000
+  runs): 43 genuine drops, 22 stale-GOAL rejections, 33 stalls, retry
+  rate 1.46% (ARM/START) / 9.47% (GOAL).
+- **Splitting at the BT-resume timestamp shows no clear worsening from
+  BT** — if anything several metrics improve after it comes on
+  (disconnects/hour 18.1→12.5, ARM/START retry 2.72%→0.37%; GOAL retry
+  roughly flat at ~9.5% either way). **Not read as "BT doesn't matter"** —
+  this isn't a controlled comparison (true BT-off start unknown, RF
+  conditions drift over hours regardless, n=1 trial) — read as "two
+  spammers alone already produce sustained meaningful stress under
+  `NONE`," which the data does support regardless of BT's contribution.
+- **The one finding that changes prior conclusions**: a genuine **5002ms**
+  `wsClient.loop()` stall (T=202785556) — the exact `WEBSOCKETS_TCP_TIMEOUT`
+  signature that defined the `MIN_MODEM` cascade in sessions 11/13/14 —
+  occurred here under `NONE`, during the confirmed-no-BT period. **Revises
+  session 15's tentative "maybe `MIN_MODEM`-specific" reading**: the severe
+  stall signature is not exclusive to `MIN_MODEM`, it's evidently a general
+  two-spammer WiFi-stack-overhead property that `NONE` is not immune to —
+  just apparently less frequent/severe under `NONE` (one occurrence here
+  vs. repeated occurrences per trial under `MIN_MODEM`) rather than absent.
+- **Item 1 (ack-path fix)**: overall retry rates (1.46%/9.47%) are
+  meaningfully lower than session 13's `MIN_MODEM` full-6h rates
+  (4.0%/18.3%) over a comparable (if shorter, ~3.6h) exposure — reasonably
+  supportive the fix is working, still not the fully clean, confound-free
+  confirmation this item has been waiting on since session 10.
 
 ### Issue: Displayed race time vs. true TSF time
 
@@ -2171,6 +2280,23 @@ rough priority order:
    far show retries are rare-to-nonexistent under the actual pass bar, so
    there's no signal yet to justify it. Only worth revisiting if a large-N
    single-spammer trial shows a meaningful retry rate.
+6. **Try different hesperus silicon, 2026-08-06 — noted, not attempted.**
+   The `wsClient.loop()` stall only ever appears on hesperus (ESP32-S3);
+   cerberus (plain `esp32dev`, confirmed in `boards.ini`) never shows the
+   equivalent symptom, though that's confounded with a second real
+   difference — hesperus's synchronous `WebSocketsClient` vs. cerberus's
+   event-driven `AsyncWebServer`/`AsyncTCP`, so chip family alone isn't
+   isolated by that comparison. **A same-library test on different
+   hesperus silicon would isolate it — but not the existing `c3-super-mini`
+   /`c3-xiao` PlatformIO environments**: the ESP32-C3 is single-core, and
+   hesperus's task/core split (`wsPumpTask`/`uploadWorkerTask`/
+   `ledDiagnosticTask` pinned to core 1, WiFi/LWIP on core 0) is already
+   confirmed load-bearing (item 2 above) — moving to C3 would collapse
+   that separation at the same time as changing silicon, confounding the
+   result either direction. A clean test needs a **dual-core, non-S3**
+   hesperus target (e.g. plain ESP32, matching cerberus's own chip) —
+   not one of hesperus's existing environments, would need a new board
+   target added, not just building an existing one.
 
 ### Issue: GOAL board retries far more than ARM/START board under heavy stress
 
