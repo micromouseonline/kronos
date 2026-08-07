@@ -26,7 +26,7 @@ const uint32_t BURST_INTERVAL_MS = 90;  // above DEBOUNCE_US (50ms, hesperus
                                         // main.cpp) so the ISR doesn't
                                         // discard these as bounce, but well
                                         // under the ~250-270ms per-event
-                                        // send cost (NETWORK-TIMING-ISSUE.md
+                                        // send cost (NETWORK-TIMING-LOG.md
                                         // #8), so the burst is expected to
                                         // queue.
 const uint32_t BURST_PULSE_MS = 10;
@@ -56,7 +56,7 @@ inline void trial_arm_pulse() {
 /// @brief Single 100ms active-low pulse on TRG_GOAL alone, mirroring
 /// trial_arm_pulse(). Repeated at high count/short interval (e.g.
 /// `trial goal_pulse 10000 250`), this is the single-gate GOAL-only steady-
-/// state traffic NETWORK-TIMING-ISSUE.md's WS-jitter characterization test
+/// state traffic NETWORK-TIMING-LOG.md's WS-jitter characterization test
 /// proposes, to hunt for periodicity/clustering in a long, steady run
 /// (see the "Unexplained minor WS jitter" issue there).
 inline void trial_goal_pulse() {
@@ -69,7 +69,7 @@ inline void trial_goal_pulse() {
 
 /// @brief ARM then START, trigger edges 200ms apart -- reproduces a robot
 /// crossing both gates in quick succession when one board serves both
-/// (NETWORK-TIMING-ISSUE.md #9), which queues START behind ARM's send cycle.
+/// (NETWORK-TIMING-LOG.md #9), which queues START behind ARM's send cycle.
 inline void trial_arm_then_start() {
   digitalWrite(LED_BUILTIN, 1);
   digitalWrite(TRG_ARM, 0);
@@ -84,7 +84,7 @@ inline void trial_arm_then_start() {
 
 /// @brief BURST_COUNT pulses on TRG_GOAL, BURST_INTERVAL_MS apart -- a
 /// controlled, repeatable version of the earlier manual rapid-fire test
-/// (NETWORK-TIMING-ISSUE.md #8). Checks whether hesperus's depth-10
+/// (NETWORK-TIMING-LOG.md #8). Checks whether hesperus's depth-10
 /// `networkQueue` actually overflows and silently drops events at a known
 /// rate, instead of just inferring it from timing alone: compare
 /// BURST_COUNT against how many GOAL events cerberus's log actually shows
@@ -104,7 +104,7 @@ inline void trial_burst() {
 /// @brief Two GOAL pulses on the same pin, DOUBLE_TRIGGER_GAP_MS apart --
 /// simulates a robot with a gapped/slotted structure breaking one gate's
 /// beam twice during what should count as a single crossing
-/// (NETWORK-TIMING-ISSUE.md #9). The race state machine is expected to
+/// (NETWORK-TIMING-LOG.md #9). The race state machine is expected to
 /// tolerate the duplicate once it's left RUNNING; this checks the network
 /// side doesn't do anything worse with the second trigger than the
 /// ARM/START case did.
@@ -157,7 +157,7 @@ constexpr size_t WAKE_SWEEP_COUNT = sizeof(WAKE_SWEEP_GAPS_MS) / sizeof(WAKE_SWE
 
 /// @brief One ARM pulse fired after each of WAKE_SWEEP_GAPS_MS's idle gaps
 /// in turn (1s, 5s, 15s, 30s, 60s) -- the wake-to-first-byte latency sweep
-/// NETWORK-TIMING-ISSUE.md's Wi-Fi power-save issue proposes, to compare
+/// NETWORK-TIMING-LOG.md's Wi-Fi power-save issue proposes, to compare
 /// WIFI_PS_NONE/MIN_MODEM/MAX_MODEM modem-sleep wake cost against a range of
 /// realistic idle durations in one pass. Prints the gap before each pulse so
 /// it can be matched against cerberus's receipt-time log. Takes just over

@@ -519,7 +519,7 @@ inline void race_timer_handle_command(RaceCommand command, const char *mouse_nam
 
     case RaceState::RUNNING:
       if (command == RaceCommand::GOAL) {
-        // NETWORK-TIMING-ISSUE.md #7 / recommendation 5 (tsf-ordering
+        // NETWORK-TIMING-LOG.md #7 / recommendation 5 (tsf-ordering
         // refinement): a GOAL whose tsf_us predates this attempt's own
         // START.tsf_us was physically triggered before this attempt even
         // began, so it must be a stale message from an already-superseded

@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 //  gate-liveness.h — Per-role (start/goal) WS connection-state tracking, for
-//  a UI liveness indicator (NETWORK-TIMING-ISSUE.md-adjacent: hesperus's own
+//  a UI liveness indicator (NETWORK-TIMING-LOG.md-adjacent: hesperus's own
 //  application-level HEARTBEAT event is deliberately never sent over the
 //  wire, see hesperus-timing-gate/src/main.cpp's uploadWorkerTask, so
 //  liveness here is keyed on WS connection lifecycle

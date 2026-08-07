@@ -70,7 +70,7 @@ pairing over 60,000 events) validate the architecture.
 ## Possible stress tests:
 
 **Status update, 2026-08-06**: the beacon-spam campaign in
-`NETWORK-TIMING-ISSUE.md` (spam-test sessions 2-15a) has since exercised
+`NETWORK-TIMING-LOG.md` (spam-test sessions 2-15a) has since exercised
 Layer 1 extensively — via deliberate beacon-frame flooding rather than the
 HTTP-GET-flood method sketched below, but the same airtime-saturation
 effect — and Layer 3 partially, via Bluetooth audio streaming co-tested
@@ -118,7 +118,7 @@ left as originally written for reference.
 Updated 2026-08-06: removed three rows that shipped since this table was
 written (mDNS server discovery, HTTP keep-alive/WebSocket, and a
 diagnostics HTTP server — see `docs/PROVISIONING.md`,
-`NETWORK-TIMING-ISSUE.md`, and `src/net/debug-http-server.h`/
+`NETWORK-TIMING-LOG.md`, and `src/net/debug-http-server.h`/
 `network-health-stats.h` respectively) and trimmed "server URL" from the
 NVS config store row for the same reason (cerberus's address is now
 resolved dynamically via mDNS, not a config-store override). The
@@ -130,7 +130,7 @@ cable attached.
 
 | Phase | Feature | Notes |
 |-------|---------|-------|
-| Near | Wi-Fi Modem Sleep | Extensively investigated, not just "unblocked" — see `NETWORK-TIMING-ISSUE.md`'s "Wi-Fi power-save vs. battery budget" issue (sessions 11-15a). `WIFI_PS_NONE` (`main.cpp:869`) stays the shipped default (decided 2026-08-04, ~110mA); `WIFI_PS_MIN_MODEM` saves ~35-40% power but has a real, still-unexplained stall/reliability regression under heavy congestion that got worse after one attempted mitigation. Still the highest-priority open item in that doc |
+| Near | Wi-Fi Modem Sleep | Extensively investigated, not just "unblocked" — see `NETWORK-TIMING-LOG.md`'s "Wi-Fi power-save vs. battery budget" issue (sessions 11-15a). `WIFI_PS_NONE` (`main.cpp:869`) stays the shipped default (decided 2026-08-04, ~110mA); `WIFI_PS_MIN_MODEM` saves ~35-40% power but has a real, still-unexplained stall/reliability regression under heavy congestion that got worse after one attempted mitigation. Still the highest-priority open item in that doc |
 | Near | NVS config store | gate_id override, debounce, DRIFT_MARGIN_US |
 | Near | Configurable debounce | Per-pin, loaded from NVS |
 | Medium | OTA firmware update | ArduinoOTA or ESP-IDF OTA; critical for field deployment |

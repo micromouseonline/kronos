@@ -4,7 +4,7 @@
 Sends the same gate_id/event/tsf_us/gate_us JSON schema the send-*.sh HTTP
 scripts in this directory use against /api/event, but over one held-open
 WebSocket connection instead of a fresh HTTP connection per event -- this is
-the actual behaviour NETWORK-TIMING-ISSUE.md's recommendation 1 introduces,
+the actual behaviour NETWORK-TIMING-LOG.md's recommendation 1 introduces,
 so unlike the HTTP scripts this tool deliberately reuses a single connection
 across every event in a run rather than reconnecting each time.
 
@@ -84,7 +84,7 @@ def main() -> int:
         type=int,
         default=None,
         help="override tsf_us instead of stamping 'now' -- e.g. to manually craft a stale GOAL "
-        "(a tsf_us before an already-sent START) for NETWORK-TIMING-ISSUE.md #7's misattribution "
+        "(a tsf_us before an already-sent START) for NETWORK-TIMING-LOG.md #7's misattribution "
         "test, without needing a real delayed message. Single-event mode only.",
     )
     args = parser.parse_args()

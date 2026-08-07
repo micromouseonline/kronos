@@ -3,6 +3,22 @@
 Date: 2026-07-30. Restructured 2026-07-31 — see "Restructuring note" at the
 bottom for what changed and why.
 
+**What this document is, 2026-08-07.** A chronological investigation log
+(lab notebook), not a live issue tracker — dated, session-by-session
+findings and decisions from bench-testing the gate/controller network
+stack. Entries are historical record: when a later session supersedes an
+earlier claim, the old text is struck through and annotated rather than
+silently rewritten, so the document stays an honest account of how
+understanding changed over time. Because of that, don't treat an
+`[OPEN]`/`[RESOLVED]`/`[Reassessed ...]` tag as necessarily *current*
+without checking its date against anything later in the same section —
+staleness here is a known failure mode, not a hypothetical one (several
+tags and cross-references in this doc have been found stale and corrected
+after the fact). For genuinely current open work, see `TODO.md`. New bugs
+or feature requests going forward are tracked as GitHub Issues, not added
+here — this document's job going forward is to stay a record of what was
+investigated and found, not a live status board.
+
 ## Context
 
 `hesperus-timing-gate` boards report race events (`ARM`, `START`, `GOAL`) to
@@ -1993,6 +2009,21 @@ wonders about the `[T=0]` lines.
 investigation in the new issue immediately below (this is the priority next
 step, unstarted); deciding whether the `ledQueue` overflow shares a cause
 with the ack-path finding or is separate.
+
+**Field-deployable overflow-drop notification shipped (folded in from
+TODO.md, originally noted there before this document's own reassessment).**
+This issue's own investigation repeatedly ran into `networkq_overflow_count`
+not being available for a given session (e.g. the very first 2026-08-02
+trial above, where only GOAL's serial output was kept). That gap is now
+closed for future sessions: overflow/drop/stall/disconnect counters are
+persistent across reboot (`hesperus-timing-gate/src/network-health-stats.h`)
+and exposed over the diagnostics HTTP server (`GET /status`,
+`src/net/debug-http-server.h`) — previously serial-debug-output-only, so a
+real deployment with no serial cable attached for hours had no way to check
+after the fact whether any of these adversarial-smoke-test-only failure
+modes had actually fired in the field. `main.cpp`'s own `uploadWorkerTask`
+comment (around line 561) still lists this as unaddressed; that comment is
+now stale and should be removed next time that function is touched.
 
 **Proposed experiment, 2026-08-07: isolating traffic-onset vs.
 connection-freshness as the trigger for severe stall clustering. Not yet

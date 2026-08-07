@@ -2,7 +2,7 @@
 //  network-health-stats.h — Persistent stall/drop/disconnect counters
 // ----------------------------------------------------------------------------
 //  Lifetime (survives reboot) counters for the failure modes characterized in
-//  NETWORK-TIMING-ISSUE.md's "wsClient.loop() blocking under congestion" and
+//  NETWORK-TIMING-LOG.md's "wsClient.loop() blocking under congestion" and
 //  "Wi-Fi power-save vs. battery budget" issues. A real deployment has no
 //  serial cable attached for hours to catch these live -- this is what lets
 //  an operator check after the fact (GET /status) whether any of the

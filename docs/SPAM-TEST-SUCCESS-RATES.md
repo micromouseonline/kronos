@@ -4,7 +4,7 @@ Date: 2026-08-06
 
 Computed directly from `test-data/spam-tests/*.log` (cerberus's own `<4,4>`
 RUNNING / `<4,5>` committed display-protocol markers — the same convention
-used elsewhere in `NETWORK-TIMING-ISSUE.md`), not copied from that doc's
+used elsewhere in `NETWORK-TIMING-LOG.md`), not copied from that doc's
 prose. See that document for full session narratives; this is a
 run-count/success-rate rollup by spammer condition only.
 
@@ -64,6 +64,6 @@ close to the busy category's.
   since retries only start once the 2nd spammer engages — there's no log
   marker distinguishing runs 1-15 from 16-30 directly.
 - Session 9's spammer count is stated ambiguously in
-  `NETWORK-TIMING-ISSUE.md` ("spammer(s)"); session 10's text implies
+  `NETWORK-TIMING-LOG.md` ("spammer(s)"); session 10's text implies
   session 9 was the lighter of the two, so it's bucketed here as busy, not
   adversarial.

@@ -93,7 +93,7 @@ inline void handle_debug_status(AsyncWebServerRequest *request) {
   doc["network_queue_depth"] = g_status_network_queue ? uxQueueMessagesWaiting(g_status_network_queue) : 0;
   doc["network_overflow_count"] = g_status_overflow_count ? *g_status_overflow_count : 0;
   // Lifetime (NVS-persisted, survives reboot) counters -- see
-  // network-health-stats.h and NETWORK-TIMING-ISSUE.md's "wsClient.loop()
+  // network-health-stats.h and NETWORK-TIMING-LOG.md's "wsClient.loop()
   // blocking under congestion" / "Wi-Fi power-save vs. battery budget"
   // issues. Lets a real deployment be checked after the fact for whether
   // the adversarial-smoke-test-only failure modes ever actually fired.

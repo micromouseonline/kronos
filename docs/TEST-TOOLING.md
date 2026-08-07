@@ -3,7 +3,7 @@
 An inventory of every test/bench tool in this workspace: what it is, what
 it tells you, and how to invoke it. Factual reference only — for the
 investigation these tools were built to support (network latency, event
-reliability, race-timing correctness), see `NETWORK-TIMING-ISSUE.md`, which
+reliability, race-timing correctness), see `NETWORK-TIMING-LOG.md`, which
 cross-references specific tools by name from within each issue's
 Confirmation/Verification sections.
 
@@ -49,7 +49,7 @@ doing nothing.
 | Trial name | Scenario | Key constants |
 |---|---|---|
 | `arm_pulse` | Single 100ms pulse on `TRG_ARM` — smoke test/baseline. | — |
-| `goal_pulse` | Single 100ms pulse on `TRG_GOAL` — smoke test/baseline, and the single-gate `GOAL`-only steady-state traffic for the proposed WS-jitter characterization test (`run goal_pulse 10000 250`, ~42 minutes; see the "Unexplained minor WS jitter" issue in `NETWORK-TIMING-ISSUE.md`). | — |
+| `goal_pulse` | Single 100ms pulse on `TRG_GOAL` — smoke test/baseline, and the single-gate `GOAL`-only steady-state traffic for the proposed WS-jitter characterization test (`run goal_pulse 10000 250`, ~42 minutes; see the "Unexplained minor WS jitter" issue in `NETWORK-TIMING-LOG.md`). | — |
 | `arm_then_start` | `TRG_ARM` then `TRG_START`, edges 200ms apart — one board serving both ARM and START gates, robot crossing both in quick succession. | `ARM_TO_START_GAP_MS` (200) |
 | `burst` | `BURST_COUNT` pulses on `TRG_GOAL`, `BURST_INTERVAL_MS` apart, each `BURST_PULSE_MS` wide — rapid-fire triggering, checks whether the send-side queue overflows/drops. Interval is chosen above the 50ms debounce but well under a ~250-270ms send cycle, so a queue backlog is expected. | `BURST_COUNT` (40), `BURST_INTERVAL_MS` (90ms), `BURST_PULSE_MS` (10ms) |
 | `double_trigger` | Two `TRG_GOAL` pulses on the same pin, `DOUBLE_TRIGGER_GAP_MS` apart — a robot with a gapped/slotted structure breaking one gate's beam twice for what should count as one crossing. | `DOUBLE_TRIGGER_GAP_MS` (150ms) |
@@ -145,7 +145,7 @@ Bench-run artifacts live at the workspace root, as paired files:
 and, for most, a companion `<same-name>-analysis.txt` (the literal stdout
 of `cerberus_log_stats.py` run against it). The `-ws` suffix marks a
 WebSocket-transport run, distinguishing it from the HTTP-default baseline
-of the same scenario — used throughout `NETWORK-TIMING-ISSUE.md` to compare
+of the same scenario — used throughout `NETWORK-TIMING-LOG.md` to compare
 before/after a transport change.
 
 ## Native unit tests
@@ -176,7 +176,7 @@ compiles and runs on the host, no board needed.
 ## Not yet built: congested-airtime stress testing
 
 Sketched in `hesperus-timing-gate/review.md`'s "Possible stress tests"
-section, referenced from `NETWORK-TIMING-ISSUE.md`'s outstanding-work list,
+section, referenced from `NETWORK-TIMING-LOG.md`'s outstanding-work list,
 but no script/tool exists for any of these yet — manual setup only:
 
 - **Airtime saturation** — several extra ESP32s (or laptops) running a

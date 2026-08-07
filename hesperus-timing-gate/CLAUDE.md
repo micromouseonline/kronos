@@ -33,7 +33,7 @@ src/
   pumped exclusively by a dedicated `wsPumpTask`, decoupled from
   `uploadWorkerTask`'s ack-wait/retry deadline logic via `ws_client_mutex`
   (guards every `wsClient` call) and `ws_ack_state_mutex` (guards the ack
-  flag/tsf pair) — see `NETWORK-TIMING-ISSUE.md`'s "`wsClient.loop()`
+  flag/tsf pair) — see `NETWORK-TIMING-LOG.md`'s "`wsClient.loop()`
   blocking under congestion" issue for why.
 - `feature_http` (`AsyncTCP`/`ESPAsyncWebServer`, `#if HAS_HTTP`) backs a
   small on-demand diagnostics server only (`src/net/debug-http-server.h`,

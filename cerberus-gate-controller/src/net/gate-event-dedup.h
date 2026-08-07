@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 //  gate-event-dedup.h — Small fixed-size de-duplication cache for gate events
-//  (NETWORK-TIMING-ISSUE.md recommendation 6), bundled alongside hesperus's
+//  (NETWORK-TIMING-LOG.md recommendation 6), bundled alongside hesperus's
 //  retry mechanism (recommendation 1's follow-on, status section item 1):
 //  once hesperus can resend an event after a lost ack, cerberus may see the
 //  same (gate_id, event, tsf_us) twice -- this recognises the repeat so it
@@ -10,7 +10,7 @@
 //  genuinely already has this event).
 //
 //  Keyed on (gate_id, event), not tsf_us alone -- tsf_us is a shared Wi-Fi
-//  TSF clock across every station on the same AP (NETWORK-TIMING-ISSUE.md
+//  TSF clock across every station on the same AP (NETWORK-TIMING-LOG.md
 //  #3), so two different boards' tsf_us values live in the same numeric
 //  space and could plausibly collide; gate_id+event avoids a false-positive
 //  cross-board match.

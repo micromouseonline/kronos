@@ -1,5 +1,5 @@
 """Extracts /api/event receipts from a cerberus debug log and reports
-one-way trigger-to-receipt latency (see NETWORK-TIMING-ISSUE.md).
+one-way trigger-to-receipt latency (see NETWORK-TIMING-LOG.md).
 
 Each cerberus log line looks like:
   #[224255534] [HTTP] POST /api/event from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":224254712237,"gate_us":584216857}
@@ -8,7 +8,7 @@ Each cerberus log line looks like:
 timeline (cerberus and hesperus are stations on the same AP), so
 `recv_ms*1000 - tsf_us` is directly comparable across boards without NTP or
 any other clock sync -- this is the same method used throughout
-NETWORK-TIMING-ISSUE.md.
+NETWORK-TIMING-LOG.md.
 
 Usage:
   python3 tools/cerberus_log_stats.py LOGFILE [--event GOAL] [--csv out.csv] [--gaps]

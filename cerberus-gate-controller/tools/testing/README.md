@@ -4,7 +4,7 @@ Manual curl test scripts for the `POST /api/event` endpoint (see
 `docs/SYSTEM-DESCRIPTION.md`'s HTTP Server section,
 implemented in `src/net/http-server.h` / `src/race/race-command-source.h`).
 See the bottom of this file for `ws_send_event.py`, the equivalent tool for
-the persistent WebSocket endpoint (`/ws`, NETWORK-TIMING-ISSUE.md
+the persistent WebSocket endpoint (`/ws`, NETWORK-TIMING-LOG.md
 recommendation 1).
 
 ## Endpoint
@@ -124,7 +124,7 @@ rather than stopping the batch.
 Same event schema as the scripts above, but sent over `/ws` (a persistent
 WebSocket connection) instead of `POST /api/event` (a fresh HTTP connection
 per event) -- the transport recommendation 1 in
-`NETWORK-TIMING-ISSUE.md` introduces. One connection is opened and reused for
+`NETWORK-TIMING-LOG.md` introduces. One connection is opened and reused for
 every event in a run, matching how a real gate board behaves post-recommendation-1
 (unlike the HTTP scripts, which necessarily open a new connection each time).
 

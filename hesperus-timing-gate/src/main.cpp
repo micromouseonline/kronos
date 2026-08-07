@@ -50,7 +50,7 @@ struct GateEvent {
   uint64_t processor_clock;  // Monotonic internal 64-bit microsecond uptime
 };
 
-/// ISR-to-task handoff for a trigger edge (NETWORK-TIMING-ISSUE.md "ISR
+/// ISR-to-task handoff for a trigger edge (NETWORK-TIMING-LOG.md "ISR
 /// calling esp_wifi_get_tsf_time()" issue) -- carries only what's safe to
 /// capture directly in an ISR (the event type and the ISR-safe
 /// esp_timer_get_time() processor clock). The real TSF read happens in
@@ -75,7 +75,7 @@ uint64_t cal_prev_proc = 0;
 const uint64_t DRIFT_MARGIN_US = 500;
 const uint64_t MIN_PLAUSIBLE_TSF = 300000000;
 
-// --- WS ACK/RETRY (NETWORK-TIMING-ISSUE.md status section item 1) ---
+// --- WS ACK/RETRY (NETWORK-TIMING-LOG.md status section item 1) ---
 // Blocking, single-in-flight retry: uploadWorkerTask waits for cerberus's
 // ack before dequeuing the next networkQueue event, matching the existing
 // one-worker/one-event-at-a-time architecture exactly (no pending-events
@@ -145,13 +145,13 @@ const uint64_t DEBOUNCE_US = 50000;
 IPAddress cerberus_ip;
 bool cerberus_ip_valid = false;
 
-// --- PERSISTENT CONNECTION TO CERBERUS (NETWORK-TIMING-ISSUE.md rec. 1) ---
+// --- PERSISTENT CONNECTION TO CERBERUS (NETWORK-TIMING-LOG.md rec. 1) ---
 // One connection opened per boot (see loop()'s g_ready edge-detection) and
 // held open across every subsequent event, replacing the old per-event
 // HTTPClient connect+POST+close cycle.
 //
 // .loop() is pumped exclusively by wsPumpTask (below) -- confirmed via
-// NETWORK-TIMING-ISSUE.md's "wsClient.loop() blocking under congestion"
+// NETWORK-TIMING-LOG.md's "wsClient.loop() blocking under congestion"
 // investigation that a single .loop() call can itself block for several
 // seconds (internal TCP reconnect under RF interference), which used to
 // silently blow past uploadWorkerTask's own 300ms/2000ms ack/retry bounds
@@ -204,7 +204,7 @@ bool g_ws_ack_received = false;
 uint64_t g_ws_ack_tsf_us = 0;  // last acked tsf_us, compared by value against the pending send
 // TSF-timeline (debug_timestamp_ms(), same clock cerberus's own [WS-ACK]
 // recv/dispatch/sent timestamps use) capture time of the ack above --
-// NETWORK-TIMING-ISSUE.md "acks not arriving back at hesperus in time"
+// NETWORK-TIMING-LOG.md "acks not arriving back at hesperus in time"
 // issue, added 2026-08-04 once cerberus-side instrumentation ruled out
 // AsyncTCP write-completion lag on cerberus's own end: this is the
 // matching receive-side timestamp needed to see where the remaining time
@@ -524,7 +524,7 @@ void wsPumpTask(void *pvParameters) {
   while (1) {
     xSemaphoreTake(ws_client_mutex, portMAX_DELAY);
     // Kept as a permanent low-cost canary (only logs above 50ms) rather than
-    // stripped once-fixed -- see NETWORK-TIMING-ISSUE.md's "wsClient.loop()
+    // stripped once-fixed -- see NETWORK-TIMING-LOG.md's "wsClient.loop()
     // blocking under congestion" issue for why this is worth watching for
     // long-term, not just during the original investigation.
     uint64_t loop_call_start = esp_timer_get_time();
@@ -622,7 +622,7 @@ void uploadWorkerTask(void *pvParameters) {
           }
         }
       } else if (current_ev.tsf_observed != 0 && !has_initial_baseline) {
-        // NETWORK-TIMING-ISSUE.md recommendation 9: trust the first TSF
+        // NETWORK-TIMING-LOG.md recommendation 9: trust the first TSF
         // reading as soon as the radio is actually associated, rather than
         // gating on the TSF value's absolute magnitude. esp_wifi_get_tsf_time()
         // tracks time since the AP's own TSF epoch, not since hesperus
@@ -862,7 +862,7 @@ void setup() {
   WiFi.persistent(false);
   WiFi.disconnect(true);
   WiFi.begin(connect_ssid, connect_pass);
-  // NETWORK-TIMING-ISSUE.md "Wi-Fi power-save vs. battery budget" --
+  // NETWORK-TIMING-LOG.md "Wi-Fi power-save vs. battery budget" --
   // testing WIFI_PS_MIN_MODEM (wakes every beacon interval, ~100ms
   // typically) 2026-08-04 against the WIFI_PS_NONE baseline (measured
   // ~110mA), now that persistent connections exist -- the original
@@ -969,7 +969,7 @@ void loop() {
           wsClient.enableHeartbeat(5000, 3000, 2);  // 5s ping, 3s pong timeout, disconnect after 2 misses
                                                     // (widened to 5000,3 2026-08-05, reverted same day --
                                                     // session 14 showed it makes the MIN_MODEM stall/disconnect
-                                                    // cascade dramatically worse, not better. NETWORK-TIMING-ISSUE.md)
+                                                    // cascade dramatically worse, not better. NETWORK-TIMING-LOG.md)
           wsClient.onEvent(wsClientEventHandler);   // receives cerberus's per-event ack
           xSemaphoreGive(ws_client_mutex);
           ws_was_ready = true;

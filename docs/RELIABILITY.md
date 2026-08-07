@@ -9,12 +9,12 @@
 > transaction-ID-based idempotent-retry scheme before any of this existed;
 > what actually shipped uses a different mechanism (below). Full
 > investigation, measurements, and bench-confirmation are in
-> `NETWORK-TIMING-ISSUE.md`'s "Reliable delivery over persistent WS
+> `NETWORK-TIMING-LOG.md`'s "Reliable delivery over persistent WS
 > connection" issue — this page is a summary, not the source of truth.
 
 Capturing sensor events with microsecond accuracy is only half the battle. The other half is guaranteeing 100% delivery of the event notification to the server in a wireless environment.
 
-Gates hold one persistent WebSocket connection open to the controller (see `NETWORK-TIMING-ISSUE.md`'s "Per-event connection latency & queueing" issue) rather than opening a fresh HTTP connection per event. That connection sits on top of TCP, so still benefits from TCP's own delivery guarantees, but retries now happen as repeated messages over the *same* held-open connection rather than fresh sockets.
+Gates hold one persistent WebSocket connection open to the controller (see `NETWORK-TIMING-LOG.md`'s "Per-event connection latency & queueing" issue) rather than opening a fresh HTTP connection per event. That connection sits on top of TCP, so still benefits from TCP's own delivery guarantees, but retries now happen as repeated messages over the *same* held-open connection rather than fresh sockets.
 
 ## 1. Idempotent Retries and De-duplication
 
@@ -45,7 +45,7 @@ sequenceDiagram
 
  - **Sensor-Side Guard**: hesperus's `uploadWorkerTask` waits for the ack after sending; if none arrives within a 300ms per-attempt timeout, it resends the exact same frozen payload over the *same* open connection (never re-derived, since recomputing it would mutate shared clock-drift-audit state as a side effect) — up to 5 attempts, bounded by a hard 2000ms overall deadline that applies even while disconnected. Unlike the original fresh-socket-per-retry proposal, there's no new connection to tear down and reopen; the retry is just another message on the same connection.
 
-Both the dedup table and the ack/retry loop are bench-confirmed on real hardware, including the specific "ack genuinely lost, sensor retries, retry recovers it" scenario via a temporary fault-injection test switch — see `NETWORK-TIMING-ISSUE.md` for the full log evidence.
+Both the dedup table and the ack/retry loop are bench-confirmed on real hardware, including the specific "ack genuinely lost, sensor retries, retry recovers it" scenario via a temporary fault-injection test switch — see `NETWORK-TIMING-LOG.md` for the full log evidence.
 
 
 ## 2. Congestion Avoidance
@@ -61,7 +61,7 @@ To prevent sensors from flooding the Access Point during network recovery, we ca
 
 ## 3. Low Latency Tuning — Already True By Default
 
-By default, the TCP protocol uses Nagle's Algorithm to bundle small outgoing payloads into larger network packets to save bandwidth. For real-time event reporting, this can introduce unacceptable delays — but analysis of the actual traffic pattern (see `NETWORK-TIMING-ISSUE.md`) found Nagle was never likely to bite here anyway: hesperus's ack/retry loop is stop-and-wait (never two un-acked writes in flight on the same socket) and events are naturally spaced seconds to minutes apart, not bursty.
+By default, the TCP protocol uses Nagle's Algorithm to bundle small outgoing payloads into larger network packets to save bandwidth. For real-time event reporting, this can introduce unacceptable delays — but analysis of the actual traffic pattern (see `NETWORK-TIMING-LOG.md`) found Nagle was never likely to bite here anyway: hesperus's ack/retry loop is stop-and-wait (never two un-acked writes in flight on the same socket) and events are naturally spaced seconds to minutes apart, not bursty.
 
 Moot either way — both ends already disable Nagle, as a side effect of the exact library versions this project pins, not app code:
 

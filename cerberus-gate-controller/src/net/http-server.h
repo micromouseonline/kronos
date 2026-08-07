@@ -50,7 +50,7 @@ inline void http_log_request(AsyncWebServerRequest *request, const String &body 
 // Pushes one SSE message per new result
 inline AsyncEventSource http_events("/events");
 
-// Persistent connection for gate boards (NETWORK-TIMING-ISSUE.md
+// Persistent connection for gate boards (NETWORK-TIMING-LOG.md
 // recommendation 1) -- replaces the per-event TCP connect+POST+close cycle
 // /api/event still serves. Rides the same AsyncWebServer instance/port, so
 // no separate mDNS service or wifi_on_connected hook is needed: http_server's
@@ -286,7 +286,7 @@ inline bool handle_gate_event_json(JsonObject &body, String &response_json, int 
     // A duplicate (gate_id, event, tsf_us) is most likely a retried event
     // whose original ack was lost, not a new event -- skip re-dispatching
     // into the race state machine, but still report success so the caller
-    // acks it (see NETWORK-TIMING-ISSUE.md recommendation 6).
+    // acks it (see NETWORK-TIMING-LOG.md recommendation 6).
     if (!gate_event_is_duplicate(evt.gate_id, evt.event, evt.tsf_us)) {
       system_event_post(cmd, evt.tsf_us, evt.gate_id);
     }
@@ -338,7 +338,7 @@ inline void http_handle_event(AsyncWebServerRequest *request, JsonVariant &json)
 inline AsyncCallbackJsonWebHandler api_event_handler("/api/event", http_handle_event);
 
 // AsyncWebSocket event handler for http_ws ("/ws") -- persistent-connection
-// counterpart to http_handle_event() above (see NETWORK-TIMING-ISSUE.md
+// counterpart to http_handle_event() above (see NETWORK-TIMING-LOG.md
 // recommendation 1). Acks a handled event back over the same client (see
 // the WS_EVT_DATA branch below) so hesperus's retry mechanism (that doc's
 // status section item 1) knows the event landed; combined with
@@ -362,7 +362,7 @@ inline void ws_event_handler(AsyncWebSocket *server, AsyncWebSocketClient *clien
     gate_liveness_mark_client_disconnected(client->id(), debug_timestamp_ms());
     debug_log_enqueue("[WS] client #%u error", client->id());
   } else if (type == WS_EVT_DATA) {
-    // Ack-path timing instrumentation (NETWORK-TIMING-ISSUE.md, "acks not
+    // Ack-path timing instrumentation (NETWORK-TIMING-LOG.md, "acks not
     // arriving back at hesperus in time" issue) -- captured unconditionally
     // (not gated on g_debug_verbose_enabled) so a beacon-spam stress run
     // doesn't need verbose mode on to get this data.
@@ -407,7 +407,7 @@ inline void ws_event_handler(AsyncWebSocket *server, AsyncWebSocketClient *clien
                            (const char *)(body["event"] | ""));
       } else {
         // Ack back over the same client so hesperus's retry mechanism
-        // (NETWORK-TIMING-ISSUE.md status section item 1) knows this event
+        // (NETWORK-TIMING-LOG.md status section item 1) knows this event
         // landed -- sent whether this was a fresh dispatch or a recognised
         // duplicate (handle_gate_event_json()'s dedup check), since either
         // way cerberus genuinely has this event now. Hand-built literal
@@ -415,7 +415,7 @@ inline void ws_event_handler(AsyncWebSocket *server, AsyncWebSocketClient *clien
         // the shared async_tcp task, doesn't need it.
         char ack[48];
         snprintf(ack, sizeof(ack), "{\"ack_tsf_us\":%llu}", (unsigned long long)tsf_us);
-        // Ack-path candidate-cause instrumentation (NETWORK-TIMING-ISSUE.md,
+        // Ack-path candidate-cause instrumentation (NETWORK-TIMING-LOG.md,
         // "acks not arriving back at hesperus in time" issue, candidate a):
         // read-only TCP-layer state on the underlying AsyncClient, captured
         // right before dispatch. canSend()==false ("ack is not pending")
