@@ -320,10 +320,16 @@ run to completion (no crash cutoff this time):
    (2026-08-07) is that clean run for `NONE`**: full 5000-run, ~5.97h
    two-spammer+BT trial, both interference sources confirmed continuous
    throughout. **The 5002ms signature is not rare under `NONE` either**
-   — 25 of 158 total stalls landed in the 4900-5100ms band across the
-   trial, spread throughout rather than clustered in one window (unlike
-   `MIN_MODEM`'s acute 2-minute/14-15s episodes in sessions 11/13). 34
-   WS disconnects total. Despite that, race outcome was 4940
+   — 25 of ~~158~~ **79** (see raw-log recount, 2026-08-07, in the issue
+   detail below — the 158 figure's source wasn't identified) total stalls
+   landed in the 4900-5100ms band across the trial, ~~spread throughout
+   rather than clustered in one window (unlike `MIN_MODEM`'s acute
+   2-minute/14-15s episodes in sessions 11/13)~~ **actually clustered: ~85%
+   of the large stalls fall inside one ~9.7-minute episode at the very
+   start of the trial, comparable in kind to `MIN_MODEM`'s acute episodes
+   just front-loaded rather than mid-run — see the corrected finding
+   below.** 34 WS disconnects total (confirmed correct). Despite that,
+   race outcome was 4940
    armed+started, 4911 committed (29 lost, 0.59%) — no crash, no reboot,
    no corrupted result, fully automatic recovery every time. **This is a
    clean pass of the smoke-test bar this trial was always held to**
@@ -349,7 +355,14 @@ run to completion (no crash cutoff this time):
    ~500ms of the 2000ms target, down from the original bug's 7.6s+
    untethered stalls. The two residual outliers are now tracked as item 1
    above, not here. Root RF-level cause (why the outages happen at all)
-   remains open too, folded into item 5 below.
+   remains open too, folded into item 5 below. **Proposed experiment,
+   2026-08-07 (not yet run)**: session 16's raw-log recount found the
+   severe stalls cluster into episodes rather than spreading evenly, with
+   the fastest-onset episodes landing suspiciously close to trial start —
+   but not in every session. A cheap two-trial pair (~75min total) is
+   designed to isolate whether traffic-onset or connection-freshness (both
+   normally coincide at trial start) is the actual trigger — see the
+   dedicated write-up at the end of the issue below.
 4. **[Duplicate triggers from gapped robot structure](#issue-duplicate-triggers-from-gapped-robot-structure)**
    — the proposed ~300ms post-trigger lock-out window is arbitrary and its
    failure mode (silently dropping a genuine second crossing, rather than
@@ -600,6 +613,14 @@ plausibly the difference between a few hours and most of a day of runtime.
 **~110mA average on a gate** — a real, non-hypothetical cost, now
 confirmed for this actual hardware rather than inferred from generic
 figures.
+
+**Revised, 2026-08-07** (more accurate monitoring): **113mA**, not 110mA
+— a small (~2.7%) upward correction to the baseline above. Every
+`MIN_MODEM`-vs-`NONE` percentage-reduction figure elsewhere in this issue
+(sessions 11/12: ~34%/~42% reduction, etc.) was computed against the
+original 110mA figure and hasn't been recalculated against 113mA — treat
+those percentages as slightly optimistic (by roughly this same ~2.7%)
+rather than re-deriving each one for a correction this small.
 
 **Resolution.** Not yet resolved. Decided direction: reintroduce a lighter
 modem-sleep mode now that persistent connections exist —
@@ -1026,17 +1047,48 @@ interference source — the first genuinely confound-free two-spammer+BT
   session 10 — the widened timeout is doing real work, not just avoiding
   drops in a short or partially-compromised window.
 - **The 5002ms `WEBSOCKETS_TCP_TIMEOUT` signature recurred 25 times** (of
-  158 total `wsClient.loop()` stalls >50ms), spread across the trial
+  ~~158~~ total `wsClient.loop()` stalls >50ms), ~~spread across the trial
   rather than clustered into the acute 2-minute-scale episodes `MIN_MODEM`
-  produced in sessions 11/13. 34 WS disconnects total, both boards
+  produced in sessions 11/13~~. 34 WS disconnects total, both boards
   combined. **This is the clean confirmation of session 15a's tentative
   finding**: the severe stall signature is a real, recurring `NONE`
-  property under sustained two-spammer load, not a rare one-off — and
-  `NONE` is meaningfully more exposed to it than session 15a's shorter,
-  partially-compromised trial suggested. Despite that, every stall and
-  disconnect recovered automatically with no operator intervention and no
-  corrupted result (16 stale-GOAL rejections, all handled correctly by the
-  existing guard — see that issue below).
+  property under sustained two-spammer load, not a rare one-off. Despite
+  that, every stall and disconnect recovered automatically with no
+  operator intervention and no corrupted result (16 stale-GOAL rejections,
+  all handled correctly by the existing guard — see that issue below).
+
+  **Correction, 2026-08-07 (raw-log recount against the actual
+  `[WS Pump] wsClient.loop() blocked` canary lines in
+  `hesperus-start-16.log`/`hesperus-goal-16.log`).** The "158 total
+  stalls" figure doesn't match the raw logs: actual count is **79** (45
+  start-board, 34 goal-board) — the source of the original 158 figure
+  wasn't identified, flagged rather than silently corrected without
+  explanation. More significantly, the distribution is clustered, not
+  spread: **49 of the 79 events (27 of them ≥4000ms) fall inside one
+  ~9.7-minute episode, T=244443571–245020561ms, starting ~9 seconds into
+  the log capture** — i.e. essentially the very start of the trial, not
+  mid-run. Within that episode, start- and goal-board large stalls
+  interleave almost metronomically (~2.6-2.9s apart — e.g. goal 5002ms,
+  start 5002ms, goal 5002ms, start 5002ms...), and consecutive same-board
+  stalls repeat at a near-exact **~5513ms** cadence for 6-7 cycles running
+  (5002ms block + ~500ms retry-loop overhead) — a fixed reconnect-retry
+  period, not random spacing. Cross-checked independently against
+  cerberus's own WS disconnect log (34 total, confirming that count is
+  correct): **19 of the 34 disconnects land inside the same opening
+  window.** Outside it: ~21 minutes of silence, then ~2.5h of only small
+  (<1.5s) isolated blips, then two much smaller flare-ups (2-3 events
+  each) at T≈258.47M and T≈263.32M–264.28M, separated by hours of near-
+  quiet. **Reading**: this episode is comparable in kind to `MIN_MODEM`'s
+  acute 2-minute-scale episodes (sessions 11/13) — just front-loaded at
+  the very start of the trial rather than occurring mid-run, and ~5x
+  longer. The tight cross-board interleaving during the episode points at
+  a shared external condition (both radios contending with the same bad
+  channel window simultaneously) rather than independent per-board
+  coincidences. Does not change the race-outcome, recovery-rate, or
+  smoke-test-pass conclusions elsewhere in this session's writeup (all
+  independently re-verified and still correct) — only the "evenly spread,
+  unlike `MIN_MODEM`" characterization, which is superseded by this
+  finding.
 - **Not done this session**: the session 9/10-style per-event round-trip
   trace (hesperus `[WS-ACK-RECV]` vs. cerberus `[WS-ACK] sent=`) that would
   show *why* each of the 8 genuine drops happened, the way sessions 9/10
@@ -1913,6 +1965,84 @@ wonders about the `[T=0]` lines.
 investigation in the new issue immediately below (this is the priority next
 step, unstarted); deciding whether the `ledQueue` overflow shares a cause
 with the ack-path finding or is separate.
+
+**Proposed experiment, 2026-08-07: isolating traffic-onset vs.
+connection-freshness as the trigger for severe stall clustering. Not yet
+run.**
+
+**Motivation.** The session 16 raw-log recount (above) found the severe
+(~5002ms `WEBSOCKETS_TCP_TIMEOUT`-signature) stalls cluster into distinct
+multi-minute episodes rather than spreading evenly through a trial. The
+fastest-onset episodes landed very close to trial start — session 16:
+~17s in; session 15a: ~5.2min in — but sessions 13 and 15 show the same
+nominal two-spammer+BT condition producing its first severe episode
+226min and 275min in respectively, not near the start at all. Trial start
+normally conflates two things that are usually simultaneous: the WS
+connection is at its freshest right when a trial's log begins, *and* the
+interference sources are typically switched on around the same time.
+Existing sessions can't distinguish which of those two (if either) is
+the actual trigger — this experiment decouples them.
+
+**Hypotheses (stated in advance, per this doc's own practice elsewhere of
+deciding before running to avoid post-hoc rationalization of a marginal
+result):**
+- **H1 — traffic-onset.** The trigger is interference stepping up to full
+  severity, regardless of connection age. Predicts: Trial A (old
+  connection, fresh interference) shows a severe episode soon after the
+  spammers switch on; Trial B (old interference, fresh connection) does
+  not.
+- **H2 — connection-freshness.** The trigger is the WS connection itself
+  being newly established, regardless of how long the interference has
+  already been present. Predicts: Trial B shows a severe episode soon
+  after the cerberus-forced reconnect; Trial A does not.
+- **H3 — general transition-sensitivity.** Either kind of abrupt change
+  (interference step *or* connection reset) elevates risk for a following
+  window — a broader, less specific version of H1/H2. Predicts: both A
+  and B show a severe episode near their own change point.
+- **H0 — null.** Severe-episode timing is unrelated to either transition
+  and is better modelled as a rare, roughly memoryless tail event
+  (consistent with the "rare probabilistic coincidence" framing already
+  used for the `MIN_MODEM` mechanism in the power-save issue above) — the
+  early clustering seen in sessions 15a/16 was coincidental. Predicts:
+  neither A nor B reliably shows a severe episode tied to its change
+  point.
+
+**Protocol.**
+- **Trial A — 45min total, one continuous log.** Minutes 0-15: quiet
+  baseline, no spammers, `WIFI_PS_NONE`. At minute 15: switch on both
+  spammers and BT streaming together (matching the two-spammer+BT
+  smoke-test condition used in sessions 13/15/15a/16). Minutes 15-45 (30
+  min post-change): interference running, both boards' WS connections
+  untouched — already ~15min old and idle-quiet at the moment of the step
+  change.
+- **Trial B — 15min unlogged pre-conditioning + 30min logged trial.**
+  Switch on both spammers and BT first, leave running 15 minutes with
+  both hesperus boards connected normally throughout (nothing captured as
+  "the run" yet — interference reaching steady state before anything is
+  measured). At minute 15: restart cerberus — forces both hesperus
+  boards' WS connections to drop and re-establish fresh simultaneously
+  (the bench-verified reconnect-after-cerberus-reboot path, `main.cpp`
+  `loop()`'s watchdog/edge-trigger logic around lines 918-993 — see this
+  turn's earlier discussion on why a cerberus restart was chosen over
+  power-cycling the CDC-serial-connected gate boards). From that point,
+  run the logged 30-minute trial with interference already steady-state
+  for 15 minutes.
+
+**Operational criterion for "clustering near the change."** One or more
+`wsClient.loop()` blocks ≥4000ms (the canary threshold already logged
+permanently by `wsPumpTask`) within 10 minutes of the relevant change
+point (spammer-on for Trial A, cerberus-restart-triggered reconnect for
+Trial B) — chosen to bound the fastest-onset episodes seen so far
+(session 16: 17s; session 15a: 5.2min) with margin.
+
+**Explicit caveat.** n=1 per condition, against a phenomenon that has
+occurred only 1-3 distinct episodes per multi-hour trial historically —
+this is a cheap first discriminating pass (~75min total bench time), not
+a conclusive test. A result matching H1 or H2 is suggestive and would
+need a confirming repeat before being treated as settled; a null result
+on both trials doesn't rule the mechanism out either — it's equally
+consistent with simply not having caught a rare event in the available
+exposure window.
 
 ### Issue: acks not arriving back at hesperus in time despite cerberus receiving the event
 
