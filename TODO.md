@@ -35,13 +35,15 @@ unchanged (it was never contingent on `NONE`'s own result).
 
 1. **Duplicate-trigger lock-out window design** — [issue](NETWORK-TIMING-ISSUE.md#issue-duplicate-triggers-from-gapped-robot-structure).
    Standalone design question, no dependencies — the top open item now.
-2. **`BUTTON_COMMAND_MAP` review — reviewed, one action item, deferred to a
-   future session** ([race-command-source.h:37](cerberus-gate-controller/src/race/race-command-source.h#L37)):
-   a short TOUCH press in race mode should send `<91,1>` to RATS (new
-   message type — nearest analog is `MSG_EXTRA_RUN=92`'s shape), replacing
-   its current bare-`NEW_MOUSE` mapping that `race-timer.h` deliberately
-   no-ops. TOUCH's long-press ("return to menu") is already correct,
-   no change needed there. Not implemented yet.
+2. **`BUTTON_COMMAND_MAP` review — reviewed, one action item, implemented
+   2026-08-07** ([race-command-source.h:37](cerberus-gate-controller/src/race/race-command-source.h#L37)):
+   a short TOUCH press on the main race screen now sends `<91,1>` to RATS
+   (`MSG_TOUCH_SHORT_PRESS`, [net/messages.h](cerberus-gate-controller/src/net/messages.h))
+   directly from `main.cpp`'s `input_event_handler`, instead of its old
+   bare-`NEW_MOUSE` mapping that `race-timer.h` deliberately no-op'd
+   everywhere — `BUTTON_COMMAND_MAP`'s `BTN_TOUCH` row now maps to `NONE`.
+   TOUCH's long-press ("return to menu") was already correct, unchanged.
+   Built clean on all 4 cerberus board envs; hardware-verified 2026-08-07.
    (`send_run_time()`'s double-send, formerly listed alongside this, is
    explained — a RATS-side belt-and-braces requirement, not a bug here —
    and the code comment updated to say so, 2026-08-07.)
@@ -139,11 +141,12 @@ NeoKey gesture, not an on-screen button.
 Smaller items tracked only in-code, not in that doc:
 
 - `BUTTON_COMMAND_MAP` reviewed against the state machine, 2026-08-07 —
-  one action item, deferred to a future session: a short TOUCH press in
-  race mode should send `<91,1>` to RATS (new message type, nearest analog
-  `MSG_EXTRA_RUN=92`), replacing its current bare-`NEW_MOUSE` mapping
-  that's deliberately a no-op today. Long-press ("return to menu") is
-  already correct. Not implemented yet. — `src/race/race-command-source.h:37`
+  one action item, implemented same day: a short TOUCH press on the main
+  race screen now sends `<91,1>` to RATS (`MSG_TOUCH_SHORT_PRESS`,
+  `src/net/messages.h`) directly, replacing its old bare-`NEW_MOUSE`
+  mapping that was deliberately a no-op. Long-press ("return to menu") is
+  unchanged. — `src/race/race-command-source.h:37`, `src/main.cpp`'s
+  `input_event_handler`
 
 (`send_run_time()`'s double-send, formerly listed here, is explained —
 RATS-side belt-and-braces, not a cerberus bug — comment updated

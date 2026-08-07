@@ -24,6 +24,16 @@ enum MessageType : int {
   MSG_C1_RUN_TIME = 13,
   MSG_COURSE_TIME_MS = 30,
 
+  // Outbound (Arduino to PC): a short TOUCH ("T") press while the main race
+  // screen is showing. BUTTON_COMMAND_MAP (race-command-source.h) no longer
+  // feeds this into the RaceCommand pipeline at all -- RaceCommand::NEW_MOUSE,
+  // its former mapping, deliberately no-ops in every RaceState (race-timer.h)
+  // -- so this is purely a host-facing notification, the same "bypass the
+  // state machine, just tell RATS" pattern serial_send_run_time() and
+  // EXTRA_RUN already use. Value always 1, mirroring MSG_EXTRA_RUN's shape
+  // just below (not otherwise related to it).
+  MSG_TOUCH_SHORT_PRESS = 91,
+
   // Inbound (PC to Arduino), from preferredMessageSequencesV2.pdf Annex A.
   MSG_EXTRA_RUN = 92,      // decrement current run count by 1 (value always 1)
   MSG_ENTRY_TIME_S = 93,   // seconds allowed for this entry, sent after NewMouse

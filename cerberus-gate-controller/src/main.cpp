@@ -25,6 +25,7 @@
 
 #include "net/http-server.h"
 #include "net/mdns.h"
+#include "net/messages.h"
 #include "net/serial-protocol.h"
 #include "net/wifi-credentials.h"
 #include "net/wifi-manager.h"
@@ -138,6 +139,14 @@ void input_event_handler(const InputEvent &evt) {
   if (evt.id == BTN_TOUCH && evt.type == InputEventType::HELD) {
     trigger_touch_lockout();
     loadScreen(SCREEN_ID_MENU);
+  }
+  // TOUCH short press, main race screen only -- a host-facing notification
+  // to RATS, not a RaceCommand (BUTTON_COMMAND_MAP maps this press to NONE;
+  // see its comment in race-command-source.h for why). Gated on the main
+  // screen the same way BTN_START's calibration-wizard re-entry below is
+  // gated on the menu screen, so this can't fire from the menu.
+  if (evt.id == BTN_TOUCH && evt.type == InputEventType::PRESSED && lv_scr_act() == objects.main) {
+    serial_send_message(MSG_TOUCH_SHORT_PRESS, 1);
   }
 #if HAS_TOUCH_INPUT && TOUCH_NEEDS_CALIBRATION
   // START held, main menu only -- manual re-entry into the touch

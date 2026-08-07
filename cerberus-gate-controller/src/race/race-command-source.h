@@ -35,21 +35,22 @@ struct ButtonCommandMap {
 // LVGL-native long-press (action_on_timer_touch_long, eez-actions.cpp)
 // that never reaches this table at all.
 //
-// Reviewed against the state machine, 2026-08-07 -- one action item, for a
-// future session: TOUCH's short press currently maps to a bare NEW_MOUSE,
-// which race-timer.h deliberately no-ops everywhere (see its own comment
-// at the RaceState::WAITING/etc. handlers). Planned instead: while in race
-// mode, a short TOUCH press should send `<91,1>` to RATS (new message
-// type -- nearest existing analog is MSG_EXTRA_RUN=92's "code + value
-// always 1" shape, see net/messages.h) rather than feed the RaceCommand
-// pipeline at all, the same way send_run_time()/ExtraRun already bypass it
-// for host-facing notifications. TOUCH's hold ("return to menu") is
-// already correct as-is, no change needed there.
+// Reviewed against the state machine, 2026-08-07 -- one action item,
+// implemented same day: TOUCH's short press used to map to a bare
+// NEW_MOUSE, which race-timer.h deliberately no-ops everywhere (see its
+// own comment at the RaceState::WAITING/etc. handlers) -- so it now maps
+// to NONE instead (feeds nothing into the RaceCommand pipeline). The
+// actual new behaviour lives outside this table, in main.cpp's
+// input_event_handler: while the main race screen is showing, a short
+// TOUCH press sends `<91,1>` to RATS (MSG_TOUCH_SHORT_PRESS, net/messages.h)
+// directly, the same way send_run_time()/ExtraRun already bypass this table
+// for host-facing notifications that aren't really race commands. TOUCH's
+// hold ("return to menu") is unchanged, already handled the same way.
 constexpr ButtonCommandMap BUTTON_COMMAND_MAP[NUM_BUTTONS] = {
     /* BTN_ARM   */ {RaceCommand::ARM, RaceCommand::RESTART},
     /* BTN_START */ {RaceCommand::START, RaceCommand::NONE},
     /* BTN_GOAL  */ {RaceCommand::GOAL, RaceCommand::NONE},
-    /* BTN_TOUCH */ {RaceCommand::NEW_MOUSE, RaceCommand::NONE},
+    /* BTN_TOUCH */ {RaceCommand::NONE, RaceCommand::NONE},
 };
 
 inline RaceCommand race_command_from_button(ButtonID id, InputEventType type = InputEventType::PRESSED) {
