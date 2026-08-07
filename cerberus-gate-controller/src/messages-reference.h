@@ -109,7 +109,10 @@ inline void send_message(int type, unsigned long value, const __FlashStringHelpe
 }
 
 void send_run_time(unsigned long time) {
-  // TODO Why do we need to send the time twice?
+  // Sent twice deliberately -- a RATS-side requirement (belt-and-braces
+  // against a dropped message on their end), not a bug here. Probably not
+  // strictly necessary, but harmless, so left as-is rather than second-
+  // guessing the host system's own author.
   send_message(MSG_C1RunTime, time, F(" RUN TIME"));
   delay(20);
   send_message(MSG_C1RunTime, time, F(" RUN TIME"));

@@ -12,50 +12,60 @@ per-project pieces, not new per-project features.
 
 ## Priorities, in order
 
-Condensed cross-workspace list, reviewed 2026-08-06. Full detail/rationale
+Condensed cross-workspace list, reviewed 2026-08-07. Full detail/rationale
 for each is in the sections below — this is the fast-scan version.
 
-1. **A genuinely clean two-spammer+BT trial under `WIFI_PS_NONE`**
-   ([NETWORK-TIMING-ISSUE.md](NETWORK-TIMING-ISSUE.md)) — the
-   highest-leverage single action available right now. One clean run of
-   this trial is expected to settle #2 and #3 below as a side effect, not
-   just itself — no need to treat them as three separate pieces of work.
-   Sessions 15 and 15a were both compromised by unrelated equipment issues
-   (a spammer dropping out, BT found off partway through); re-run with the
-   setup double-checked before starting.
-2. **Wi-Fi power-save vs. battery budget** — [issue](NETWORK-TIMING-ISSUE.md#issue-wi-fi-power-save-vs-battery-budget).
-   `NONE` stays shipped default for now; waiting on #1 to know whether
-   it's genuinely safe from the `MIN_MODEM`-associated stall mechanism or
-   just less exposed to it.
-3. **Ack-path timeout fix confirmation** — [issue](NETWORK-TIMING-ISSUE.md#issue-acks-not-arriving-back-at-hesperus-in-time-despite-cerberus-receiving-the-event).
-   Tuning already applied and build-verified (`WS_ACK_TIMEOUT_MS`
-   300→500ms); just needs #1's clean trial to confirm the retry-rate drop
-   under `NONE`.
-4. **Duplicate-trigger lock-out window design** — [issue](NETWORK-TIMING-ISSUE.md#issue-duplicate-triggers-from-gapped-robot-structure).
-   Standalone design question, doesn't depend on #1-3 — pick up whenever.
-5. **Two small cerberus in-code items**, cheap and independent:
-   [`BUTTON_COMMAND_MAP` review](cerberus-gate-controller/src/race/race-command-source.h#L37),
-   [`send_run_time()` sent twice for unclear reasons](cerberus-gate-controller/src/messages-reference.h#L111-L115).
-6. **ARES reset-glitch investigation** (see
+**#1-3 settled, 2026-08-07.** Session 16 was the genuinely clean
+two-spammer+BT trial under `WIFI_PS_NONE` these were all waiting on
+(5000 runs, ~5.97h, both spammers and BT confirmed continuous throughout
+— see [NETWORK-TIMING-ISSUE.md](NETWORK-TIMING-ISSUE.md#issue-wi-fi-power-save-vs-battery-budget)).
+Results: 4940 armed+started, 4911 committed (0.59% lost); of 923 events
+needing a retry, only 8 exhausted all attempts (99.1% recovered); the
+5002ms `WEBSOCKETS_TCP_TIMEOUT` stall signature recurred 25 times but
+every stall/disconnect recovered automatically with zero crashes and zero
+corrupted results. Net effect: the ack-path fix
+([issue](NETWORK-TIMING-ISSUE.md#issue-acks-not-arriving-back-at-hesperus-in-time-despite-cerberus-receiving-the-event))
+is confirmed under real sustained load, and `NONE`
+([issue](NETWORK-TIMING-ISSUE.md#issue-wi-fi-power-save-vs-battery-budget))
+is confirmed to pass the two-spammer+BT smoke-test bar (graceful
+degradation + full auto-recovery, not zero-loss) — while also confirming
+`NONE` isn't immune to the severe stall signature either, just apparently
+less exposed than `MIN_MODEM`. The `MIN_MODEM`-stays-unadopted decision is
+unchanged (it was never contingent on `NONE`'s own result).
+
+1. **Duplicate-trigger lock-out window design** — [issue](NETWORK-TIMING-ISSUE.md#issue-duplicate-triggers-from-gapped-robot-structure).
+   Standalone design question, no dependencies — the top open item now.
+2. **`BUTTON_COMMAND_MAP` review — reviewed, one action item, deferred to a
+   future session** ([race-command-source.h:37](cerberus-gate-controller/src/race/race-command-source.h#L37)):
+   a short TOUCH press in race mode should send `<91,1>` to RATS (new
+   message type — nearest analog is `MSG_EXTRA_RUN=92`'s shape), replacing
+   its current bare-`NEW_MOUSE` mapping that `race-timer.h` deliberately
+   no-ops. TOUCH's long-press ("return to menu") is already correct,
+   no change needed there. Not implemented yet.
+   (`send_run_time()`'s double-send, formerly listed alongside this, is
+   explained — a RATS-side belt-and-braces requirement, not a bug here —
+   and the code comment updated to say so, 2026-08-07.)
+3. **ARES reset-glitch investigation** (see
    [ares-pulse-generator](#ares-pulse-generator) below) — both gates fire
    when ARES resets while wired directly to a pair of hesperus boards.
    Isolated, doesn't block running test trials.
 
 Deprioritized, not pursued right now (see the relevant sections below for
 why): GOAL-board retry asymmetry under heavy stress (deferred to
-production-board testing), congested-airtime stress testing (judged
-sufficient 2026-08-04), hedged burst sends for tail latency (watching
-telemetry only), and all net-new feature work — cerberus's supervisor
-state machine / SD-card logging / HTTP log streaming / `race_runs[]`
-concurrency guard, hesperus's NVS config store / OTA / SSD1306 display /
-stack telemetry / NVS event buffering / multi-AP BSSID fallback / standalone
-scoring, and ARGUS (not started at all).
+production-board testing — session 16 saw the same asymmetry again at a
+smaller 2.5x ratio vs. session 13's 4.6x, doesn't change the deferred
+status), congested-airtime stress testing (judged sufficient 2026-08-04),
+hedged burst sends for tail latency (watching telemetry only), and all
+net-new feature work — cerberus's supervisor state machine / SD-card
+logging / HTTP log streaming / `race_runs[]` concurrency guard,
+hesperus's NVS config store / OTA / SSD1306 display / stack telemetry /
+NVS event buffering / multi-AP BSSID fallback / standalone scoring, and
+ARGUS (not started at all).
 
-**After a few of these land: a thorough documentation review.**
-`NETWORK-TIMING-ISSUE.md` and this file have both grown complex and hard
-to follow — a long story told poorly, accumulated session by session.
-Deliberately deferred until after the trial above lands, so the rewrite
-happens once against settled results instead of mid-investigation.
+**Now due: a thorough documentation review.** With #1-3 settled, this is
+the next thing — `NETWORK-TIMING-ISSUE.md` and this file have both grown
+complex and hard to follow, a long story told poorly, accumulated session
+by session. Not started yet.
 
 ---
 
@@ -63,35 +73,29 @@ happens once against settled results instead of mid-investigation.
 
 Primary tracker: **`NETWORK-TIMING-ISSUE.md`** (root) — its "Outstanding
 work, prioritized" section is the ranked list, kept up to date there rather
-than mirrored here. As of 2026-08-06, in priority order:
+than mirrored here. As of 2026-08-07, in priority order:
 
-1. Wi-Fi power-save vs. battery budget — still open. `NONE` stays the
-   shipped default (decided 2026-08-04); `MIN_MODEM`'s stall/reliability
-   regression is real but unexplained (sessions 11/13, worse after a
-   reverted mitigation attempt in session 14). Sessions 15/15a
-   (2026-08-06) found the same severe stall signature also occurs under
-   `NONE`, just less often — so it's not `MIN_MODEM`-exclusive after all —
-   but both `NONE` confirmation trials were confound-compromised; a clean
-   run still hasn't happened.
-2. Ack-path timeout mismatch — tuning applied 2026-08-04
-   (`WS_ACK_TIMEOUT_MS` 300→500ms), build-verified, but still not
-   confirmed by a genuinely clean trial: two attempted two-spammer+BT
-   `NONE` re-runs (sessions 15, 15a) were each compromised by an
-   unrelated equipment issue.
-3. Duplicate triggers from gapped robot structure — lock-out window design unresolved
-4. GOAL board retries far more than ARM/START under heavy stress (session
-   13: 18.3% vs. 4.0%) — cause (physical position vs. role) not yet
+1. Duplicate triggers from gapped robot structure — lock-out window design unresolved
+2. GOAL board retries far more than ARM/START under heavy stress (session
+   13: 18.3% vs. 4.0%; session 16: 10.3% vs. 4.2%, same asymmetry at a
+   smaller ratio) — cause (physical position vs. role) not yet
    distinguished; the planned start/goal swap is deferred to
    production-board testing
-5. Congested-airtime stress testing — judged sufficient 2026-08-04 and
+3. Congested-airtime stress testing — judged sufficient 2026-08-04 and
    deprioritized (not formally closed); bulk-throughput contention and
    broadband noise remain genuinely untested, not pursued without a
    concrete reason to
-6. Hedged burst sends for tail latency — deprioritized, watch retry telemetry first
+4. Hedged burst sends for tail latency — deprioritized, watch retry telemetry first
 
 Resolved/closed since the last pass: the `wsClient.loop()`-blocking
-congestion bug (hardware-verified 2026-08-03) and the unexplained WS
-jitter/reconnect blip (characterized as benign, closed 2026-08-04).
+congestion bug (hardware-verified 2026-08-03), the unexplained WS
+jitter/reconnect blip (characterized as benign, closed 2026-08-04), the
+ack-path timeout mismatch (confirmed under real sustained load by session
+16's clean trial, 2026-08-07), and Wi-Fi power-save vs. battery budget's
+own open sub-question — whether `NONE` cleanly passes the two-spammer+BT
+smoke test — which session 16 also settled (it does; `MIN_MODEM` still
+doesn't get adopted, that decision was separate). See the "Priorities, in
+order" section at the top of this file for the full summary.
 
 Other cross-project items not tracked in that file:
 
@@ -101,12 +105,8 @@ Other cross-project items not tracked in that file:
 
 ### Testing gaps
 
-- A genuinely confound-free two-spammer+BT trial under `WIFI_PS_NONE` —
-  sessions 15 and 15a (2026-08-06) both compromised by unrelated equipment
-  issues; this is what items 1 and 2 above are both waiting on
-  (`NETWORK-TIMING-ISSUE.md`)
 - Congested-airtime stress harness — airtime saturation has extensive
-  coverage (spam-test sessions 2-15a); bulk throughput contention and
+  coverage (spam-test sessions 2-16); bulk throughput contention and
   broadband noise layers are untested and deprioritized, not tooled
   (`docs/TEST-TOOLING.md`)
 - Duplicate-trigger lock-out re-test (`trial_double_trigger`) — blocked until the lock-out feature above is built
@@ -114,7 +114,10 @@ Other cross-project items not tracked in that file:
 Closed: the 10,000-message WS jitter test and the power-save
 current-draw/latency measurement were both completed (the latter via
 sessions 11-15a's spam-test trials rather than the originally-proposed
-dedicated bench method) — see `NETWORK-TIMING-ISSUE.md` for results.
+dedicated bench method); the genuinely confound-free two-spammer+BT
+`WIFI_PS_NONE` trial (sessions 15/15a were both compromised by unrelated
+equipment issues) was finally delivered by session 16, 2026-08-07 — see
+`NETWORK-TIMING-ISSUE.md` for results.
 
 ---
 
@@ -135,8 +138,16 @@ NeoKey gesture, not an on-screen button.
 
 Smaller items tracked only in-code, not in that doc:
 
-- `BUTTON_COMMAND_MAP` flagged as needing review against the state machine — `src/race/race-command-source.h:37`
-- Legacy serial sends `send_run_time()` twice for unclear reasons — `src/messages-reference.h:111-115`
+- `BUTTON_COMMAND_MAP` reviewed against the state machine, 2026-08-07 —
+  one action item, deferred to a future session: a short TOUCH press in
+  race mode should send `<91,1>` to RATS (new message type, nearest analog
+  `MSG_EXTRA_RUN=92`), replacing its current bare-`NEW_MOUSE` mapping
+  that's deliberately a no-op today. Long-press ("return to menu") is
+  already correct. Not implemented yet. — `src/race/race-command-source.h:37`
+
+(`send_run_time()`'s double-send, formerly listed here, is explained —
+RATS-side belt-and-braces, not a cerberus bug — comment updated
+2026-08-07, `src/messages-reference.h:111-116`.)
 
 ## hesperus-timing-gate
 

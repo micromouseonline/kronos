@@ -261,8 +261,18 @@ run to completion (no crash cutoff this time):
    under session 13's `MIN_MODEM` baseline (4.0%/18.3%) over a comparable
    exposure. Two compromised trials in a row is enough supportive signal
    to lower this item's urgency, but a genuinely clean confound-free run
-   still hasn't happened. Full detail, including the per-event round-trip
-   breakdown, in the issue below.
+   still hasn't happened. **Session 16 (2026-08-07) is that clean run**:
+   full 5000-run, ~5.97h two-spammer+BT trial under `NONE`, both spammers
+   and BT confirmed continuous throughout, no equipment confound. Retry
+   rates 4.15%/10.32% (ARM/START vs. GOAL) — of the 923 events that needed
+   at least one retry, only 8 exhausted all retries (99.1% recovered).
+   **Confirms the fix**: the widened timeout is doing real work under
+   sustained real adversarial load, not just the shorter/compromised
+   trials this item was leaning on before. Full per-event round-trip
+   tracing (the session 9/10-style breakdown showing *why* each retry
+   happened) wasn't repeated for this session — the aggregate recovery
+   rate is the evidence here, not a re-derivation of the mechanism, which
+   sessions 9/10 already established. Full detail in the issue below.
 2. **[Wi-Fi power-save vs. battery budget](#issue-wi-fi-power-save-vs-battery-budget)**
    — Measure current draw across `WIFI_PS_NONE`/`MIN_MODEM`/`MAX_MODEM`
    with persistent connections in place. Real, measured 110mA cost today;
@@ -306,7 +316,25 @@ run to completion (no crash cutoff this time):
    less frequent/severe under it (one occurrence in ~3.6h vs. repeated
    occurrences per `MIN_MODEM` trial) rather than absent. Both `NONE`
    trials to date have been confound-compromised; a genuinely clean run
-   under either power mode still hasn't happened.
+   under either power mode still hasn't happened. **Session 16
+   (2026-08-07) is that clean run for `NONE`**: full 5000-run, ~5.97h
+   two-spammer+BT trial, both interference sources confirmed continuous
+   throughout. **The 5002ms signature is not rare under `NONE` either**
+   — 25 of 158 total stalls landed in the 4900-5100ms band across the
+   trial, spread throughout rather than clustered in one window (unlike
+   `MIN_MODEM`'s acute 2-minute/14-15s episodes in sessions 11/13). 34
+   WS disconnects total. Despite that, race outcome was 4940
+   armed+started, 4911 committed (29 lost, 0.59%) — no crash, no reboot,
+   no corrupted result, fully automatic recovery every time. **This is a
+   clean pass of the smoke-test bar this trial was always held to**
+   ("degrades gracefully and recovers automatically" — not zero-loss,
+   see the acceptance-criteria section above) — the first genuinely
+   confound-free confirmation that `NONE` survives the harshest tested
+   condition without manual intervention. Does not overturn the
+   `MIN_MODEM`-stays-unadopted decision (that was never contingent on
+   `NONE`'s own smoke-test result) — it closes out the parallel question
+   of whether `NONE` itself has ever been cleanly verified under this
+   condition. It hadn't been; now it has.
 3. **[`wsClient.loop()` blocking under congestion](#issue-wsclientloop-blocking-under-congestion-defeats-the-ackretry-deadline-bound)**
    — confirmed via instrumentation + cross-board log correlation: beacon
    spam causes real TCP-level WS disconnects (up to ~18s outages seen) on
@@ -964,6 +992,65 @@ answering a slightly different question than intended.
   (4.0%/18.3%) over a comparable (if shorter, ~3.6h) exposure — reasonably
   supportive the fix is working, still not the fully clean, confound-free
   confirmation this item has been waiting on since session 10.
+
+**Session 16 results (2026-08-07)** (`test-data/spam-tests/{cerberus-16,
+hesperus-start-16,hesperus-goal-16}.log`) — the clean re-run sessions 15
+and 15a couldn't deliver: `WIFI_PS_NONE`, two spammers + BT, 5000 runs,
+~5.97h (T=244434923→265930842ms). Both spammers and the BT stream
+confirmed continuous throughout, no dropout or equipment issue on any
+interference source — the first genuinely confound-free two-spammer+BT
+`NONE` trial to date.
+
+- **Race outcome: 4940 armed+started, 4911 committed — 29 lost (0.59%).**
+  Higher than session 13's `MIN_MODEM` loss rate (17/15,000 physical
+  triggers, ~0.11%) by count, though on a smaller physical-trigger base
+  here (~14,868) the two aren't a strictly like-for-like comparison. No
+  crash, no reboot, on either board, across the full trial.
+- **Retry rates, whole trial: ARM/START 4.15% (411/9906), GOAL 10.32%
+  (512/4962).** ARM/START sits almost exactly on session 13's `MIN_MODEM`
+  figure (4.0%) — consistent with the standing read that this side of the
+  congestion hit is power-save-independent. GOAL is meaningfully lower
+  than session 13's 18.3% but higher than session 15a's (compromised,
+  shorter) 9.47%.
+- **Sustained, not localized.** Time-binned into sixths: ARM/START retry
+  ran 9.0% / 2.8% / 2.2% / 2.5% / 3.1% / 5.6%; GOAL ran 16.4% / 7.8% /
+  8.5% / 7.1% / 8.2% / 14.1%. Elevated at both ends, real throughout the
+  middle — genuine sustained stress across the whole ~6h trial, not one
+  isolated episode (session 15's pattern) or a front-loaded confound
+  (session 7's). Mean RSSI -65.4dBm (range -82 to -55), in line with prior
+  sessions — not a signal-strength confound either.
+- **Recovery rate is the strongest evidence for the ack-path fix**: of the
+  923 distinct events that needed at least one retry, only 8 exhausted all
+  retry attempts and were genuinely dropped (99.1% recovered). This is the
+  clean, sustained-load confirmation item 1 has been waiting on since
+  session 10 — the widened timeout is doing real work, not just avoiding
+  drops in a short or partially-compromised window.
+- **The 5002ms `WEBSOCKETS_TCP_TIMEOUT` signature recurred 25 times** (of
+  158 total `wsClient.loop()` stalls >50ms), spread across the trial
+  rather than clustered into the acute 2-minute-scale episodes `MIN_MODEM`
+  produced in sessions 11/13. 34 WS disconnects total, both boards
+  combined. **This is the clean confirmation of session 15a's tentative
+  finding**: the severe stall signature is a real, recurring `NONE`
+  property under sustained two-spammer load, not a rare one-off — and
+  `NONE` is meaningfully more exposed to it than session 15a's shorter,
+  partially-compromised trial suggested. Despite that, every stall and
+  disconnect recovered automatically with no operator intervention and no
+  corrupted result (16 stale-GOAL rejections, all handled correctly by the
+  existing guard — see that issue below).
+- **Not done this session**: the session 9/10-style per-event round-trip
+  trace (hesperus `[WS-ACK-RECV]` vs. cerberus `[WS-ACK] sent=`) that would
+  show *why* each of the 8 genuine drops happened, the way sessions 9/10
+  established the mechanism in the first place. The aggregate recovery
+  rate above is solid evidence the fix works; it isn't a re-verification
+  of the underlying mechanism, which wasn't in question here.
+- **Reading**: closes out the "genuinely clean confound-free `NONE` trial"
+  gap that items 1 and 2 in the outstanding-work list were both blocked
+  on. Confirms the ack-path fix under real sustained load, and confirms
+  `NONE` passes the two-spammer+BT smoke-test bar (graceful degradation,
+  full automatic recovery, no corruption) — while also confirming, more
+  robustly than session 15a could, that `NONE` is not immune to the severe
+  stall mechanism either. Does not touch the separate `MIN_MODEM`-stays-
+  unadopted decision, which was never contingent on `NONE`'s own result.
 
 ### Issue: Displayed race time vs. true TSF time
 
@@ -2250,6 +2337,14 @@ per-event stall remains comfortably inside budget there. Build-verified
 step is re-running a session-9/10-style marginal trial and confirming the
 retry count drops.
 
+**Confirmed, session 16 (2026-08-07).** The clean, confound-free
+two-spammer+BT `NONE` trial this item had been waiting on since session
+10 finally landed — full detail in the "Wi-Fi power-save vs. battery
+budget" issue above (same trial serves both items). Headline: of 923
+events needing at least one retry, only 8 exhausted all attempts (99.1%
+recovered) over a genuine ~5.97h sustained-stress trial. This is the
+hardware verification the paragraph above was waiting on.
+
 **Candidate further mitigations, 2026-08-03 — not yet tried.** Discussed
 while waiting on the large-N single-spammer trial; deliberately held until
 there's a disrupted-trial baseline to compare against, rather than tried
@@ -2340,6 +2435,15 @@ result to actually mean something.
 
 **Resolution.** Not yet — diagnostic deferred until production hardware is
 available.
+
+**Data point, session 16 (2026-08-07).** Same asymmetry, smaller ratio:
+GOAL 10.32% (512/4962) vs. ARM/START 4.15% (411/9906), a 2.5x gap under a
+clean full-length `NONE` two-spammer+BT trial, vs. session 13's 4.6x under
+`MIN_MODEM`. Consistent with the asymmetry being real (shows up again,
+same direction) but its magnitude varying with something else — power-save
+mode, RF conditions on the day, or just trial-to-trial noise at this
+sample size — none of which distinguishes the two hypotheses above.
+Doesn't change the deferred status.
 
 ### Issue: ISR calling `esp_wifi_get_tsf_time()` causes an Interrupt WDT panic under heavy WiFi load
 
