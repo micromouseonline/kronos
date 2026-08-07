@@ -33,9 +33,7 @@ degradation + full auto-recovery, not zero-loss) — while also confirming
 less exposed than `MIN_MODEM`. The `MIN_MODEM`-stays-unadopted decision is
 unchanged (it was never contingent on `NONE`'s own result).
 
-1. **Duplicate-trigger lock-out window design** — [issue](NETWORK-TIMING-ISSUE.md#issue-duplicate-triggers-from-gapped-robot-structure).
-   Standalone design question, no dependencies — the top open item now.
-2. **`BUTTON_COMMAND_MAP` review — reviewed, one action item, implemented
+1. **`BUTTON_COMMAND_MAP` review — reviewed, one action item, implemented
    2026-08-07** ([race-command-source.h:37](cerberus-gate-controller/src/race/race-command-source.h#L37)):
    a short TOUCH press on the main race screen now sends `<91,1>` to RATS
    (`MSG_TOUCH_SHORT_PRESS`, [net/messages.h](cerberus-gate-controller/src/net/messages.h))
@@ -47,13 +45,21 @@ unchanged (it was never contingent on `NONE`'s own result).
    (`send_run_time()`'s double-send, formerly listed alongside this, is
    explained — a RATS-side belt-and-braces requirement, not a bug here —
    and the code comment updated to say so, 2026-08-07.)
-3. **ARES reset-glitch investigation** (see
-   [ares-pulse-generator](#ares-pulse-generator) below) — both gates fire
-   when ARES resets while wired directly to a pair of hesperus boards.
-   Isolated, doesn't block running test trials.
+
+Not a task, just a standing note: the ARES pulse generator can produce a
+spurious trigger on both gates if reset while wired directly to a pair of
+hesperus boards — reset it fully before starting a trial or a new log. See
+[ares-pulse-generator](#ares-pulse-generator) below. Bench-test tooling
+only, no bearing on production use.
 
 Deprioritized, not pursued right now (see the relevant sections below for
-why): GOAL-board retry asymmetry under heavy stress (deferred to
+why): duplicate-trigger lock-out window design (reassessed 2026-08-07 —
+its own justification was written under HTTP's per-event connection cost
+and doesn't hold under WS's ~7-8ms latencies; multiple triggers from one
+robot are rare in practice and already harmlessly ignored, so a redundant
+trigger is closer to a free reliability win than a problem worth
+suppressing — see [issue](NETWORK-TIMING-ISSUE.md#issue-duplicate-triggers-from-gapped-robot-structure)),
+GOAL-board retry asymmetry under heavy stress (deferred to
 production-board testing — session 16 saw the same asymmetry again at a
 smaller 2.5x ratio vs. session 13's 4.6x, doesn't change the deferred
 status), congested-airtime stress testing (judged sufficient 2026-08-04),
@@ -77,27 +83,29 @@ Primary tracker: **`NETWORK-TIMING-ISSUE.md`** (root) — its "Outstanding
 work, prioritized" section is the ranked list, kept up to date there rather
 than mirrored here. As of 2026-08-07, in priority order:
 
-1. Duplicate triggers from gapped robot structure — lock-out window design unresolved
-2. GOAL board retries far more than ARM/START under heavy stress (session
+1. GOAL board retries far more than ARM/START under heavy stress (session
    13: 18.3% vs. 4.0%; session 16: 10.3% vs. 4.2%, same asymmetry at a
    smaller ratio) — cause (physical position vs. role) not yet
    distinguished; the planned start/goal swap is deferred to
    production-board testing
-3. Congested-airtime stress testing — judged sufficient 2026-08-04 and
+2. Congested-airtime stress testing — judged sufficient 2026-08-04 and
    deprioritized (not formally closed); bulk-throughput contention and
    broadband noise remain genuinely untested, not pursued without a
    concrete reason to
-4. Hedged burst sends for tail latency — deprioritized, watch retry telemetry first
+3. Hedged burst sends for tail latency — deprioritized, watch retry telemetry first
 
 Resolved/closed since the last pass: the `wsClient.loop()`-blocking
 congestion bug (hardware-verified 2026-08-03), the unexplained WS
 jitter/reconnect blip (characterized as benign, closed 2026-08-04), the
 ack-path timeout mismatch (confirmed under real sustained load by session
-16's clean trial, 2026-08-07), and Wi-Fi power-save vs. battery budget's
-own open sub-question — whether `NONE` cleanly passes the two-spammer+BT
+16's clean trial, 2026-08-07), Wi-Fi power-save vs. battery budget's own
+open sub-question — whether `NONE` cleanly passes the two-spammer+BT
 smoke test — which session 16 also settled (it does; `MIN_MODEM` still
-doesn't get adopted, that decision was separate). See the "Priorities, in
-order" section at the top of this file for the full summary.
+doesn't get adopted, that decision was separate), and duplicate triggers
+from gapped robot structure (reassessed 2026-08-07 — the lock-out design's
+own justification was HTTP-latency-era and doesn't hold under WS, see the
+"Priorities, in order" section above). See that section at the top of this
+file for the full summary.
 
 Other cross-project items not tracked in that file:
 
@@ -171,7 +179,9 @@ and should be removed next time that function is touched.)
 
 ## ares-pulse-generator
 
-- Resetting the ARES board while wired directly to a pair of hesperus boards
-  tends to make both gates fire -- looks like an electrical glitch on reset,
-  not yet investigated. Doesn't block using ARES to run test trials, so
-  deprioritized for now. (noted 2026-08-02)
+- **Note, not an open task** (removed from the priorities list 2026-08-07):
+  resetting the ARES board while wired directly to a pair of hesperus
+  boards can produce a spurious trigger glitch on both gates. Just make
+  sure the board has fully reset before starting a trial or a new log —
+  ARES is bench-test tooling only, this has no bearing on production use.
+  (originally noted 2026-08-02)

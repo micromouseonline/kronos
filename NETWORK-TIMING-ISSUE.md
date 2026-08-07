@@ -364,10 +364,18 @@ run to completion (no crash cutoff this time):
    normally coincide at trial start) is the actual trigger — see the
    dedicated write-up at the end of the issue below.
 4. **[Duplicate triggers from gapped robot structure](#issue-duplicate-triggers-from-gapped-robot-structure)**
-   — the proposed ~300ms post-trigger lock-out window is arbitrary and its
-   failure mode (silently dropping a genuine second crossing, rather than
-   today's harmless ignore-once-out-of-`RUNNING`) hasn't been worked out.
-   Cheap once resolved, but resolve the design questions first.
+   — **[Reassessed 2026-08-07 — deprioritized, lock-out design not being
+   pursued.]** The proposal's own justification (needless network pressure
+   from extra events) was written under HTTP's per-event connection cost;
+   this issue's own WS re-run data (200/200 arrived, ~7-8ms latency, the
+   104ms queueing offset gone) already shows that premise doesn't hold
+   anymore. Multiple triggers from one robot are rare in practice, and
+   under WS a redundant trigger costs almost nothing to send and is already
+   harmlessly ignored once out of `RUNNING` — if anything, sending
+   duplicates is closer to a reliability feature (a free extra delivery
+   attempt) than a problem worth suppressing at the source. Not formally
+   closed (a genuinely gapped robot could still exist), just no longer the
+   standing design question it was.
 5. **Congested-airtime stress testing** (cross-cutting, not tied to one
    issue) — **[Judged sufficient, 2026-08-04 — deprioritized, not
    formally closed.]** The four stressor layers sketched in
@@ -1270,7 +1278,7 @@ otherwise.
 
 ### Issue: Duplicate triggers from gapped robot structure
 
-**[OPEN — see outstanding-work #2]**
+**[Reassessed 2026-08-07 — deprioritized, see outstanding-work #4]**
 *(was part of Observation #9; Recommendation 8)*
 
 **Observation.** A robot with a gapped/slotted structure can break one
@@ -1280,9 +1288,12 @@ but a structural gap can plausibly be wider than that, generating
 genuinely separate, correctly-timestamped triggers for what should be one
 logical event. The race state machine already tolerates this once it's out
 of `RUNNING` (a later duplicate is dropped by state, not corrupted), so
-this isn't a correctness bug today — but needlessly sending/queueing extra
-events adds avoidable network-side pressure for no benefit, since only the
-first trigger of a crossing is ever wanted for a race time.
+this isn't a correctness bug today — ~~but needlessly sending/queueing
+extra events adds avoidable network-side pressure for no benefit, since
+only the first trigger of a crossing is ever wanted for a race time~~ **—
+that "avoidable network-side pressure" framing was written under HTTP's
+per-event connection cost and doesn't hold under WS; see the reassessment
+below.**
 
 **Confirmation.** `ares-pulse-generator`'s `trial_double_trigger` (two
 `GOAL` pulses on the same pin, edges 150ms apart, 100 trials). HTTP
@@ -1311,13 +1322,15 @@ queueing offset is gone (down to **~0.7ms**). One first-trigger outlier at
 smaller 10-20ms spikes scattered through the run — see the WS-jitter issue
 below, not investigated further here.
 
-**Resolution.** Not yet implemented. Proposed: a gate-side post-trigger
+**Resolution.** ~~Not yet implemented. Proposed: a gate-side post-trigger
 lock-out (~300ms) — deactivate a sensor for a short window after it fires,
 on top of the existing 50ms electrical debounce — would suppress these at
 the source. Cheap to add, does no harm once persistent connections make
-per-event overhead small (they now do).
+per-event overhead small (they now do).~~ **Not being pursued — see
+Reassessed, 2026-08-07, below.**
 
-**Two open concerns, 2026-07-31, not yet resolved:**
+**Two open concerns, 2026-07-31 (mooted by the reassessment below, kept
+for the record rather than deleted):**
 - **The ~300ms figure is arbitrary.** It's only justified as "distinct
   from and longer than the 50ms electrical debounce" — not derived from
   any measured robot gap width or crossing speed. Worth a better estimate
@@ -1333,10 +1346,25 @@ per-event overhead small (they now do).
   working out what that failure looks like (and how it'd be noticed)
   before picking a window width.
 
-**Verification.** N/A — not implemented yet. Once it is: re-run
-`trial_double_trigger` at the chosen gap to confirm only one event now
-reaches cerberus, and at a gap wider than the lock-out window to confirm a
-genuinely-separate second crossing still gets through.
+**Reassessed, 2026-08-07.** The original observation's premise — that
+extra events are "avoidable network-side pressure for no benefit" — was
+written when per-event transport was HTTP (a fresh TCP connection per
+trigger, ~267ms baseline latency). This issue's own WS re-run, already
+recorded above, shows that premise no longer applies: 200/200 duplicate
+events arrived cleanly at ~7-8ms latency, no queueing, no drops. Under
+that transport, a redundant trigger costs almost nothing to send and is
+already handled correctly (harmlessly ignored once out of `RUNNING`).
+Combined with multiple triggers from one robot being rare in practice,
+building a source-side lock-out to suppress them is solving a problem
+that, under the current transport, barely costs anything to leave alone —
+if anything, a duplicate is a free extra delivery attempt, closer to a
+reliability feature than a problem. Deprioritized, not formally closed (a
+genuinely gapped robot could still exist and this reasoning would need
+revisiting if one shows up in practice). The lock-out design (and its two
+open concerns above) is not being pursued.
+
+**Verification.** N/A — not being pursued (see Reassessed, 2026-08-07,
+above), not merely not-yet-implemented. No planned re-run.
 
 ### Issue: ARM/START shared-board queueing
 
