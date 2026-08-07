@@ -31,9 +31,11 @@ char gate_id[16];
 
 const int LED_PIN = 2;
 // Channel A / channel B -- see board-role.h for how these map to ARM/START/
-// GOAL depending on the board's provisioned role. Active-low.
-const int GATE_PIN = 7;
-const int GATE_PIN_B = 6;
+// GOAL depending on the board's provisioned role. Active-low. GATE_PIN_A/
+// GATE_PIN_B themselves come from the per-board build_flags in
+// platformio.ini/boards.ini (same convention as STATUS_LED above) -- they
+// vary per target, e.g. GPIO7/6 on most boards but GPIO33/32 on the QT Py
+// ESP32 Pico, which doesn't expose GPIO6/7 the same way.
 
 BoardRole board_role = BoardRole::UNSET;
 Cli cli;
@@ -407,7 +409,7 @@ void IRAM_ATTR handleSensor1() {
   bool quiet = (current_time - last_edge_time) >= DEBOUNCE_US;
   last_edge_time = current_time;
 
-  if (digitalRead(GATE_PIN) == HIGH) {
+  if (digitalRead(GATE_PIN_A) == HIGH) {
     if (quiet) {
       armed = true;  // settled back high -- ready for the next press
     }
@@ -817,11 +819,20 @@ void setup() {
 
   pinMode(LED_PIN, OUTPUT);
 
+#ifdef NEOPIXEL_POWER_PIN
+  // Only defined for boards where the onboard NeoPixel's power rail is
+  // gated by a separate GPIO rather than always-on (e.g. the QT Py ESP32
+  // Pico's GPIO8/"NEOPIX_PWR") -- must be driven HIGH before `led`
+  // (Adafruit_NeoPixel) is used below, or the pixel never lights at all.
+  pinMode(NEOPIXEL_POWER_PIN, OUTPUT);
+  digitalWrite(NEOPIXEL_POWER_PIN, HIGH);
+#endif
+
   network_health_load();  // before wsPumpTask/uploadWorkerTask exist -- nothing can increment these yet
 
   strlcpy(gate_id, identifyBoard(), sizeof(gate_id));
-  pinMode(GATE_PIN, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(GATE_PIN), handleSensor1, CHANGE);
+  pinMode(GATE_PIN_A, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(GATE_PIN_A), handleSensor1, CHANGE);
   pinMode(GATE_PIN_B, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(GATE_PIN_B), handleSensor2, CHANGE);
 

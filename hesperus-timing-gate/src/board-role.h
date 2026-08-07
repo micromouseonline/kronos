@@ -1,9 +1,14 @@
 // ----------------------------------------------------------------------------
 //  board-role.h — Which race event a gate's two physical channels report as.
-//  Determined authoritatively at every boot by a hardware jumper (GPIO 9
-//  driven low, GPIO 8 read with its internal pull-up): wired together ->
-//  START, left disconnected -> GOAL -- a fixed physical per-board decision,
-//  not a software setting. See board_role_from_jumper() below.
+//  Determined authoritatively at every boot by a hardware jumper
+//  (JUMPER_DRIVE_PIN driven low, JUMPER_SENSE_PIN read with its internal
+//  pull-up): wired together -> START, left disconnected -> GOAL -- a fixed
+//  physical per-board decision, not a software setting. See
+//  board_role_from_jumper() below. JUMPER_DRIVE_PIN/JUMPER_SENSE_PIN
+//  themselves come from the per-board build_flags in
+//  platformio.ini/boards.ini (same convention as STATUS_LED/GATE_PIN_A/
+//  GATE_PIN_B) -- e.g. GPIO9/8 on most boards, GPIO7/14 on the QT Py ESP32
+//  Pico, which needs GPIO8 free for its NeoPixel power-enable pin instead.
 //
 //  `role <start|goal>` (provisioning-commands.h) and NVS still exist as a
 //  same-session manual override for testing without re-wiring the jumper --
@@ -19,7 +24,8 @@
 //  job: translate "channel A/B fired" into the right event name before
 //  sending it.
 //
-//  Wiring: channel A is GPIO 7, channel B is GPIO 6, both active-low.
+//  Wiring: channel A is GATE_PIN_A, channel B is GATE_PIN_B (both
+//  active-low, per-board build_flags -- see main.cpp).
 //  START boards: channel A -> ARM, channel B -> START.
 //  GOAL boards: both channels -> GOAL (single GOAL event, no per-lane
 //  distinction -- matches cerberus's RaceCommand::GOAL having no lane
@@ -36,13 +42,14 @@ enum class BoardRole { UNSET,
                         START,
                         GOAL };
 
-// GPIO 9 drives low; GPIO 8 senses it through its internal pull-up. A wire
-// between the two reads low (shorted -> START); left disconnected, the
-// pull-up holds GPIO 8 high (GOAL). GPIO 9 is a strapping pin on some ESP32
-// variants, but that's resolved by the ROM bootloader before setup() ever
-// runs, so driving it here afterwards doesn't interfere with boot.
-const int JUMPER_DRIVE_PIN = 9;
-const int JUMPER_SENSE_PIN = 8;
+// JUMPER_DRIVE_PIN drives low; JUMPER_SENSE_PIN senses it through its
+// internal pull-up. A wire between the two reads low (shorted -> START);
+// left disconnected, the pull-up holds JUMPER_SENSE_PIN high (GOAL). On
+// most boards JUMPER_DRIVE_PIN (GPIO9) is a strapping pin, but that's
+// resolved by the ROM bootloader before setup() ever runs, so driving it
+// here afterwards doesn't interfere with boot -- not necessarily true of
+// every board's JUMPER_DRIVE_PIN value, worth checking against the target
+// chip's own strapping-pin list before repurposing a new one here.
 
 /// @brief Reads the start/goal hardware jumper. Always returns a definite
 /// answer (never UNSET) -- disconnected is itself a valid, meaningful
