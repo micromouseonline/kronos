@@ -11,6 +11,7 @@
 
 #include "debug-log.h"
 #include "net/gate-event-dedup.h"
+#include "net/gate-liveness.h"
 #include "net/wifi-manager.h"
 #include "race/race-command-source.h"
 #include "race/race-timer.h"
@@ -350,10 +351,15 @@ inline void ws_event_handler(AsyncWebSocket *server, AsyncWebSocketClient *clien
     // a peer that vanishes without a clean close (power loss, WiFi drop),
     // which a plain held-open TCP socket doesn't provide on its own.
     client->keepAlivePeriod(5);
+    // Optimistically re-associate a reconnecting gate with its role by IP,
+    // ahead of its next real event -- see gate-liveness.h's header comment.
+    gate_liveness_note_client_connect(client->id(), client->remoteIP(), debug_timestamp_ms());
     debug_log_enqueue("[WS] client #%u connected from %s", client->id(), client->remoteIP().toString().c_str());
   } else if (type == WS_EVT_DISCONNECT) {
+    gate_liveness_mark_client_disconnected(client->id(), debug_timestamp_ms());
     debug_log_enqueue("[WS] client #%u disconnected", client->id());
   } else if (type == WS_EVT_ERROR) {
+    gate_liveness_mark_client_disconnected(client->id(), debug_timestamp_ms());
     debug_log_enqueue("[WS] client #%u error", client->id());
   } else if (type == WS_EVT_DATA) {
     // Ack-path timing instrumentation (NETWORK-TIMING-ISSUE.md, "acks not
@@ -373,6 +379,17 @@ inline void ws_event_handler(AsyncWebSocket *server, AsyncWebSocketClient *clien
         return;
       }
       JsonObject body = doc.as<JsonObject>();
+      // Liveness tracking: role is never transmitted explicitly (see
+      // gate-liveness.h) -- infer it from `event` and record this client as
+      // that role's current connection. Runs unconditionally, ahead of
+      // dispatch below, since even a duplicate/retried event proves the
+      // link is alive right now.
+      int gate_role = gate_role_from_event((const char *)(body["event"] | ""));
+      if (gate_role >= 0) {
+        gate_liveness_mark_role_connected(static_cast<GateRole>(gate_role), client->id(),
+                                           (const char *)(body["gate_id"] | ""), client->remoteIP(),
+                                           debug_timestamp_ms());
+      }
       // Same "body=" shape http_log_request() uses -- tools/cerberus_log_stats.py's
       // LINE_RE matches on "body={...}" regardless of the preceding tag, so
       // this keeps that tool working unmodified.

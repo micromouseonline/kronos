@@ -15,6 +15,7 @@
 #include <WiFi.h>
 #include <stdio.h>
 
+#include "net/gate-liveness.h"
 #include "race-timer.h"
 #include "ui/screens.h"
 
@@ -137,9 +138,13 @@ inline void race_timer_render_status_bar() {
     lv_obj_set_style_text_color(objects.lbl_status_wifi, lv_color_hex(0xff3b30), LV_PART_MAIN | LV_STATE_DEFAULT);
   }
 
-  // Reserved for future gate-liveness indicators (two remote gates) --
-  // placeholder text only, no tracking behind it yet.
-  lv_label_set_text_static(objects.lbl_status_gates, "ASGG");
+  // Per-role gate connection state (see net/gate-liveness.h) -- green "S"/
+  // "G" when that gate's WS link is up, red when not. Recolor markup
+  // (enabled in race_timer_display_init()) renders just "S G"; the "#RRGGBB
+  // text#" runs themselves aren't visible glyphs.
+  lv_label_set_text_fmt(objects.lbl_status_gates, "#%s S# #%s G#",
+                         g_gate_link[(int)GateRole::START].connected ? "adff2f" : "ff3b30",
+                         g_gate_link[(int)GateRole::GOAL].connected ? "adff2f" : "ff3b30");
 }
 
 //============================================================================
@@ -151,6 +156,11 @@ inline void race_timer_display_init() {
   // position) -- set at runtime rather than hand-editing the generated
   // screens.c, which would be overwritten on the next EEZ Studio export.
   lv_obj_align(objects.lbl_run_number, LV_ALIGN_CENTER, 0, 0);
+  // EEZ Studio's editor doesn't expose the label recolor flag -- enabled
+  // here at runtime, same reasoning as the alignment fix just above, so
+  // race_timer_render_status_bar()'s "#RRGGBB text#" markup for
+  // lbl_status_gates actually renders as colored text.
+  lv_label_set_recolor(objects.lbl_status_gates, true);
 }
 
 // Called every loop() iteration regardless of events, so the Run Timer

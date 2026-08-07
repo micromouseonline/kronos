@@ -80,53 +80,53 @@ const uint64_t MIN_PLAUSIBLE_TSF = 300000000;
 // table needed). WS_ACK_TIMEOUT_MS is comfortably above the ~5-15ms typical
 // WS round trip measured during rec. 1's bring-up, generous against the
 // occasional ~40ms single-event jitter spike also seen there.
-const uint32_t WS_ACK_TIMEOUT_MS = 500;         // per-attempt base: resend if no ack within this --
-                                                 // raised from 300, 2026-08-04 session 10: end-to-end
-                                                 // instrumentation on both boards (cerberus's
-                                                 // pending/space, hesperus's [WS-ACK-RECV]) traced every
-                                                 // retry in a two-spammer+BT trial and found none were
-                                                 // lost -- each was the original ack arriving fine on a
-                                                 // round trip (258-458ms) that simply outran the old
-                                                 // 240-360ms window under heavy channel congestion
-                                                 // (neither board's own processing was slow -- cerberus's
-                                                 // dispatch stayed <15ms and wsPumpTask's own
-                                                 // wsClient.loop() canary logged only one >50ms stall in
-                                                 // the whole trial, uncorrelated with these events -- so
-                                                 // the time is most likely spent on-air/at the WiFi MAC
-                                                 // layer itself, not in either board's software). 500ms
-                                                 // clears the observed 458ms worst case with margin.
-const uint32_t WS_ACK_TIMEOUT_JITTER_MS = 100;  // +/- randomised against the base above (see below) --
-                                                 // kept at the same ~20% of base as before (was 60/300)
-                                                 // -- 2026-08-03 beacon-spam stress testing (session 3)
-                                                 // found cerberus's own ack dispatch reliably fast
-                                                 // (<15ms) even under heavy congestion, yet acks still
-                                                 // failed to arrive back in time; a fixed retry schedule
-                                                 // means both gate boards' retries (or retries vs. ARES's
-                                                 // own periodic traffic) can lock-step and collide
-                                                 // repeatedly on an already-congested channel -- jitter
-                                                 // breaks that synchronisation. Deliberately widening the
-                                                 // interval under congestion (not shortening it) rather
-                                                 // than retrying faster into contention.
-const uint8_t WS_MAX_SEND_ATTEMPTS = 10;        // raised from 5, 2026-08-03 session 3 -- extra attempts
-                                                 // only ever fire on a timeout, so a healthy send (the
-                                                 // normal case) pays none of this cost; only the tail
-                                                 // under congestion gets more chances
-const uint32_t WS_ACK_WAIT_TICK_MS = 5;         // real vTaskDelay between poll iterations -- see below
+const uint32_t WS_ACK_TIMEOUT_MS = 500;            // per-attempt base: resend if no ack within this --
+                                                   // raised from 300, 2026-08-04 session 10: end-to-end
+                                                   // instrumentation on both boards (cerberus's
+                                                   // pending/space, hesperus's [WS-ACK-RECV]) traced every
+                                                   // retry in a two-spammer+BT trial and found none were
+                                                   // lost -- each was the original ack arriving fine on a
+                                                   // round trip (258-458ms) that simply outran the old
+                                                   // 240-360ms window under heavy channel congestion
+                                                   // (neither board's own processing was slow -- cerberus's
+                                                   // dispatch stayed <15ms and wsPumpTask's own
+                                                   // wsClient.loop() canary logged only one >50ms stall in
+                                                   // the whole trial, uncorrelated with these events -- so
+                                                   // the time is most likely spent on-air/at the WiFi MAC
+                                                   // layer itself, not in either board's software). 500ms
+                                                   // clears the observed 458ms worst case with margin.
+const uint32_t WS_ACK_TIMEOUT_JITTER_MS = 100;     // +/- randomised against the base above (see below) --
+                                                   // kept at the same ~20% of base as before (was 60/300)
+                                                   // -- 2026-08-03 beacon-spam stress testing (session 3)
+                                                   // found cerberus's own ack dispatch reliably fast
+                                                   // (<15ms) even under heavy congestion, yet acks still
+                                                   // failed to arrive back in time; a fixed retry schedule
+                                                   // means both gate boards' retries (or retries vs. ARES's
+                                                   // own periodic traffic) can lock-step and collide
+                                                   // repeatedly on an already-congested channel -- jitter
+                                                   // breaks that synchronisation. Deliberately widening the
+                                                   // interval under congestion (not shortening it) rather
+                                                   // than retrying faster into contention.
+const uint8_t WS_MAX_SEND_ATTEMPTS = 10;           // raised from 5, 2026-08-03 session 3 -- extra attempts
+                                                   // only ever fire on a timeout, so a healthy send (the
+                                                   // normal case) pays none of this cost; only the tail
+                                                   // under congestion gets more chances
+const uint32_t WS_ACK_WAIT_TICK_MS = 5;            // real vTaskDelay between poll iterations -- see below
 const uint32_t WS_ACK_OVERALL_DEADLINE_MS = 5200;  // hard wall-clock cap, applies even while disconnected
-                                                    // -- without this a real Wi-Fi outage would park
-                                                    // uploadWorkerTask on one stale event for the whole
-                                                    // outage while fresh events overflow-drop from
-                                                    // networkQueue behind it. Raised from 3200 to 5200,
-                                                    // 2026-08-04, alongside WS_ACK_TIMEOUT_MS's 300->500 --
-                                                    // scaled proportionally so WS_MAX_SEND_ATTEMPTS's 10
-                                                    // attempts still fit inside the deadline (10x500=5000,
-                                                    // +200ms margin, same margin the original 3200 left
-                                                    // over 10x300=3000) rather than quietly shrinking to
-                                                    // ~7 attempts' worth of real-loss recovery depth as a
-                                                    // side effect of the per-attempt timeout increase.
-                                                    // Real-race events are sparse (one every 20+ seconds)
-                                                    // and networkQueue is depth 10, so this remains
-                                                    // comfortably inside that budget.
+                                                   // -- without this a real Wi-Fi outage would park
+                                                   // uploadWorkerTask on one stale event for the whole
+                                                   // outage while fresh events overflow-drop from
+                                                   // networkQueue behind it. Raised from 3200 to 5200,
+                                                   // 2026-08-04, alongside WS_ACK_TIMEOUT_MS's 300->500 --
+                                                   // scaled proportionally so WS_MAX_SEND_ATTEMPTS's 10
+                                                   // attempts still fit inside the deadline (10x500=5000,
+                                                   // +200ms margin, same margin the original 3200 left
+                                                   // over 10x300=3000) rather than quietly shrinking to
+                                                   // ~7 attempts' worth of real-loss recovery depth as a
+                                                   // side effect of the per-attempt timeout increase.
+                                                   // Real-race events are sparse (one every 20+ seconds)
+                                                   // and networkQueue is depth 10, so this remains
+                                                   // comfortably inside that budget.
 
 // ISR debounce guard for both trigger pins -- one place to tune. 50ms
 // comfortably absorbs mechanical switch bounce (bench-testing with a
@@ -303,16 +303,16 @@ void wsClearAck() {
   xSemaphoreGive(ws_ack_state_mutex);
 }
 
-volatile uint32_t networkq_overflow_count = 0;  ///< Incremented by ISR/timer on dropped networkQueue send
+volatile uint32_t networkq_overflow_count = 0;         ///< Incremented by ISR/timer on dropped networkQueue send
 volatile uint32_t triggerCaptureq_overflow_count = 0;  ///< Incremented by ISR on dropped triggerCaptureQueue send
 
 // --- WATCHDOG STATE SHARING VARIABLES ---
 volatile bool global_is_stuck_in_syn = false;  // Shared flag to notify main loop
 
 // --- FreeRTOS Queues ---
-QueueHandle_t networkQueue;        // stores network activities - sending notifications
-QueueHandle_t ledQueue;            // stored neopixel commands
-QueueHandle_t triggerCaptureQueue; // ISR-to-tsfCaptureTask handoff, see PendingCapture
+QueueHandle_t networkQueue;         // stores network activities - sending notifications
+QueueHandle_t ledQueue;             // stored neopixel commands
+QueueHandle_t triggerCaptureQueue;  // ISR-to-tsfCaptureTask handoff, see PendingCapture
 
 // --- FreeRTOS Task Handles (for stack instrumentation) ---
 TaskHandle_t ledTaskHandle = NULL;
@@ -538,8 +538,7 @@ void wsPumpTask(void *pvParameters) {
         g_network_health.max_stall_ms = stall_ms;
       }
       g_network_health_dirty = true;
-      debug_printf("[WS Pump] wsClient.loop() blocked %llums (wifi_status=%d, ws_connected=%d)\n",
-                   loop_call_us / 1000, WiFi.status(), wsClient.isConnected());
+      debug_printf("[WS Pump] wsClient.loop() blocked %llums (wifi_status=%d, ws_connected=%d)\n", loop_call_us / 1000, WiFi.status(), wsClient.isConnected());
     }
     xSemaphoreGive(ws_client_mutex);
     vTaskDelay(pdMS_TO_TICKS(10));
@@ -568,8 +567,9 @@ void uploadWorkerTask(void *pvParameters) {
       }
 
       LedPattern pattern = (current_ev.type == TRIGGER_A) ? FLASH_TRIGGER_1 : FLASH_TRIGGER_2;
-      if (current_ev.type == HEARTBEAT)
+      if (current_ev.type == HEARTBEAT) {
         pattern = SHOW_HEARTBEAT;
+      }
       if (xQueueSend(ledQueue, &pattern, 0) != pdTRUE) {
         debug_println("[QUEUE OVERFLOW] ledQueue full; LED feedback dropped.");
       }
@@ -725,8 +725,7 @@ void uploadWorkerTask(void *pvParameters) {
         bool acked = false;
         // Jittered per-attempt timeout (WS_ACK_TIMEOUT_MS +/- WS_ACK_TIMEOUT_JITTER_MS)
         // -- re-rolled on every attempt, see WS_ACK_TIMEOUT_JITTER_MS above.
-        uint32_t attempt_timeout_ms =
-            WS_ACK_TIMEOUT_MS + random(-(int32_t)WS_ACK_TIMEOUT_JITTER_MS, (int32_t)WS_ACK_TIMEOUT_JITTER_MS + 1);
+        uint32_t attempt_timeout_ms = WS_ACK_TIMEOUT_MS + random(-(int32_t)WS_ACK_TIMEOUT_JITTER_MS, (int32_t)WS_ACK_TIMEOUT_JITTER_MS + 1);
 
         // No wsClient.loop() call here -- wsPumpTask pumps the socket on its
         // own task now, so this loop's millis()-based deadline checks below
@@ -741,8 +740,7 @@ void uploadWorkerTask(void *pvParameters) {
           if (wsTakeAckIfReceived(acked_tsf, acked_recv_t_ms)) {
             if (acked_tsf == expected_ack) {
               acked = true;
-              debug_printf("[WS-ACK-RECV] tsf_us=%llu recv_t=%llu attempt=%u\n", acked_tsf, acked_recv_t_ms,
-                           attempt);
+              debug_printf("[WS-ACK-RECV] tsf_us=%llu recv_t=%llu attempt=%u\n", acked_tsf, acked_recv_t_ms, attempt);
               break;
             }
             wsClearAck();  // stale/mismatched ack -- keep waiting for ours
@@ -762,8 +760,7 @@ void uploadWorkerTask(void *pvParameters) {
               debug_println("[WS Worker] Event dropped after max retries.");
               break;
             }
-            if (wsIsConnectedBounded(WS_MUTEX_SEND_TIMEOUT_MS) &&
-                wsSendTxtBounded(payload, WS_MUTEX_SEND_TIMEOUT_MS)) {
+            if (wsIsConnectedBounded(WS_MUTEX_SEND_TIMEOUT_MS) && wsSendTxtBounded(payload, WS_MUTEX_SEND_TIMEOUT_MS)) {
               attempt++;
               debug_printf("[WS Worker] Resent %s (%s), attempt %u.\n", event_name, clock_mode.c_str(), attempt);
             }
@@ -771,8 +768,7 @@ void uploadWorkerTask(void *pvParameters) {
             // down -- this resend is skipped, but the deadline checks above
             // keep running on schedule regardless.
             attempt_start = now;
-            attempt_timeout_ms =
-                WS_ACK_TIMEOUT_MS + random(-(int32_t)WS_ACK_TIMEOUT_JITTER_MS, (int32_t)WS_ACK_TIMEOUT_JITTER_MS + 1);
+            attempt_timeout_ms = WS_ACK_TIMEOUT_MS + random(-(int32_t)WS_ACK_TIMEOUT_JITTER_MS, (int32_t)WS_ACK_TIMEOUT_JITTER_MS + 1);
           }
           // Real block, not a spin -- uploadWorkerTask runs at a higher
           // FreeRTOS priority than ledDiagnosticTask/loop() on the same
@@ -924,9 +920,9 @@ void loop() {
 #if HAS_HTTP
       MDNS.addService("http", "tcp", 80);
       debug_http_server_init();  // idempotent route registration; .begin() re-issued every edge --
-                                  // see debug-http-server.h's AsyncServer::begin() note
+                                 // see debug-http-server.h's AsyncServer::begin() note
 #endif
-      cerberus_ip_valid = false;    // re-resolve on this connection
+      cerberus_ip_valid = false;  // re-resolve on this connection
       last_cerberus_attempt = 0;  // force an immediate resolve attempt below
       was_connected = true;
     }
@@ -960,9 +956,9 @@ void loop() {
         if (xSemaphoreTake(ws_client_mutex, pdMS_TO_TICKS(WS_MUTEX_SETUP_TIMEOUT_MS)) == pdTRUE) {
           wsClient.begin(cerberus_ip.toString(), 80, "/ws");
           wsClient.enableHeartbeat(5000, 3000, 2);  // 5s ping, 3s pong timeout, disconnect after 2 misses
-                                                     // (widened to 5000,3 2026-08-05, reverted same day --
-                                                     // session 14 showed it makes the MIN_MODEM stall/disconnect
-                                                     // cascade dramatically worse, not better. NETWORK-TIMING-ISSUE.md)
+                                                    // (widened to 5000,3 2026-08-05, reverted same day --
+                                                    // session 14 showed it makes the MIN_MODEM stall/disconnect
+                                                    // cascade dramatically worse, not better. NETWORK-TIMING-ISSUE.md)
           wsClient.onEvent(wsClientEventHandler);   // receives cerberus's per-event ack
           xSemaphoreGive(ws_client_mutex);
           ws_was_ready = true;

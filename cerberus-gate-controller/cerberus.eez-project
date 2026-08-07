@@ -2050,8 +2050,7 @@
                         "DEFAULT": {
                           "text_font": "MONTSERRAT_14",
                           "text_color": "aliceblue",
-                          "text_align": "CENTER",
-                          "text_opa": 128
+                          "text_align": "CENTER"
                         }
                       }
                     }

@@ -488,7 +488,6 @@ void create_screen_main() {
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xf0f8ff), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_obj_set_style_text_opa(obj, 128, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_label_set_text_static(obj, "ASGG");
                 }
             }
