@@ -201,6 +201,20 @@ void system_event_handler(const SystemEvent &evt) {
   race_timer_handle_command(evt.type, evt.payload_is_mouse_name ? evt.payload : nullptr,
                              evt.timestamp_us);
   neokey_reflect_race_state();
+  if (race_state == RaceState::CALIBRATE) {
+    // Mirrors input_event_handler's CALIBRATE block above -- gate-sourced
+    // ARM/START/GOAL events (Serial/HTTP/WS) need the same key-flash
+    // indication local button presses get, otherwise gate tests are
+    // invisible during calibration (see docs/RACE-STATE-MACHINE.md).
+    ButtonID id = evt.type == RaceCommand::ARM     ? BTN_ARM
+                  : evt.type == RaceCommand::START ? BTN_START
+                  : evt.type == RaceCommand::GOAL  ? BTN_GOAL
+                                                    : NUM_BUTTONS;
+    if (id != NUM_BUTTONS) {
+      neokey_set_colour(BTN_TOUCH, NP_OFF);
+      neokey_set_colour(id, NP_YELLOW);
+    }
+  }
 }
 
 // Wired to wifi-manager.h's wifi_on_connected hook in setup() below --
