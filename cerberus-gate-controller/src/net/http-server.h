@@ -21,41 +21,34 @@
 
 inline AsyncWebServer http_server(80);
 
-// One line per incoming request, gated behind the same sw_debug_verbose
-// switch as serial-protocol.h's RX echo -- this is the HTTP-side equivalent
-// of that trace. Called from every route handler below (AsyncWebServer has
-// no single before-dispatch hook to do this in one place). `body` is only
-// passed by the JSON POST handler (http_handle_event) -- GET routes have
-// nothing to serialize, so it stays empty for those.
+// Log one line per HTTP request when `sw_debug_verbose` is enabled (matches
+// serial-protocol.h's RX trace). Called directly by each route handler because
+// AsyncWebServer lacks a global pre-dispatch hook. `body` is provided only for JSON POSTs.
 //
-// This runs inside the AsyncWebServer request callback, so it relies on
-// debug_log_enqueue() being non-blocking -- a blocking Serial write here
-// (e.g. serial_write_mutex contended by another task's own debug output)
-// adds straight to the client's round-trip time, which can be enough on
-// its own to blow through a gate's HTTP client timeout and trigger a
-// retry it didn't otherwise need.
+// Note: Runs inside the AsyncWebServer request callback. Relies on non-blocking
+// `debug_log_enqueue()` to prevent Serial lock contention from inflating RTT and
+// triggering client timeouts.
 inline void http_log_request(AsyncWebServerRequest *request, const String &body = String()) {
   if (!g_debug_verbose_enabled) {
     return;
   }
   if (body.length() > 0) {
-    debug_log_enqueue("[HTTP] %s %s from %s body=%s", request->methodToString(), request->url().c_str(),
-                       request->client()->remoteIP().toString().c_str(), body.c_str());
+    debug_log_enqueue("[HTTP] %s %s from %s body=%s", request->methodToString(), request->url().c_str(), request->client()->remoteIP().toString().c_str(),
+                      body.c_str());
   } else {
-    debug_log_enqueue("[HTTP] %s %s from %s", request->methodToString(), request->url().c_str(),
-                       request->client()->remoteIP().toString().c_str());
+    debug_log_enqueue("[HTTP] %s %s from %s", request->methodToString(), request->url().c_str(), request->client()->remoteIP().toString().c_str());
   }
 }
 
 // Pushes one SSE message per new result
 inline AsyncEventSource http_events("/events");
 
-// Persistent connection for gate boards (NETWORK-TIMING-LOG.md
-// recommendation 1) -- replaces the per-event TCP connect+POST+close cycle
-// /api/event still serves. Rides the same AsyncWebServer instance/port, so
-// no separate mDNS service or wifi_on_connected hook is needed: http_server's
-// existing restart-on-reconnect (http_server_restart() below) carries this
-// route through too.
+// Persistent WebSocket connection for gate boards (see NETWORK-TIMING-LOG.md, rec #1).
+// Replaces the per-event TCP connect+POST+close cycle used by /api/event.
+//
+// Shares the main AsyncWebServer instance/port.
+// Re-uses existing Wi-Fi lifecycle hooks, so `http_server_restart()` automatically
+// handles reconnects for this route too.
 inline AsyncWebSocket http_ws("/ws");
 
 inline void http_notify_leaderboard_changed() {
@@ -72,13 +65,11 @@ inline void http_server_restart() {
 const char *ntpServer = "pool.ntp.org";
 const char *timeZone = "GMT0BST,M3.5.0/1,M10.5.0/2";
 
-// Wired into main.cpp's combined wifi_on_connected handler, not called
-// inline in http_server_init() -- configTzTime()'s SNTP setup needs Wi-Fi/
-// DNS to actually be reachable, and previously ran synchronously in
-// setup() before that was guaranteed. Same category of bug as
-// net/mdns.h's mdns_start() (see its header comment): if it ever blocks
-// waiting on the network, http_server_init() never reaches
-// http_server.begin(), so no route responds at all, not just /time.
+// Registered in main.cpp's wifi_on_connected handler (not http_server_init()).
+//
+// `configTzTime()` requires active Wi-Fi/DNS. Running it synchronously during
+// server setup can block execution—preventing `http_server.begin()` from being
+// reached and causing all HTTP routes to fail (similar to mdns_start()).
 inline void ntp_start() {
   configTzTime(timeZone, ntpServer);
 }
@@ -129,14 +120,13 @@ inline String generate_html_head(const char *title, const char *extra_head = "")
   return head;
 }
 
-// Set by wifi-provisioning.h once its config portal is up, so browsing to
-// the AP's root IP (192.168.4.1) lands on the setup form instead of the
-// clock page below. "/" is bound to http_handle_root here in
-// http_server_init(), before Wi-Fi ever attempts to connect -- by the time
-// provisioning is known to be needed, that binding already exists and
-// re-registering "/" wouldn't take priority over it (AsyncWebServer serves
-// the first-added handler that matches), so this checks a hook instead of
-// fighting the route table.
+// Checked by http_handle_root() when "/" is requested.
+// Set by wifi-provisioning.h once the config portal is active so 192.168.4.1
+// serves the setup form instead of the clock page.
+//
+// Note: "/" is bound here in http_server_init() before Wi-Fi connects. Because
+// AsyncWebServer matches the first-registered handler, we use this boolean hook
+// rather than trying to re-register the route later.
 inline void (*http_handle_root_override)(AsyncWebServerRequest *) = nullptr;
 
 inline void http_handle_root(AsyncWebServerRequest *request) {
@@ -263,16 +253,12 @@ inline void http_handle_leaderboard(AsyncWebServerRequest *request) {
   request->send(200, "text/html", html);
 }
 
-// Transport-agnostic core shared by http_handle_event() (below) and
-// ws_event_handler()'s WS_EVT_DATA case -- parses the same 4-field
-// gate_id/event/tsf_us/gate_us schema (or the RATS V2 info-message
-// vocabulary) and dispatches into the race state machine exactly the same
-// way regardless of whether it arrived over a POST body or a WS text frame.
-// Returns true if the event was recognised (either a race command or an
-// info message) and handled. out_tsf_us always reflects the parsed tsf_us
-// field regardless of outcome -- callers that ack a specific event back to
-// its sender (ws_event_handler()) need this even on a recognised duplicate,
-// since the caller can't otherwise see inside evt.
+// Shared transport-agnostic core for HTTP POSTs and WS frames.
+// Parses the 4-field schema (or RATS V2 info messages) and dispatches to the
+// race state machine.
+//
+// Returns true if handled. `out_tsf_us` is always populated so callers (like WS)
+// can ACK duplicates back to the sender.
 inline bool handle_gate_event_json(JsonObject &body, String &response_json, int &http_status, uint64_t &out_tsf_us) {
   HttpGateEvent evt{};
   strlcpy(evt.gate_id, body["gate_id"] | "", sizeof(evt.gate_id));
@@ -283,10 +269,8 @@ inline bool handle_gate_event_json(JsonObject &body, String &response_json, int 
 
   RaceCommand cmd = race_command_from_http(evt);
   if (cmd != RaceCommand::NONE) {
-    // A duplicate (gate_id, event, tsf_us) is most likely a retried event
-    // whose original ack was lost, not a new event -- skip re-dispatching
-    // into the race state machine, but still report success so the caller
-    // acks it (see NETWORK-TIMING-LOG.md recommendation 6).
+    // Skip duplicate events (likely retries from lost ACKs), but return 200/true
+    // so the caller can re-ACK (see NETWORK-TIMING-LOG.md, rec #6).
     if (!gate_event_is_duplicate(evt.gate_id, evt.event, evt.tsf_us)) {
       system_event_post(cmd, evt.tsf_us, evt.gate_id);
     }
@@ -295,12 +279,8 @@ inline bool handle_gate_event_json(JsonObject &body, String &response_json, int 
     return true;
   }
 
-  // Not a gate/race event -- try the RATS V2 "info message" vocabulary
-  // (ContestName, EventName, AllowedRuns, EntryTimeS, ExtraRun, SetMode,
-  // RequestType), the same set net/serial-protocol.h's RX task hands to
-  // serial_protocol_handle_info_message(). Reuses that function unchanged:
-  // a SerialLine is built from `event`/`value` instead of parsed off the
-  // UART, everything downstream is identical to the serial path.
+  // Fallback: RATS V2 "info message" vocabulary.
+  // Reuses serial path logic by constructing a synthetic SerialLine from `event`/`value`.
   int info_type = http_info_message_type(evt.event);
   if (info_type != -1) {
     SerialLine line{};
@@ -328,8 +308,7 @@ inline void http_handle_event(AsyncWebServerRequest *request, JsonVariant &json)
   uint64_t tsf_us = 0;
   bool handled = handle_gate_event_json(body, response_json, http_status, tsf_us);
   if (!handled) {
-    debug_log_enqueue("[HTTP] rejected /api/event: gate_id=\"%s\" event=\"%s\"",
-                       (const char *)(body["gate_id"] | ""), (const char *)(body["event"] | ""));
+    debug_log_enqueue("[HTTP] rejected /api/event: gate_id=\"%s\" event=\"%s\"", (const char *)(body["gate_id"] | ""), (const char *)(body["event"] | ""));
   }
   request->send(http_status, "application/json", response_json);
 }
@@ -337,22 +316,23 @@ inline void http_handle_event(AsyncWebServerRequest *request, JsonVariant &json)
 // Global static handler prevents heap re-allocation
 inline AsyncCallbackJsonWebHandler api_event_handler("/api/event", http_handle_event);
 
-// AsyncWebSocket event handler for http_ws ("/ws") -- persistent-connection
-// counterpart to http_handle_event() above (see NETWORK-TIMING-LOG.md
-// recommendation 1). Acks a handled event back over the same client (see
-// the WS_EVT_DATA branch below) so hesperus's retry mechanism (that doc's
-// status section item 1) knows the event landed; combined with
-// gate-event-dedup.h's de-duplication, a resend after a lost ack is
-// recognised rather than double-processed.
-inline void ws_event_handler(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg,
-                              uint8_t *data, size_t len) {
+// AsyncWebSocket event handler for http_ws ("/ws") — persistent counterpart
+// to http_handle_event().
+//
+// Key behaviors:
+// - Acknowledges received events back to the client via WS_EVT_DATA so Hesperus's
+//   retry mechanism knows the event landed.
+// - Works with gate-event-dedup.h to handle lost ACKs smoothly: retried events
+//   are identified and ignored, preventing duplicate processing.
+//
+// Ref: NETWORK-TIMING-LOG.md (Recommendation #1 & Status Item #1)
+inline void ws_event_handler(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len) {
   if (type == WS_EVT_CONNECT) {
-    // Auto ping/pong every 5s -- gives WS_EVT_DISCONNECT-based detection of
-    // a peer that vanishes without a clean close (power loss, WiFi drop),
-    // which a plain held-open TCP socket doesn't provide on its own.
+    // Auto ping/pong every 5s to detect ungraceful disconnects (power loss, WiFi drop)
+    // via WS_EVT_DISCONNECT, which raw TCP sockets miss.
     client->keepAlivePeriod(5);
-    // Optimistically re-associate a reconnecting gate with its role by IP,
-    // ahead of its next real event -- see gate-liveness.h's header comment.
+    // Optimistically re-associate a reconnecting gate with its role by IP
+    // before its next event (see gate-liveness.h).
     gate_liveness_note_client_connect(client->id(), client->remoteIP(), debug_timestamp_ms());
     debug_log_enqueue("[WS] client #%u connected from %s", client->id(), client->remoteIP().toString().c_str());
   } else if (type == WS_EVT_DISCONNECT) {
@@ -362,14 +342,12 @@ inline void ws_event_handler(AsyncWebSocket *server, AsyncWebSocketClient *clien
     gate_liveness_mark_client_disconnected(client->id(), debug_timestamp_ms());
     debug_log_enqueue("[WS] client #%u error", client->id());
   } else if (type == WS_EVT_DATA) {
-    // Ack-path timing instrumentation (NETWORK-TIMING-LOG.md, "acks not
-    // arriving back at hesperus in time" issue) -- captured unconditionally
-    // (not gated on g_debug_verbose_enabled) so a beacon-spam stress run
-    // doesn't need verbose mode on to get this data.
+    // Ack-path timing instrumentation (NETWORK-TIMING-LOG.md) — captured
+    // unconditionally so stress tests don't require verbose mode.
     uint32_t t_data_recv_ms = debug_timestamp_ms();
     AwsFrameInfo *info = (AwsFrameInfo *)arg;
-    // Single-frame text fast path only -- the 4-field event payload is well
-    // under any frame-size concern, so no multi-frame reassembly is needed.
+    // Single-frame text fast path — event payload fits comfortably within one frame,
+    // so multi-frame reassembly is unnecessary.
     if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
       data[len] = 0;  // AsyncWebSocket null-terminates single-frame text payloads
       JsonDocument doc;
@@ -379,20 +357,16 @@ inline void ws_event_handler(AsyncWebSocket *server, AsyncWebSocketClient *clien
         return;
       }
       JsonObject body = doc.as<JsonObject>();
-      // Liveness tracking: role is never transmitted explicitly (see
-      // gate-liveness.h) -- infer it from `event` and record this client as
-      // that role's current connection. Runs unconditionally, ahead of
-      // dispatch below, since even a duplicate/retried event proves the
-      // link is alive right now.
+      // Liveness tracking: infer role from `event` (roles are never sent explicitly,
+      // see gate-liveness.h) and mark client as active. Runs before dispatch, as even
+      // duplicate events prove the connection is alive.
       int gate_role = gate_role_from_event((const char *)(body["event"] | ""));
       if (gate_role >= 0) {
-        gate_liveness_mark_role_connected(static_cast<GateRole>(gate_role), client->id(),
-                                           (const char *)(body["gate_id"] | ""), client->remoteIP(),
-                                           debug_timestamp_ms());
+        gate_liveness_mark_role_connected(static_cast<GateRole>(gate_role), client->id(), (const char *)(body["gate_id"] | ""), client->remoteIP(),
+                                          debug_timestamp_ms());
       }
-      // Same "body=" shape http_log_request() uses -- tools/cerberus_log_stats.py's
-      // LINE_RE matches on "body={...}" regardless of the preceding tag, so
-      // this keeps that tool working unmodified.
+      // Matches http_log_request() formatting so tools/cerberus_log_stats.py
+      // parses `body={...}` without modifications.
       if (g_debug_verbose_enabled) {
         String body_str;
         serializeJson(body, body_str);
@@ -403,40 +377,24 @@ inline void ws_event_handler(AsyncWebSocket *server, AsyncWebSocketClient *clien
       uint64_t tsf_us = 0;
       bool handled = handle_gate_event_json(body, response_json, http_status, tsf_us);
       if (!handled) {
-        debug_log_enqueue("[WS] rejected: gate_id=\"%s\" event=\"%s\"", (const char *)(body["gate_id"] | ""),
-                           (const char *)(body["event"] | ""));
+        debug_log_enqueue("[WS] rejected: gate_id=\"%s\" event=\"%s\"", (const char *)(body["gate_id"] | ""), (const char *)(body["event"] | ""));
       } else {
-        // Ack back over the same client so hesperus's retry mechanism
-        // (NETWORK-TIMING-LOG.md status section item 1) knows this event
-        // landed -- sent whether this was a fresh dispatch or a recognised
-        // duplicate (handle_gate_event_json()'s dedup check), since either
-        // way cerberus genuinely has this event now. Hand-built literal
-        // rather than JsonDocument/serializeJson: a single scalar field, on
-        // the shared async_tcp task, doesn't need it.
+        // Ack back over the same client to halt Hesperus retries (fresh or duplicate).
+        // Uses a hand-built string instead of JsonDocument to avoid allocation overhead on async_tcp.
         char ack[48];
         snprintf(ack, sizeof(ack), "{\"ack_tsf_us\":%llu}", (unsigned long long)tsf_us);
-        // Ack-path candidate-cause instrumentation (NETWORK-TIMING-LOG.md,
-        // "acks not arriving back at hesperus in time" issue, candidate a):
-        // read-only TCP-layer state on the underlying AsyncClient, captured
-        // right before dispatch. canSend()==false ("ack is not pending")
-        // means a previous write on this connection hasn't been TCP-acked by
-        // hesperus yet -- i.e. still queued/in-flight below the WS layer,
-        // not merely "not yet processed by hesperus's app code". Deliberately
-        // NOT using AsyncClient::onAck() for this: AsyncWebSocketClient
-        // already binds its own onAck handler on this same client for its
-        // outgoing message-queue bookkeeping (_runQueue()), and onAck() only
-        // holds one callback -- registering ours would silently replace
-        // theirs and break queued-message delivery after the first frame.
+        // TCP-layer state pre-dispatch instrumentation (NETWORK-TIMING-LOG.md).
+        // `!canSend()` means a prior write is un-acked by Hesperus (queued/in-flight below WS layer).
+        // Note: Avoid AsyncClient::onAck() here as AsyncWebSocketClient uses it internally;
+        // registering a custom callback would overwrite theirs and break message delivery.
         AsyncClient *raw_client = client->client();
         bool ack_path_pending = !raw_client->canSend();
         size_t ack_path_space = raw_client->space();
         uint32_t t_ack_dispatch_ms = debug_timestamp_ms();
         client->text(ack);
         uint32_t t_ack_sent_ms = debug_timestamp_ms();
-        debug_log_enqueue("[WS-ACK] tsf_us=%llu recv=%u dispatch=%u sent=%u text_ms=%u pending=%d space=%u",
-                           (unsigned long long)tsf_us, t_data_recv_ms, t_ack_dispatch_ms, t_ack_sent_ms,
-                           (unsigned)(t_ack_sent_ms - t_ack_dispatch_ms), (int)ack_path_pending,
-                           (unsigned)ack_path_space);
+        debug_log_enqueue("[WS-ACK] tsf_us=%llu recv=%u dispatch=%u sent=%u text_ms=%u pending=%d space=%u", (unsigned long long)tsf_us, t_data_recv_ms,
+                          t_ack_dispatch_ms, t_ack_sent_ms, (unsigned)(t_ack_sent_ms - t_ack_dispatch_ms), (int)ack_path_pending, (unsigned)ack_path_space);
       }
     }
   }
