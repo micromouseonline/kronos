@@ -39,6 +39,8 @@ See `docs/OPERATOR-GUIDE.md` for how to run a race day, and
 
 ## Build
 
+From the command line, something like:
+
 ```
 pio run -e cerberus-esp32-s3-cyd-touch-freenove
 pio run -e cerberus-esp32-s3-cyd-touch-freenove -t upload

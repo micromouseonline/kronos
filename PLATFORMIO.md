@@ -139,6 +139,40 @@ pio run -e <env-name> -t upload
 pio run                     # builds ALL environments - avoid unless you mean to
 ```
 
+## Setting a default environment
+
+No `platformio.ini` in this workspace sets `default_envs`, so a bare `pio
+run` builds every `[env:*]` (see the warning above). To make `pio
+run`/`pio run -t upload` target just one environment by default, add
+`default_envs` to the `[platformio]` section at the top of that project's
+`platformio.ini`:
+
+```ini
+[platformio]
+extra_configs = boards.ini
+default_envs = cerberus-esp32-s3-cyd-touch-freenove
+```
+
+Accepts a comma-separated list if more than one environment should build by
+default. `-e <name>` on the command line always overrides this. Don't point
+it at `[env:version_metadata]` (release-metadata only, not buildable) or
+`[env:native]` (host-side unit tests, no board/display/WiFi dependency) —
+pick one of the actual board environments.
+
+## Selecting a build environment in VSCode
+
+The PlatformIO IDE extension exposes environments two ways:
+
+- **PlatformIO sidebar (alien-head icon) → PROJECT TASKS**: each environment
+  is its own expandable entry (e.g. `cerberus-esp32-s3-cyd-touch-freenove`)
+  with Build/Upload/Clean/Monitor tasks underneath. Expand the one you want
+  and run its task directly — this works regardless of `default_envs`.
+- **Status bar environment switcher**: the bottom status bar shows the
+  currently active environment (`default_envs` if set, otherwise the first
+  `[env:*]` PlatformIO finds). Click it to open a picker listing every
+  environment in `platformio.ini`; the one you pick becomes the target for
+  the status bar's Build/Upload/Clean icons until changed again.
+
 ## Other sub-projects
 
 `hesperus-timing-gate/` and `ares-pulse-generator/` each have their own
