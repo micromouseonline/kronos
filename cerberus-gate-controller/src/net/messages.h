@@ -26,23 +26,22 @@ enum MessageType : int {
 
   // Outbound (Arduino to PC): a short TOUCH ("T") press while the main race
   // screen is showing. BUTTON_COMMAND_MAP (race-command-source.h) no longer
-  // feeds this into the RaceCommand pipeline at all -- RaceCommand::NEW_MOUSE,
-  // its former mapping, deliberately no-ops in every RaceState (race-timer.h)
-  // -- so this is purely a host-facing notification, the same "bypass the
-  // state machine, just tell RATS" pattern serial_send_run_time() and
-  // EXTRA_RUN already use. Value always 1, mirroring MSG_EXTRA_RUN's shape
-  // just below (not otherwise related to it).
+  // feeds this into the RaceCommand pipeline at all - this is purely a
+  // host-facing notification, the same "bypass the state
+  // machine, just tell RATS" pattern serial_send_run_time() and EXTRA_RUN
+  // already use. Value always 1, mirroring MSG_EXTRA_RUN's shape just below
+  // (not otherwise related to it).
   MSG_TOUCH_SHORT_PRESS = 91,
 
   // Inbound (PC to Arduino), from preferredMessageSequencesV2.pdf Annex A.
-  MSG_EXTRA_RUN = 92,      // decrement current run count by 1 (value always 1)
-  MSG_ENTRY_TIME_S = 93,   // seconds allowed for this entry, sent after NewMouse
-  MSG_ALLOWED_RUNS = 94,   // number of runs allowed for this entry, sent after NewMouse
-  MSG_EVENT_NAME = 95,     // name of the robotics event in progress, e.g. "Minos 2026"
-  MSG_CONTEST_NAME = 96,   // name of the current contest, e.g. "Senior Maze Solver"
-  MSG_REQUEST_TYPE = 97,   // PC asks the gate to identify itself (value always 0)
-  MSG_NEW_MOUSE = 98,      // value is now the mouse's name (text), not always 0
-  MSG_SET_MODE = 99,       // value is "TIMER" or "CALIBRATION"
+  MSG_EXTRA_RUN = 92,     // decrement current run count by 1 (value always 1)
+  MSG_ENTRY_TIME_S = 93,  // seconds allowed for this entry, sent after NewMouse
+  MSG_ALLOWED_RUNS = 94,  // number of runs allowed for this entry, sent after NewMouse
+  MSG_EVENT_NAME = 95,    // name of the robotics event in progress, e.g. "Minos 2026"
+  MSG_CONTEST_NAME = 96,  // name of the current contest, e.g. "Senior Maze Solver"
+  MSG_REQUEST_TYPE = 97,  // PC asks the gate to identify itself (value always 0)
+  MSG_NEW_MOUSE = 98,     // value is now the mouse's name (text), not always 0
+  MSG_SET_MODE = 99,      // value is "TIMER" or "CALIBRATION"
 
   // Outbound (Arduino to PC), reply to MSG_REQUEST_TYPE. Deliberately the
   // same numeric code as MSG_CONTEST_NAME above -- the source spec's own

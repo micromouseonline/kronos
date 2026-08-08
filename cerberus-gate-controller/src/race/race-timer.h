@@ -77,7 +77,6 @@ constexpr size_t NUM_MICE = sizeof(mouse_names) / sizeof(mouse_names[0]);
 // given InputEvent means as a RaceCommand.
 enum class RaceCommand {
   NONE,               //
-  NEW_MOUSE,          //
   ARM,                //
   START,              //
   GOAL,               //
@@ -387,8 +386,8 @@ inline uint32_t race_timer_entry_time_remaining_ms() {
 }
 
 // Arms for another run. Used to drop back to WAITING once this mouse's
-// allowed run count (race_timer_allowed_runs()) was used up, requiring
-// RaceCommand::NEW_MOUSE to continue -- that gate is gone: runs past the
+// allowed run count (race_timer_allowed_runs()) was used up, requiring a
+// new RESTART to continue -- that gate is gone: runs past the
 // allowed count still arm normally. race_timer_allowed_runs() now only
 // bounds what race_timer_render_run_times() (race-timer-display.h) shows
 // and what counts as this mouse's "official" run_number range; the

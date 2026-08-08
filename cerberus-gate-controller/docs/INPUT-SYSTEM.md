@@ -1,200 +1,150 @@
-# Cerberus gate controller — input system
 
-Race commands (ARM, START, GOAL, new mouse) are driven by physical
-buttons — today, exclusively the NeoKey 1x4 I2C keypad, since none of the
-four supported boards enable the (still-present) GPIO-button code path.
-Touch does **not** drive race commands: the on-screen ARM/START/GOAL
-buttons were removed in favour of physical NeoKey input, and touch's only
-remaining role is generic screen navigation (menu, settings, WiFi setup)
-and tapping the WiFi-status panel.
+# Cerberus Gate Controller — Physical Input System Architecture
 
-All local input sources (currently NeoKey, plus the dormant GPIO-button
-path) place event notifications into a shared queue, drained by one common
-handler (see Architecture below).
+## Overview & Executive Summary
 
-Remote operation by serial messages or HTTP POST requests is implemented
--- see `docs/SYSTEM-DESCRIPTION.md`'s "5. Serial Protocol & Legacy Host
-Interop" and "3. HTTP Server" sections. It does **not** share the
-local-input queue below: Serial (`net/serial-protocol.h`) and HTTP
-(`net/http-server.h`) both post into a separate Main Event Queue
-(`SystemEvent`, `race/system-event-queue.h`), since they carry payload
-types (mouse name, `gate_id`, remote timestamp) the local queue's
-`ButtonID`/`InputSource` pair can't hold. Both queues converge on the same
-`race_timer_handle_command()` entry point -- the state machine never needs
-to know which queue, or which producer, an event came from.
+Race commands (**ARM**, **START**, **GOAL**, **NEW MOUSE**) are driven exclusively by physical hardware. Today, the **Adafruit NeoKey 1x4 I2C keypad** is the sole active local source, consisting of four buttons marked
 
-## Architecture
+ - 'A' - ARM
+ - 'S' - START
+ - 'G' - GOAL
+ - 'T' - TOUCH
 
-A Local Input Polling Task on Core 1 (`input_poll_task`, `main.cpp`) polls
-GPIO buttons and NeoKey every `INPUT_POLL_PERIOD_MS` (15ms, `config.h`) and
-posts events into a shared FreeRTOS queue (`input-events.h`). Touch is
-**not** on this task, is not a race-command producer, and never posts into
-this queue (`InputSource::TOUCH` is still declared in the `InputSource`
-enum but nothing produces it) -- it's polled internally by LVGL's own
-input device (`lvgl_touch_init()`, `display/lvgl-bridge.h`/`.cpp`) purely
-for screen navigation.
+Each button, when pressed drives a race command, setting the race state, controlling the timers and notifying the RATS host.
+Touch input does **not** drive race commands, it simply notifies the RATS host of a touch. 
 
-`loop()` (`main.cpp`) drains the queue every iteration via
-`input_queue_drain(input_event_handler)`. The handler (`main.cpp`) maps
-`ButtonID`/`InputEventType` to a `RaceCommand` via
-`race_command_from_button()` (`race/race-command-source.h`) and calls
-`race_timer_handle_command()` (`race/race-timer.h`) -- see "App state"
-below. It also drives NeoKey LED feedback from the current `RaceState`
-(`neokey_reflect_race_state()`, `main.cpp:75-125`), and handles a held
-NeoKey TOUCH key as a UI-only "return to menu" navigation, independent of
-the race state machine.
+Long presses on the buttons perform special actions. At the time of writing, only two such actions exist:
 
-Producers are interchangeable: any local producer posts the same
-`ButtonID`/`InputSource` pairs, so this handler never needs to know which
-physical device generated a press. That held true when touch was also a
-producer and remains true now that NeoKey is the only active one.
+ - 'A' - long press starts a new mouse
+ - 'T' - long press switches from the race display to the main menu
 
-### Button-activity mapping
+Physical GPIO inputs can also be used to drive the ARM, START and GOAL commands but this is not currently implemented
 
-What a press or hold actually *means* (which `RaceCommand` it produces) is
-centralized in one table, `BUTTON_COMMAND_MAP` (`race/
-race-command-source.h`) -- one `{on_press, on_hold}` row per `ButtonID`.
-Every producer posts through this table automatically once it's reduced a
-physical event to a `ButtonID`/`InputEventType` pair, so changing what any
-button's press or hold does is a one-line edit there, not a hunt through
-each producer.
+```
+                 ┌──────────────────────┐
+                 │   NeoKey 1x4 (I2C)   │
+                 └──────────┬───────────┘
+                            │ (Polls every 15ms on Core 1)
+                            ▼
+┌─────────────────┐  ┌──────────────┐
+│  GPIO Buttons   ├──►  Local Queue │
+│ (Dormant path)  │  │(ButtonID/Type│
+└─────────────────┘  └──────┬───────┘
+                            │
+                            │ (Drained via loop())
+                            ▼
+┌────────────────────┐  ┌──────────────┐   BUTTON_COMMAND_MAP  ┌────────────────────────────┐
+│ Serial Messages    ├──► Main System  ├───────────────────────► race_timer_handle_command()│
+├────────────────────┤  │    Queue     │                       │   (Race State Machine)     │
+│ WebSocket /ws      ├──►              │                       └────────────────────────────┘
+│ (primary, gates)   │  │(SystemEvent) │
+├────────────────────┤  │              │
+│ HTTP POST /api/    ├──►              │
+│ event (secondary)  │  └──────────────┘
+└────────────────────┘
+```
+
+---
+
+## 1. Local vs. Remote Event Architecture
+
+Local and remote inputs both drive the central race state machine (`race_timer_handle_command()`), but use separate event queues based on payload requirements. The buttons carry no additional information but network and serial inputs can carry various metadata items:
+
+* **Local Input Queue (`input-events.h`):** Receives events from physical hardware via a simple `ButtonID` / `InputSource` pair.
+* **Main System Event Queue (`race/system-event-queue.h`):** Receives `SystemEvent` payloads from **Serial** (`net/serial-protocol.h`) and the network — primarily a persistent **WebSocket** (`/ws`) connection held open by each gate, with **HTTP POST `/api/event`** kept as a secondary one-shot fallback for the same event schema (both handled by `net/http-server.h`). This separate queue is required to transport rich metadata (mouse name, `gate_id`, remote timestamps).
+
+The core state machine remains completely agnostic to which queue or physical device produced an event.
+
+---
+
+## 2. Core Processing Flow (Local Input)
+
+1. **Polling (`Core 1`):** A dedicated task (`input_poll_task`, `main.cpp`) polls physical inputs every 15ms (`INPUT_POLL_PERIOD_MS`).
+2. **Queueing:** Physical presses are pushed to the shared FreeRTOS queue.
+3. **Execution (`loop()`):** The main loop drains the queue via `input_queue_drain(input_event_handler)`.
+4. **Command Mapping:** The handler maps `ButtonID` and `InputEventType` to a `RaceCommand` using `BUTTON_COMMAND_MAP` and updates `RaceState`.
+5. **Visual Feedback:** Updates the NeoKey status LEDs using `neokey_reflect_race_state()`.
+
+---
+
+## 3. Command Mapping Reference
+
+Input intent is centralized in `BUTTON_COMMAND_MAP` (`race/race-command-source.h`). Changing a button's press or hold behavior requires editing a single row in this table:
 
 ```c++
 constexpr ButtonCommandMap BUTTON_COMMAND_MAP[NUM_BUTTONS] = {
-    /* BTN_ARM   */ {RaceCommand::ARM, RaceCommand::RESTART},
-    /* BTN_START */ {RaceCommand::START, RaceCommand::NONE},
-    /* BTN_GOAL  */ {RaceCommand::GOAL, RaceCommand::NONE},
-    /* BTN_TOUCH */ {RaceCommand::NEW_MOUSE, RaceCommand::NONE},
+/* BTN_ARM   */ {RaceCommand::ARM,       RaceCommand::RESTART},
+/* BTN_START */ {RaceCommand::START,     RaceCommand::NONE},
+/* BTN_GOAL  */ {RaceCommand::GOAL,      RaceCommand::NONE},
+/* BTN_TOUCH */ {RaceCommand::NONE,      RaceCommand::NONE},
 };
 ```
 
-## Input producers
+---
 
-**NeoKey 1x4** (`neokey-driver.h` / `neokey-buttons.h` / `neokey-pixels.h`,
-all at `src/`, not under a `neokey/` subfolder) -- optional external I2C
-attachment (Adafruit seesaw chip, address 0x30), enabled by default on all
-4 boards regardless of whether a physical module is present. **This is the
-only active local producer of ARM/START/GOAL/TOUCH race commands today.**
-- Init is fully non-blocking: a background FreeRTOS task does a quick
-  presence probe, then the full handshake only if something acks. The rest
-  of the app never waits on it.
-- Runtime presence detection (`Neokey::isAvailable()`) -- an absent module
-  degrades to silent no-ops (no errors, no hangs, no blocking of other
-  input producers), both at boot and if unplugged while running.
-- Debounce, long-press, double-press, and combo detection are all built
-  into the `Neokey` class, but only press and hold (`InputEventType::
-  PRESSED` / `HELD` -- there is no release event type) are currently
-  wired into the event queue. Double-press and combo detection exist but
-  have no call sites yet.
-- Held buttons map through `BUTTON_COMMAND_MAP` like every other producer
-  (ARM-held -> `RaceCommand::RESTART`); a held NeoKey TOUCH button
-  additionally returns to the menu screen via a special case in
-  `main.cpp`'s `input_event_handler` (not through the table -- a UI-only
-  action, same idea as the old touch-panel long-press before it was
-  removed).
-- 4 onboard NeoPixel LEDs, independently controllable (`neokey_set_colour()`
-  / `neokey_set_colours()` / `neokey_set_all()`, `neokey-pixels.h`).
-  `neokey_set_colours()` (plural, takes a `KeyColours` struct) is what
-  drives the per-`RaceState` LED feedback in `main.cpp`. Key 3 (BTN_TOUCH)
-  is normally reserved for the WiFi-status indicator
-  (`net/wifi-manager.h`'s `WIFI_STATUS_KEY`) rather than race-state
-  feedback, since none of the target boards has a working onboard status
-  LED. See `docs/OPERATOR-GUIDE.md` for what each LED colour means during
-  a race.
+## 4. Input Producers
 
-**Physical GPIO buttons** (`gpio-buttons.h`) -- present in code, currently
-unused: no board enables `HAS_GPIO_BUTTONS`.
-- Buttons A/B/C, active-low, debounced (`DebouncedButton`, `button/
-  button.h`).
-- All three support press + hold (`GPIO_BUTTON_LONG_PRESS_MS`): PRESSED
-  fires on the press edge, HELD fires once mid-hold if still down past
-  the threshold -- the same dual-post pattern as NeoKey.
-- Maps through `BUTTON_COMMAND_MAP` like every other producer.
-- On a board with no touchscreen, `BTN_TOUCH` would never be produced here.
+### NeoKey 1x4 Keypad (Primary Local Input)
 
-**Touch** -- all 4 boards. Capacitive (FT6336U, CST820) or resistive
-(XPT2046), abstracted by LovyanGFX. **Not a race-command producer.** Its
-role today is limited to:
-- On-screen navigation between the menu, main timer, settings, and
-  WiFi-setup screens, via EEZ Studio-generated LVGL widgets (`ui/
-  screens.c`) and their callbacks in `eez-actions.cpp`
-  (`action_on_menu_*`, `action_on_settings_*`, `action_on_wifi_setup_*`).
-- A tap on the WiFi-status panel on the main screen
-  (`action_on_menu_setup`, wired to `pnl_status_wifi` in
-  `create_screen_main()`).
+* **Status:** Active.
+* **Driver:** `src/neokey-driver.h`, `neokey-buttons.h`, `neokey-pixels.h`
+* **Bus Address:** I2C address `0x30` (Adafruit seesaw).
+* **Fault Tolerance:** Non-blocking initialization via a background FreeRTOS task. If missing or disconnected mid-run, `Neokey::isAvailable()` allows the system to degrade silently to no-ops without blocking other inputs.
+* **Supported Events:** Handles `PRESSED` and `HELD` events.
+* **LED Feedback:** Features 4 onboard NeoPixels. .
+* **Special Navigation Behaviour:** Holding the NeoKey `TOUCH` key bypasses the command table to trigger an immediate UI return-to-menu action.
 
-An earlier design routed ARM/START/GOAL/TOUCH through on-screen buttons
-(`action_on_timer_arm/start/goal/touch` in `eez-actions.cpp`, wired from
-`ui/screens.c`'s main timer screen). That UI was removed when the status
-bar replaced it; the four `action_on_timer_*` function bodies are gone,
-though `ui/actions.h` still carries their now-unused `extern`
-declarations. If you find yourself looking for on-screen race-command
-buttons, they no longer exist -- use the physical NeoKey keypad.
+### Physical GPIO Buttons (Fallback)
 
-A 250ms touch lockout (`trigger_touch_lockout()`,
-`display/lvgl-bridge.cpp`) debounces touch input immediately after a
-screen change.
+* **Status:** Dormant (No active boards set `HAS_GPIO_BUTTONS`).
+* **Driver:** `gpio-buttons.h` / `button/button.h`
+* **Logic:** Debounced active-low inputs (Buttons A/B/C). Fires `PRESSED` on the initial edge and `HELD` once if held past `GPIO_BUTTON_LONG_PRESS_MS`. Maps directly through `BUTTON_COMMAND_MAP`.
 
-## Remote producers (Serial & HTTP)
+These can be used as alternate manual inputs or could be wired to external gate hardware. In the latter case, they woudld really need to drive an interrupt toget accurate timing data.
 
-Serial and HTTP were originally sketched as a future `InputSource::
-WIFI_MESSAGE` value on the local input queue; the actual implementation
-went a different route instead (`input-events.h`'s `InputSource` enum has
-no such placeholder). Both post into the separate `SystemEvent` queue and
-converge on `race_timer_handle_command()` alongside local button input:
+### Touchscreen Panel
 
-- **Serial** (`net/serial-protocol.h`, `race/race-command-source.h`) --
-  `race_command_from_serial()` and `serial_protocol_handle_info_message()`
-  parse the legacy bracket-CSV RATS V2 protocol (`<type,value>`) and post
-  `RaceCommand`s such as `NEW_MOUSE` (from `MSG_NEW_MOUSE`),
-  `ENTER_CALIBRATION`/`RESUME_TIMER` (from `MSG_SET_MODE`), and
-  `EXTRA_RUN` (from `MSG_EXTRA_RUN`).
-- **HTTP** (`net/http-server.h`, `race/race-command-source.h`) --
-  `POST /api/event` events are mapped through `HTTP_EVENT_COMMAND_MAP` via
-  `race_command_from_http()` into the same `RaceCommand` set.
+* **Status:** Active for UI navigation only (Not a race command producer).
+* **Hardware Support:** FT6336U / CST820 (Capacitive) and XPT2046 (Resistive), abstracted via LovyanGFX.
+* **Handling:** Polled directly on Core 0 by LVGL (`lvgl_touch_init()`). It never posts to the local input queue.
+* **Debounce Protection:** Enforces a 250ms touch lockout (`trigger_touch_lockout()`) immediately following screen transitions.
 
-## App state
+### Remote Producers (Serial, WebSocket & HTTP)
 
-There is no `AppState`/Supervisor menu system. Race progress is tracked by
-two enums in `race/race-timer.h`:
-- `RaceState`: `CALIBRATE` / `NEW_MOUSE` / `WAITING` / `ARMED` / `RUNNING`
-  / `GOAL` / `TIMED_OUT`.
-- `RaceCommand`: `NONE` / `NEW_MOUSE` / `ARM` / `START` / `GOAL` /
-  `RESTART` / `ENTER_CALIBRATION` / `RESUME_TIMER` / `EXTRA_RUN`.
+* **Serial Protocol (`net/serial-protocol.h`):** Parses legacy bracket-CSV RATS V2 commands (`<type,value>`). A `NewMouse` line maps to `RaceCommand::RESTART`, not `NEW_MOUSE` — deliberately, so it works from any race state (`race_command_from_serial()`, `race/race-command-source.h`). Everything else (`SetMode` → `ENTER_CALIBRATION`/`RESUME_TIMER`, `ExtraRun` → `EXTRA_RUN`, etc.) is handled by a separate function in the same file, `serial_protocol_handle_info_message()`.
+* **WebSocket (`net/http-server.h`, route `/ws`):** The primary transport for remote gate boards — each gate holds one persistent connection open, parsed by `ws_event_handler()`.
+* **HTTP Server (`net/http-server.h`):** `POST /api/event` is a secondary, one-shot fallback carrying the same JSON event schema as `/ws`.
 
-`race_timer_handle_command()` advances `RaceState` in response to each
-`RaceCommand`, from whichever producer it came from. Screen navigation
-(menu vs. main timer screen) is a separate concern, handled by EEZ
-Studio's `loadScreen()` (`ui/screens.c`), decoupled from race state. A
-250ms touch lockout (`trigger_touch_lockout()`, `display/lvgl-bridge.cpp`)
-debounces touch input immediately after a screen change.
+  Both the WebSocket and HTTP POST paths share one dispatch function, `handle_gate_event_json()` → `race_command_from_http()` (`HTTP_EVENT_COMMAND_MAP`, `race/race-command-source.h`) — there's no separate WS-only command map.
 
-## Touch calibration (`display/touch-calibration.h`)
+---
 
-4-corner interactive wizard, NVS-persisted, reused across every touch
-technology -- needed by resistive touch (raw ADC scaling) and by
-capacitive touch (rotation offset between the panel and the touch chip's
-native orientation) alike. Gated per board by `TOUCH_NEEDS_CALIBRATION`.
-Since touch now drives only menu/settings navigation (not race commands),
-a bad calibration locks the user out of the menu, not out of racing.
+## 5. State Machine & Navigation
 
-Currently only runs automatically at boot (`setup()`, before
-`input_poll_task` is created -- boot-time ordering avoids racing the
-polling task against `lcd.getTouch()`, rather than any runtime suspend).
-The menu has a "Recalibrate" entry (`action_on_menu_calibrate`,
-`eez-actions.cpp`) but it is currently a stub that only logs to serial --
-it does not yet call into the calibration wizard. On-demand recalibration
-is a known gap (see `docs/PLANNED-UPDATES.md`).
+Race progression is tracked in `race/race-timer.h` across two primary enums:
 
-## Per-board capability matrix
+* **`RaceState`:** `CALIBRATE` | `NEW_MOUSE` | `WAITING` | `ARMED` | `RUNNING` | `GOAL` | `TIMED_OUT`
+* **`RaceCommand`:** `NONE` | `ARM` | `START` | `GOAL` | `RESTART` | `ENTER_CALIBRATION` | `RESUME_TIMER` | `EXTRA_RUN`
 
-| Board | Touch | Calibration | Physical buttons | NeoKey SDA/SCL | NeoKey confirmed |
-|---|---|---|---|---|---|
-| Freenove S3 CYD | FT6336U (capacitive) | yes | none | 6/5 | present + absent |
-| JC2432W328C | CST820 (capacitive) | yes | none | 21/22 | present + absent |
-| CYD2USB (ILI9341) | XPT2046 (resistive) | yes | none | 27/22 | present + absent |
-| CYD2USB (ST7789) | XPT2046 (resistive) | yes | none | 27/22 | present + absent |
+Screen transitions (e.g., loading screens via EEZ Studio’s `loadScreen()`) run independently of race state execution.
 
-Capability flags (`HAS_TOUCH_INPUT`, `HAS_GPIO_BUTTONS`,
-`HAS_NEOKEY_BUTTONS`, `TOUCH_NEEDS_CALIBRATION`, `TOUCH_SHARES_DISPLAY_SPI_BUS`)
-and NeoKey pins live in `boards/*.h`, one file per board.
+---
+
+## 6. Touch Calibration (`display/touch-calibration.h`)
+
+* **Scope:** 4-corner interactive calibration wizard, stored in NVS. Required by resistive screens (ADC scaling) and capacitive screens (rotation offset corrections). Controlled per board via `TOUCH_NEEDS_CALIBRATION`.
+* **Current Behaviour:** Runs automatically at boot (`setup()`) before launching `input_poll_task`. A test is made for an existing calibration and, if there is none, halts the startup to allow manual calibration.
+* **Manual Calibration**: if needed, the main menu screen provides a manual calibration option.
+
+---
+
+## 7. Board Capability Matrix
+
+| Board Model | Touch Controller | Calibration | GPIO Buttons | NeoKey (SDA/SCL) | NeoKey Tested |
+| --- | --- | --- | --- | --- | --- |
+| **Freenove S3 CYD** | FT6336U (Capacitive) | Yes | None | 6 / 5 | Present & Absent |
+| **JC2432W328C** | CST820 (Capacitive) | Yes | None | 21 / 22 | Present & Absent |
+| **CYD2USB (ILI9341)** | XPT2046 (Resistive) | Yes | None | 27 / 22 | Present & Absent |
+| **CYD2USB (ST7789)** | XPT2046 (Resistive) | Yes | None | 27 / 22 | Present & Absent |
+
+*Note: Hardware capability flags and pin definitions are located in `boards/*.h`.*

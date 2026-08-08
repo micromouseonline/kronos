@@ -150,17 +150,6 @@ void test_leaderboard_max_out_truncates_by_mouse_order(void) {
 // State machine
 // ---------------------------------------------------------------------------
 
-void test_calibrate_bare_new_mouse_is_ignored(void) {
-  // docs/RACE-STATE-MACHINE.md: only RESTART (which NewMouse's serial/HTTP/
-  // button producers all normalize to) drops the controller out of
-  // CALIBRATING -- a bare NEW_MOUSE (BTN_TOUCH's short press) gets no
-  // response here (see race-timer.h's CALIBRATE case).
-  ASSERT_STATE_EQ(RaceState::CALIBRATE);
-  race_timer_handle_command(RaceCommand::NEW_MOUSE);
-  ASSERT_STATE_EQ(RaceState::CALIBRATE);
-  TEST_ASSERT_EQUAL_UINT16(0, mouse_id);
-}
-
 void test_calibrate_restart_enters_waiting(void) {
   ASSERT_STATE_EQ(RaceState::CALIBRATE);
   race_timer_handle_command(RaceCommand::RESTART);
@@ -317,7 +306,6 @@ int main(int argc, char **argv) {
   RUN_TEST(test_leaderboard_ties_keep_mouse_order);
   RUN_TEST(test_leaderboard_max_out_truncates_by_mouse_order);
 
-  RUN_TEST(test_calibrate_bare_new_mouse_is_ignored);
   RUN_TEST(test_calibrate_restart_enters_waiting);
   RUN_TEST(test_waiting_arm_enters_armed);
   RUN_TEST(test_waiting_restart_reenters_new_mouse);

@@ -19,10 +19,10 @@
 struct SystemEvent {
   RaceCommand type;
   uint64_t timestamp_us;
-  // Mouse name (RaceCommand::NEW_MOUSE, RATS V2) or gate_id (HTTP),
-  // depending on source -- payload_is_mouse_name disambiguates which,
-  // since main.cpp's system_event_handler() is the single consumer for
-  // every source and can't otherwise tell them apart.
+  // Mouse name (RaceCommand::RESTART's payload, from a RATS V2 NewMouse
+  // line) or gate_id (HTTP), depending on source -- payload_is_mouse_name
+  // disambiguates which, since main.cpp's system_event_handler() is the
+  // single consumer for every source and can't otherwise tell them apart.
   char payload[32];
   bool payload_is_mouse_name = false;
 };

@@ -93,7 +93,6 @@ Keys 0-2 (ARM/START/GOAL) reflect the current race state:
 | Race state | Key 0 (ARM) | Key 1 (START) | Key 2 (GOAL) |
 |---|---|---|---|
 | Calibrating | off | off | off |
-| New mouse (transient) | magenta | magenta | magenta |
 | Waiting for robot | green | green | green |
 | Armed | green | off | off |
 | Running | off | green | off |
@@ -124,10 +123,9 @@ starts in **Calibrating**. This is a self-test screen, not a race state:
 ## Running a race
 
 1. **Start a new mouse.** Long-press ARM (or send a NewMouse command from
-   the host). The controller briefly shows New Mouse (all three LEDs
-   magenta), then settles into **Waiting**, all three LEDs green. The
-   screen shows the mouse's name, the maximum entry time, and a `0/5`
-   run counter (defaults; the host can override both via serial/HTTP
+   the host). The controller goes straight to **Waiting**, all three LEDs
+   green. The screen shows the mouse's name, the maximum entry time, and a
+   `0/5` run counter (defaults; the host can override both via serial/HTTP
    before the first Arm).
 2. **Place the mouse in the start cell and press ARM.** The controller
    moves to **Armed** — key 0 (ARM) lights, keys 1/2 go off. The run timer

@@ -182,11 +182,12 @@ struct HttpEventCommandMap {
 // reachable here (unlike from a physical button, see BUTTON_COMMAND_MAP's
 // comment) -- it has no dedicated physical button and is only raised via
 // serial or HTTP command.
-// NEW_MOUSE -> RESTART, not RaceCommand::NEW_MOUSE -- same reasoning as
-// BUTTON_COMMAND_MAP's ARM-hold and race_command_from_serial's <98,0>
-// handling above: race_timer_handle_command's WAITING/RUNNING/GOAL branches
-// only act on RESTART, so this is what makes an HTTP new-mouse request take
-// effect regardless of current race state, matching the other two producers.
+// The "NEW_MOUSE" event string maps to RaceCommand::RESTART -- same
+// reasoning as BUTTON_COMMAND_MAP's ARM-hold and race_command_from_serial's
+// <98,0> handling above: race_timer_handle_command's WAITING/RUNNING/GOAL
+// branches only act on RESTART, so this is what makes an HTTP new-mouse
+// request take effect regardless of current race state, matching the other
+// two producers.
 constexpr HttpEventCommandMap HTTP_EVENT_COMMAND_MAP[] = {
     {"ARM", RaceCommand::ARM},         {"START", RaceCommand::START},       {"GOAL", RaceCommand::GOAL},
     {"RESTART", RaceCommand::RESTART}, {"NEW_MOUSE", RaceCommand::RESTART},

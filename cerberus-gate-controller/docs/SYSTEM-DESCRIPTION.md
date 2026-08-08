@@ -7,7 +7,7 @@ CERBERUS is a multi-gate timing system for micromouse-style runs. A central cont
 * **MCU:** ESP32 or ESP32-S3 (dual-core).
 * **Display & Touch:** Cheap Yellow Display (CYD) board with SPI TFT screen and XPT2046 touch controller.
 * **Storage:** Onboard SD card slot sharing the SPI bus with display and touch.
-* **Local inputs:** Four physical buttons (GPIO or I2C NeoKey expander, depending on board — see `INPUT-SYSTEM.md`), mapped to race commands ARM, START, GOAL, NEW_MOUSE. Touch drives on-screen navigation only, not race commands.
+* **Local inputs:** Four physical buttons (GPIO or I2C NeoKey expander, depending on board — see `INPUT-SYSTEM.md`), mapped to race commands ARM, START, GOAL (plus RESTART, via ARM's long-press). Touch drives on-screen navigation only, not race commands.
 * **Status LEDs:** Four onboard NeoPixel LEDs, independently controllable.
 
 ---
@@ -47,9 +47,9 @@ A fixed-size struct passed by value into the Main Event Queue. No dynamic alloca
 
 ```c++
 struct SystemEvent {
-  RaceCommand type;           // ARM, START, GOAL, NEW_MOUSE, RESTART, etc.
+  RaceCommand type;           // ARM, START, GOAL, RESTART, etc.
   uint64_t timestamp_us;      // TSF time if remote, esp_timer_get_time() if local
-  char payload[32];           // Mouse name (NEW_MOUSE) or gate_id (HTTP)
+  char payload[32];           // Mouse name (RESTART, from a NewMouse) or gate_id (HTTP)
   bool payload_is_mouse_name; // Disambiguates payload content
 };
 ```
@@ -58,7 +58,7 @@ Defined in `src/race/system-event-queue.h:19–28`.
 
 ### `RaceCommand` Enum
 
-Defined in `src/race/race-timer.h:76–86`. Values: `NONE`, `NEW_MOUSE`, `ARM`, `START`, `GOAL`, `RESTART`, `ENTER_CALIBRATION`, `RESUME_TIMER`, `EXTRA_RUN`.
+Defined in `src/race/race-timer.h:76–86`. Values: `NONE`, `ARM`, `START`, `GOAL`, `RESTART`, `ENTER_CALIBRATION`, `RESUME_TIMER`, `EXTRA_RUN`.
 
 ---
 
@@ -68,7 +68,7 @@ Defined in `src/race/race-timer.h:76–86`. Values: `NONE`, `NEW_MOUSE`, `ARM`, 
 
 See `INPUT-SYSTEM.md` for complete details on local button hardware, debouncing, and event routing.
 
-* **Local Input Polling Task (Core 1):** Polls GPIO buttons and the I2C NeoKey expander every 15ms, handles debouncing in software, maps valid inputs to `RaceCommand` (ARM/START/GOAL/NEW_MOUSE), and pushes to the race state machine via `input_event_handler()` with local `esp_timer_get_time()` timestamp. Touch is polled separately by LVGL's own input device and drives on-screen navigation only — it is not on this task and does not produce race commands.
+* **Local Input Polling Task (Core 1):** Polls GPIO buttons and the I2C NeoKey expander every 15ms, handles debouncing in software, maps valid inputs to `RaceCommand` (ARM/START/GOAL, plus RESTART via ARM's long-press), and pushes to the race state machine via `input_event_handler()` with local `esp_timer_get_time()` timestamp. Touch is polled separately by LVGL's own input device and drives on-screen navigation only — it is not on this task and does not produce race commands.
 * **Asynchronous HTTP/WebSocket Listener (Core 0):** Connects to shared WiFi network as a station and runs an async web server on port 80. Remote intelligent gates hold a persistent WebSocket connection to `/ws` (replacing an earlier per-event TCP connect+POST+close cycle) and send timing events as JSON text frames:
   ```json
   {
@@ -86,7 +86,7 @@ See `INPUT-SYSTEM.md` for complete details on local button hardware, debouncing,
 * **Resource Ownership:** The main application task holds exclusive ownership of the display (LovyanGFX) and the race state machine.
 * **Operation:** Loops using a bounded-timeout queue receive so it wakes on a short tick (~30–50ms) even with no event pending — required for live timer redraw. On timeout with no event, redraws active timers; on a real message, advances the state machine and updates the display.
 * **Race State Machine:** Manages the sequence of states for a single mouse run. See `docs/RACE-STATE-MACHINE.md` for the authoritative state diagram and transition rules.
-  * **States** (from `src/race/race-timer.h:88–96`): `CALIBRATE` (boot), `NEW_MOUSE` (reset on new entry), `WAITING` (idle, waiting for start), `ARMED` (mouse in start cell), `RUNNING` (active race), `GOAL` (run finished), `TIMED_OUT` (run exceeded entry time).
+  * **States** (from `src/race/race-timer.h:88–96`): `CALIBRATE` (boot), `NEW_MOUSE` (the reset-for-a-new-entry step — name/run-count/timers — but never actually stored in `race_state`: `race_timer_enter_new_mouse()` runs that reset and writes `WAITING` directly, since nothing can observe `race_state` mid-call anyway; kept as an enum value for switch-exhaustiveness), `WAITING` (idle, waiting for start), `ARMED` (mouse in start cell), `RUNNING` (active race), `GOAL` (run finished), `TIMED_OUT` (run exceeded entry time).
   * **Entry Time Countdown:** A per-mouse countdown starting at first ARM, configured via host `MSG_ENTRY_TIME_S` (default 600s). Stored in `g_entry_time_s_limit` (`src/race/race-timer.h:163`), displayed on screen, clamped to zero. Behaviour on expiry is already decided (freeze timer, do not auto-advance state).
 * **Leaderboard:** Computes top finishers from completed runs, displayed on-screen (top 5 only due to space) and served via HTTP `GET /leaderboard` for full standings in a browser.
 
