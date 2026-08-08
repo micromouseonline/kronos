@@ -8,9 +8,7 @@
 /// @brief Legacy CERBERUS <-> host-PC wire protocol: `<type,value>\r\n`.
 ///
 /// This is the numeric protocol from the original Arduino/Visual-Basic
-/// micromouse timer (see the archived, unused `src/messages.h` at the src/
-/// root for the full original comment block and the disused calibration/
-/// trigger message types), extended with the inbound messages from
+/// micromouse timer, extended with the inbound messages from
 /// docs/preferredMessageSequencesV2.pdf ("RATS" protocol -- Registration
 /// And Timing System). It is kept here, in its intended home, purely as a
 /// wire-format layer: no dependency on RaceCommand/RaceState. See

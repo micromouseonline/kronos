@@ -163,5 +163,4 @@ The `gate_us` field (gate's own free-running microsecond timer) is parsed but cu
 * **Input hardware & debouncing:** `docs/INPUT-SYSTEM.md`.
 * **Operating the device on race day:** `docs/OPERATOR-GUIDE.md`.
 * **Serial protocol detail:** `tools/testing/SERIAL-TEST-PLAN.md`, `docs/preferredMessageSequencesV2.pdf`.
-* **Legacy V7.0 serial reference (superseded, historical):** `docs/LEGACY-V7-PROTOCOL.md`.
 * **Leaderboard implementation:** `src/race-timer.h`, `src/net/http-server.h`.
