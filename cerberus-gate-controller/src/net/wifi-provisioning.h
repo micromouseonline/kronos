@@ -27,12 +27,9 @@
 const char* const WIFI_PROVISIONING_AP_SSID = "CERBERUS-SETUP";
 const char* const WIFI_PROVISIONING_AP_PASSWORD = "cerberus-setup";
 
-// Set once wifi_provisioning_start() has drawn its instructions directly to
-// the LCD (bypassing LVGL). main.cpp's loop() checks this and stops pumping
-// lvgl_task_handler()/ui_tick() once it's true -- otherwise LVGL's next
-// flush of whatever screen was active repaints straight over our raw pixels,
-// since both are writing to the same panel and nothing else needs LVGL
-// running once Wi-Fi/race functionality is moot for the rest of this boot.
+// Set when wifi_provisioning_start() draws raw setup instructions to the LCD.
+// Signals main.cpp's loop() to stop calling lvgl_task_handler()/ui_tick() to prevent
+// LVGL from overwriting the display buffer during provisioning.
 inline volatile bool wifi_provisioning_active = false;
 
 inline void wifi_provisioning_handle_form(AsyncWebServerRequest* request) {
@@ -71,12 +68,12 @@ inline void wifi_provisioning_handle_save(AsyncWebServerRequest* request) {
   ESP.restart();
 }
 
-/// @brief Drops onto a WIFI_AP-only config portal: draws AP name/password/IP
-/// directly on the LCD (bypassing LVGL, same as touch-calibration.h's
-/// re_calibrate()) and serves a save-and-reboot form on the existing
-/// http_server. Returns once the portal is up; from then on the AsyncWebServer
-/// runs it independently, so the caller (wifi-manager.h's wifi_connect_task)
-/// has nothing further to do and deletes its own task.
+// @brief Launches the AP-only Wi-Fi configuration portal.
+//
+// Draws setup info (AP name, password, IP) directly to the LCD (bypassing LVGL)
+// and serves a save-and-reboot form via http_server. Once initialized,
+// AsyncWebServer handles requests independently, allowing the calling task
+// (wifi_connect_task) to safely self-delete.
 inline void wifi_provisioning_start(LGFX& lcd) {
   wifi_provisioning_active = true;
 
@@ -100,13 +97,13 @@ inline void wifi_provisioning_start(LGFX& lcd) {
   lcd.setTextSize(1);
   lcd.drawCenterString("Hold TOUCH to cancel & reboot", lcd.width() / 2, y);
 
-  // No http_server_restart() here -- http_server_init() already bound this
-  // server to IP_ADDR_ANY back in setup(), before Wi-Fi ever connected, so
-  // it keeps listening across the STA->AP interface swap with no restart
-  // needed. Calling end()+begin() right after WiFi.mode(WIFI_AP) instead hit
-  // a real lwIP/AsyncTCP race (bind error -8 / EADDRINUSE, seen on-device)
-  // where the old listening PCB hadn't finished releasing yet, so the
-  // rebind failed and nothing was left listening at all.
+  // No http_server_restart() is needed:
+  // http_server_init() bound to IP_ADDR_ANY during setup, so it continues
+  // listening seamlessly across the STA->AP transition.
+  //
+  // Note: Avoid calling end() + begin() after WiFi.mode(WIFI_AP). Doing so triggers
+  // an lwIP/AsyncTCP race condition (bind error -8 / EADDRINUSE) where the socket
+  // fails to release in time, leaving the server completely unhandled.
   http_server.on("/wifi", HTTP_GET, wifi_provisioning_handle_form);
   http_server.on("/wifi", HTTP_POST, wifi_provisioning_handle_save);
 
