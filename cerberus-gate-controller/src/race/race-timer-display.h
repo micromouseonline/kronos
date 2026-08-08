@@ -133,18 +133,29 @@ inline void race_timer_render_status_bar() {
   if (WiFi.status() == WL_CONNECTED) {
     lv_label_set_text_fmt(objects.lbl_status_wifi, LV_SYMBOL_WIFI " %ddBm", (int)WiFi.RSSI());
     lv_obj_set_style_text_color(objects.lbl_status_wifi, lv_color_hex(0xadff2f), LV_PART_MAIN | LV_STATE_DEFAULT);
+    // Matches timer_panel_blue's default (styles.c) -- explicit here (rather
+    // than left alone) so reconnecting always clears the MANUAL red below,
+    // since this runs every loop() tick regardless of which branch fired
+    // last time.
+    lv_obj_set_style_bg_color(objects.pnl_status_wifi, lv_color_hex(0x1e1e22), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_color(objects.pnl_status_wifi, lv_color_hex(0x1e1e22), LV_PART_MAIN | LV_STATE_DEFAULT);
   } else {
-    lv_label_set_text(objects.lbl_status_wifi, LV_SYMBOL_CLOSE " connecting");
-    lv_obj_set_style_text_color(objects.lbl_status_wifi, lv_color_hex(0xff3b30), LV_PART_MAIN | LV_STATE_DEFAULT);
+    // No connect timeout (net/wifi-manager.h) means "not connected" is a
+    // normal, indefinite operating state, not a transient one -- MANUAL
+    // reflects that the controller is running on local buttons alone,
+    // not "still trying".
+    lv_label_set_text(objects.lbl_status_wifi, "MANUAL");
+    lv_obj_set_style_text_color(objects.lbl_status_wifi, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(objects.pnl_status_wifi, lv_color_hex(0xFFFF00), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_color(objects.pnl_status_wifi, lv_color_hex(0xff3b30), LV_PART_MAIN | LV_STATE_DEFAULT);
   }
 
   // Per-role gate connection state (see net/gate-liveness.h) -- green "S"/
   // "G" when that gate's WS link is up, red when not. Recolor markup
   // (enabled in race_timer_display_init()) renders just "S G"; the "#RRGGBB
   // text#" runs themselves aren't visible glyphs.
-  lv_label_set_text_fmt(objects.lbl_status_gates, "#%s S# #%s G#",
-                         g_gate_link[(int)GateRole::START].connected ? "adff2f" : "ff3b30",
-                         g_gate_link[(int)GateRole::GOAL].connected ? "adff2f" : "ff3b30");
+  lv_label_set_text_fmt(objects.lbl_status_gates, "#%s S# #%s G#", g_gate_link[(int)GateRole::START].connected ? "adff2f" : "ff3b30",
+                        g_gate_link[(int)GateRole::GOAL].connected ? "adff2f" : "ff3b30");
 }
 
 //============================================================================

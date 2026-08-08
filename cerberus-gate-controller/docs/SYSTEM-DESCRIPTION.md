@@ -106,9 +106,9 @@ Implemented in `src/net/http-server.h` using `AsyncWebServer`. Endpoints:
 Implemented in `src/net/wifi-manager.h`.
 
 * **Non-blocking connect:** Runs as a background Core-0 task, polling WiFi status every 250ms. Reacts to connect/disconnect edges, not one-time checks, so reconnects are logged whether instant (cached NVS) or mid-retry.
-* **Fallback:** Local racing works even with no router present; WiFi joins whenever the router becomes available, no reboot needed.
+* **Fallback:** Local racing works even with no router present; WiFi joins whenever the router becomes available, no reboot needed. There's no connect timeout — the task retries forever and never forces a hand-off to WiFi provisioning; that only happens on an explicit `wifi_request_provisioning()` call from the WiFi Setup screen.
 * **Credential storage:** SSID and password cached in NVS (`src/net/secrets.h`), loaded at boot.
-* **Status display:** WiFi connection status shown on NeoKey LED position 3 (WIFI_STATUS_KEY).
+* **Status display:** WiFi connection status shown on the main screen's status bar (WIFI + dBm when connected, red "MANUAL" when not) — not on the NeoKey.
 
 ### 5. Serial Protocol & Legacy Host Interop
 

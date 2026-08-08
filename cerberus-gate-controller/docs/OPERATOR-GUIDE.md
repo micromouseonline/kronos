@@ -99,10 +99,11 @@ Keys 0-2 (ARM/START/GOAL) reflect the current race state:
 | Running | off | green | off |
 | Goal reached | off | off | green |
 
-Key 3 (TOUCH) is normally reserved for **WiFi status**, not race state:
-blinking cyan while connecting, off once connected. The only exception is
-during Calibrating (see below), where it briefly reflects a keypress
-instead.
+Key 3 (TOUCH) is reserved for WiFi status but stays off either way — WiFi
+connection status is shown on the main screen's status bar instead (WIFI and
+a dBm reading when connected, red **MANUAL** when not — see below). The only
+exception to key 3 staying off is during Calibrating (see below), where it
+briefly reflects a keypress instead.
 
 ## Power-on and Calibrating
 
@@ -173,9 +174,13 @@ a session; there's no mode switch to select between them.
   detected (unplugged, bad I2C connection). The controller still runs
   and still accepts remote commands; reseat/reconnect the keypad to
   restore local control — no reboot needed, it's detected automatically.
-- **Key 3 blinking cyan and staying that way:** WiFi isn't connecting.
-  Local racing is unaffected (WiFi is only needed for remote gates, the
-  HTTP leaderboard, and HTTP-driven remote control).
+- **Status bar shows red "MANUAL" instead of a dBm reading:** WiFi isn't
+  connected. There's no timeout and no forced hand-off to WiFi setup — the
+  controller keeps racing on the physical buttons indefinitely, and keeps
+  retrying the network in the background on its own. Local racing is
+  unaffected (WiFi is only needed for remote gates, the HTTP leaderboard,
+  and HTTP-driven remote control). To set up WiFi, hold TOUCH to reach the
+  main menu, then press **WiFi SETUP**.
 - **Controller stuck showing Calibrating:** it's waiting for a genuine
   new-mouse event — long-press ARM, or send `<98,...>` from the host.
 - **Touchscreen unresponsive after a screen change:** there's a brief

@@ -18,12 +18,13 @@ inline bool is_wifi_active() {
   return false;
 }
 
-// NeoKey key 3 (the BTN_TOUCH position) doubles as the Wi-Fi status light --
-// none of the 5 target boards has a working onboard status LED (three have
-// STATUS_LED=-1, one is missing HAS_LED, and the nominal HAS_NEOPIXEL board's
-// pin doesn't light in practice; see boards.ini). main.cpp's
-// neokey_reflect_race_state() deliberately leaves key 3 alone so this owns it
-// exclusively.
+// NeoKey key 3 (the BTN_TOUCH position) is reserved for the Wi-Fi status
+// light, kept exclusively off by this file (main.cpp's
+// neokey_reflect_race_state() deliberately leaves key 3 alone). It no longer
+// blinks to signal "not connected" -- the controller is expected to run
+// indefinitely on local buttons alone with no WiFi, so a flashing key would
+// just be a permanent false alarm. The status bar's WIFI/dBm vs. red
+// "MANUAL" label (race-timer-display.h) carries that indication instead.
 constexpr uint8_t WIFI_STATUS_KEY = 3;
 
 // Manual-testing aid only -- toggle off to silence the repeating 5s "IP:
@@ -44,19 +45,18 @@ inline bool g_wifi_rssi_report_enabled = false;
 // end() + begin() forces a fresh bind/listen.
 inline void (*wifi_on_connected)() = nullptr;
 
-// Fired once per boot if the link hasn't connected within
-// WIFI_PROVISIONING_TIMEOUT_MS -- wired up in main.cpp to
-// wifi_provisioning_start() (net/wifi-provisioning.h), which owns the lcd
-// instance this file doesn't have access to. Same "hook set by main.cpp"
-// shape as wifi_on_connected above.
+// Fired only by an explicit wifi_request_provisioning() call (see below) --
+// wired up in main.cpp to wifi_provisioning_start() (net/wifi-provisioning.h),
+// which owns the lcd instance this file doesn't have access to. Same "hook
+// set by main.cpp" shape as wifi_on_connected above.
 inline void (*wifi_on_provisioning_needed)() = nullptr;
 
 // Set by wifi_request_provisioning() (called from eez-actions.cpp's
 // action_on_menu_setup) to force provisioning open immediately, regardless
-// of whether the current network is connected -- the 60s timeout below only
-// covers "can't connect at all", which never fires if the compiled-in
-// secrets.h network is still in range (e.g. on a dev bench), so a manual
-// request needs its own unconditional path into the same hand-off.
+// of whether the current network is connected -- this is the *only* way into
+// the config portal (see wifi_connect_task below: there is no automatic
+// timeout into it), so a manual request needs its own unconditional path
+// into the hand-off.
 inline volatile bool wifi_provisioning_requested = false;
 
 /// @brief Forces Wi-Fi provisioning mode open on wifi_connect_task's next
@@ -65,13 +65,6 @@ inline volatile bool wifi_provisioning_requested = false;
 inline void wifi_request_provisioning() {
   wifi_provisioning_requested = true;
 }
-
-// How long to keep retrying the stored/secrets.h network before giving up
-// and dropping into the config portal. Generous enough to ride out a router
-// reboot or the venue AP taking a while to come up, short enough that a
-// genuinely wrong/absent network doesn't leave the device stuck blinking
-// indefinitely with no recovery path other than the physical Setup button.
-constexpr uint32_t WIFI_PROVISIONING_TIMEOUT_MS = 60000;
 
 // Core-0 background task: connects, then keeps monitoring and reconnects if
 // the link drops, so a race in progress never blocks on Wi-Fi and never
@@ -127,32 +120,24 @@ inline void wifi_connect_task(void*) {
   WiFi.begin(connect_ssid, connect_pass);
 
   bool was_connected = false;
-  bool blink_state = false;
   uint32_t attempt_start = millis();
-  uint32_t disconnected_since = millis();
   uint32_t last_ip_report = 0;
-  // Set on the first successful connect this boot -- the 60s timeout below
-  // is only meant to cover "can't join at all" (a bad/absent network at
-  // boot), not a drop mid-session. Without this, disconnected_since resets
-  // on every drop (below) and a race in progress would get yanked into the
-  // provisioning portal 60s after any brief AP hiccup, defeating the whole
-  // point of this task retrying forever once it's actually joined once.
-  bool ever_connected = false;
 
   for (;;) {
     bool connected = (WiFi.status() == WL_CONNECTED);
 
-    // Single hand-off point into the config portal (net/wifi-provisioning.h),
-    // reached either by the disconnected-too-long timeout below or by a
-    // manual wifi_request_provisioning() call -- the latter fires
-    // unconditionally, even while currently connected, since
-    // action_on_menu_setup's whole point is switching to a *different*
-    // network on demand, not waiting for this one to fail first. That call
-    // switches WiFi.mode() to AP-only, so this task has nothing further to
-    // do; deleting it rather than looping avoids it fighting the portal with
-    // pointless reconnect() calls against a now-AP-mode radio.
-    if (wifi_provisioning_requested ||
-        (!ever_connected && !connected && millis() - disconnected_since > WIFI_PROVISIONING_TIMEOUT_MS)) {
+    // Single hand-off point into the config portal (net/wifi-provisioning.h)
+    // -- reached only by an explicit wifi_request_provisioning() call
+    // (action_on_menu_setup's "New network" button), never automatically.
+    // There is no "give up after N seconds disconnected" path: the
+    // controller is meant to keep racing on local buttons alone
+    // indefinitely with no network at all, so a timed hand-off here would
+    // yank the display into the (LVGL-blocking) portal exactly when local
+    // control matters most. That call switches WiFi.mode() to AP-only, so
+    // this task has nothing further to do; deleting it rather than looping
+    // avoids it fighting the portal with pointless reconnect() calls against
+    // a now-AP-mode radio.
+    if (wifi_provisioning_requested) {
       debug_log_enqueue("[SYSTEM] Entering Wi-Fi provisioning mode");
       if (wifi_on_provisioning_needed != nullptr) {
         wifi_on_provisioning_needed();
@@ -161,7 +146,6 @@ inline void wifi_connect_task(void*) {
     }
 
     if (connected && !was_connected) {
-      ever_connected = true;
       esp_wifi_set_ps(WIFI_PS_NONE);
       neokey_set_colour(WIFI_STATUS_KEY, NP_OFF);
       debug_log_enqueue("[SYSTEM] Wi-Fi Connected!");
@@ -173,10 +157,7 @@ inline void wifi_connect_task(void*) {
       debug_log_enqueue("[SYSTEM] Wi-Fi connection lost, reconnecting...");
       WiFi.reconnect();
       attempt_start = millis();
-      disconnected_since = millis();
     } else if (!connected) {
-      blink_state = !blink_state;
-      neokey_set_colour(WIFI_STATUS_KEY, blink_state ? NP_CYAN : NP_OFF);
       if (millis() - attempt_start > 10000) {
         debug_log_enqueue("[SYSTEM] Wi-Fi connect attempt timed out, retrying...");
         WiFi.reconnect();
@@ -202,8 +183,9 @@ inline void wifi_connect_task(void*) {
 }
 
 /// @brief Starts Wi-Fi connect/reconnect as a non-blocking Core-0 task.
-/// Call once from setup(); never blocks the caller. Status shows on NeoKey
-/// key WIFI_STATUS_KEY (blinking cyan while searching, off once connected).
+/// Call once from setup(); never blocks the caller. Retries forever with no
+/// timeout; connection status shows on the main screen's status bar
+/// (race-timer-display.h), not on the NeoKey.
 inline void wifi_connect_start_async() {
   WiFi.setTxPower(WIFI_POWER_11dBm);
   xTaskCreatePinnedToCore(wifi_connect_task, "wifi_connect", 4096, nullptr, 1, nullptr, 0);
