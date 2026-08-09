@@ -1124,7 +1124,7 @@
               "type": "LVGLPanelWidget",
               "left": 8,
               "top": 8,
-              "width": 172,
+              "width": 162,
               "height": 28,
               "customInputs": [],
               "customOutputs": [],
@@ -1145,9 +1145,9 @@
                 {
                   "objID": "004bce7c-6d2d-45c9-efb2-86ffe71281bb",
                   "type": "LVGLLabelWidget",
-                  "left": -5,
+                  "left": -6,
                   "top": -8,
-                  "width": 163,
+                  "width": 143,
                   "height": 16,
                   "customInputs": [],
                   "customOutputs": [],
@@ -1191,7 +1191,7 @@
                   "groupIndex": 0,
                   "text": "CUNNING ODYSSEUS",
                   "textType": "literal",
-                  "longMode": "CLIP",
+                  "longMode": "DOT",
                   "recolor": false
                 }
               ],
@@ -1597,9 +1597,9 @@
             {
               "objID": "af9a7c1e-8263-4dcc-fd88-7f26a58352d9",
               "type": "LVGLPanelWidget",
-              "left": 185,
+              "left": 178,
               "top": 8,
-              "width": 41,
+              "width": 48,
               "height": 28,
               "customInputs": [],
               "customOutputs": [],
@@ -1620,9 +1620,9 @@
                 {
                   "objID": "264f6960-0b69-4844-9be0-2b1ef76b5ab4",
                   "type": "LVGLLabelWidget",
-                  "left": -8,
+                  "left": -14,
                   "top": -9,
-                  "width": 26,
+                  "width": 48,
                   "height": 18,
                   "customInputs": [],
                   "customOutputs": [],
@@ -1656,7 +1656,7 @@
                       "MAIN": {
                         "DEFAULT": {
                           "text_color": "greenyellow",
-                          "text_font": "MONTSERRAT_16",
+                          "text_font": "MONTSERRAT_14",
                           "text_align": "CENTER"
                         }
                       }
