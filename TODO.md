@@ -49,6 +49,10 @@ only, no bearing on production use.
 
 ---
 
+## ALL boards
+
+ - Add non volatile run logs. Cerberus can use an SD card. Hesperus can easily store perhaps 8000 runs at full logging
+
 ## cerberus-gate-controller
 
 Full list: **`cerberus-gate-controller/docs/PLANNED-UPDATES.md`** —
