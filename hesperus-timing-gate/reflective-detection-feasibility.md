@@ -256,26 +256,19 @@ secondary-processor alternative, the single-chip path's remaining open
 questions are narrower than they first looked, and both are ESP32-S3-specific
 unknowns rather than firm objections:
 
-1. **Core 0 headroom is unmeasured.** Unknown how much margin exists once the
-   Wi-Fi/lwIP internals ESP-IDF places there are accounted for — needs
-   profiling on real hardware before the new task's placement can be decided.
-   This is a scheduling-contention question, not a raw-throughput one: an
-   ESP32-S3 core has far more headroom than an ATtiny1604, and the DSP
-   pipeline was already shown comfortably feasible on that much smaller part
-   (see above), so compute capacity was never actually in doubt on this chip
-   — the open question is whether a new real-time task disrupts the
-   *timing* of Wi-Fi/lwIP work on Core 0 (or, if placed on Core 1 instead,
-   the *timing* of `TsfCaptureTask`), not whether the S3 has cycles to spare.
-   **How to measure:** enable FreeRTOS runtime stats
-   (`configGENERATE_RUN_TIME_STATS` + `configUSE_TRACE_FACILITY`) and read
-   `vTaskGetRunTimeStats()`/`uxTaskGetSystemState()` — this reports per-core
-   `IDLE0`/`IDLE1` percentages, the standard way to see actual headroom.
-   Should be measured under real load (Wi-Fi connected, WS session active,
-   events flowing), not at idle — this project's own `wsClient.loop()`
-   blocking-under-congestion issue (`NETWORK-TIMING-LOG.md`) already shows
-   Wi-Fi activity causes measurable stalls elsewhere in this firmware, so
-   idle-bench headroom on Core 0 wouldn't necessarily reflect race
-   conditions.
+1. **Core 0 headroom — measured, not a risk.** Profiled with an
+   `esp_register_freertos_idle_hook_for_cpu` probe (per-core idle-hit counter,
+   logged every ~5.1s, `gather-stats-core0` branch) under a 1000-simulated-run
+   load trial (`test-data/load-tests/`, both gate boards, ~5044s, Wi-Fi
+   connected and WS session active throughout). `core0_idle_hits` ran higher
+   than `core1_idle_hits` in both trials (goal: mean 5312 vs 5165; start: mean
+   5311 vs 5170 — ratio ~1.03), with tight variance and no starvation dips at
+   any point. Core 1 (`TsfCaptureTask`, `WsPump`, `UploadWorker`, `LED_Task`,
+   `loopTask`) is the busier core as expected; Core 0 (IDF Wi-Fi/lwIP
+   internals only) has equal or greater idle headroom under sustained real
+   load. The trial itself was clean — no panics/watchdog resets, every WS send
+   acked on `attempt=1`. A new Core 0 task is not expected to be a
+   scheduling-contention risk on this evidence.
 2. **ADC2-vs-Wi-Fi likely moot.** ADC1 has multiple input channels and
    continuous/DMA mode can round-robin sample a pattern of channels within
    one ADC unit — two channels at 4 kHz each is only ~8 kHz aggregate, a
@@ -285,9 +278,8 @@ unknowns rather than firm objections:
    confirming ADC1's actual max aggregate continuous rate against the TRM
    once real numbers matter, but this is no longer a first-order concern.
 
-Point 1 is resolvable by measurement, not a structural blocker. Neither point
-applies to the secondary-processor path, which stays off the Wi-Fi-carrying
-chip entirely.
+Point 1 is now resolved by measurement. Neither point applies to the
+secondary-processor path, which stays off the Wi-Fi-carrying chip entirely.
 
 ## Current per-core responsibility breakdown
 

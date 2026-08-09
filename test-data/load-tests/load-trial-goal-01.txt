@@ -1,0 +1,2973 @@
+[T=101670848ms] [CORE-LOAD] core=5159 (~5.1s window)
+LOAD] core0_idle_hits=5302 core1_idle_hits=5159 (~5.1s window)
+[T=101681142ms] [=5159 (~5.1s window)
+=5160 (~5.1s window)
+[T=101686290ms] [AUDIT ALERT] Temporal Disruption! Drift: 821 us. Rejecting stack value.
+[T=101686291ms] [DISCIPLINED SYN] Extrapolated TSF: 101686290526 (Alpha: 1.00000470)
+[T=101691436ms] [CORE-LOAD] core0_idle_hits=5296 core1_idle_hits=5158 (~5.1s window)
+] [CORE-LOAD] core0_idle_hits=5292 core1_idle_hits=5159 (~5.1s window)
+[T=101701731ms] [CORE-LOAD] core=5160 (~5.1s window)
+=5160 (~5.1s window)
+[T=101712025ms] [CORE-LOAD] core0_idle_hits=5300 core1_idle_hits=5163 (~5.1s window)
+[T=101712089ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101712115ms] [WS-ACK-RECV] tsf_us=101712086890 recv_t=101712111 attempt=1
+[T=101716389ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101716415ms] [WS-ACK-RECV] tsf_us=101716386911 recv_t=101716413 attempt=1
+[T=101717172ms] [CORE-LOAD] core0_idle_hits=5320 core1_idle_hits=5172 (~5.1s window)
+[T=101720689ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101720709ms] [WS-ACK-RECV] tsf_us=101720686894 recv_t=101720705 attempt=1
+[T=101722319ms] [CORE-LOAD] core0_idle_hits=5315 core1_idle_hits=5164 (~5.1s window)
+[T=101724989ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101725009ms] [WS-ACK-RECV] tsf_us=101724986883 recv_t=101725008 attempt=1
+[T=101727466ms] [CORE-LOAD] core0_idle_hits=5305 core1_idle_hits=5162 (~5.1s window)
+[T=101729289ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101729304ms] [WS-ACK-RECV] tsf_us=101729286888 recv_t=101729302 attempt=1
+CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5166 (~5.1s window)
+[T=101733589ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101733619ms] [WS-ACK-RECV] tsf_us=101733586876 recv_t=101733616 attempt=1
+[T=101737760ms] [e1_idle_hits=5166 (~5.1s window)
+[T=101737889ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101737909ms] [WS-ACK-RECV] tsf_us=101737886883 recv_t=101737908 attempt=1
+[T=101742189ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101742214ms] [WS-ACK-RECV] tsf_us=101742186872 recv_t=101742211 attempt=1
+=5172 (~5.1s window)
+[T=101746489ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101746504ms] [WS-ACK-RECV] tsf_us=101746486860 recv_t=101746503 attempt=1
+[T=101748054ms] [CORE-LOAD] core0_idle_hits=5302 core1_idle_hits=5165 (~5.1s window)
+[T=101750789ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101750809ms] [WS-ACK-RECV] tsf_us=101750786859 recv_t=101750804 attempt=1
+[T=101753201ms] [CORE-LOAD] core0_idle_hits=5304 core1_idle_hits=5166 (~5.1s window)
+[T=101755089ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101755109ms] [WS-ACK-RECV] tsf_us=101755086851 recv_t=101755106 attempt=1
+le_hits=5163 (~5.1s window)
+[T=101759389ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101759409ms] [WS-ACK-RECV] tsf_us=101759386852 recv_t=101759408 attempt=1
+[T=101763495ms] [CORE-LOAD] core0_idle_hits=5314 core1_idle_hits=5161 (~5.1s window)
+[T=101763689ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101763724ms] [WS-ACK-RECV] tsf_us=101763686847 recv_t=101763721 attempt=1
+[T=101767989ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101768004ms] [WS-ACK-RECV] tsf_us=101767986840 recv_t=101768003 attempt=1
+[T=101768642ms] [CORE-LOAD] core0_idle_hits=5321 core1_idle_hits=5171 (~5.1s window)
+[T=101772289ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101772309ms] [WS-ACK-RECV] tsf_us=101772286833 recv_t=101772306 attempt=1
+ core0_idle_hits=5302 core1_idle_hits=5162 (~5.1s window)
+1s w107 ms=51[T=101780889ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101780914ms] [WS-ACK-RECV] tsf_us=101780886825 recv_t=101780911 attempt=1
+[T=101784083ms] [CORE-LOAD] coreidle_hits=5322 core1_idle_hits=5223 (~5.1s window)
+[T=101785189ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101785219ms] [WS-ACK-RECV] tsf_us=101785186817 recv_t=101785214 attempt=1
+=5164 (~5.1s window)
+[T=101789489ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101789519ms] [WS-ACK-RECV] tsf_us=101789486806 recv_t=101789517 attempt=1
+[T=101793789ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101793814ms] [WS-ACK-RECV] tsf_us=101793786806 recv_t=101793810 attempt=1
+[T=101794377ms] [CORE-LOAD] core0_idle_hits=5316 core1_idle_hits=5166 (~5.1s window)
+[T=101798089ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101798114ms] [WS-ACK-RECV] tsf_us=101798086810 recv_t=101798113 attempt=1
+01799524ms] [CORE-LOAD] core0_idle_hits=5313 core1_idle_hits=5163 (~5.1s window)
+[T=101802389ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101802409ms] [WS-ACK-RECV] tsf_us=101802386798 recv_t=101802406 attempt=1
+hits=5313 core1_idle_hits=5165 (~5.1s window)
+[T=101806689ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101806714ms] [WS-ACK-RECV] tsf_us=101806686790 recv_t=101806710 attempt=1
+[T=101809818ms] [CORE-LOAD] core=5162 (~5.1s window)
+[T=101810989ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101811014ms] [WS-ACK-RECV] tsf_us=101810986790 recv_t=101811011 attempt=1
+[T=101814965ms] [CORE-LOAD] core0_idle_hits=5301 core1_idle_hits=5161 (~5.1s window)
+[T=101815289ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101815314ms] [WS-ACK-RECV] tsf_us=101815286783 recv_t=101815313 attempt=1
+[T=101819589ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101819619ms] [WS-ACK-RECV] tsf_us=101819586789 recv_t=101819616 attempt=1
+[T=101820112ms] [CORE-LOAD] core0_idle_hits=5307 core1_idle_hits=5166 (~5.1s window)
+[T=101823889ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101823914ms] [WS-ACK-RECV] tsf_us=101823886769 recv_t=101823910 attempt=1
+[T=101825259ms] [CORE-LOAD] core0_idle_hits=5301 core1_idle_hits=5163 (~5.1s window)
+[T=101828189ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101828214ms] [WS-ACK-RECV] tsf_us=101828186764 recv_t=101828212 attempt=1
+[T=101830406ms] [CORE-LOAD] core0_idle_hits=5309 core1_idle_hits=5163 (~5.1s window)
+[T=101832489ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101832509ms] [WS-ACK-RECV] tsf_us=101832486759 recv_t=101832505 attempt=1
+[T=101835553ms] [CORE-LOAD] core0_idle_hits=5309 core1_idle_hits=5164 (~5.1s window)
+[T=101836789ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101836814ms] [WS-ACK-RECV] tsf_us=101836786753 recv_t=101836810 attempt=1
+[T=101840700ms] [CORE-LOAD] core0_idle_hits=5316 core1_idle_hits=5165 (~5.1s window)
+[T=101841089ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101841115ms] [WS-ACK-RECV] tsf_us=101841086749 recv_t=101841111 attempt=1
+[T=101845389ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101845415ms] [WS-ACK-RECV] tsf_us=101845386741 recv_t=101845413 attempt=1
+[T=101845847ms] [CORE-LOAD] corecore1_idle_hits=5174 (~5.1s window)
+[T=101849689ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101849710ms] [WS-ACK-RECV] tsf_us=101849686739 recv_t=101849706 attempt=1
+[T=101850994ms] [CORE-LOAD] core0_idle_hits=5309 core1_idle_hits=5164 (~5.1s window)
+[T=101853989ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101854025ms] [WS-ACK-RECV] tsf_us=101853986723 recv_t=101854020 attempt=1
+[T=101856141ms] [=5161 (~5.1s window)
+[T=101858289ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101858315ms] [WS-ACK-RECV] tsf_us=101858286720 recv_t=101858312 attempt=1
+[T=101861288ms] [CORE-LOAD] core=5167 (~5.1s window)
+[T=101862589ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101862620ms] [WS-ACK-RECV] tsf_us=101862586719 recv_t=101862614 attempt=1
+[T=101875489ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101875529ms] [WS-ACK-RECV] tsf_us=101875486696 recv_t=101875523 attempt=1
+[T=101876729ms]=5190 (~5.1s window)
+[T=101879789ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101879819ms] [WS-ACK-RECV] tsf_us=101879786693 recv_t=101879816 attempt=1
+=5164 (~5.1s window)
+[T=101884089ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101884125ms] [WS-ACK-RECV] tsf_us=101884086682 recv_t=101884120 attempt=1
+[T=101887023ms] [CORE-LOAD] core=5163 (~5.1s window)
+[T=101888389ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101888419ms] [WS-ACK-RECV] tsf_us=101888386679 recv_t=101888413 attempt=1
+=5163 (~5.1s window)
+[T=101892689ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101892719ms] [WS-ACK-RECV] tsf_us=101892686672 recv_t=101892716 attempt=1
+[T=101896989ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101897025ms] [WS-ACK-RECV] tsf_us=101896986661 recv_t=101897020 attempt=1
+[T=101897317ms] [CORE-LOAD] core=5169 (~5.1s window)
+[T=101901289ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101901314ms] [WS-ACK-RECV] tsf_us=101901286665 recv_t=101901311 attempt=1
+[T==5166 (~5.1s window)
+[T=101905589ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101905619ms] [WS-ACK-RECV] tsf_us=101905586652 recv_t=101905613 attempt=1
+[T=101907612ms] [CORE-LOAD] core=5168 (~5.1s window)
+[T=101909889ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101909909ms] [WS-ACK-RECV] tsf_us=101909886639 recv_t=101909906 attempt=1
+[T=101912758ms] [CORE-LOAD] core0_idle_hits=5304 core1_idle_hits=5163 (~5.1s window)
+[T=101914189ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101914214ms] [WS-ACK-RECV] tsf_us=101914186645 recv_t=101914210 attempt=1
+[T=101917906ms] [CORE-LOAD] core0_idle_hits=5311 core1_idle_hits=5163 (~5.1s window)
+[T=101918489ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101918514ms] [WS-ACK-RECV] tsf_us=101918486627 recv_t=101918513 attempt=1
+[T=101922789ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101922819ms] [WS-ACK-RECV] tsf_us=101922786627 recv_t=101922816 attempt=1
+[T=101923053ms] [CORE-LOAD] core0_idle_hits=5324 core1_idle_hits=5173 (~5.1s window)
+[T=101927089ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101927119ms] [WS-ACK-RECV] tsf_us=101927086614 recv_t=101927118 attempt=1
+[T=101928200ms] [CORE-LOAD] core=5165 (~5.1s window)
+[T=101931389ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101931424ms] [WS-ACK-RECV] tsf_us=101931386613 recv_t=101931420 attempt=1
+[T=101933347ms] [CORE-LOAD] core0_idle_hits=5303 core1_idle_hits=5164 (~5.1s window)
+[T=101935689ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101935714ms] [WS-ACK-RECV] tsf_us=101935686602 recv_t=101935712 attempt=1
+[T=101938494ms] [ORE-LOAD] core0_idle_hits=5328 core1_idle_hits=5163 (~5.1s window)
+[T=101939989ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101940019ms] [WS-ACK-RECV] tsf_us=101939986593 recv_t=101940015 attempt=1
+1_idle_hits=5165 (~5.1s window)
+[T=101944289ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101944339ms] [WS-ACK-RECV] tsf_us=101944286591 recv_t=101944338 attempt=1
+[T=101948589ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101948624ms] [WS-ACK-RECV] tsf_us=101948586596 recv_t=101948620 attempt=1
+[T=101948788ms=5167 (~5.1s window)
+[T=101952889ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101952914ms] [WS-ACK-RECV] tsf_us=101952886576 recv_t=101952912 attempt=1
+[T=101953935ms] [CORE-LOAD] core0_idle_hits=5308 core1_idle_hits=5166 (~5.1s window)
+[T=101957189ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101957219ms] [WS-ACK-RECV] tsf_us=101957186569 recv_t=101957215 attempt=1
+[T=101959082ms] [OAD] core0_idle_hits=5321 core1_idle_hits=5164 (~5.1s window)
+[T=101961489ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101961520ms] [WS-ACK-RECV] tsf_us=101961486582 recv_t=101961518 attempt=1
+[T=101964229ms] [CORE-LOAD] core0_idle_hits=5315 core1_idle_hits=5163 (~5.1s window)
+[T=101965789ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101965814ms] [WS-ACK-RECV] tsf_us=101965786561 recv_t=101965810 attempt=1
+=5164 (~5.1s window)
+[T=101970089ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101970114ms] [WS-ACK-RECV] tsf_us=101970086556 recv_t=101970112 attempt=1
+[T=101974389ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101974409ms] [WS-ACK-RECV] tsf_us=101974386552 recv_t=101974405 attempt=1
+[T=101974523ms] =5168 (~5.1s window)
+[T=101978689ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101978714ms] [WS-ACK-RECV] tsf_us=101978686540 recv_t=101978710 attempt=1
+[T=101979670ms] [CORE-LOAD] core0_idle_hits=5301 core1_idle_hits=5165 (~5.1s window)
+[T=101982989ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101983014ms] [WS-ACK-RECV] tsf_us=101982986533 recv_t=101983013 attempt=1
+[T=101984817ms] [s=5166 (~5.1s window)
+[T=101987289ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101987309ms] [WS-ACK-RECV] tsf_us=101987286521 recv_t=101987305 attempt=1
+[T=101989964ms] [CORE-LOAD] core0_idle_hits=5295 core1_idle_hits=5165 (~5.1s window)
+[T=101991589ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101991614ms] [WS-ACK-RECV] tsf_us=101991586510 recv_t=101991610 attempt=1
+[T=101995111ms=5164 (~5.1s window)
+[T=101995889ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=101995914ms] [WS-ACK-RECV] tsf_us=101995886505 recv_t=101995911 attempt=1
+[T=102000189ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102000214ms] [WS-ACK-RECV] tsf_us=102000186499 recv_t=102000213 attempt=1
+_idle_hits=5328 core1_idle_hits=5171 (~5.1s window)
+[T=102004489ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102004509ms] [WS-ACK-RECV] tsf_us=102004486495 recv_t=102004506 attempt=1
+[T=102005405ms]=5164 (~5.1s window)
+[T=102008789ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102008814ms] [WS-ACK-RECV] tsf_us=102008786493 recv_t=102008810 attempt=1
+[T=102010552ms] =5165 (~5.1s window)
+[T=102013089ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102013114ms] [WS-ACK-RECV] tsf_us=102013086483 recv_t=102013112 attempt=1
+=5165 (~5.1s window)
+[T=102017389ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102017409ms] [WS-ACK-RECV] tsf_us=102017386474 recv_t=102017404 attempt=1
+[T=102020846ms] [CORE-LOAD] core0_idle_hits=5300 core1_idle_hits=5168 (~5.1s window)
+[T=102021689ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102021709ms] [WS-ACK-RECV] tsf_us=102021686459 recv_t=102021706 attempt=1
+[T=102025989ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+=5168 (~5.1s window)
+[T=102026009ms] [WS-ACK-RECV] tsf_us=102025986466 recv_t=102026007 attempt=1
+[T=102030289ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102030313ms] [WS-ACK-RECV] tsf_us=102030286456 recv_t=102030310 attempt=1
+=5166 (~5.1s window)
+[T=102034589ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102034618ms] [WS-ACK-RECV] tsf_us=102034586446 recv_t=102034613 attempt=1
+[T=102036287ms] [CORE-LOAD] core0_idle_hits=5310 core1_idle_hits=5165 (~5.1s window)
+[T=102038888ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102038919ms] [WS-ACK-RECV] tsf_us=102038886435 recv_t=102038916 attempt=1
+[T=102041434ms=5164 (~5.1s window)
+[T=102043189ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102043215ms] [WS-ACK-RECV] tsf_us=102043186432 recv_t=102043210 attempt=1
+[T=102046581ms] [CORE-LOAD] core=5165 (~5.1s window)
+[T=102047489ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102047509ms] [WS-ACK-RECV] tsf_us=102047486427 recv_t=102047503 attempt=1
+[T=102051728ms] [CORE-LOAD] core0_idle_hits=5313 core1_idle_hits=5164 (~5.1s window)
+[T=102051789ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102051809ms] [WS-ACK-RECV] tsf_us=102051786429 recv_t=102051805 attempt=1
+[T=102056089ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102056109ms] [WS-ACK-RECV] tsf_us=102056086413 recv_t=102056106 attempt=1
+[T=102056875ms]=5170 (~5.1s window)
+[T=102060389ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102060414ms] [WS-ACK-RECV] tsf_us=102060386408 recv_t=102060409 attempt=1
+[T=102062022ms] [CORE-LOAD] core0_idle_hits=5296 core1_idle_hits=5163 (~5.1s window)
+[T=102064688ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102064714ms] [WS-ACK-RECV] tsf_us=102064686399 recv_t=102064711 attempt=1
+[T=102067169ms] [=5166 (~5.1s window)
+[T=102068988ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102069009ms] [WS-ACK-RECV] tsf_us=102068986383 recv_t=102069004 attempt=1
+[T=102072316ms] [CORE-LOAD] core=5165 (~5.1s window)
+[T=102073289ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102073314ms] [WS-ACK-RECV] tsf_us=102073286384 recv_t=102073308 attempt=1
+[T=102077463ms] [CORE-LOAD] core0_idle_hits=5309 core1_idle_hits=5169 (~5.1s window)
+[T=102077589ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102077614ms] [WS-ACK-RECV] tsf_us=102077586373 recv_t=102077611 attempt=1
+[T=102081889ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102081909ms] [WS-ACK-RECV] tsf_us=102081886365 recv_t=102081905 attempt=1
+[T=102082610ms]=5172 (~5.1s window)
+[T=102086188ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102086209ms] [WS-ACK-RECV] tsf_us=102086186362 recv_t=102086206 attempt=1
+[T=102087757ms] [CORE-LOAD] core0_idle_hits=5307 core1_idle_hits=5165 (~5.1s window)
+[T=102090488ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102090514ms] [WS-ACK-RECV] tsf_us=102090486353 recv_t=102090510 attempt=1
+[T=102092905ms] [CORE-LOAD] core0_idle_hits=5318 core1_idle_hits=5161 (~5.1s window)
+[T=102094788ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102094814ms] [WS-ACK-RECV] tsf_us=102094786341 recv_t=102094812 attempt=1
+[T=102098051ms] [CORE-LOAD] core0_idle_hits=5298 core1_idle_hits=5164 (~5.1s window)
+[T=102099088ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102099109ms] [WS-ACK-RECV] tsf_us=102099086342 recv_t=102099105 attempt=1
+[T=102103198ms] [CORE-LOAD] core0_idle_hits=5292 core1_idle_hits=5166 (~5.1s window)
+[T=102103389ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102103414ms] [WS-ACK-RECV] tsf_us=102103386328 recv_t=102103409 attempt=1
+[T=102107688ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102107704ms] [WS-ACK-RECV] tsf_us=102107686327 recv_t=102107701 attempt=1
+=5168 (~5.1s window)
+[T=102111988ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102112009ms] [WS-ACK-RECV] tsf_us=102111986322 recv_t=102112004 attempt=1
+13493ms] [CORE-LOAD] core0_idle_hits=5303 core1_idle_hits=5165 (~5.1s window)
+[T=102116289ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102116309ms] [WS-ACK-RECV] tsf_us=102116286312 recv_t=102116306 attempt=1
+s=5319 core1_idle_hits=5163 (~5.1s window)
+[T=102120589ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102120614ms] [WS-ACK-RECV] tsf_us=102120586317 recv_t=102120609 attempt=1
+=5162 (~5.1s window)
+[T=102124888ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102124909ms] [WS-ACK-RECV] tsf_us=102124886310 recv_t=102124904 attempt=1
+[T=102128934ms] [=5162 (~5.1s window)
+[T=102129188ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102129209ms] [WS-ACK-RECV] tsf_us=102129186286 recv_t=102129207 attempt=1
+[T=102133488ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102133514ms] [WS-ACK-RECV] tsf_us=102133486284 recv_t=102133510 attempt=1
+[T=102134081ms] [CORE-LOAD] core0_idle_hits=5319 core1_idle_hits=5167 (~5.1s window)
+[T=102137788ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102137814ms] [WS-ACK-RECV] tsf_us=102137786275 recv_t=102137813 attempt=1
+[T=102139228ms] [4 core1_idle_hits=5164 (~5.1s window)
+[T=102142088ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102142109ms] [WS-ACK-RECV] tsf_us=102142086264 recv_t=102142106 attempt=1
+=5166 (~5.1s window)
+[T=102146388ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102146409ms] [WS-ACK-RECV] tsf_us=102146386270 recv_t=102146407 attempt=1
+[T=102149522ms] [CORE-LOAD] core0_idle_hits=5290 core1_idle_hits=5161 (~5.1s window)
+[T=102150688ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102150714ms] [WS-ACK-RECV] tsf_us=102150686254 recv_t=102150710 attempt=1
+[T=102154669ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5163 (~5.1s window)
+[T=102154988ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102155014ms] [WS-ACK-RECV] tsf_us=102154986242 recv_t=102155012 attempt=1
+[T=102159288ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102159319ms] [WS-ACK-RECV] tsf_us=102159286240 recv_t=102159315 attempt=1
+[T=102159816ms] e1_idle_hits=5173 (~5.1s window)
+[T=102163588ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102163614ms] [WS-ACK-RECV] tsf_us=102163586229 recv_t=102163610 attempt=1
+[T=102164963ms=5167 (~5.1s window)
+[T=102167888ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102167904ms] [WS-ACK-RECV] tsf_us=102167886218 recv_t=102167902 attempt=1
+[T=102170110ms] [CORE-LOAD] core0_idle_hits=5313 core1_idle_hits=5164 (~5.1s window)
+[T=102172188ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102172209ms] [WS-ACK-RECV] tsf_us=102172186213 recv_t=102172205 attempt=1
+=5164 (~5.1s window)
+[T=102176488ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102176509ms] [WS-ACK-RECV] tsf_us=102176486208 recv_t=102176506 attempt=1
+[T=102180404ms]=5164 (~5.1s window)
+[T=102180788ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102180814ms] [WS-ACK-RECV] tsf_us=102180786200 recv_t=102180810 attempt=1
+[T=102185088ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102185114ms] [WS-ACK-RECV] tsf_us=102185086196 recv_t=102185112 attempt=1
+=5168 (~5.1s window)
+[T=102189388ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102189409ms] [WS-ACK-RECV] tsf_us=102189386190 recv_t=102189405 attempt=1
+=5164 (~5.1s window)
+[T=102193688ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102193714ms] [WS-ACK-RECV] tsf_us=102193686174 recv_t=102193709 attempt=1
+[T=102195845ms] [CORE-LOAD] core0_idle_hits=5313 core1_idle_hits=5162 (~5.1s window)
+[T=102197988ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102198013ms] [WS-ACK-RECV] tsf_us=102197986171 recv_t=102198012 attempt=1
+[T=102200992ms] =5166 (~5.1s window)
+[T=102202288ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102202308ms] [WS-ACK-RECV] tsf_us=102202286167 recv_t=102202305 attempt=1
+[T=102206139ms] [=5165 (~5.1s window)
+[T=102206588ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102206618ms] [WS-ACK-RECV] tsf_us=102206586155 recv_t=102206616 attempt=1
+[T=102210888ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102210913ms] [WS-ACK-RECV] tsf_us=102210886148 recv_t=102210910 attempt=1
+[T=102211286ms] [CORE-LOAD] core0_idle_hits=5318 core1_idle_hits=5172 (~5.1s window)
+[T=102215188ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102215213ms] [WS-ACK-RECV] tsf_us=102215186140 recv_t=102215212 attempt=1
+=5167 (~5.1s window)
+[T=102219488ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102219508ms] [WS-ACK-RECV] tsf_us=102219486138 recv_t=102219505 attempt=1
+[T=102221580ms] [=5165 (~5.1s window)
+[T=102223788ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102223813ms] [WS-ACK-RECV] tsf_us=102223786126 recv_t=102223809 attempt=1
+[T=102226727ms] [CORE-LOAD] core0_idle_hits=5301 core1_idle_hits=5166 (~5.1s window)
+[T=102228088ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102228113ms] [WS-ACK-RECV] tsf_us=102228086119 recv_t=102228111 attempt=1
+[CORE-LOAD] core0_idle_hits=5304 core1_idle_hits=5162 (~5.1s window)
+[T=102232388ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102232418ms] [WS-ACK-RECV] tsf_us=102232386111 recv_t=102232413 attempt=1
+[T=102236688ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102236708ms] [WS-ACK-RECV] tsf_us=102236686094 recv_t=102236706 attempt=1
+[T=102237021ms] [CORE-LOAD] core=5171 (~5.1s window)
+[T=102240988ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102241009ms] [WS-ACK-RECV] tsf_us=102240986099 recv_t=102241007 attempt=1
+[T=102242168ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5164 (~5.1s window)
+[T=102245288ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102245314ms] [WS-ACK-RECV] tsf_us=102245286085 recv_t=102245311 attempt=1
+[T=102247315ms] [=5162 (~5.1s window)
+[T=102249588ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102249609ms] [WS-ACK-RECV] tsf_us=102249586083 recv_t=102249603 attempt=1
+[T=102252462ms] [CORE-LOAD] core0_idle_hits=5308 core1_idle_hits=5166 (~5.1s window)
+[T=102253888ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102253909ms] [WS-ACK-RECV] tsf_us=102253886074 recv_t=102253906 attempt=1
+[T=102257609ms] [dle_hits=5166 (~5.1s window)
+[T=102258188ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102258214ms] [WS-ACK-RECV] tsf_us=102258186065 recv_t=102258209 attempt=1
+[T=102262488ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102262514ms] [WS-ACK-RECV] tsf_us=102262486061 recv_t=102262512 attempt=1
+[T=102262756ms] [=5167 (~5.1s window)
+[T=102266788ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102266809ms] [WS-ACK-RECV] tsf_us=102266786046 recv_t=102266805 attempt=1
+[T=102267903ms] [CORE-LOAD] core0_idle_hits=5294 core1_idle_hits=5166 (~5.1s window)
+[T=102271088ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102271109ms] [WS-ACK-RECV] tsf_us=102271086046 recv_t=102271106 attempt=1
+] core0_idle_hits=5302 core1_idle_hits=5166 (~5.1s window)
+[T=102275388ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102275414ms] [WS-ACK-RECV] tsf_us=102275386036 recv_t=102275410 attempt=1
+[T=102278197ms] [CORE-LOAD] core0_idle_hits=5304 core1_idle_hits=5157 (~5.1s window)
+[T=102279688ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102279709ms] [WS-ACK-RECV] tsf_us=102279686027 recv_t=102279703 attempt=1
+[T=102283344ms] [=5168 (~5.1s window)
+[T=102283988ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102284009ms] [WS-ACK-RECV] tsf_us=102283986019 recv_t=102284005 attempt=1
+[T=102288288ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102288314ms] [WS-ACK-RECV] tsf_us=102288286010 recv_t=102288309 attempt=1
+[T=102288491ms] =5168 (~5.1s window)
+[T=102292588ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102292614ms] [WS-ACK-RECV] tsf_us=102292586005 recv_t=102292612 attempt=1
+e0_idle_hits=5307 core1_idle_hits=5164 (~5.1s window)
+[T=102296888ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102296909ms] [WS-ACK-RECV] tsf_us=102296885998 recv_t=102296904 attempt=1
+=5165 (~5.1s window)
+[T=102301188ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102301209ms] [WS-ACK-RECV] tsf_us=102301185985 recv_t=102301205 attempt=1
+[T=102303933ms] [=5165 (~5.1s window)
+[T=102305489ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102305514ms] [WS-ACK-RECV] tsf_us=102305485977 recv_t=102305509 attempt=1
+=5163 (~5.1s window)
+[T=102309788ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102309814ms] [WS-ACK-RECV] tsf_us=102309785969 recv_t=102309811 attempt=1
+[T=102314088ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102314109ms] [WS-ACK-RECV] tsf_us=102314085967 recv_t=102314104 attempt=1
+[T=102314227ms] [CORE-LOAD] core0_idle_hits=5315 core1_idle_hits=5172 (~5.1s window)
+[T=102318388ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102318419ms] [WS-ACK-RECV] tsf_us=102318385949 recv_t=102318416 attempt=1
+[T=102319374ms] [=5164 (~5.1s window)
+[T=102322688ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102322714ms] [WS-ACK-RECV] tsf_us=102322685948 recv_t=102322709 attempt=1
+[T=102324521ms] [CORE-LOAD] core0_idle_hits=5314 core1_idle_hits=5162 (~5.1s window)
+[T=102326988ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102327014ms] [WS-ACK-RECV] tsf_us=102326985940 recv_t=102327012 attempt=1
+[T=102329668ms] =5166 (~5.1s window)
+[T=102331288ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102331319ms] [WS-ACK-RECV] tsf_us=102331285936 recv_t=102331314 attempt=1
+=5162 (~5.1s window)
+[T=102335588ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102335619ms] [WS-ACK-RECV] tsf_us=102335585919 recv_t=102335617 attempt=1
+[T=102339888ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102339913ms] [WS-ACK-RECV] tsf_us=102339885928 recv_t=102339910 attempt=1
+[T=102339962ms] [CORE-LOAD] core0_idle_hits=5305 core1_idle_hits=5166 (~5.1s window)
+[T=102344188ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102344218ms] [WS-ACK-RECV] tsf_us=102344185911 recv_t=102344213 attempt=1
+[T=102345109ms] [CORE-LOAD] core0_idle_hits=5290 core1_idle_hits=5164 (~5.1s window)
+[T=102348488ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102348518ms] [WS-ACK-RECV] tsf_us=102348485903 recv_t=102348516 attempt=1
+[T=102350256ms] [CORE-LOAD] core0_idle_hits=5300 core1_idle_hits=5166 (~5.1s window)
+[T=102352788ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102352813ms] [WS-ACK-RECV] tsf_us=102352785902 recv_t=102352809 attempt=1
+=5163 (~5.1s window)
+[T=102357088ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102357113ms] [WS-ACK-RECV] tsf_us=102357085886 recv_t=102357111 attempt=1
+[T=102360550ms] [CORE-LOAD] core0_idle_hits=5317 core1_idle_hits=5168 (~5.1s window)
+[T=102361388ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102361413ms] [WS-ACK-RECV] tsf_us=102361385877 recv_t=102361412 attempt=1
+[T=102365688ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102365697ms] [CORE-LOAD] core0_idle_hits=5314 core1_idle_hits=5168 (~5.1s window)
+[T=102365718ms] [WS-ACK-RECV] tsf_us=102365685868 recv_t=102365715 attempt=1
+[T=102369988ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102370008ms] [WS-ACK-RECV] tsf_us=102369985859 recv_t=102370007 attempt=1
+=5166 (~5.1s window)
+[T=102374288ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102374313ms] [WS-ACK-RECV] tsf_us=102374285853 recv_t=102374310 attempt=1
+[T=102375991ms] [CORE-LOAD] core0_idle_hits=5304 core1_idle_hits=5165 (~5.1s window)
+[T=102378588ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102378618ms] [WS-ACK-RECV] tsf_us=102378585847 recv_t=102378613 attempt=1
+[T=102381138ms] [=5160 (~5.1s window)
+[T=102382888ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102382908ms] [WS-ACK-RECV] tsf_us=102382885849 recv_t=102382905 attempt=1
+[T=102386285ms] [CORE-LOAD] core=5167 (~5.1s window)
+[T=102387188ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102387213ms] [WS-ACK-RECV] tsf_us=102387185821 recv_t=102387209 attempt=1
+[T=102391432ms] [CORE-LOAD] core0_idle_hits=5294 core1_idle_hits=5158 (~5.1s window)
+[T=102391488ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102391513ms] [WS-ACK-RECV] tsf_us=102391485822 recv_t=102391510 attempt=1
+[T=102395788ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102395808ms] [WS-ACK-RECV] tsf_us=102395785820 recv_t=102395803 attempt=1
+[T=102396579ms] [CORE-LOAD] core0_idle_hits=5311 core1_idle_hits=5171 (~5.1s window)
+[T=102400088ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102400108ms] [WS-ACK-RECV] tsf_us=102400085803 recv_t=102400105 attempt=1
+[T=102401726ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5165 (~5.1s window)
+[T=102404388ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102404413ms] [WS-ACK-RECV] tsf_us=102404385806 recv_t=102404409 attempt=1
+[T=102406873ms] [CORE-LOAD] core0_idle_hits=5314 core1_idle_hits=5157 (~5.1s window)
+[T=102408688ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102408723ms] [WS-ACK-RECV] tsf_us=102408685795 recv_t=102408722 attempt=1
+[T=102412020msits=5316 core1_idle_hits=5166 (~5.1s window)
+[T=102412988ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102413008ms] [WS-ACK-RECV] tsf_us=102412985785 recv_t=102413005 attempt=1
+[T=102417167ms] [CORE-LOAD] core=5165 (~5.1s window)
+[T=102417288ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102417313ms] [WS-ACK-RECV] tsf_us=102417285775 recv_t=102417309 attempt=1
+[T=102421588ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102421623ms] [WS-ACK-RECV] tsf_us=102421585785 recv_t=102421620 attempt=1
+[T=102422314ms] [CORE-LOAD] core0_idle_hits=5299 core1_idle_hits=5167 (~5.1s window)
+[T=102425888ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102425913ms] [WS-ACK-RECV] tsf_us=102425885761 recv_t=102425912 attempt=1
+[T=102427461ms] [CORE-LOAD] core0_idle_hits=5305 core1_idle_hits=5163 (~5.1s window)
+[T=102430188ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102430218ms] [WS-ACK-RECV] tsf_us=102430185754 recv_t=102430214 attempt=1
+[T=102432608ms] [295 core1_idle_hits=5168 (~5.1s window)
+[T=102434488ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102434513ms] [WS-ACK-RECV] tsf_us=102434485741 recv_t=102434509 attempt=1
+[T=102437755ms] [=5162 (~5.1s window)
+[T=102438788ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102438813ms] [WS-ACK-RECV] tsf_us=102438785733 recv_t=102438811 attempt=1
+[T=102442902ms] [CORE-LOAD] core0_idle_hits=5337 core1_idle_hits=5165 (~5.1s window)
+[T=102443088ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102443119ms] [WS-ACK-RECV] tsf_us=102443085731 recv_t=102443114 attempt=1
+[T=102447388ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102447424ms] [WS-ACK-RECV] tsf_us=102447385725 recv_t=102447419 attempt=1
+[T=102448049ms] [CORE-LOAD] core0_idle_hits=5341 core1_idle_hits=5171 (~5.1s window)
+[T=102451688ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102451724ms] [WS-ACK-RECV] tsf_us=102451685715 recv_t=102451720 attempt=1
+[T=102453196ms] [CORE-LOAD] coreore1_idle_hits=5166 (~5.1s window)
+[T=102455988ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102456019ms] [WS-ACK-RECV] tsf_us=102455985710 recv_t=102456013 attempt=1
+[T=102458343ms] [CORE-LOAD] core0_idle_hits=5322 core1_idle_hits=5167 (~5.1s window)
+[T=102460288ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102460309ms] [WS-ACK-RECV] tsf_us=102460285703 recv_t=102460305 attempt=1
+[T=102463490ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5165 (~5.1s window)
+[T=102464588ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102464614ms] [WS-ACK-RECV] tsf_us=102464585691 recv_t=102464609 attempt=1
+[T=102468637ms] [CORE-LOAD] core=5164 (~5.1s window)
+[T=102468888ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102468904ms] [WS-ACK-RECV] tsf_us=102468885689 recv_t=102468902 attempt=1
+[T=102473188ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102473209ms] [WS-ACK-RECV] tsf_us=102473185676 recv_t=102473205 attempt=1
+[T=102473784ms] [CORE-LOAD] core0_idle_hits=5338 core1_idle_hits=5172 (~5.1s window)
+[T=102477488ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102477514ms] [WS-ACK-RECV] tsf_us=102477485671 recv_t=102477510 attempt=1
+=5163 (~5.1s window)
+[T=102481788ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102481818ms] [WS-ACK-RECV] tsf_us=102481785655 recv_t=102481812 attempt=1
+=5167 (~5.1s window)
+[T=102486088ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102486118ms] [WS-ACK-RECV] tsf_us=102486085653 recv_t=102486114 attempt=1
+[T=102489225ms] [CORE-LOAD] core0_idle_hits=5333 core1_idle_hits=5164 (~5.1s window)
+[T=102490388ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102490409ms] [WS-ACK-RECV] tsf_us=102490385639 recv_t=102490406 attempt=1
+[T=102494372ms] [CORE-LOAD] core0_idle_hits=5331 core1_idle_hits=5166 (~5.1s window)
+[T=102494688ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102494723ms] [WS-ACK-RECV] tsf_us=102494685640 recv_t=102494719 attempt=1
+[T=102498988ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102499028ms] [WS-ACK-RECV] tsf_us=102498985633 recv_t=102499022 attempt=1
+[T=102499519ms] [CORE-LOAD] core0_idle_hits=5326 core1_idle_hits=5172 (~5.1s window)
+[T=102503288ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102503318ms] [WS-ACK-RECV] tsf_us=102503285615 recv_t=102503315 attempt=1
+=5162 (~5.1s window)
+[T=102507588ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102507613ms] [WS-ACK-RECV] tsf_us=102507585616 recv_t=102507608 attempt=1
+=5164 (~5.1s window)
+[T=102511888ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102511923ms] [WS-ACK-RECV] tsf_us=102511885606 recv_t=102511920 attempt=1
+[T=102514961ms] =5166 (~5.1s window)
+[T=102516188ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102516213ms] [WS-ACK-RECV] tsf_us=102516185597 recv_t=102516211 attempt=1
+[T=102520108ms] [CORE-LOAD] core0_idle_hits=5321 core1_idle_hits=5164 (~5.1s window)
+[T=102520488ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102520508ms] [WS-ACK-RECV] tsf_us=102520485593 recv_t=102520504 attempt=1
+[T=102524788ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102524813ms] [WS-ACK-RECV] tsf_us=102524785580 recv_t=102524809 attempt=1
+[T=102525255ms] [CORE-LOAD] core0_idle_hits=5344 core1_idle_hits=5168 (~5.1s window)
+[T=102529088ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102529103ms] [WS-ACK-RECV] tsf_us=102529085568 recv_t=102529102 attempt=1
+[T=102530402ms=5164 (~5.1s window)
+[T=102533388ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102533408ms] [WS-ACK-RECV] tsf_us=102533385562 recv_t=102533405 attempt=1
+[T=102535549ms] =5165 (~5.1s window)
+[T=102537688ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102537713ms] [WS-ACK-RECV] tsf_us=102537685556 recv_t=102537709 attempt=1
+[T=102540696ms]=5162 (~5.1s window)
+[T=102541988ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102542023ms] [WS-ACK-RECV] tsf_us=102541985543 recv_t=102542022 attempt=1
+RE-LOAD] core0_idle_hits=5295 core1_idle_hits=5162 (~5.1s window)
+[T=102546288ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102546318ms] [WS-ACK-RECV] tsf_us=102546285547 recv_t=102546313 attempt=1
+[T=102550588ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102550618ms] [WS-ACK-RECV] tsf_us=102550585535 recv_t=102550615 attempt=1
+[T=102550990ms] [CORE-LOAD] core0_idle_hits=5333 core1_idle_hits=5174 (~5.1s window)
+[T=102554888ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102554913ms] [WS-ACK-RECV] tsf_us=102554885524 recv_t=102554909 attempt=1
+[T=102556137ms=5163 (~5.1s window)
+[T=102559188ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102559213ms] [WS-ACK-RECV] tsf_us=102559185521 recv_t=102559211 attempt=1
+[T=102561284ms] [=5163 (~5.1s window)
+[T=102563488ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102563508ms] [WS-ACK-RECV] tsf_us=102563485516 recv_t=102563504 attempt=1
+[T=102566431ms] [CORE-LOAD] core0_idle_hits=5319 core1_idle_hits=5166 (~5.1s window)
+[T=102567788ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102567813ms] [WS-ACK-RECV] tsf_us=102567785509 recv_t=102567809 attempt=1
+_hits=5162 (~5.1s window)
+[T=102572088ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102572113ms] [WS-ACK-RECV] tsf_us=102572085493 recv_t=102572112 attempt=1
+[T=102576388ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102576418ms] [WS-ACK-RECV] tsf_us=102576385485 recv_t=102576413 attempt=1
+[T=102576725ms] [=5168 (~5.1s window)
+[T=102580688ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102580708ms] [WS-ACK-RECV] tsf_us=102580685473 recv_t=102580705 attempt=1
+[T=102581872ms] [CORE-LOAD] core=5166 (~5.1s window)
+[T=102584988ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102585013ms] [WS-ACK-RECV] tsf_us=102584985471 recv_t=102585009 attempt=1
+[T=102587019ms] [CORE-LOAD] core0_idle_hits=5311 core1_idle_hits=5161 (~5.1s window)
+[T=102589287ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102589303ms] [WS-ACK-RECV] tsf_us=102589285458 recv_t=102589302 attempt=1
+[T=102592166ms] [CORE-LOAD] core=5165 (~5.1s window)
+[T=102593587ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102593608ms] [WS-ACK-RECV] tsf_us=102593585450 recv_t=102593605 attempt=1
+[T=102597313ms] [CORE-LOAD] core0_idle_hits=5327 core1_idle_hits=5165 (~5.1s window)
+[T=102597888ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102597913ms] [WS-ACK-RECV] tsf_us=102597885448 recv_t=102597909 attempt=1
+[T=102602188ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102602213ms] [WS-ACK-RECV] tsf_us=102602185434 recv_t=102602211 attempt=1
+=5170 (~5.1s window)
+[T=102606488ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102606513ms] [WS-ACK-RECV] tsf_us=102606485428 recv_t=102606512 attempt=1
+[T=102607607ms] [idle_hits=5329 core1_idle_hits=5166 (~5.1s window)
+[T=102610788ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102610809ms] [WS-ACK-RECV] tsf_us=102610785422 recv_t=102610805 attempt=1
+[T=102612754ms]=5165 (~5.1s window)
+[T=102615088ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102615113ms] [WS-ACK-RECV] tsf_us=102615085411 recv_t=102615109 attempt=1
+[T=10261790=5163 (~5.1s window)
+[T=102619387ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102619407ms] [WS-ACK-RECV] tsf_us=102619385403 recv_t=102619402 attempt=1
+[T=102623048ms] [CORE-LOAD] core0_idle_hits=5316 core1_idle_hits=5164 (~5.1s window)
+[T=102623688ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102623718ms] [WS-ACK-RECV] tsf_us=102623685399 recv_t=102623714 attempt=1
+[T=102627988ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102628008ms] [WS-ACK-RECV] tsf_us=102627985386 recv_t=102628006 attempt=1
+[T=102628195ms] [CORE-LOAD] core0_idle_hits=5325 core1_idle_hits=5169 (~5.1s window)
+[T=102632287ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102632312ms] [WS-ACK-RECV] tsf_us=102632285377 recv_t=102632309 attempt=1
+[T=102633342ms] [=5162 (~5.1s window)
+[T=102636587ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102636622ms] [WS-ACK-RECV] tsf_us=102636585370 recv_t=102636620 attempt=1
+[T=102638489ms] =5164 (~5.1s window)
+[T=102640887ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102640917ms] [WS-ACK-RECV] tsf_us=102640885368 recv_t=102640913 attempt=1
+=5164 (~5.1s window)
+[T=102645187ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102645208ms] [WS-ACK-RECV] tsf_us=102645185363 recv_t=102645206 attempt=1
+=5165 (~5.1s window)
+[T=102649487ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102649513ms] [WS-ACK-RECV] tsf_us=102649485348 recv_t=102649509 attempt=1
+[T=102653787ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102653813ms] [WS-ACK-RECV] tsf_us=102653785341 recv_t=102653811 attempt=1
+[T=102653930ms] [CORE-LOAD] core0_idle_hits=5335 core1_idle_hits=5171 (~5.1s window)
+[T=102658087ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102658108ms] [WS-ACK-RECV] tsf_us=102658085337 recv_t=102658104 attempt=1
+[T=102659077ms] [=5164 (~5.1s window)
+[T=102662388ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102662413ms] [WS-ACK-RECV] tsf_us=102662385319 recv_t=102662408 attempt=1
+[T=102664224ms] =5166 (~5.1s window)
+[T=102666687ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102666713ms] [WS-ACK-RECV] tsf_us=102666685316 recv_t=102666709 attempt=1
+[T=102669371ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5166 (~5.1s window)
+[T=102670987ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102671013ms] [WS-ACK-RECV] tsf_us=102670985310 recv_t=102671011 attempt=1
+[T=102674518ms] =5165 (~5.1s window)
+[T=102675287ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102675308ms] [WS-ACK-RECV] tsf_us=102675285303 recv_t=102675304 attempt=1
+[T=102679588ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102679623ms] [WS-ACK-RECV] tsf_us=102679585292 recv_t=102679617 attempt=1
+[T=102679665ms] [CORE-LOAD] core0_idle_hits=5317 core1_idle_hits=5169 (~5.1s window)
+[T=102683887ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102683913ms] [WS-ACK-RECV] tsf_us=102683885285 recv_t=102683909 attempt=1
+=5163 (~5.1s window)
+[T=102688187ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102688208ms] [WS-ACK-RECV] tsf_us=102688185276 recv_t=102688202 attempt=1
+[T=102689959ms] [=5167 (~5.1s window)
+[T=102692487ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102692508ms] [WS-ACK-RECV] tsf_us=102692485271 recv_t=102692505 attempt=1
+[T=102695106ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5164 (~5.1s window)
+[T=102696787ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102696813ms] [WS-ACK-RECV] tsf_us=102696785265 recv_t=102696808 attempt=1
+[T=102700253ms] [CORE-LOAD] core0_idle_hits=5295 core1_idle_hits=5165 (~5.1s window)
+[T=102701087ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102701113ms] [WS-ACK-RECV] tsf_us=102701085254 recv_t=102701110 attempt=1
+[T=102705387ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=1=5167 (~5.1s window)
+[T=102705408ms] [WS-ACK-RECV] tsf_us=102705385251 recv_t=102705402 attempt=1
+[T=102709687ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102709708ms] [WS-ACK-RECV] tsf_us=102709685254 recv_t=102709705 attempt=1
+[T=102710547ms] [CORE-LOAD] core=5168 (~5.1s window)
+[T=102713987ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102714013ms] [WS-ACK-RECV] tsf_us=102713985237 recv_t=102714008 attempt=1
+=5163 (~5.1s window)
+[T=102718287ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102718313ms] [WS-ACK-RECV] tsf_us=102718285224 recv_t=102718312 attempt=1
+[T=102720842ms] [CORE-LOAD] core0_idle_hits=5319 core1_idle_hits=5164 (~5.1s window)
+[T=102722587ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102722608ms] [WS-ACK-RECV] tsf_us=102722585212 recv_t=102722604 attempt=1
+[T=102725989ms] [CORE-LOAD] core0_idle_hits=5309 core1_idle_hits=5167 (~5.1s window)
+[T=102726887ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102726918ms] [WS-ACK-RECV] tsf_us=102726885205 recv_t=102726915 attempt=1
+[T=102731136ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5163 (~5.1s window)
+[T=102731187ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102731213ms] [WS-ACK-RECV] tsf_us=102731185201 recv_t=102731209 attempt=1
+[T=102735487ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102735503ms] [WS-ACK-RECV] tsf_us=102735485192 recv_t=102735502 attempt=1
+[T=102736283ms] [=5167 (~5.1s window)
+[T=102739787ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102739808ms] [WS-ACK-RECV] tsf_us=102739785183 recv_t=102739804 attempt=1
+[T=102741430ms] [CORE-LOAD] core0_idle_hits=5304 core1_idle_hits=5163 (~5.1s window)
+[T=102744087ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102744108ms] [WS-ACK-RECV] tsf_us=102744085181 recv_t=102744106 attempt=1
+[T=102746577ms] [CORE-LOAD] core0_idle_hits=5293 core1_idle_hits=5165 (~5.1s window)
+[T=102748387ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102748413ms] [WS-ACK-RECV] tsf_us=102748385170 recv_t=102748409 attempt=1
+=5161 (~5.1s window)
+[T=102752687ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102752713ms] [WS-ACK-RECV] tsf_us=102752685160 recv_t=102752712 attempt=1
+[T=102756871ms=5165 (~5.1s window)
+[T=102756987ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102757008ms] [WS-ACK-RECV] tsf_us=102756985152 recv_t=102757005 attempt=1
+[T=102761287ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102761308ms] [WS-ACK-RECV] tsf_us=102761285143 recv_t=102761306 attempt=1
+[T=102762018ms] [ORE-LOAD] core0_idle_hits=5319 core1_idle_hits=5174 (~5.1s window)
+[T=102765587ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102765613ms] [WS-ACK-RECV] tsf_us=102765585135 recv_t=102765609 attempt=1
+[T=102767165ms] [CORE-LOAD] core0_idle_hits=5310 core1_idle_hits=5161 (~5.1s window)
+[T=102769887ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102769913ms] [WS-ACK-RECV] tsf_us=102769885128 recv_t=102769912 attempt=1
+[T=102772312ms] [CORE-LOAD] core=5164 (~5.1s window)
+[T=102774187ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102774207ms] [WS-ACK-RECV] tsf_us=102774185118 recv_t=102774205 attempt=1
+[T=102777459ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5164 (~5.1s window)
+[T=102778487ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102778513ms] [WS-ACK-RECV] tsf_us=102778485114 recv_t=102778509 attempt=1
+[T=102782606ms] [CORE-LOAD] core=5164 (~5.1s window)
+[T=102782787ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102782813ms] [WS-ACK-RECV] tsf_us=102782785104 recv_t=102782812 attempt=1
+[T=102787087ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102787107ms] [WS-ACK-RECV] tsf_us=102787085096 recv_t=102787104 attempt=1
+[T=102787753ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5169 (~5.1s window)
+[T=102791387ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102791407ms] [WS-ACK-RECV] tsf_us=102791385091 recv_t=102791405 attempt=1
+[T=102792900ms] [CORE-LOAD] core0_idle_hits=5301 core1_idle_hits=5164 (~5.1s window)
+[T=102795687ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102795713ms] [WS-ACK-RECV] tsf_us=102795685084 recv_t=102795708 attempt=1
+[T=102798047ms] [CORE-LOAD] core0_idle_hits=5323 core1_idle_hits=5163 (~5.1s window)
+[T=102799987ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102800012ms] [WS-ACK-RECV] tsf_us=102799985080 recv_t=102800011 attempt=1
+=5165 (~5.1s window)
+[T=102804287ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102804307ms] [WS-ACK-RECV] tsf_us=102804285066 recv_t=102804304 attempt=1
+=5162 (~5.1s window)
+[T=102808587ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102808612ms] [WS-ACK-RECV] tsf_us=102808585056 recv_t=102808608 attempt=1
+[T=102812887ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102812902ms] [WS-ACK-RECV] tsf_us=102812885052 recv_t=102812901 attempt=1
+[T=102813488ms] [CORE-LOAD] core=5165 (~5.1s window)
+[T=102817187ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102817207ms] [WS-ACK-RECV] tsf_us=102817185040 recv_t=102817204 attempt=1
+[T=102818635ms] [CORE-LOAD] core=5163 (~5.1s window)
+[T=102821487ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102821507ms] [WS-ACK-RECV] tsf_us=102821485032 recv_t=102821505 attempt=1
+[T=102823782ms] [CORE-LOAD] core0_idle_hits=5297 core1_idle_hits=5163 (~5.1s window)
+[T=102825787ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102825812ms] [WS-ACK-RECV] tsf_us=102825785023 recv_t=102825808 attempt=1
+[T=102828929ms] [=5162 (~5.1s window)
+[T=102830087ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102830112ms] [WS-ACK-RECV] tsf_us=102830085019 recv_t=102830111 attempt=1
+=5164 (~5.1s window)
+[T=102834387ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102834407ms] [WS-ACK-RECV] tsf_us=102834385011 recv_t=102834404 attempt=1
+[T=102838687ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102838712ms] [WS-ACK-RECV] tsf_us=102838685006 recv_t=102838708 attempt=1
+[T=102839223ms] [CORE-LOAD] core0_idle_hits=5311 core1_idle_hits=5169 (~5.1s window)
+[T=102842987ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102843013ms] [WS-ACK-RECV] tsf_us=102842984995 recv_t=102843010 attempt=1
+[T=102844370ms] [CORE-LOAD] core=5164 (~5.1s window)
+[T=102847287ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102847318ms] [WS-ACK-RECV] tsf_us=102847284985 recv_t=102847313 attempt=1
+[T=102849517ms] [CORE-LOAD] core=5164 (~5.1s window)
+[T=102851587ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102851618ms] [WS-ACK-RECV] tsf_us=102851584988 recv_t=102851614 attempt=1
+[T=102854664ms] [CORE-LOAD] core=5166 (~5.1s window)
+[T=102855887ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102855913ms] [WS-ACK-RECV] tsf_us=102855884978 recv_t=102855908 attempt=1
+[T=102859811ms] [CORE-LOAD] core0_idle_hits=5303 core1_idle_hits=5163 (~5.1s window)
+[T=102860187ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102860213ms] [WS-ACK-RECV] tsf_us=102860184965 recv_t=102860211 attempt=1
+[T=102864487ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102864508ms] [WS-ACK-RECV] tsf_us=102864484962 recv_t=102864504 attempt=1
+[T=102864958ms] [CORE-LOAD] core0_idle_hits=5312 core1_idle_hits=5176 (~5.1s window)
+[T=102868787ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102868813ms] [WS-ACK-RECV] tsf_us=102868784952 recv_t=102868808 attempt=1
+[T=102870105ms] [CORE-LOAD] core0_idle_hits=5298 core1_idle_hits=5161 (~5.1s window)
+[T=102873087ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102873113ms] [WS-ACK-RECV] tsf_us=102873084947 recv_t=102873110 attempt=1
+[T=102875252ms] [CORE-LOAD] core0_idle_hits=5310 core1_idle_hits=5162 (~5.1s window)
+[T=102877387ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102877418ms] [WS-ACK-RECV] tsf_us=102877384946 recv_t=102877412 attempt=1
+[T=102880399ms] [ core0_idle_hits=5310 core1_idle_hits=5167 (~5.1s window)
+[T=102881687ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102881718ms] [WS-ACK-RECV] tsf_us=102881684927 recv_t=102881714 attempt=1
+[T=102885546ms] [CORE-LOAD] corets=5168 (~5.1s window)
+[T=102885987ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102886013ms] [WS-ACK-RECV] tsf_us=102885984914 recv_t=102886008 attempt=1
+[T=102890287ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102890313ms] [WS-ACK-RECV] tsf_us=102890284910 recv_t=102890311 attempt=1
+[T=102890693ms] [CORE-LOAD] core0_idle_hits=5315 core1_idle_hits=5167 (~5.1s window)
+[T=102894587ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102894618ms] [WS-ACK-RECV] tsf_us=102894584903 recv_t=102894613 attempt=1
+=5168 (~5.1s window)
+[T=102898887ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102898908ms] [WS-ACK-RECV] tsf_us=102898884907 recv_t=102898905 attempt=1
+0_idle_hits=5303 core1_idle_hits=5165 (~5.1s window)
+[T=102903187ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102903213ms] [WS-ACK-RECV] tsf_us=102903184890 recv_t=102903208 attempt=1
+[T=102906135ms] [CORE-LOAD] core0_idle_hits=5299 core1_idle_hits=5164 (~5.1s window)
+[T=102907487ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102907518ms] [WS-ACK-RECV] tsf_us=102907484878 recv_t=102907512 attempt=1
+=5166 (~5.1s window)
+[T=102911787ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102911818ms] [WS-ACK-RECV] tsf_us=102911784873 recv_t=102911813 attempt=1
+[T=102916087ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102916108ms] [WS-ACK-RECV] tsf_us=102916084861 recv_t=102916105 attempt=1
+[T=102916429ms] [CORE-LOAD] core0_idle_hits=5322 core1_idle_hits=5170 (~5.1s window)
+[T=102920387ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102920413ms] [WS-ACK-RECV] tsf_us=102920384858 recv_t=102920408 attempt=1
+[T=102921576ms]e_hits=5315 core1_idle_hits=5165 (~5.1s window)
+[T=102924687ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102924717ms] [WS-ACK-RECV] tsf_us=102924684856 recv_t=102924711 attempt=1
+[T=102926723ms]=5167 (~5.1s window)
+[T=102928987ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102929017ms] [WS-ACK-RECV] tsf_us=102928984839 recv_t=102929015 attempt=1
+=5162 (~5.1s window)
+[T=102933287ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102933313ms] [WS-ACK-RECV] tsf_us=102933284828 recv_t=102933309 attempt=1
+[T=102937017ms] [CORE-LOAD] core=5163 (~5.1s window)
+[T=102937587ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102937617ms] [WS-ACK-RECV] tsf_us=102937584833 recv_t=102937613 attempt=1
+[T=102941887ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102941907ms] [WS-ACK-RECV] tsf_us=102941884814 recv_t=102941904 attempt=1
+[T=102942164ms] [CORE-LOAD] core0_idle_hits=5308 core1_idle_hits=5176 (~5.1s window)
+[T=102946187ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102946212ms] [WS-ACK-RECV] tsf_us=102946184809 recv_t=102946208 attempt=1
+[T=102947312ms] [CORE-LOAD] core0_idle_hits=5297 core1_idle_hits=5164 (~5.1s window)
+[T=102950487ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102950512ms] [WS-ACK-RECV] tsf_us=102950484802 recv_t=102950510 attempt=1
+[T=102952458ms] [CORE-LOAD] core=5166 (~5.1s window)
+[T=102954787ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102954807ms] [WS-ACK-RECV] tsf_us=102954784792 recv_t=102954803 attempt=1
+[T=102957605ms] [CORE-LOAD] core0_idle_hits=5308 core1_idle_hits=5167 (~5.1s window)
+[T=102959087ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102959107ms] [WS-ACK-RECV] tsf_us=102959084787 recv_t=102959105 attempt=1
+[T=102962752ms] [CORE-LOAD] core0_idle_hits=5312 core1_idle_hits=5162 (~5.1s window)
+[T=102963387ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102963422ms] [WS-ACK-RECV] tsf_us=102963384778 recv_t=102963418 attempt=1
+[T=102967687ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102967712ms] [WS-ACK-RECV] tsf_us=102967684777 recv_t=102967711 attempt=1
+[T=102967899ms] [=5164 (~5.1s window)
+[T=102971987ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102972017ms] [WS-ACK-RECV] tsf_us=102971984756 recv_t=102972012 attempt=1
+[T=102973046ms] [CORE-LOAD] core0_idle_hits=5312 core1_idle_hits=5163 (~5.1s window)
+[T=102976287ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102976317ms] [WS-ACK-RECV] tsf_us=102976284751 recv_t=102976314 attempt=1
+=5163 (~5.1s window)
+[T=102980587ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102980612ms] [WS-ACK-RECV] tsf_us=102980584743 recv_t=102980608 attempt=1
+[T=102983340ms] [CORE-LOAD] core=5164 (~5.1s window)
+[T=102984887ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102984912ms] [WS-ACK-RECV] tsf_us=102984884735 recv_t=102984911 attempt=1
+=5163 (~5.1s window)
+[T=102989187ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102989227ms] [WS-ACK-RECV] tsf_us=102989184730 recv_t=102989224 attempt=1
+[T=102993487ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102993522ms] [WS-ACK-RECV] tsf_us=102993484727 recv_t=102993518 attempt=1
+[T=102993634ms] [CORE-LOAD] core0_idle_hits=5313 core1_idle_hits=5167 (~5.1s window)
+[T=102997787ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=102997812ms] [WS-ACK-RECV] tsf_us=102997784718 recv_t=102997811 attempt=1
+[T=102998781ms] [CORE-LOAD] core=5165 (~5.1s window)
+[T=103002087ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103002127ms] [WS-ACK-RECV] tsf_us=103002084723 recv_t=103002122 attempt=1
+[T=103003928ms] [CORE-LOAD] core0_idle_hits=5310 core1_idle_hits=5165 (~5.1s window)
+[T=103006387ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103006422ms] [WS-ACK-RECV] tsf_us=103006384702 recv_t=103006418 attempt=1
+[T=103009075ms=5161 (~5.1s window)
+[T=103010687ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103010712ms] [WS-ACK-RECV] tsf_us=103010684688 recv_t=103010711 attempt=1
+[T=103014222ms] [CORE-LOAD] core0_idle_hits=5313 core1_idle_hits=5161 (~5.1s window)
+[T=103014987ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103015007ms] [WS-ACK-RECV] tsf_us=103014984678 recv_t=103015004 attempt=1
+[T=103019287ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103019313ms] [WS-ACK-RECV] tsf_us=103019284673 recv_t=103019308 attempt=1
+[T=103019369ms=5170 (~5.1s window)
+[T=103023587ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103023612ms] [WS-ACK-RECV] tsf_us=103023584667 recv_t=103023611 attempt=1
+[T=103024516ms] [CORE-LOAD] core0_idle_hits=5297 core1_idle_hits=5166 (~5.1s window)
+[T=103027887ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103027917ms] [WS-ACK-RECV] tsf_us=103027884654 recv_t=103027914 attempt=1
+[T=103029663ms] [CORE-LOAD] core0_idle_hits=5299 core1_idle_hits=5158 (~5.1s window)
+[T=103032187ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103032212ms] [WS-ACK-RECV] tsf_us=103032184655 recv_t=103032208 attempt=1
+[T=103034810ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5165 (~5.1s window)
+[T=103036487ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103036512ms] [WS-ACK-RECV] tsf_us=103036484642 recv_t=103036509 attempt=1
+[T=103039957ms] 17 core1_idle_hits=5165 (~5.1s window)
+[T=103040787ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103040813ms] [WS-ACK-RECV] tsf_us=103040784636 recv_t=103040811 attempt=1
+[T=103045087ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103045104ms] [CORE-LOAD] core0_idle_hits=5311 core1_idle_hits=5167 (~5.1s window)
+[T=103045118ms] [WS-ACK-RECV] tsf_us=103045084625 recv_t=103045113 attempt=1
+[T=103049387ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103049413ms] [WS-ACK-RECV] tsf_us=103049384618 recv_t=103049408 attempt=1
+[T=103050251ms] [CORE-LOAD] core0_idle_hits=5315 core1_idle_hits=5170 (~5.1s window)
+[T=103053687ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103053703ms] [WS-ACK-RECV] tsf_us=103053684608 recv_t=103053700 attempt=1
+[T=103055398ms] [CORE-LOAD] core0_idle_hits=5307 core1_idle_hits=5168 (~5.1s window)
+[T=103057987ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103058018ms] [WS-ACK-RECV] tsf_us=103057984607 recv_t=103058012 attempt=1
+[T=103060545ms] [CORE-LOAD] core0_idle_hits=5299 core1_idle_hits=5165 (~5.1s window)
+[T=103062287ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103062318ms] [WS-ACK-RECV] tsf_us=103062284590 recv_t=103062314 attempt=1
+[T=103065692ms] [CORE-LOAD] core0_idle_hits=5293 core1_idle_hits=5164 (~5.1s window)
+[T=103066587ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103066618ms] [WS-ACK-RECV] tsf_us=103066584597 recv_t=103066615 attempt=1
+[T=103070839ms] [CORE-LOAD] core0_i=5162 (~5.1s window)
+[T=103070887ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103070922ms] [WS-ACK-RECV] tsf_us=103070884579 recv_t=103070918 attempt=1
+[T=103075187ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103075217ms] [WS-ACK-RECV] tsf_us=103075184572 recv_t=103075211 attempt=1
+[T=103075986ms] [CORE-LOAD] core0_idle_hits=5315 core1_idle_hits=5168 (~5.1s window)
+[T=103079487ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103079507ms] [WS-ACK-RECV] tsf_us=103079484562 recv_t=103079504 attempt=1
+dle_hits=5164 (~5.1s window)
+[T=103083787ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103083813ms] [WS-ACK-RECV] tsf_us=103083784560 recv_t=103083808 attempt=1
+[T=103086280ms] [CORE-LOAD] core0_idle_hits=5305 core1_idle_hits=5164 (~5.1s window)
+[T=103088087ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103088117ms] [WS-ACK-RECV] tsf_us=103088084547 recv_t=103088111 attempt=1
+[T=103091427ms] [CORE-LOAD] core=5169 (~5.1s window)
+[T=103092387ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103092407ms] [WS-ACK-RECV] tsf_us=103092384541 recv_t=103092403 attempt=1
+=5167 (~5.1s window)
+[T=103096687ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103096707ms] [WS-ACK-RECV] tsf_us=103096684527 recv_t=103096704 attempt=1
+[T=103100987ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103101012ms] [WS-ACK-RECV] tsf_us=103100984522 recv_t=103101007 attempt=1
+[T=103101721ms] [CORE-LOAD] core0_idle_hits=5338 core1_idle_hits=5169 (~5.1s window)
+[T=103105286ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103105312ms] [WS-ACK-RECV] tsf_us=103105284520 recv_t=103105309 attempt=1
+[T=103106869ms] [CORE-LOAD] core0_idle_hits=5307 core1_idle_hits=5164 (~5.1s window)
+[T=103109586ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103109607ms] [WS-ACK-RECV] tsf_us=103109584507 recv_t=103109603 attempt=1
+[T=103112016ms] [CORE-LOAD] core0_idle_hits=5310 core1_idle_hits=5165 (~5.1s window)
+[T=103113887ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103113907ms] [WS-ACK-RECV] tsf_us=103113884506 recv_t=103113905 attempt=1
+[T=103117163ms] [CORE-LOAD] core0_idle_hits=5328 core1_idle_hits=5170 (~5.1s window)
+[T=103118187ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103118212ms] [WS-ACK-RECV] tsf_us=103118184490 recv_t=103118207 attempt=1
+[T=103122310ms] [CORE-LOAD] core=5168 (~5.1s window)
+[T=103122486ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103122502ms] [WS-ACK-RECV] tsf_us=103122484487 recv_t=103122501 attempt=1
+[T=103126787ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103126817ms] [WS-ACK-RECV] tsf_us=103126784473 recv_t=103126812 attempt=1
+[T=103127457ms] [=5168 (~5.1s window)
+[T=103131086ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103131107ms] [WS-ACK-RECV] tsf_us=103131084472 recv_t=103131104 attempt=1
+[T=103132604ms] [CORE-LOAD] core0_idle_hits=5325 core1_idle_hits=5164 (~5.1s window)
+[T=103135387ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103135422ms] [WS-ACK-RECV] tsf_us=103135384464 recv_t=103135418 attempt=1
+[T=103137751ms] [=5164 (~5.1s window)
+[T=103139687ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103139702ms] [WS-ACK-RECV] tsf_us=103139684449 recv_t=103139701 attempt=1
+[T=103142898ms] [CORE-LOAD] core0_idle_hits=5319 core1_idle_hits=5166 (~5.1s window)
+[T=103143987ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103144007ms] [WS-ACK-RECV] tsf_us=103143984447 recv_t=103144004 attempt=1
+[T=103148045ms] [CORE-LOAD] core=5163 (~5.1s window)
+[T=103148287ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103148312ms] [WS-ACK-RECV] tsf_us=103148284443 recv_t=103148308 attempt=1
+[T=103152586ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103152612ms] [WS-ACK-RECV] tsf_us=103152584437 recv_t=103152610 attempt=1
+[T=103153192ms] [CORE-LOAD] core0_idle_hits=5329 core1_idle_hits=5163 (~5.1s window)
+[T=103156886ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103156912ms] [WS-ACK-RECV] tsf_us=103156884418 recv_t=103156911 attempt=1
+[T=103158339ms] [CORE-LOAD] core0_idle_hits=5321 core1_idle_hits=5167 (~5.1s window)
+[T=103161186ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103161217ms] [WS-ACK-RECV] tsf_us=103161184411 recv_t=103161214 attempt=1
+=5166 (~5.1s window)
+[T=103165487ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103165512ms] [WS-ACK-RECV] tsf_us=103165484403 recv_t=103165508 attempt=1
+[T=103168633ms=5160 (~5.1s window)
+[T=103169786ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103169812ms] [WS-ACK-RECV] tsf_us=103169784398 recv_t=103169811 attempt=1
+[T=103173780ms] [CORE-LOAD] core0_idle_hits=5332 core1_idle_hits=5165 (~5.1s window)
+[T=103174086ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103174107ms] [WS-ACK-RECV] tsf_us=103174084383 recv_t=103174104 attempt=1
+[T=103178387ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103178412ms] [WS-ACK-RECV] tsf_us=103178384385 recv_t=103178408 attempt=1
+[T=103178927ms] [CORE-LOAD] core0_idle_hits=5325 core1_idle_hits=5171 (~5.1s window)
+[T=103182686ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103182712ms] [WS-ACK-RECV] tsf_us=103182684379 recv_t=103182710 attempt=1
+[T=103184074ms] [CORE-LOAD] core=5165 (~5.1s window)
+[T=103186986ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103187002ms] [WS-ACK-RECV] tsf_us=103186984370 recv_t=103187001 attempt=1
+[T=103189221ms] [=5165 (~5.1s window)
+[T=103191286ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103191307ms] [WS-ACK-RECV] tsf_us=103191284365 recv_t=103191304 attempt=1
+[T=103194368ms] [CORE-LOAD] core0_idle_hits=5321 core1_idle_hits=5167 (~5.1s window)
+[T=103195586ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103195612ms] [WS-ACK-RECV] tsf_us=103195584347 recv_t=103195608 attempt=1
+[T=103199515ms] [CORE-LOAD] core0_idle_hits=5339 core1_idle_hits=5162 (~5.1s window)
+[T=103199886ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103199912ms] [WS-ACK-RECV] tsf_us=103199884348 recv_t=103199910 attempt=1
+[T=103204186ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103204207ms] [WS-ACK-RECV] tsf_us=103204184336 recv_t=103204202 attempt=1
+[T=103204662ms] [CORE-LOAD] core0_idle_hits=5347 core1_idle_hits=5174 (~5.1s window)
+[T=103208486ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103208507ms] [WS-ACK-RECV] tsf_us=103208484329 recv_t=103208505 attempt=1
+[T=103209809ms] [CORE-LOAD] core0_idle_hits=5336 core1_idle_hits=5167 (~5.1s window)
+[T=103212786ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103212812ms] [WS-ACK-RECV] tsf_us=103212784317 recv_t=103212808 attempt=1
+[T=103214956ms] [CORE-LOAD] core0_idle_hits=5328 core1_idle_hits=5162 (~5.1s window)
+[T=103217086ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103217111ms] [WS-ACK-RECV] tsf_us=103217084309 recv_t=103217109 attempt=1
+[T=103220103ms] =5164 (~5.1s window)
+[T=103221386ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103221416ms] [WS-ACK-RECV] tsf_us=103221384306 recv_t=103221412 attempt=1
+[T=103225250ms] [CORE-LOAD] core=5164 (~5.1s window)
+[T=103225686ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103225706ms] [WS-ACK-RECV] tsf_us=103225684294 recv_t=103225704 attempt=1
+[T=103229986ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103230012ms] [WS-ACK-RECV] tsf_us=103229984292 recv_t=103230008 attempt=1
+[T=103230397ms] [CORE-LOAD] core0_idle_hits=5329 core1_idle_hits=5169 (~5.1s window)
+[T=103234286ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103234311ms] [WS-ACK-RECV] tsf_us=103234284283 recv_t=103234310 attempt=1
+[T=103235544ms] [CORE-LOAD] core0_idle_hits=5328 core1_idle_hits=5163 (~5.1s window)
+[T=103238586ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103238606ms] [WS-ACK-RECV] tsf_us=103238584278 recv_t=103238602 attempt=1
+[T=103240691ms] =5162 (~5.1s window)
+[T=103242886ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103242907ms] [WS-ACK-RECV] tsf_us=103242884268 recv_t=103242904 attempt=1
+[T=103245838ms] [CORE-LOAD] core=5165 (~5.1s window)
+[T=103247186ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103247207ms] [WS-ACK-RECV] tsf_us=103247184258 recv_t=103247205 attempt=1
+[T=103250985ms] [=5165 (~5.1s window)
+[T=103251486ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103251512ms] [WS-ACK-RECV] tsf_us=103251484250 recv_t=103251508 attempt=1
+[T=103255786ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103255807ms] [WS-ACK-RECV] tsf_us=103255784242 recv_t=103255801 attempt=1
+334 core1_idle_hits=5168 (~5.1s window)
+[T=103260086ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103260107ms] [WS-ACK-RECV] tsf_us=103260084239 recv_t=103260104 attempt=1
+[T=103261279ms] [CORE-LOAD] core=5164 (~5.1s window)
+[T=103264386ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103264412ms] [WS-ACK-RECV] tsf_us=103264384229 recv_t=103264407 attempt=1
+[T=103266426ms] =5163 (~5.1s window)
+[T=103268686ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103268702ms] [WS-ACK-RECV] tsf_us=103268684221 recv_t=103268700 attempt=1
+[T=103271573ms] [CORE-LOAD] core0_idle_hits=5312 core1_idle_hits=5163 (~5.1s window)
+[T=103272986ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103273007ms] [WS-ACK-RECV] tsf_us=103272984206 recv_t=103273003 attempt=1
+[T=103276720ms] [CORE-LOAD] core0_idle_hits=5314 core1_idle_hits=5165 (~5.1s window)
+[T=103277286ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103277307ms] [WS-ACK-RECV] tsf_us=103277284201 recv_t=103277304 attempt=1
+[T=103281586ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103281612ms] [WS-ACK-RECV] tsf_us=103281584192 recv_t=103281607 attempt=1
+[T=103281867ms] [CORE-LOAD] core0_=5170 (~5.1s window)
+[T=103285886ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103285911ms] [WS-ACK-RECV] tsf_us=103285884189 recv_t=103285911 attempt=1
+[T=103287014ms] [CORE-LOAD] core0_idle_hits=5326 core1_idle_hits=5163 (~5.1s window)
+[T=103290186ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103290207ms] [WS-ACK-RECV] tsf_us=103290184179 recv_t=103290203 attempt=1
+[T=103292161ms] [CORE-LOAD] core0_idle_hits=5329 core1_idle_hits=5163 (~5.1s window)
+[T=103294486ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103294512ms] [WS-ACK-RECV] tsf_us=103294484175 recv_t=103294507 attempt=1
+[T=103297308ms] [CORE-LOAD] core0_idle_hits=5313 core1_idle_hits=5162 (~5.1s window)
+[T=103298786ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103298802ms] [WS-ACK-RECV] tsf_us=103298784172 recv_t=103298800 attempt=1
+[T=103302456ms] [CORE-LOAD] core0_idle_hits=5322 core1_idle_hits=5161 (~5.1s window)
+[T=103303086ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103303107ms] [WS-ACK-RECV] tsf_us=103303084159 recv_t=103303103 attempt=1
+[T=103307386ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103307412ms] [WS-ACK-RECV] tsf_us=103307384148 recv_t=103307407 attempt=1
+[T=103307603ms] [CORE-LOAD] core=5166 (~5.1s window)
+[T=103311686ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103311712ms] [WS-ACK-RECV] tsf_us=103311684137 recv_t=103311708 attempt=1
+[T=103312750ms] [CORE-LOAD] core0_idle_hits=5318 core1_idle_hits=5165 (~5.1s window)
+[T=103315986ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103316007ms] [WS-ACK-RECV] tsf_us=103315984132 recv_t=103316001 attempt=1
+[T=103317897ms] [CORE-LOAD] core0_idle_hits=5332 core1_idle_hits=5166 (~5.1s window)
+[T=103320286ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103320307ms] [WS-ACK-RECV] tsf_us=103320284133 recv_t=103320304 attempt=1
+=5161 (~5.1s window)
+[T=103324586ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103324612ms] [WS-ACK-RECV] tsf_us=103324584117 recv_t=103324608 attempt=1
+[T=103328191ms] [CORE-LOAD] core0_idle_hits=5316 core1_idle_hits=5165 (~5.1s window)
+[T=103328886ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103328917ms] [WS-ACK-RECV] tsf_us=103328884112 recv_t=103328912 attempt=1
+[T=103333186ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103333217ms] [WS-ACK-RECV] tsf_us=103333184103 recv_t=103333214 attempt=1
+[T=103333338ms] [=5175 (~5.1s window)
+[T=103337486ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103337512ms] [WS-ACK-RECV] tsf_us=103337484093 recv_t=103337508 attempt=1
+[T=103338485ms] [CORE-LOAD] core0_idle_hits=5303 core1_idle_hits=5164 (~5.1s window)
+[T=103341786ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103341812ms] [WS-ACK-RECV] tsf_us=103341784087 recv_t=103341809 attempt=1
+[T=103343632ms] =5166 (~5.1s window)
+[T=103346086ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103346106ms] [WS-ACK-RECV] tsf_us=103346084079 recv_t=103346102 attempt=1
+[T=103348779ms] [CORE-LOAD] core0_idle_hits=5301 core1_idle_hits=5164 (~5.1s window)
+[T=103350386ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103350407ms] [WS-ACK-RECV] tsf_us=103350384064 recv_t=103350405 attempt=1
+[T=103353926ms] [CORE-LOAD] core0_idle_hits=5304 core1_idle_hits=5163 (~5.1s window)
+[T=103354686ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103354712ms] [WS-ACK-RECV] tsf_us=103354684061 recv_t=103354708 attempt=1
+[T=103358986ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103359012ms] [WS-ACK-RECV] tsf_us=103358984049 recv_t=103359010 attempt=1
+[T=103359073ms] [=5169 (~5.1s window)
+[T=103363286ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103363306ms] [WS-ACK-RECV] tsf_us=103363284047 recv_t=103363303 attempt=1
+[T=103364220ms] [CORE-LOAD] core0_idle_hits=5314 core1_idle_hits=5164 (~5.1s window)
+[T=103367586ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103367612ms] [WS-ACK-RECV] tsf_us=103367584034 recv_t=103367608 attempt=1
+[T=103369367ms] [CORE-LOAD] core0_idle_hits=5309 core1_idle_hits=5164 (~5.1s window)
+[T=103371886ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103371901ms] [WS-ACK-RECV] tsf_us=103371884027 recv_t=103371899 attempt=1
+_idle_hits=5165 (~5.1s window)
+[T=103376186ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103376206ms] [WS-ACK-RECV] tsf_us=103376184023 recv_t=103376201 attempt=1
+=5167 (~5.1s window)
+[T=103380486ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103380506ms] [WS-ACK-RECV] tsf_us=103380484011 recv_t=103380504 attempt=1
+[T=103384786ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103384808ms] [CORE-LOAD] core0_idle_hits=5299 core1_idle_hits=5166 (~5.1s window)
+[T=103384811ms] [WS-ACK-RECV] tsf_us=103384784007 recv_t=103384807 attempt=1
+[T=103389086ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103389101ms] [WS-ACK-RECV] tsf_us=103389083997 recv_t=103389100 attempt=1
+[T=103389955ms] [CORE-LOAD] core0_idle_hits=5310 core1_idle_hits=5171 (~5.1s window)
+[T=103393386ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103393417ms] [WS-ACK-RECV] tsf_us=103393383990 recv_t=103393412 attempt=1
+[T=103395102ms] [CORE-LOAD] core0_idle_hits=5308 core1_idle_hits=5165 (~5.1s window)
+[T=103397686ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103397706ms] [WS-ACK-RECV] tsf_us=103397683979 recv_t=103397705 attempt=1
+[T=103400249ms] [CORE-LOAD] core0_idle_hits=5318 core1_idle_hits=5163 (~5.1s window)
+[T=103401986ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103402011ms] [WS-ACK-RECV] tsf_us=103401983973 recv_t=103402007 attempt=1
+[T=103405396ms=5162 (~5.1s window)
+[T=103406286ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103406311ms] [WS-ACK-RECV] tsf_us=103406283971 recv_t=103406309 attempt=1
+[T=103410543ms] [CORE-LOAD] core0_idle_hits=5315 core1_idle_hits=5161 (~5.1s window)
+[T=103410586ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103410606ms] [WS-ACK-RECV] tsf_us=103410583953 recv_t=103410601 attempt=1
+[T=103414886ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103414916ms] [WS-ACK-RECV] tsf_us=103414883951 recv_t=103414913 attempt=1
+[T=103415690ms] [CORE-LOAD] core0_idle_hits=5312 core1_idle_hits=5173 (~5.1s window)
+[T=103419186ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103419206ms] [WS-ACK-RECV] tsf_us=103419183940 recv_t=103419205 attempt=1
+[T=103420837ms] [=5162 (~5.1s window)
+[T=103423486ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103423511ms] [WS-ACK-RECV] tsf_us=103423483938 recv_t=103423508 attempt=1
+[T=103425984ms] [CORE-LOAD] core0_idle_hits=5294 core1_idle_hits=5164 (~5.1s window)
+[T=103427786ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103427817ms] [WS-ACK-RECV] tsf_us=103427783921 recv_t=103427811 attempt=1
+[T=103431131ms] [CORE-LOAD] core0_idle_hits=5297 core1_idle_hits=5164 (~5.1s window)
+[T=103432086ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103432106ms] [WS-ACK-RECV] tsf_us=103432083929 recv_t=103432102 attempt=1
+[T=103436278ms] [CORE-LOAD] core=5164 (~5.1s window)
+[T=103436386ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103436416ms] [WS-ACK-RECV] tsf_us=103436383920 recv_t=103436414 attempt=1
+[T=103440686ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103440712ms] [WS-ACK-RECV] tsf_us=103440683913 recv_t=103440707 attempt=1
+=5165 (~5.1s window)
+[T=103444986ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103445012ms] [WS-ACK-RECV] tsf_us=103444983894 recv_t=103445010 attempt=1
+[T=103446572ms] [CORE-LOAD] core0_idle_hits=5316 core1_idle_hits=5163 (~5.1s window)
+[T=103449286ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103449317ms] [WS-ACK-RECV] tsf_us=103449283889 recv_t=103449312 attempt=1
+[T=103451719ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5165 (~5.1s window)
+[T=103453586ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103453617ms] [WS-ACK-RECV] tsf_us=103453583888 recv_t=103453614 attempt=1
+[T=103456866ms] [CORE-LOAD] core0_idle_hits=5299 core1_idle_hits=5166 (~5.1s window)
+[T=103457886ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103457912ms] [WS-ACK-RECV] tsf_us=103457883882 recv_t=103457907 attempt=1
+[T=103462013ms] [CORE-LOAD] core0_idle_hits=5298 core1_idle_hits=5166 (~5.1s window)
+[T=103462186ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103462212ms] [WS-ACK-RECV] tsf_us=103462183859 recv_t=103462208 attempt=1
+[T=103466486ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103466517ms] [WS-ACK-RECV] tsf_us=103466483858 recv_t=103466511 attempt=1
+[T=103467160ms] [CORE-LOAD] core0_idle_hits=5311 core1_idle_hits=5171 (~5.1s window)
+[T=103470786ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103470812ms] [WS-ACK-RECV] tsf_us=103470783852 recv_t=103470807 attempt=1
+[T=10347230=5165 (~5.1s window)
+[T=103475086ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103475112ms] [WS-ACK-RECV] tsf_us=103475083838 recv_t=103475110 attempt=1
+=5168 (~5.1s window)
+[T=103479386ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103479417ms] [WS-ACK-RECV] tsf_us=103479383829 recv_t=103479413 attempt=1
+[T=103482601ms] [CORE-LOAD] core0_idle_hits=5318 core1_idle_hits=5168 (~5.1s window)
+[T=103483686ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103483712ms] [WS-ACK-RECV] tsf_us=103483683826 recv_t=103483707 attempt=1
+[T=103487748ms] [CORE-LOAD] core0_idle_hits=5312 core1_idle_hits=5165 (~5.1s window)
+[T=103487986ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103488002ms] [WS-ACK-RECV] tsf_us=103487983817 recv_t=103488000 attempt=1
+[T=103492286ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103492317ms] [WS-ACK-RECV] tsf_us=103492283818 recv_t=103492311 attempt=1
+[T=103492895ms] [CORE-LOAD] core0_idle_hits=5308 core1_idle_hits=5169 (~5.1s window)
+[T=103496586ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103496607ms] [WS-ACK-RECV] tsf_us=103496583823 recv_t=103496604 attempt=1
+[T=103498042ms] [CORE-LOAD] core0_idle_hits=5302 core1_idle_hits=5162 (~5.1s window)
+[T=103500886ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103500912ms] [WS-ACK-RECV] tsf_us=103500883791 recv_t=103500907 attempt=1
+[T=103503190ms=5166 (~5.1s window)
+[T=103505186ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103505216ms] [WS-ACK-RECV] tsf_us=103505183785 recv_t=103505211 attempt=1
+_idle_hits=5304 core1_idle_hits=5167 (~5.1s window)
+[T=103509486ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103509511ms] [WS-ACK-RECV] tsf_us=103509483778 recv_t=103509506 attempt=1
+[T=103513484ms] [CORE-LOAD] core0_idle_hits=5308 core1_idle_hits=5167 (~5.1s window)
+[T=103513786ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103513811ms] [WS-ACK-RECV] tsf_us=103513783771 recv_t=103513809 attempt=1
+[T=103518086ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103518116ms] [WS-ACK-RECV] tsf_us=103518083761 recv_t=103518113 attempt=1
+[T=103518631ms] [CORE-LOAD] core0_idle_hits=5329 core1_idle_hits=5170 (~5.1s window)
+[T=103522386ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103522426ms] [WS-ACK-RECV] tsf_us=103522383759 recv_t=103522424 attempt=1
+[T103523778ms] [CORE-LOAD] core0_idle_hits=5312 core1_idle_hits=5165 (~5.1s window)
+[T=103526686ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103526711ms] [WS-ACK-RECV] tsf_us=103526683742 recv_t=103526707 attempt=1
+[T=103528925ms] [CORE-LOAD] core0_idle_hits=5308 core1_idle_hits=5164 (~5.1s window)
+[T=103530986ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103531011ms] [WS-ACK-RECV] tsf_us=103530983734 recv_t=103531010 attempt=1
+=5165 (~5.1s window)
+[T=103535286ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103535316ms] [WS-ACK-RECV] tsf_us=103535283727 recv_t=103535313 attempt=1
+[T=103539219ms] [CORE-LOAD] core0_idle_hits=5301 core1_idle_hits=5165 (~5.1s window)
+[T=103539586ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103539611ms] [WS-ACK-RECV] tsf_us=103539583736 recv_t=103539607 attempt=1
+[T=103543886ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103543911ms] [WS-ACK-RECV] tsf_us=103543883712 recv_t=103543910 attempt=1
+[T=103544366ms] [CORE-LOAD] core0_idle_hits=5304 core1_idle_hits=5171 (~5.1s window)
+[T=103548186ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103548206ms] [WS-ACK-RECV] tsf_us=103548183704 recv_t=103548203 attempt=1
+[T=103549513ms] [CORE-LOAD] core0_idle_hits=5298 core1_idle_hits=5168 (~5.1s window)
+[T=103552487ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103552532ms] [WS-ACK-RECV] tsf_us=103552483702 recv_t=103552526 attempt=1
+[T=103554660ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5161 (~5.1s window)
+[T=103556786ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103556811ms] [WS-ACK-RECV] tsf_us=103556783695 recv_t=103556808 attempt=1
+[T=103559807ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5165 (~5.1s window)
+[T=103561086ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103561116ms] [WS-ACK-RECV] tsf_us=103561083698 recv_t=103561111 attempt=1
+[T=103564954ms] [CORE-LOAD] core=5163 (~5.1s window)
+[T=103565386ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103565406ms] [WS-ACK-RECV] tsf_us=103565383680 recv_t=103565404 attempt=1
+[T=103569686ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103569711ms] [WS-ACK-RECV] tsf_us=103569683671 recv_t=103569707 attempt=1
+[T=103570101ms] [CORE-LOAD] core0_idle_hits=5317 core1_idle_hits=5166 (~5.1s window)
+[T=103573986ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103574011ms] [WS-ACK-RECV] tsf_us=103573983663 recv_t=103574010 attempt=1
+[T=103575248ms] [CORE-LOAD] core=5166 (~5.1s window)
+[T=103578286ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103578326ms] [WS-ACK-RECV] tsf_us=103578283651 recv_t=103578323 attempt=1
+=5163 (~5.1s window)
+[T=103582586ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103582611ms] [WS-ACK-RECV] tsf_us=103582583645 recv_t=103582607 attempt=1
+[T=103585542ms] [=5160 (~5.1s window)
+[T=103586886ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103586911ms] [WS-ACK-RECV] tsf_us=103586883641 recv_t=103586908 attempt=1
+[T=103590689ms] [CORE-LOAD] core0_idle_hits=5303 core1_idle_hits=5165 (~5.1s window)
+[T=103591186ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103591216ms] [WS-ACK-RECV] tsf_us=103591183632 recv_t=103591211 attempt=1
+[T=103595486ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103595516ms] [WS-ACK-RECV] tsf_us=103595483621 recv_t=103595514 attempt=1
+[T=103595836ms] [CORE-LOAD] core=5172 (~5.1s window)
+[T=103599786ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103599821ms] [WS-ACK-RECV] tsf_us=103599783612 recv_t=103599817 attempt=1
+=5162 (~5.1s window)
+[T=103604086ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103604116ms] [WS-ACK-RECV] tsf_us=103604083609 recv_t=103604111 attempt=1
+[T=103606130ms] [CORE-LOAD] core0_idle_hits=5308 core1_idle_hits=5166 (~5.1s window)
+[T=103608386ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103608416ms] [WS-ACK-RECV] tsf_us=103608383596 recv_t=103608413 attempt=1
+[T=103611277ms=5166 (~5.1s window)
+[T=103612686ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103612711ms] [WS-ACK-RECV] tsf_us=103612683583 recv_t=103612707 attempt=1
+[T=103616424ms] [=5167 (~5.1s window)
+[T=103616986ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103617011ms] [WS-ACK-RECV] tsf_us=103616983583 recv_t=103617008 attempt=1
+[T=103621286ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103621311ms] [WS-ACK-RECV] tsf_us=103621283573 recv_t=103621310 attempt=1
+=5172 (~5.1s window)
+[T=103625586ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103625606ms] [WS-ACK-RECV] tsf_us=103625583571 recv_t=103625604 attempt=1
+[T=103626718ms] [CORE-LOAD] core0_idle_hits=5296 core1_idle_hits=5167 (~5.1s window)
+[T=103629886ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103629921ms] [WS-ACK-RECV] tsf_us=103629883558 recv_t=103629917 attempt=1
+[T=103631865ms] =5164 (~5.1s window)
+[T=103634186ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103634211ms] [WS-ACK-RECV] tsf_us=103634183550 recv_t=103634209 attempt=1
+[T=103637012ms] [CORE-LOAD] core0_idle_hits=5319 core1_idle_hits=5165 (~5.1s window)
+[T=103638486ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103638517ms] [WS-ACK-RECV] tsf_us=103638483538 recv_t=103638512 attempt=1
+[T=103642159ms] [CORE-LOAD] core0_idle_hits=5318 core1_idle_hits=5167 (~5.1s window)
+[T=103642786ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103642812ms] [WS-ACK-RECV] tsf_us=103642783533 recv_t=103642806 attempt=1
+[T=103647086ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103647112ms] [WS-ACK-RECV] tsf_us=103647083527 recv_t=103647107 attempt=1
+[T=103647306ms] [CORE-LOAD] core0_idle_hits=5321 core1_idle_hits=5171 (~5.1s window)
+[T=103651386ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103651402ms] [WS-ACK-RECV] tsf_us=103651383518 recv_t=103651400 attempt=1
+[T=103652453ms] [CORE-LOAD] core=5166 (~5.1s window)
+[T=103655686ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103655707ms] [WS-ACK-RECV] tsf_us=103655683518 recv_t=103655703 attempt=1
+[T=103657600ms] [=5162 (~5.1s window)
+[T=103659986ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103660022ms] [WS-ACK-RECV] tsf_us=103659983498 recv_t=103660017 attempt=1
+[T=103662747ms] [CORE-LOAD] core0_idle_hits=5296 core1_idle_hits=5163 (~5.1s window)
+[T=103664286ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103664311ms] [WS-ACK-RECV] tsf_us=103664283503 recv_t=103664309 attempt=1
+[T=103667894ms] [CORE-LOAD] core0_idle_hits=5300 core1_idle_hits=5162 (~5.1s window)
+[T=103668586ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103668616ms] [WS-ACK-RECV] tsf_us=103668583488 recv_t=103668612 attempt=1
+[T=103672886ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103672907ms] [WS-ACK-RECV] tsf_us=103672883479 recv_t=103672904 attempt=1
+[T=103673041ms] [CORE-LOAD] core0_idle_hits=5314 core1_idle_hits=5170 (~5.1s window)
+[T=103677186ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103677211ms] [WS-ACK-RECV] tsf_us=103677183466 recv_t=103677206 attempt=1
+[T=103678188ms] [CORE-LOAD] core0_idle_hits=5322 core1_idle_hits=5165 (~5.1s window)
+[T=103681485ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103681511ms] [WS-ACK-RECV] tsf_us=103681483467 recv_t=103681508 attempt=1
+[T=103683335msLOAD] core0_idle_hits=5314 core1_idle_hits=5164 (~5.1s window)
+[T=103685786ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103685816ms] [WS-ACK-RECV] tsf_us=103685783457 recv_t=103685811 attempt=1
+[T=103688482ms] [CORE-LOAD] core0_ile_hits=5164 (~5.1s window)
+[T=103690086ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103690106ms] [WS-ACK-RECV] tsf_us=103690083448 recv_t=103690104 attempt=1
+[T=103693629ms] [CORE-LOAD] core0_idle_hits=5299 core1_idle_hits=5164 (~5.1s window)
+[T=103694386ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103694411ms] [WS-ACK-RECV] tsf_us=103694383439 recv_t=103694407 attempt=1
+[T=103698685ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103698701ms] [WS-ACK-RECV] tsf_us=103698683427 recv_t=103698699 attempt=1
+[T=103698776ms] [CORE-LOAD] core0_idle_hits=5301 core1_idle_hits=5168 (~5.1s window)
+[T=103702986ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103703006ms] [WS-ACK-RECV] tsf_us=103702983425 recv_t=103703002 attempt=1
+[T=103703924ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5165 (~5.1s window)
+[T=103707285ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103707316ms] [WS-ACK-RECV] tsf_us=103707283412 recv_t=103707313 attempt=1
+[T=103709071ms] [CORE-LOAD] core0_idle_hits=5300 core1_idle_hits=5163 (~5.1s window)
+[T=103711586ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103711611ms] [WS-ACK-RECV] tsf_us=103711583408 recv_t=103711606 attempt=1
+=5163 (~5.1s window)
+[T=103715885ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103715901ms] [WS-ACK-RECV] tsf_us=103715883400 recv_t=103715899 attempt=1
+[T=103719365ms]=5166 (~5.1s window)
+[T=103720185ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103720206ms] [WS-ACK-RECV] tsf_us=103720183392 recv_t=103720203 attempt=1
+[T=103724485ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103724511ms] [WS-ACK-RECV] tsf_us=103724483383 recv_t=103724508 attempt=1
+[T=103724511ms] [CORE-LOAD] core0_idle_hits=5322 core1_idle_hits=5166 (~5.1s window)
+[T=103728785ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103728811ms] [WS-ACK-RECV] tsf_us=103728783379 recv_t=103728810 attempt=1
+[T=103729659ms] [CORE-LOAD] core=5171 (~5.1s window)
+[T=103733086ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103733106ms] [WS-ACK-RECV] tsf_us=103733083377 recv_t=103733102 attempt=1
+[T=103734806ms] [CORE-LOAD] core0_idle_hits=5295 core1_idle_hits=5163 (~5.1s window)
+[T=103737385ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103737406ms] [WS-ACK-RECV] tsf_us=103737383362 recv_t=103737403 attempt=1
+[T=103739953ms] =5165 (~5.1s window)
+[T=103741686ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103741711ms] [WS-ACK-RECV] tsf_us=103741683349 recv_t=103741707 attempt=1
+[T=103745100ms] [CORE-LOAD] core0_idle_hits=5296 core1_idle_hits=5161 (~5.1s window)
+[T=103745986ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103746011ms] [WS-ACK-RECV] tsf_us=103745983342 recv_t=103746010 attempt=1
+[T=103750247ms=5164 (~5.1s window)
+[T=103750285ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103750316ms] [WS-ACK-RECV] tsf_us=103750283333 recv_t=103750313 attempt=1
+[T=103754586ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103754611ms] [WS-ACK-RECV] tsf_us=103754583329 recv_t=103754607 attempt=1
+[T=103755394ms] [=5166 (~5.1s window)
+[T=103758885ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103758911ms] [WS-ACK-RECV] tsf_us=103758883335 recv_t=103758909 attempt=1
+[T=103760541ms] [CORE-LOAD] core0_idle_hits=5314 core1_idle_hits=5161 (~5.1s window)
+[T=103763186ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103763206ms] [WS-ACK-RECV] tsf_us=103763183309 recv_t=103763202 attempt=1
+[T=103765688ms] [CORE-LOAD] core0_idle_hits=5307 core1_idle_hits=5170 (~5.1s window)
+[T=103767485ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103767506ms] [WS-ACK-RECV] tsf_us=103767483307 recv_t=103767503 attempt=1
+[T=103770835ms] [CORE-LOAD] core0_idle_hits=5307 core1_idle_hits=5168 (~5.1s window)
+[T=103771786ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103771811ms] [WS-ACK-RECV] tsf_us=103771783296 recv_t=103771807 attempt=1
+[T=103775982ms=5160 (~5.1s window)
+[T=103776085ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103776111ms] [WS-ACK-RECV] tsf_us=103776083290 recv_t=103776110 attempt=1
+[T=103780385ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103780526ms] [WS-ACK-RECV] tsf_us=103780383277 recv_t=103780522 attempt=1
+=5172 (~5.1s window)
+[T=103784685ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103784711ms] [WS-ACK-RECV] tsf_us=103784683273 recv_t=103784707 attempt=1
+[T=103786276ms] [CORE-LOAD] core0_idle_hits=5299 core1_idle_hits=5165 (~5.1s window)
+[T=103788985ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103789011ms] [WS-ACK-RECV] tsf_us=103788983265 recv_t=103789010 attempt=1
+=5164 (~5.1s window)
+[T=103793285ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103793306ms] [WS-ACK-RECV] tsf_us=103793283261 recv_t=103793303 attempt=1
+[T=103796570ms] [=5164 (~5.1s window)
+[T=103797585ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103797606ms] [WS-ACK-RECV] tsf_us=103797583261 recv_t=103797604 attempt=1
+e0_idle_hits=5309 core1_idle_hits=5165 (~5.1s window)
+[T=103801885ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103801910ms] [WS-ACK-RECV] tsf_us=103801883244 recv_t=103801908 attempt=1
+[T=103806185ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103806205ms] [WS-ACK-RECV] tsf_us=103806183237 recv_t=103806200 attempt=1
+[T=103806864ms] [=5169 (~5.1s window)
+[T=103810485ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103810515ms] [WS-ACK-RECV] tsf_us=103810483231 recv_t=103810512 attempt=1
+=5162 (~5.1s window)
+[T=103814785ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103814810ms] [WS-ACK-RECV] tsf_us=103814783217 recv_t=103814806 attempt=1
+[T=103817158ms] [CORE-LOAD] core0_idle_hits=5296 core1_idle_hits=5163 (~5.1s window)
+[T=103819085ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103819110ms] [WS-ACK-RECV] tsf_us=103819083215 recv_t=103819108 attempt=1
+[T=103822305ms] le_hits=5301 core1_idle_hits=5163 (~5.1s window)
+[T=103823385ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103823415ms] [WS-ACK-RECV] tsf_us=103823383203 recv_t=103823411 attempt=1
+[T=103827452ms] [CORE-LOAD] core0_idle_hits=5301 core1_idle_hits=5165 (~5.1s window)
+[T=103827685ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103827710ms] [WS-ACK-RECV] tsf_us=103827683198 recv_t=103827706 attempt=1
+[T=103831985ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103832010ms] [WS-ACK-RECV] tsf_us=103831983195 recv_t=103832007 attempt=1
+[T=103832599ms] =5171 (~5.1s window)
+[T=103836285ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103836301ms] [WS-ACK-RECV] tsf_us=103836283181 recv_t=103836299 attempt=1
+[T=103837746ms] [CORE-LOAD] core0_idle_hits=5316 core1_idle_hits=5167 (~5.1s window)
+[T=103840585ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103840616ms] [WS-ACK-RECV] tsf_us=103840583169 recv_t=103840612 attempt=1
+[T=103842893ms] [CORE-LOAD] corets=5309 core1_idle_hits=5162 (~5.1s window)
+[T=103844885ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103844911ms] [WS-ACK-RECV] tsf_us=103844883172 recv_t=103844906 attempt=1
+[T=103848040ms] [CORE-LOAD] core0_idle_hits=5311 core1_idle_hits=5162 (~5.1s window)
+[T=103849185ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103849211ms] [WS-ACK-RECV] tsf_us=103849183157 recv_t=103849208 attempt=1
+[T=103853187ms] [CORE-LOAD] core0_idle_hits=5299 core1_idle_hits=5163 (~5.1s window)
+[T=103853485ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103853506ms] [WS-ACK-RECV] tsf_us=103853483143 recv_t=103853500 attempt=1
+[T=103857785ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103857816ms] [WS-ACK-RECV] tsf_us=103857783136 recv_t=103857813 attempt=1
+[T=103858334ms] [CORE-LOAD] core0_idle_hits=5297 core1_idle_hits=5167 (~5.1s window)
+[T=103862085ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103862111ms] [WS-ACK-RECV] tsf_us=103862083136 recv_t=103862106 attempt=1
+[T=103863481ms] [95 core1_idle_hits=5167 (~5.1s window)
+[T=103866385ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103866411ms] [WS-ACK-RECV] tsf_us=103866383126 recv_t=103866408 attempt=1
+[T=103868628ms] [CORE-LOAD] core0_idle_hits=5303 core1_idle_hits=5164 (~5.1s window)
+[T=103870685ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103870706ms] [WS-ACK-RECV] tsf_us=103870683116 recv_t=103870701 attempt=1
+[T=103873775ms] [=5166 (~5.1s window)
+[T=103874985ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103875016ms] [WS-ACK-RECV] tsf_us=103874983115 recv_t=103875013 attempt=1
+=5165 (~5.1s window)
+[T=103879285ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103879311ms] [WS-ACK-RECV] tsf_us=103879283103 recv_t=103879306 attempt=1
+[T=103883585ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103883611ms] [WS-ACK-RECV] tsf_us=103883583089 recv_t=103883609 attempt=1
+[T=103884069ms] [CORE-LOAD] core0_idle_hits=5319 core1_idle_hits=5167 (~5.1s window)
+[T=103887885ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103887906ms] [WS-ACK-RECV] tsf_us=103887883082 recv_t=103887902 attempt=1
+[T=103889216ms] [CORE-LOAD] core0_idle_hits=5311 core1_idle_hits=5165 (~5.1s window)
+[T=103892185ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103892221ms] [WS-ACK-RECV] tsf_us=103892183074 recv_t=103892215 attempt=1
+[T=103894364ms] [CORE-LOAD] core0_idle_hits=5294 core1_idle_hits=5163 (~5.1s window)
+[T=103896485ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103896511ms] [WS-ACK-RECV] tsf_us=103896483068 recv_t=103896508 attempt=1
+[T=103899510ms] [CORE-LOAD] core0_idle_hits=5291 core1_idle_hits=5163 (~5.1s window)
+[T=103900785ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103900806ms] [WS-ACK-RECV] tsf_us=103900783063 recv_t=103900801 attempt=1
+[T=103904658ms] [CORE-LOAD] core0_idle_hits=5300 core1_idle_hits=5165 (~5.1s window)
+[T=103905085ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103905111ms] [WS-ACK-RECV] tsf_us=103905083050 recv_t=103905106 attempt=1
+[T=103909385ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103909411ms] [WS-ACK-RECV] tsf_us=103909383047 recv_t=103909409 attempt=1
+[T=103909805ms] [CORE-LOAD] core0_idle_hits=5312 core1_idle_hits=5174 (~5.1s window)
+[T=103913685ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103913716ms] [WS-ACK-RECV] tsf_us=103913683040 recv_t=103913711 attempt=1
+[T=103914952ms] [CORE-LOAD] core=5167 (~5.1s window)
+[T=103917985ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103918011ms] [WS-ACK-RECV] tsf_us=103917983033 recv_t=103918007 attempt=1
+[T=103920099ms] [CORE-LOAD] core=5161 (~5.1s window)
+[T=103922285ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103922311ms] [WS-ACK-RECV] tsf_us=103922283021 recv_t=103922308 attempt=1
+[T=103925246ms] [CORE-LOAD] core0_idle_hits=5307 core1_idle_hits=5165 (~5.1s window)
+[T=103926585ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103926606ms] [WS-ACK-RECV] tsf_us=103926583014 recv_t=103926601 attempt=1
+=5167 (~5.1s window)
+[T=103930885ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103930906ms] [WS-ACK-RECV] tsf_us=103930883002 recv_t=103930903 attempt=1
+[T=103935185ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103935211ms] [WS-ACK-RECV] tsf_us=103935182996 recv_t=103935206 attempt=1
+[T=103935540ms] [CORE-LOAD] core0_idle_hits=5304 core1_idle_hits=5172 (~5.1s window)
+[T=103939486ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103939511ms] [WS-ACK-RECV] tsf_us=103939482994 recv_t=103939509 attempt=1
+[T=103940687ms] [CORE-LOAD] core=5168 (~5.1s window)
+[T=103943785ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103943805ms] [WS-ACK-RECV] tsf_us=103943782978 recv_t=103943802 attempt=1
+=5163 (~5.1s window)
+[T=103948085ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103948111ms] [WS-ACK-RECV] tsf_us=103948082977 recv_t=103948107 attempt=1
+=5164 (~5.1s window)
+[T=103952385ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103952410ms] [WS-ACK-RECV] tsf_us=103952382965 recv_t=103952408 attempt=1
+[T=103956128ms] [CORE-LOAD] core0_idle_hits=5307 core1_idle_hits=5168 (~5.1s window)
+[T=103956685ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103956715ms] [WS-ACK-RECV] tsf_us=103956682966 recv_t=103956711 attempt=1
+[T=103960985ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103961005ms] [WS-ACK-RECV] tsf_us=103960982950 recv_t=103961003 attempt=1
+[T=103961275ms] [CORE-LOAD] core0_idle_hits=5321 core1_idle_hits=5173 (~5.1s window)
+[T=103965285ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103965310ms] [WS-ACK-RECV] tsf_us=103965282950 recv_t=103965307 attempt=1
+[T=103966422ms] [CORE-LOAD] core0_idle_hits=5308 core1_idle_hits=5163 (~5.1s window)
+[T=103969585ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103969615ms] [WS-ACK-RECV] tsf_us=103969582939 recv_t=103969610 attempt=1
+[T=103971569ms=5164 (~5.1s window)
+[T=103973885ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103973905ms] [WS-ACK-RECV] tsf_us=103973882939 recv_t=103973903 attempt=1
+[T=103976716ms] [CORE-LOAD] core0_idle_hits=5294 core1_idle_hits=5164 (~5.1s window)
+[T=103978185ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103978210ms] [WS-ACK-RECV] tsf_us=103978182924 recv_t=103978206 attempt=1
+[T=103981863msidle_hits=5165 (~5.1s window)
+[T=103982485ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103982510ms] [WS-ACK-RECV] tsf_us=103982482911 recv_t=103982507 attempt=1
+[T=103986785ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103986815ms] [WS-ACK-RECV] tsf_us=103986782903 recv_t=103986810 attempt=1
+[T=103987010ms] [CORE-LOAD] core=5171 (~5.1s window)
+[T=103991085ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103991105ms] [WS-ACK-RECV] tsf_us=103991082893 recv_t=103991103 attempt=1
+[T=103992157ms] [CORE-LOAD] core0_idle_hits=5308 core1_idle_hits=5166 (~5.1s window)
+[T=103995385ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103995410ms] [WS-ACK-RECV] tsf_us=103995382888 recv_t=103995406 attempt=1
+[T=103997304ms] [CORE-LOAD] core0_idle_hits=5313 core1_idle_hits=5163 (~5.1s window)
+[T=103999685ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=103999700ms] [WS-ACK-RECV] tsf_us=103999682877 recv_t=103999699 attempt=1
+[T=104002451ms] [CORE-LOAD] core0_idle_hits=5310 core1_idle_hits=5162 (~5.1s window)
+[T=104003985ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104004015ms] [WS-ACK-RECV] tsf_us=104003982873 recv_t=104004011 attempt=1
+[T=104007598ms] [CORE-LOAD] core=5164 (~5.1s window)
+[T=104008285ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104008305ms] [WS-ACK-RECV] tsf_us=104008282865 recv_t=104008303 attempt=1
+[T=104012585ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104012610ms] [WS-ACK-RECV] tsf_us=104012582856 recv_t=104012606 attempt=1
+[T=104012745ms] [CORE-LOAD] core0_idle_hits=5303 core1_idle_hits=5170 (~5.1s window)
+[T=104016885ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104016910ms] [WS-ACK-RECV] tsf_us=104016882849 recv_t=104016909 attempt=1
+re0_idle_hits=5307 core1_idle_hits=5166 (~5.1s window)
+[T=104021185ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104021205ms] [WS-ACK-RECV] tsf_us=104021182846 recv_t=104021201 attempt=1
+[T=104023039ms] [CORE-LOAD] core0_idle_hits=5297 core1_idle_hits=5163 (~5.1s window)
+[T=104025485ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104025505ms] [WS-ACK-RECV] tsf_us=104025482854 recv_t=104025503 attempt=1
+[T=104028186ms] [=5163 (~5.1s window)
+[T=104029785ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104029810ms] [WS-ACK-RECV] tsf_us=104029782823 recv_t=104029806 attempt=1
+[T=104033333ms] [CORE-LOAD] core0_idle_hits=5310 core1_idle_hits=5163 (~5.1s window)
+[T=104034085ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104034111ms] [WS-ACK-RECV] tsf_us=104034082815 recv_t=104034108 attempt=1
+[T=104038385ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104038406ms] [WS-ACK-RECV] tsf_us=104038382809 recv_t=104038401 attempt=1
+[T=104038480ms] [CORE-LOAD] core0_idle_hits=5318 core1_idle_hits=5166 (~5.1s window)
+[T=104042685ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104042716ms] [WS-ACK-RECV] tsf_us=104042682806 recv_t=104042712 attempt=1
+[T=104043627ms] =5164 (~5.1s window)
+[T=104046985ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104047071ms] [WS-ACK-RECV] tsf_us=104046982794 recv_t=104047066 attempt=1
+=5167 (~5.1s window)
+[T=104051285ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104051311ms] [WS-ACK-RECV] tsf_us=104051282784 recv_t=104051309 attempt=1
+[T=104053921ms] [CORE-LOAD] core=5166 (~5.1s window)
+[T=104055585ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104055616ms] [WS-ACK-RECV] tsf_us=104055582778 recv_t=104055612 attempt=1
+[T=104059068ms] [CORE-LOAD] core=5158 (~5.1s window)
+[T=104059885ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104059911ms] [WS-ACK-RECV] tsf_us=104059882770 recv_t=104059906 attempt=1
+[T=104064185ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104064211ms] [WS-ACK-RECV] tsf_us=104064182762 recv_t=104064208 attempt=1
+[T=104064215ms] [CORE-LOAD] core0_idle_hits=5310 core1_idle_hits=5170 (~5.1s window)
+[T=104068485ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104068506ms] [WS-ACK-RECV] tsf_us=104068482765 recv_t=104068500 attempt=1
+[T=104069362ms] [CORE-LOAD] core0_idle_hits=5311 core1_idle_hits=5171 (~5.1s window)
+[T=104072785ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104072815ms] [WS-ACK-RECV] tsf_us=104072782747 recv_t=104072811 attempt=1
+[T=104074509ms=5164 (~5.1s window)
+[T=104077085ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104077111ms] [WS-ACK-RECV] tsf_us=104077082740 recv_t=104077106 attempt=1
+=5165 (~5.1s window)
+[T=104081385ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104081415ms] [WS-ACK-RECV] tsf_us=104081382732 recv_t=104081409 attempt=1
+[T=104084803ms] [CORE-LOAD] core0_idle_hits=5313 core1_idle_hits=5165 (~5.1s window)
+[T=104085685ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104085705ms] [WS-ACK-RECV] tsf_us=104085682725 recv_t=104085702 attempt=1
+[T=104089950ms] [CORE-LOAD] core0_idle_hits=5298 core1_idle_hits=5165 (~5.1s window)
+[T=104089985ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104090020ms] [WS-ACK-RECV] tsf_us=104089982710 recv_t=104090015 attempt=1
+[T=104094285ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104094310ms] [WS-ACK-RECV] tsf_us=104094282708 recv_t=104094308 attempt=1
+=5167 (~5.1s window)
+[T=104098585ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104098615ms] [WS-ACK-RECV] tsf_us=104098582701 recv_t=104098612 attempt=1
+=5165 (~5.1s window)
+[T=104102885ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104102910ms] [WS-ACK-RECV] tsf_us=104102882700 recv_t=104102905 attempt=1
+[T=104105392ms] [=5166 (~5.1s window)
+[T=104107185ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104107220ms] [WS-ACK-RECV] tsf_us=104107182685 recv_t=104107216 attempt=1
+[T=104110539ms] [CORE-LOAD] core0_idle_hits=5312 core1_idle_hits=5166 (~5.1s window)
+[T=104111485ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104111525ms] [WS-ACK-RECV] tsf_us=104111482681 recv_t=104111519 attempt=1
+idle_hits=5314 core1_idle_hits=5166 (~5.1s window)
+[T=104115785ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104115815ms] [WS-ACK-RECV] tsf_us=104115782671 recv_t=104115813 attempt=1
+[T=104120085ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104120110ms] [WS-ACK-RECV] tsf_us=104120082658 recv_t=104120106 attempt=1
+[T=104120833ms] [CORE-LOAD] core=5167 (~5.1s window)
+[T=104124385ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104124410ms] [WS-ACK-RECV] tsf_us=104124382652 recv_t=104124409 attempt=1
+[T=104125980ms] [=5163 (~5.1s window)
+[T=104128685ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104128705ms] [WS-ACK-RECV] tsf_us=104128682645 recv_t=104128702 attempt=1
+[T=104131127ms] [CORE-LOAD] core0_idle_hits=5295 core1_idle_hits=5165 (~5.1s window)
+[T=104132985ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104133005ms] [WS-ACK-RECV] tsf_us=104132982633 recv_t=104133004 attempt=1
+[T=104136274ms] [CORE-LOAD] core0_idle_hits=5291 core1_idle_hits=5165 (~5.1s window)
+[T=104137285ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104137310ms] [WS-ACK-RECV] tsf_us=104137282627 recv_t=104137306 attempt=1
+[T=104141421ms] [=5160 (~5.1s window)
+[T=104141585ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104141610ms] [WS-ACK-RECV] tsf_us=104141582620 recv_t=104141609 attempt=1
+[T=104145885ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104145915ms] [WS-ACK-RECV] tsf_us=104145882616 recv_t=104145912 attempt=1
+[T=104146568ms] [CORE-LOAD] core0_idle_hits=5313 core1_idle_hits=5167 (~5.1s window)
+[T=104150185ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104150210ms] [WS-ACK-RECV] tsf_us=104150182602 recv_t=104150206 attempt=1
+715ms] [CORE-LOAD] core0_idle_hits=5308 core1_idle_hits=5161 (~5.1s window)
+[T=104154485ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104154510ms] [WS-ACK-RECV] tsf_us=104154482604 recv_t=104154509 attempt=1
+5317 core1_idle_hits=5166 (~5.1s window)
+[T=104158785ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104158815ms] [WS-ACK-RECV] tsf_us=104158782597 recv_t=104158811 attempt=1
+[T=104162009ms] [CORE-LOAD] core0_idle_hits=5313 core1_idle_hits=5166 (~5.1s window)
+[T=104163085ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104163115ms] [WS-ACK-RECV] tsf_us=104163082585 recv_t=104163114 attempt=1
+[T=104167156ms] [CORE-LOAD] core0_i=5163 (~5.1s window)
+[T=104167385ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104167410ms] [WS-ACK-RECV] tsf_us=104167382578 recv_t=104167406 attempt=1
+[T=104171685ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104171710ms] [WS-ACK-RECV] tsf_us=104171682573 recv_t=104171709 attempt=1
+[T=104172303ms] [CORE-LOAD] core0_idle_hits=5301 core1_idle_hits=5166 (~5.1s window)
+[T=104175985ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104176015ms] [WS-ACK-RECV] tsf_us=104175982561 recv_t=104176012 attempt=1
+[T=104177450ms] [CORE-LOAD] corecore1_idle_hits=5168 (~5.1s window)
+[T=104180285ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104180320ms] [WS-ACK-RECV] tsf_us=104180282552 recv_t=104180316 attempt=1
+[T=104182597ms] [CORE-LOAD] core0_idle_hits=5304 core1_idle_hits=5162 (~5.1s window)
+[T=104184585ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104184610ms] [WS-ACK-RECV] tsf_us=104184582543 recv_t=104184608 attempt=1
+[T=104187744ms=5166 (~5.1s window)
+[T=104188885ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104188905ms] [WS-ACK-RECV] tsf_us=104188882533 recv_t=104188901 attempt=1
+[T=104192891ms] [CORE-LOAD] core0_idle_hits=5314 core1_idle_hits=5163 (~5.1s window)
+[T=104193185ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104193210ms] [WS-ACK-RECV] tsf_us=104193182531 recv_t=104193206 attempt=1
+[T=104197485ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104197510ms] [WS-ACK-RECV] tsf_us=104197482524 recv_t=104197507 attempt=1
+_idle_hits=5173 (~5.1s window)
+[T=104201785ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104201800ms] [WS-ACK-RECV] tsf_us=104201782513 recv_t=104201799 attempt=1
+[T=104203185ms] [CORE-LOAD] core0_idle_hits=5311 core1_idle_hits=5165 (~5.1s window)
+[T=104206085ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104206115ms] [WS-ACK-RECV] tsf_us=104206082502 recv_t=104206111 attempt=1
+=5167 (~5.1s window)
+[T=104210385ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104210410ms] [WS-ACK-RECV] tsf_us=104210382494 recv_t=104210406 attempt=1
+=5164 (~5.1s window)
+[T=104214685ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104214710ms] [WS-ACK-RECV] tsf_us=104214682489 recv_t=104214708 attempt=1
+[T=104218626ms] [CORE-LOAD] core0_idle_hits=5303 core1_idle_hits=5164 (~5.1s window)
+[T=104218985ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104219015ms] [WS-ACK-RECV] tsf_us=104218982483 recv_t=104219011 attempt=1
+[T=104223285ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104223305ms] [WS-ACK-RECV] tsf_us=104223282489 recv_t=104223303 attempt=1
+[T=104223773ms] [CORE-LOAD] core0_idle_hits=5334 core1_idle_hits=5170 (~5.1s window)
+[T=104227585ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104227610ms] [WS-ACK-RECV] tsf_us=104227582463 recv_t=104227606 attempt=1
+[T=104228920ms] [CORE-LOAD] core0_idle_hits=5327 core1_idle_hits=5161 (~5.1s window)
+[T=104231885ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104231910ms] [WS-ACK-RECV] tsf_us=104231882460 recv_t=104231908 attempt=1
+[T=104234067ms] [CORE-LOAD] core0_idle_hits=5331 core1_idle_hits=5167 (~5.1s window)
+[T=104236185ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104236205ms] [WS-ACK-RECV] tsf_us=104236182451 recv_t=104236201 attempt=1
+=5164 (~5.1s window)
+[T=104240485ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104240510ms] [WS-ACK-RECV] tsf_us=104240482441 recv_t=104240506 attempt=1
+[T=104244361ms] [CORE-LOAD] core0_idle_hits=5316 core1_idle_hits=5164 (~5.1s window)
+[T=104244784ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104244815ms] [WS-ACK-RECV] tsf_us=104244782438 recv_t=104244809 attempt=1
+[T=104249085ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104249115ms] [WS-ACK-RECV] tsf_us=104249082433 recv_t=104249111 attempt=1
+[T=104249508ms] [CORE-LOAD] core0_idle_hits=5333 core1_idle_hits=5171 (~5.1s window)
+[T=104253385ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104253405ms] [WS-ACK-RECV] tsf_us=104253382420 recv_t=104253403 attempt=1
+[T=104254655ms=5168 (~5.1s window)
+[T=104257685ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104257710ms] [WS-ACK-RECV] tsf_us=104257682411 recv_t=104257705 attempt=1
+[T=104259802ms] [CORE-LOAD] core0_idle_hits=5310 core1_idle_hits=5162 (~5.1s window)
+[T=104261984ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104262000ms] [WS-ACK-RECV] tsf_us=104261982406 recv_t=104261998 attempt=1
+[T=104264949ms] [CORE-LOAD] core0_idle_hits=5323 core1_idle_hits=5165 (~5.1s window)
+[T=104266284ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104266305ms] [WS-ACK-RECV] tsf_us=104266282396 recv_t=104266301 attempt=1
+[T=104270096ms] [CORE-LOAD] core0_idle_hits=5327 core1_idle_hits=5163 (~5.1s window)
+[T=104270585ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104270615ms] [WS-ACK-RECV] tsf_us=104270582386 recv_t=104270613 attempt=1
+[T=104274884ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104274910ms] [WS-ACK-RECV] tsf_us=104274882382 recv_t=104274905 attempt=1
+[T==5171 (~5.1s window)
+[T=104279184ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104279210ms] [WS-ACK-RECV] tsf_us=104279182371 recv_t=104279208 attempt=1
+[T=104280390ms] [=5162 (~5.1s window)
+[T=104283484ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104283515ms] [WS-ACK-RECV] tsf_us=104283482368 recv_t=104283511 attempt=1
+=5166 (~5.1s window)
+[T=104287784ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104287815ms] [WS-ACK-RECV] tsf_us=104287782359 recv_t=104287812 attempt=1
+[T=104290684ms] [CORE-LOAD] core0_idle_hits=5309 core1_idle_hits=5163 (~5.1s window)
+[T=104292085ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104292110ms] [WS-ACK-RECV] tsf_us=104292082348 recv_t=104292105 attempt=1
+[T=104295832ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5162 (~5.1s window)
+[T=104296384ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104296400ms] [WS-ACK-RECV] tsf_us=104296382344 recv_t=104296398 attempt=1
+[T=104300684ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104300705ms] [WS-ACK-RECV] tsf_us=104300682333 recv_t=104300701 attempt=1
+=5165 (~5.1s window)
+[T=104304984ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104305010ms] [WS-ACK-RECV] tsf_us=104304982326 recv_t=104305005 attempt=1
+[T=104306126ms] [CORE-LOAD] core=5162 (~5.1s window)
+[T=104309284ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104309310ms] [WS-ACK-RECV] tsf_us=104309282321 recv_t=104309307 attempt=1
+[T=104311273ms] [CORE-LOAD] core0_idle_hits=5330 core1_idle_hits=5164 (~5.1s window)
+[T=104313584ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104313615ms] [WS-ACK-RECV] tsf_us=104313582318 recv_t=104313610 attempt=1
+[T=104316420ms] [s=5163 (~5.1s window)
+[T=104317884ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104317905ms] [WS-ACK-RECV] tsf_us=104317882305 recv_t=104317902 attempt=1
+[T=104321567ms] [CORE-LOAD] core0_idle_hits=5321 core1_idle_hits=5164 (~5.1s window)
+[T=104322184ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104322210ms] [WS-ACK-RECV] tsf_us=104322182294 recv_t=104322206 attempt=1
+[T=104326484ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104326500ms] [WS-ACK-RECV] tsf_us=104326482288 recv_t=104326498 attempt=1
+[T=104326714ms] [CORE-LOAD] core0_idle_hits=5322 core1_idle_hits=5168 (~5.1s window)
+[T=104330784ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104330815ms] [WS-ACK-RECV] tsf_us=104330782280 recv_t=104330810 attempt=1
+[T=104331861ms] [CORE-LOAD] core0_idle_hits=5308 core1_idle_hits=5164 (~5.1s window)
+[T=104335084ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104335105ms] [WS-ACK-RECV] tsf_us=104335082269 recv_t=104335103 attempt=1
+[T=104337008ms] [CORE-LOAD] core0_idle_hits=5307 core1_idle_hits=5165 (~5.1s window)
+[T=104339384ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104339410ms] [WS-ACK-RECV] tsf_us=104339382261 recv_t=104339406 attempt=1
+[T=104342155ms] [CORE-LOAD] core0_idle_hits=5314 core1_idle_hits=5165 (~5.1s window)
+[T=104343684ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104343710ms] [WS-ACK-RECV] tsf_us=104343682258 recv_t=104343708 attempt=1
+[T=104347302ms] [CORE-LOAD] core0_idle_hits=5337 core1_idle_hits=5168 (~5.1s window)
+[T=104347984ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104348000ms] [WS-ACK-RECV] tsf_us=104347982245 recv_t=104347999 attempt=1
+[T=104352284ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104352305ms] [WS-ACK-RECV] tsf_us=104352282245 recv_t=104352303 attempt=1
+[T=104352449ms] [CORE-LOAD] core_hits=5340 core1_idle_hits=5168 (~5.1s window)
+[T=104356584ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104356610ms] [WS-ACK-RECV] tsf_us=104356582232 recv_t=104356606 attempt=1
+[T=104357596ms] [CORE-LOAD] core=5163 (~5.1s window)
+[T=104360884ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104360910ms] [WS-ACK-RECV] tsf_us=104360882227 recv_t=104360909 attempt=1
+=5165 (~5.1s window)
+[T=104365184ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104365205ms] [WS-ACK-RECV] tsf_us=104365182223 recv_t=104365202 attempt=1
+[T=104367890ms] [=5164 (~5.1s window)
+[T=104369484ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104369510ms] [WS-ACK-RECV] tsf_us=104369482206 recv_t=104369506 attempt=1
+[T=104373037ms=5164 (~5.1s window)
+[T=104373784ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104373809ms] [WS-ACK-RECV] tsf_us=104373782202 recv_t=104373808 attempt=1
+[T=104378084ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104378104ms] [WS-ACK-RECV] tsf_us=104378082195 recv_t=104378101 attempt=1
+[T=104378184ms] [CORE-LOAD] core0_idle_hits=5344 core1_idle_hits=5167 (~5.1s window)
+[T=104382384ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104382405ms] [WS-ACK-RECV] tsf_us=104382382185 recv_t=104382402 attempt=1
+=5167 (~5.1s window)
+[T=104386684ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104386710ms] [WS-ACK-RECV] tsf_us=104386682178 recv_t=104386706 attempt=1
+=5163 (~5.1s window)
+[T=104390984ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104391004ms] [WS-ACK-RECV] tsf_us=104390982174 recv_t=104390999 attempt=1
+[T=104393625ms] [CORE-LOAD] core0_idle_hits=5327 core1_idle_hits=5164 (~5.1s window)
+[T=104395284ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104395304ms] [WS-ACK-RECV] tsf_us=104395282167 recv_t=104395301 attempt=1
+=5163 (~5.1s window)
+[T=104399584ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104399609ms] [WS-ACK-RECV] tsf_us=104399582152 recv_t=104399605 attempt=1
+[T=104403884ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104403899ms] [WS-ACK-RECV] tsf_us=104403882145 recv_t=104403898 attempt=1
+[T=104403919ms] [CORE-LOAD] core0_idle_hits=5333 core1_idle_hits=5166 (~5.1s window)
+[T=104408184ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104408204ms] [WS-ACK-RECV] tsf_us=104408182142 recv_t=104408201 attempt=1
+[T=104409066ms] [CORE-LOAD] core=5168 (~5.1s window)
+[T=104412484ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104412504ms] [WS-ACK-RECV] tsf_us=104412482130 recv_t=104412502 attempt=1
+[T=104414213ms] [CORE-LOAD] core=5163 (~5.1s window)
+[T=104416784ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104416809ms] [WS-ACK-RECV] tsf_us=104416782127 recv_t=104416805 attempt=1
+=5161 (~5.1s window)
+[T=104421084ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104421109ms] [WS-ACK-RECV] tsf_us=104421082113 recv_t=104421108 attempt=1
+[T=104424507ms] [CORE-LOAD] core0_idle_hits=5330 core1_idle_hits=5163 (~5.1s window)
+[T=104425384ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104425404ms] [WS-ACK-RECV] tsf_us=104425382110 recv_t=104425401 attempt=1
+[T=104429654ms] [e_hits=5335 core1_idle_hits=5163 (~5.1s window)
+[T=104429684ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104429705ms] [WS-ACK-RECV] tsf_us=104429682098 recv_t=104429703 attempt=1
+[T=104433984ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104434010ms] [WS-ACK-RECV] tsf_us=104433982094 recv_t=104434007 attempt=1
+=5175 (~5.1s window)
+[T=104438284ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104438315ms] [WS-ACK-RECV] tsf_us=104438282085 recv_t=104438309 attempt=1
+[T=104439948ms]=5165 (~5.1s window)
+[T=104442584ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104442605ms] [WS-ACK-RECV] tsf_us=104442582076 recv_t=104442600 attempt=1
+[T=104445095ms] [CORE-LOAD] core0_idle_hits=5312 core1_idle_hits=5165 (~5.1s window)
+[T=104446884ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104446910ms] [WS-ACK-RECV] tsf_us=104446882069 recv_t=104446905 attempt=1
+[T=104450242ms] [CORE-LOAD] core0_idle_hits=5305 core1_idle_hits=5162 (~5.1s window)
+[T=104451184ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104451210ms] [WS-ACK-RECV] tsf_us=104451182061 recv_t=104451207 attempt=1
+=5163 (~5.1s window)
+[T=104455484ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104455515ms] [WS-ACK-RECV] tsf_us=104455482057 recv_t=104455509 attempt=1
+[T=104459784ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104459805ms] [WS-ACK-RECV] tsf_us=104459782057 recv_t=104459801 attempt=1
+[T=104460536ms] [=5167 (~5.1s window)
+[T=104464084ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104464110ms] [WS-ACK-RECV] tsf_us=104464082037 recv_t=104464105 attempt=1
+ms] [CORE-LOAD] core0_idle_hits=5305 core1_idle_hits=5161 (~5.1s window)
+[T=104468384ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104468410ms] [WS-ACK-RECV] tsf_us=104468382028 recv_t=104468408 attempt=1
+[T=104470830ms] [CORE-LOAD] core0_idle_hits=5317 core1_idle_hits=5161 (~5.1s window)
+[T=104472684ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104472705ms] [WS-ACK-RECV] tsf_us=104472682028 recv_t=104472699 attempt=1
+[T=104475977ms] [=5166 (~5.1s window)
+[T=104476984ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104477005ms] [WS-ACK-RECV] tsf_us=104476982015 recv_t=104477001 attempt=1
+=5164 (~5.1s window)
+[T=104481284ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104481310ms] [WS-ACK-RECV] tsf_us=104481282010 recv_t=104481305 attempt=1
+[T=104485584ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104485600ms] [WS-ACK-RECV] tsf_us=104485582001 recv_t=104485597 attempt=1
+[T=104486271ms] [CORE-LOAD] core0_idle_hits=5313 core1_idle_hits=5169 (~5.1s window)
+[T=104489884ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104489915ms] [WS-ACK-RECV] tsf_us=104489881990 recv_t=104489910 attempt=1
+e1_idle_hits=5164 (~5.1s window)
+[T=104494184ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104494205ms] [WS-ACK-RECV] tsf_us=104494181984 recv_t=104494202 attempt=1
+=5167 (~5.1s window)
+[T=104498484ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104498510ms] [WS-ACK-RECV] tsf_us=104498481974 recv_t=104498506 attempt=1
+=5164 (~5.1s window)
+[T=104502784ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104502810ms] [WS-ACK-RECV] tsf_us=104502781967 recv_t=104502807 attempt=1
+[T=104506860ms] [CORE-LOAD] core0_idle_hits=5316 core1_idle_hits=5166 (~5.1s window)
+[T=104507084ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104507115ms] [WS-ACK-RECV] tsf_us=104507081960 recv_t=104507110 attempt=1
+[T=104511384ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104511405ms] [WS-ACK-RECV] tsf_us=104511381961 recv_t=104511402 attempt=1
+[T=104512007ms] le_hits=5169 (~5.1s window)
+[T=104515684ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104515710ms] [WS-ACK-RECV] tsf_us=104515681951 recv_t=104515706 attempt=1
+[T=104517154ms] [CORE-LOAD] core0_idle_hits=5333 core1_idle_hits=5166 (~5.1s window)
+[T=104519984ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104520010ms] [WS-ACK-RECV] tsf_us=104519981942 recv_t=104520008 attempt=1
+[T=104522301ms] [CORE-LOAD] core=5165 (~5.1s window)
+[T=104524284ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104524304ms] [WS-ACK-RECV] tsf_us=104524281929 recv_t=104524301 attempt=1
+=5164 (~5.1s window)
+[T=104528584ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104528605ms] [WS-ACK-RECV] tsf_us=104528581922 recv_t=104528603 attempt=1
+[T=104532595ms] [=5163 (~5.1s window)
+[T=104532884ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104532909ms] [WS-ACK-RECV] tsf_us=104532881908 recv_t=104532905 attempt=1
+[T=104537184ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104537209ms] [WS-ACK-RECV] tsf_us=104537181911 recv_t=104537208 attempt=1
+[T=104537742ms] [CORE-LOAD] core0_idle_hits=5338 core1_idle_hits=5170 (~5.1s window)
+[T=104541484ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104541504ms] [WS-ACK-RECV] tsf_us=104541481907 recv_t=104541501 attempt=1
+[T=104542889ms] [=5163 (~5.1s window)
+[T=104545784ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104545804ms] [WS-ACK-RECV] tsf_us=104545781888 recv_t=104545803 attempt=1
+=5168 (~5.1s window)
+[T=104550084ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104550109ms] [WS-ACK-RECV] tsf_us=104550081880 recv_t=104550106 attempt=1
+[T=104553183ms] [=5167 (~5.1s window)
+[T=104554384ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104554414ms] [WS-ACK-RECV] tsf_us=104554381873 recv_t=104554409 attempt=1
+[T=104558330ms] [CORE-LOAD] core0_idle_hits=5335 core1_idle_hits=5165 (~5.1s window)
+[T=104558684ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104558714ms] [WS-ACK-RECV] tsf_us=104558681872 recv_t=104558712 attempt=1
+[T=104562984ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104563004ms] [WS-ACK-RECV] tsf_us=104562981863 recv_t=104563003 attempt=1
+[T=104563477ms] [CORE-LOAD] core0_idle_hits=5338 core1_idle_hits=5168 (~5.1s window)
+[T=104567284ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104567309ms] [WS-ACK-RECV] tsf_us=104567281856 recv_t=104567306 attempt=1
+[T=104568624ms] [CORE-LOAD] core0_idle_hits=5307 core1_idle_hits=5162 (~5.1s window)
+[T=104571584ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104571614ms] [WS-ACK-RECV] tsf_us=104571581847 recv_t=104571609 attempt=1
+=5166 (~5.1s window)
+[T=104575884ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104575914ms] [WS-ACK-RECV] tsf_us=104575881840 recv_t=104575912 attempt=1
+=5168 (~5.1s window)
+[T=104580184ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104580209ms] [WS-ACK-RECV] tsf_us=104580181827 recv_t=104580205 attempt=1
+[T=104584065ms]-LOAD] core0_idle_hits=5323 core1_idle_hits=5164 (~5.1s window)
+[T=104584484ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104584509ms] [WS-ACK-RECV] tsf_us=104584481829 recv_t=104584507 attempt=1
+[T=104588784ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104588804ms] [WS-ACK-RECV] tsf_us=104588781813 recv_t=104588799 attempt=1
+[T=104589212ms] [CORE-LOAD] core0_idle_hits=5352 core1_idle_hits=5175 (~5.1s window)
+[T=104593084ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104593104ms] [WS-ACK-RECV] tsf_us=104593081805 recv_t=104593100 attempt=1
+[T=104594359ms] [CORE-LOAD] core0_idle_hits=5324 core1_idle_hits=5167 (~5.1s window)
+[T=104597384ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104597404ms] [WS-ACK-RECV] tsf_us=104597381800 recv_t=104597402 attempt=1
+[T=104599506ms] [CORE-LOAD] core=5162 (~5.1s window)
+[T=104601684ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104601709ms] [WS-ACK-RECV] tsf_us=104601681794 recv_t=104601705 attempt=1
+[T=104604653ms] [CORE-LOAD] core0_idle_hits=5315 core1_idle_hits=5162 (~5.1s window)
+[T=104605984ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104605999ms] [WS-ACK-RECV] tsf_us=104605981785 recv_t=104605998 attempt=1
+[T=104609800ms] [CORE-LOAD] core0_idle_hits=5305 core1_idle_hits=5165 (~5.1s window)
+[T=104610284ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104610304ms] [WS-ACK-RECV] tsf_us=104610281770 recv_t=104610301 attempt=1
+[T=104614584ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104614609ms] [WS-ACK-RECV] tsf_us=104614581778 recv_t=104614605 attempt=1
+=5169 (~5.1s window)
+[T=104618884ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104618909ms] [WS-ACK-RECV] tsf_us=104618881765 recv_t=104618907 attempt=1
+=5165 (~5.1s window)
+[T=104623184ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104623214ms] [WS-ACK-RECV] tsf_us=104623181752 recv_t=104623210 attempt=1
+[T=104625241ms] [CORE-LOAD] core0_idle_hits=5319 core1_idle_hits=5165 (~5.1s window)
+[T=104627484ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104627515ms] [WS-ACK-RECV] tsf_us=104627481744 recv_t=104627510 attempt=1
+[T=104630388ms] [CORE-LOAD] core0_idle_hits=5327 core1_idle_hits=5170 (~5.1s window)
+[T=104631784ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104631805ms] [WS-ACK-RECV] tsf_us=104631781734 recv_t=104631802 attempt=1
+[T=104635535ms] =5165 (~5.1s window)
+[T=104636084ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104636110ms] [WS-ACK-RECV] tsf_us=104636081726 recv_t=104636105 attempt=1
+[T=104640384ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104640410ms] [WS-ACK-RECV] tsf_us=104640381725 recv_t=104640408 attempt=1
+T=104640682ms] [CORE-LOAD] core0_idle_hits=5335 core1_idle_hits=5168 (~5.1s window)
+[T=104644684ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104644705ms] [WS-ACK-RECV] tsf_us=104644681709 recv_t=104644702 attempt=1
+[T=104645829ms] le_hits=5315 core1_idle_hits=5165 (~5.1s window)
+[T=104648984ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104649010ms] [WS-ACK-RECV] tsf_us=104648981707 recv_t=104649005 attempt=1
+[T=104650976ms] [CORE-LOAD] core=5160 (~5.1s window)
+[T=104653284ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104653314ms] [WS-ACK-RECV] tsf_us=104653281693 recv_t=104653308 attempt=1
+[T=104656123ms] [CORE-LOAD] core0_idle_hits=5325 core1_idle_hits=5167 (~5.1s window)
+[T=104657584ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104657614ms] [WS-ACK-RECV] tsf_us=104657581686 recv_t=104657609 attempt=1
+[T=104661270ms] [CORE-LOAD] core=5164 (~5.1s window)
+[T=104661884ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104661914ms] [WS-ACK-RECV] tsf_us=104661881690 recv_t=104661911 attempt=1
+[T=104666184ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104666210ms] [WS-ACK-RECV] tsf_us=104666181675 recv_t=104666205 attempt=1
+[T=104666417ms] [CORE-LOAD] corets=5352 core1_idle_hits=5166 (~5.1s window)
+[T=104670484ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104670514ms] [WS-ACK-RECV] tsf_us=104670481668 recv_t=104670508 attempt=1
+=5167 (~5.1s window)
+[T=104674784ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104674814ms] [WS-ACK-RECV] tsf_us=104674781668 recv_t=104674811 attempt=1
+=5164 (~5.1s window)
+[T=104679084ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104679120ms] [WS-ACK-RECV] tsf_us=104679081647 recv_t=104679114 attempt=1
+[T=104681858ms] [CORE-LOAD] core0_idle_hits=5326 core1_idle_hits=5162 (~5.1s window)
+[T=104683384ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104683409ms] [WS-ACK-RECV] tsf_us=104683381649 recv_t=104683406 attempt=1
+[T=104687005ms] [CORE-LOAD] core0_idle_hits=5299 core1_idle_hits=5166 (~5.1s window)
+[T=104687684ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104687709ms] [WS-ACK-RECV] tsf_us=104687681634 recv_t=104687707 attempt=1
+[T=104691984ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104692014ms] [WS-ACK-RECV] tsf_us=104691981623 recv_t=104692010 attempt=1
+[T=104692153ms] [CORE-LOAD] core=5168 (~5.1s window)
+[T=104696284ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104696314ms] [WS-ACK-RECV] tsf_us=104696281619 recv_t=104696312 attempt=1
+[T=104697300ms] [CORE-LOAD] core0_idle_hits=5322 core1_idle_hits=5166 (~5.1s window)
+[T=104700584ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104700609ms] [WS-ACK-RECV] tsf_us=104700581611 recv_t=104700605 attempt=1
+=5164 (~5.1s window)
+[T=104704884ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104704914ms] [WS-ACK-RECV] tsf_us=104704881605 recv_t=104704908 attempt=1
+[T=104707594ms] [CORE-LOAD] core=5162 (~5.1s window)
+[T=104709184ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104709214ms] [WS-ACK-RECV] tsf_us=104709181601 recv_t=104709211 attempt=1
+[T=104712741ms] [CORE-LOAD] core0_idle_hits=5320 core1_idle_hits=5164 (~5.1s window)
+[T=104713484ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104713509ms] [WS-ACK-RECV] tsf_us=104713481588 recv_t=104713505 attempt=1
+[T=104717784ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104717809ms] [WS-ACK-RECV] tsf_us=104717781579 recv_t=104717806 attempt=1
+[T=104717888ms] [CORE-LOAD] core0_idle_hits=5313 core1_idle_hits=5167 (~5.1s window)
+[T=104722084ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104722114ms] [WS-ACK-RECV] tsf_us=104722081575 recv_t=104722110 attempt=1
+=5165 (~5.1s window)
+[T=104726384ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104726414ms] [WS-ACK-RECV] tsf_us=104726381573 recv_t=104726413 attempt=1
+[T=104728182ms] [CORE-LOAD] core0_idle_hits=5296 core1_idle_hits=5163 (~5.1s window)
+[T=104730684ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104730709ms] [WS-ACK-RECV] tsf_us=104730681557 recv_t=104730705 attempt=1
+=5166 (~5.1s window)
+[T=104734984ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104735009ms] [WS-ACK-RECV] tsf_us=104734981552 recv_t=104735007 attempt=1
+[T=104738476ms] [CORE-LOAD] core0_idle_hits=5314 core1_idle_hits=5163 (~5.1s window)
+[T=104739284ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104739314ms] [WS-ACK-RECV] tsf_us=104739281540 recv_t=104739310 attempt=1
+[T=104743584ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104743619ms] [WS-ACK-RECV] tsf_us=104743581541 recv_t=104743615 attempt=1
+=5167 (~5.1s window)
+[T=104747884ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104747919ms] [WS-ACK-RECV] tsf_us=104747881536 recv_t=104747916 attempt=1
+[T=104748770ms] [CORE-LOAD] core=5168 (~5.1s window)
+[T=104752184ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104752204ms] [WS-ACK-RECV] tsf_us=104752181524 recv_t=104752199 attempt=1
+=5164 (~5.1s window)
+[T=104756484ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104756504ms] [WS-ACK-RECV] tsf_us=104756481521 recv_t=104756501 attempt=1
+64ms] [CORE-LOAD] core0_idle_hits=5304 core1_idle_hits=5165 (~5.1s window)
+[T=104760784ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104760809ms] [WS-ACK-RECV] tsf_us=104760781506 recv_t=104760805 attempt=1
+[T=104764211ms] [CORE-LOAD] core0_idle_hits=5295 core1_idle_hits=5161 (~5.1s window)
+[T=104765084ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104765109ms] [WS-ACK-RECV] tsf_us=104765081497 recv_t=104765107 attempt=1
+[T=104769358ms] [CORE-LOAD] core0_idle_hits=5303 core1_idle_hits=5166 (~5.1s window)
+[T=104769383ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104769404ms] [WS-ACK-RECV] tsf_us=104769381490 recv_t=104769399 attempt=1
+[T=104773684ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104773704ms] [WS-ACK-RECV] tsf_us=104773681477 recv_t=104773702 attempt=1
+[T=104774505ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5173 (~5.1s window)
+[T=104777984ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104778009ms] [WS-ACK-RECV] tsf_us=104777981473 recv_t=104778005 attempt=1
+[T=104779652ms] [CORE-LOAD] core0_idle_hits=5313 core1_idle_hits=5164 (~5.1s window)
+[T=104782284ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104782299ms] [WS-ACK-RECV] tsf_us=104782281462 recv_t=104782298 attempt=1
+[T=104784799ms] [CORE-LOAD] core0_idle_hits=5322 core1_idle_hits=5164 (~5.1s window)
+[T=104786584ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104786614ms] [WS-ACK-RECV] tsf_us=104786581456 recv_t=104786610 attempt=1
+[T=104789946ms] [CORE-LOAD] core0_=5166 (~5.1s window)
+[T=104790884ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104790904ms] [WS-ACK-RECV] tsf_us=104790881458 recv_t=104790902 attempt=1
+[T=104795093ms] [=5165 (~5.1s window)
+[T=104795183ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104795209ms] [WS-ACK-RECV] tsf_us=104795181441 recv_t=104795205 attempt=1
+[T=104799483ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104799499ms] [WS-ACK-RECV] tsf_us=104799481434 recv_t=104799497 attempt=1
+E-LOAD] core0_idle_hits=5340 core1_idle_hits=5170 (~5.1s window)
+[T=104803783ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104803803ms] [WS-ACK-RECV] tsf_us=104803781422 recv_t=104803800 attempt=1
+[T=104805387ms] [CORE-LOAD] core0_idle_hits=5312 core1_idle_hits=5166 (~5.1s window)
+[T=104808083ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104808103ms] [WS-ACK-RECV] tsf_us=104808081420 recv_t=104808101 attempt=1
+[T=104810534ms] [=5167 (~5.1s window)
+[T=104812384ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104812409ms] [WS-ACK-RECV] tsf_us=104812381414 recv_t=104812404 attempt=1
+=5167 (~5.1s window)
+[T=104816683ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104816708ms] [WS-ACK-RECV] tsf_us=104816681402 recv_t=104816706 attempt=1
+[T=104820828ms] [CORE-LOAD] core0_idle_hits=5330 core1_idle_hits=5164 (~5.1s window)
+[T=104820983ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104821013ms] [WS-ACK-RECV] tsf_us=104820981397 recv_t=104821009 attempt=1
+[T=104825284ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104825304ms] [WS-ACK-RECV] tsf_us=104825281396 recv_t=104825302 attempt=1
+[T=104825975ms] [CORE-LOAD] core0_idle_hits=5344 core1_idle_hits=5166 (~5.1s window)
+[T=104829583ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104829609ms] [WS-ACK-RECV] tsf_us=104829581382 recv_t=104829604 attempt=1
+=5162 (~5.1s window)
+[T=104833883ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104833909ms] [WS-ACK-RECV] tsf_us=104833881372 recv_t=104833906 attempt=1
+[T=104836269ms] [CORE-LOAD] core0_idle_hits=5333 core1_idle_hits=5164 (~5.1s window)
+[T=104838183ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104838209ms] [WS-ACK-RECV] tsf_us=104838181366 recv_t=104838207 attempt=1
+[T=104841416ms] =5163 (~5.1s window)
+[T=104842483ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104842514ms] [WS-ACK-RECV] tsf_us=104842481358 recv_t=104842509 attempt=1
+[T=104846563ms] [CORE-LOAD] core0_idle_hits=5297 core1_idle_hits=5164 (~5.1s window)
+[T=104846783ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104846804ms] [WS-ACK-RECV] tsf_us=104846781350 recv_t=104846801 attempt=1
+[T=104851083ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104851109ms] [WS-ACK-RECV] tsf_us=104851081342 recv_t=104851104 attempt=1
+[T=104851710ms] [CORE-LOAD] core0_idle_hits=5343 core1_idle_hits=5168 (~5.1s window)
+[T=104855383ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104855409ms] [WS-ACK-RECV] tsf_us=104855381330 recv_t=104855407 attempt=1
+[T==5164 (~5.1s window)
+[T=104859683ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104859704ms] [WS-ACK-RECV] tsf_us=104859681324 recv_t=104859700 attempt=1
+[T=104862004ms] [CORE-LOAD] core0_idle_hits=5323 core1_idle_hits=5165 (~5.1s window)
+[T=104863983ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104864009ms] [WS-ACK-RECV] tsf_us=104863981313 recv_t=104864004 attempt=1
+[T=104867151ms] =5161 (~5.1s window)
+[T=104868283ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104868309ms] [WS-ACK-RECV] tsf_us=104868281306 recv_t=104868305 attempt=1
+=5166 (~5.1s window)
+[T=104872583ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104872604ms] [WS-ACK-RECV] tsf_us=104872581300 recv_t=104872598 attempt=1
+[T=104876883ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104876904ms] [WS-ACK-RECV] tsf_us=104876881296 recv_t=104876901 attempt=1
+[T=104877445ms] [CORE-LOAD] core=5172 (~5.1s window)
+[T=104881183ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104881209ms] [WS-ACK-RECV] tsf_us=104881181285 recv_t=104881204 attempt=1
+[T=104882592ms] [=5162 (~5.1s window)
+[T=104885483ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104885509ms] [WS-ACK-RECV] tsf_us=104885481280 recv_t=104885507 attempt=1
+=5165 (~5.1s window)
+[T=104889783ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104889804ms] [WS-ACK-RECV] tsf_us=104889781268 recv_t=104889799 attempt=1
+[T=104892887ms] [CORE-LOAD] core0_idle_hits=5316 core1_idle_hits=5162 (~5.1s window)
+[T=104894083ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104894109ms] [WS-ACK-RECV] tsf_us=104894081264 recv_t=104894104 attempt=1
+AD] core0_idle_hits=5324 core1_idle_hits=5162 (~5.1s window)
+[T=104898383ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104898409ms] [WS-ACK-RECV] tsf_us=104898381257 recv_t=104898406 attempt=1
+[T=104902683ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104902699ms] [WS-ACK-RECV] tsf_us=104902681246 recv_t=104902698 attempt=1
+[T=104903181ms] [CORE-LOAD] core0_idle_hits=5343 core1_idle_hits=5168 (~5.1s window)
+[T=104906983ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104907004ms] [WS-ACK-RECV] tsf_us=104906981241 recv_t=104907000 attempt=1
+[T=104908328ms] [CORE-LOAD] core0_idle_hits=5324 core1_idle_hits=5164 (~5.1s window)
+[T=104911283ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104911309ms] [WS-ACK-RECV] tsf_us=104911281230 recv_t=104911305 attempt=1
+[T=104913475ms] [CORE-LOAD] core0_idle_hits=5328 core1_idle_hits=5165 (~5.1s window)
+[T=104915583ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104915609ms] [WS-ACK-RECV] tsf_us=104915581226 recv_t=104915607 attempt=1
+[T=104918622ms] [CORE-LOAD] core0_idle_hits=5328 core1_idle_hits=5164 (~5.1s window)
+[T=104919883ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104919914ms] [WS-ACK-RECV] tsf_us=104919881215 recv_t=104919910 attempt=1
+[T=104923769ms] [CORE-LOAD] core0_idle_hits=5317 core1_idle_hits=5166 (~5.1s window)
+[T=104924183ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104924204ms] [WS-ACK-RECV] tsf_us=104924181208 recv_t=104924202 attempt=1
+[T=104928483ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104928509ms] [WS-ACK-RECV] tsf_us=104928481199 recv_t=104928505 attempt=1
+[T=104928916ms] [CORE-LOAD] core0_idle_hits=5315 core1_idle_hits=5170 (~5.1s window)
+[T=104932783ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104932809ms] [WS-ACK-RECV] tsf_us=104932781190 recv_t=104932806 attempt=1
+=5166 (~5.1s window)
+[T=104937083ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104937104ms] [WS-ACK-RECV] tsf_us=104937081183 recv_t=104937099 attempt=1
+[T=104939210ms] [CORE-LOAD] core0_idle_hits=5331 core1_idle_hits=5163 (~5.1s window)
+[T=104941383ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104941414ms] [WS-ACK-RECV] tsf_us=104941381178 recv_t=104941411 attempt=1
+[T=104944357ms] [=5164 (~5.1s window)
+[T=104945683ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104945709ms] [WS-ACK-RECV] tsf_us=104945681169 recv_t=104945705 attempt=1
+[T=104949504ms] =5163 (~5.1s window)
+[T=104949983ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104950009ms] [WS-ACK-RECV] tsf_us=104949981163 recv_t=104950007 attempt=1
+[T=104954283ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104954304ms] [WS-ACK-RECV] tsf_us=104954281153 recv_t=104954299 attempt=1
+[T=104954651ms] [CORE-LOAD] core0_idle_hits=5337 core1_idle_hits=5173 (~5.1s window)
+[T=104958583ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104958603ms] [WS-ACK-RECV] tsf_us=104958581146 recv_t=104958601 attempt=1
+[T=104959798ms] [CORE-LOAD] core0_idle_hits=5318 core1_idle_hits=5166 (~5.1s window)
+[T=104962883ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104962903ms] [WS-ACK-RECV] tsf_us=104962881149 recv_t=104962902 attempt=1
+[T=104964945ms] [CORE-LOAD] core=5163 (~5.1s window)
+[T=104967183ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104967208ms] [WS-ACK-RECV] tsf_us=104967181131 recv_t=104967205 attempt=1
+[T=104970092ms] [CORE-LOAD] core0_idle_hits=5312 core1_idle_hits=5164 (~5.1s window)
+[T=104971483ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104971513ms] [WS-ACK-RECV] tsf_us=104971481127 recv_t=104971508 attempt=1
+[T=104975239ms] =5166 (~5.1s window)
+[T=104975783ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104975813ms] [WS-ACK-RECV] tsf_us=104975781119 recv_t=104975810 attempt=1
+[T=104980083ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104980108ms] [WS-ACK-RECV] tsf_us=104980081108 recv_t=104980104 attempt=1
+5327 core1_idle_hits=5166 (~5.1s window)
+[T=104984383ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104984398ms] [WS-ACK-RECV] tsf_us=104984381098 recv_t=104984397 attempt=1
+[T=104985533ms] [CORE-LOAD] core0_idle_hits=5327 core1_idle_hits=5166 (~5.1s window)
+[T=104988683ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104988703ms] [WS-ACK-RECV] tsf_us=104988681089 recv_t=104988699 attempt=1
+[T=104990680ms] [CORE-LOAD] core0_idle_hits=5330 core1_idle_hits=5165 (~5.1s window)
+[T=104992983ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104993003ms] [WS-ACK-RECV] tsf_us=104992981084 recv_t=104993000 attempt=1
+[T=104995827ms] [CORE-LOAD] core0_idle_hits=5320 core1_idle_hits=5165 (~5.1s window)
+[T=104997283ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=104997308ms] [WS-ACK-RECV] tsf_us=104997281072 recv_t=104997304 attempt=1
+[T=105000974ms] [=5164 (~5.1s window)
+[T=105001583ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105001598ms] [WS-ACK-RECV] tsf_us=105001581069 recv_t=105001596 attempt=1
+[T=105005883ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105005903ms] [WS-ACK-RECV] tsf_us=105005881059 recv_t=105005898 attempt=1
+=5168 (~5.1s window)
+[T=105010183ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105010203ms] [WS-ACK-RECV] tsf_us=105010181059 recv_t=105010200 attempt=1
+=5162 (~5.1s window)
+[T=105014483ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105014508ms] [WS-ACK-RECV] tsf_us=105014481045 recv_t=105014504 attempt=1
+[T=105016415ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5161 (~5.1s window)
+[T=105018783ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105018809ms] [WS-ACK-RECV] tsf_us=105018781038 recv_t=105018806 attempt=1
+[T=105021562ms] [CORE-LOAD] core=5165 (~5.1s window)
+[T=105023083ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105023099ms] [WS-ACK-RECV] tsf_us=105023081026 recv_t=105023097 attempt=1
+[T=105026709ms]=5163 (~5.1s window)
+[T=105027383ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105027404ms] [WS-ACK-RECV] tsf_us=105027381019 recv_t=105027400 attempt=1
+[T=105031683ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105031709ms] [WS-ACK-RECV] tsf_us=105031681012 recv_t=105031704 attempt=1
+[T=105031856ms] [CORE-LOAD] core0_idle_hits=5326 core1_idle_hits=5169 (~5.1s window)
+[T=105035983ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105035999ms] [WS-ACK-RECV] tsf_us=105035981010 recv_t=105035996 attempt=1
+=5163 (~5.1s window)
+[T=105040283ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105040314ms] [WS-ACK-RECV] tsf_us=105040281006 recv_t=105040309 attempt=1
+[T=105042150ms] [CORE-LOAD] core=5164 (~5.1s window)
+[T=105044583ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105044609ms] [WS-ACK-RECV] tsf_us=105044580989 recv_t=105044604 attempt=1
+[T=105047297ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5163 (~5.1s window)
+[T=105048883ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105048909ms] [WS-ACK-RECV] tsf_us=105048880981 recv_t=105048907 attempt=1
+[T=105052444ms] [CORE-LOAD] core0_idle_hits=5313 core1_idle_hits=5168 (~5.1s window)
+[T=105053183ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105053214ms] [WS-ACK-RECV] tsf_us=105053180980 recv_t=105053208 attempt=1
+[T=105057483ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105057514ms] [WS-ACK-RECV] tsf_us=105057480976 recv_t=105057510 attempt=1
+[T=105057591ms]=5174 (~5.1s window)
+[T=105061783ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105061809ms] [WS-ACK-RECV] tsf_us=105061780961 recv_t=105061804 attempt=1
+[T=105062738ms] [=5160 (~5.1s window)
+[T=105066083ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105066109ms] [WS-ACK-RECV] tsf_us=105066080947 recv_t=105066106 attempt=1
+[T=105067885ms] [=5165 (~5.1s window)
+[T=105070383ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105070414ms] [WS-ACK-RECV] tsf_us=105070380955 recv_t=105070408 attempt=1
+[T=105073032ms] [CORE-LOAD] core0_idle_hits=5312 core1_idle_hits=5166 (~5.1s window)
+[T=105074683ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105074704ms] [WS-ACK-RECV] tsf_us=105074680933 recv_t=105074701 attempt=1
+ core1_idle_hits=5162 (~5.1s window)
+[T=105078983ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105079009ms] [WS-ACK-RECV] tsf_us=105078980930 recv_t=105079004 attempt=1
+[T=105083283ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105083309ms] [WS-ACK-RECV] tsf_us=105083280920 recv_t=105083305 attempt=1
+[T=105083326ms] [=5164 (~5.1s window)
+[T=105087583ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105087609ms] [WS-ACK-RECV] tsf_us=105087580912 recv_t=105087607 attempt=1
+[T=105088474ms] [CORE-LOAD] core=5170 (~5.1s window)
+[T=105091883ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105091904ms] [WS-ACK-RECV] tsf_us=105091880906 recv_t=105091900 attempt=1
+[T=105093621ms] [ORE-LOAD] core0_idle_hits=5326 core1_idle_hits=5164 (~5.1s window)
+[T=105096183ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105096209ms] [WS-ACK-RECV] tsf_us=105096180897 recv_t=105096205 attempt=1
+[T=105098768ms] [CORE-LOAD] core0_idle_hits=5325 core1_idle_hits=5163 (~5.1s window)
+[T=105100483ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105100508ms] [WS-ACK-RECV] tsf_us=105100480890 recv_t=105100506 attempt=1
+=5164 (~5.1s window)
+[T=105104783ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105104813ms] [WS-ACK-RECV] tsf_us=105104780880 recv_t=105104810 attempt=1
+[T=105109062ms] [CORE-LOAD] core0_i=5167 (~5.1s window)
+[T=105109082ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105109108ms] [WS-ACK-RECV] tsf_us=105109080877 recv_t=105109104 attempt=1
+[T=105113383ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105113408ms] [WS-ACK-RECV] tsf_us=105113380867 recv_t=105113405 attempt=1
+[T=105114209ms] [CORE-LOAD] core0_idle_hits=5324 core1_idle_hits=5168 (~5.1s window)
+[T=105117683ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105117698ms] [WS-ACK-RECV] tsf_us=105117680869 recv_t=105117697 attempt=1
+[T=105119356ms] e_hits=5164 (~5.1s window)
+[T=105121983ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105122003ms] [WS-ACK-RECV] tsf_us=105121980848 recv_t=105122000 attempt=1
+[T=105124503ms] [CORE-LOAD] core0_idle_hits=5311 core1_idle_hits=5165 (~5.1s window)
+[T=105126283ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105126308ms] [WS-ACK-RECV] tsf_us=105126280845 recv_t=105126304 attempt=1
+[T=105129650ms] [CORE-LOAD] core0_idle_hits=5324 core1_idle_hits=5159 (~5.1s window)
+[T=105130583ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105130608ms] [WS-ACK-RECV] tsf_us=105130580851 recv_t=105130607 attempt=1
+=5161 (~5.1s window)
+[T=105134883ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105134903ms] [WS-ACK-RECV] tsf_us=105134880831 recv_t=105134900 attempt=1
+[T=105139183ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105139208ms] [WS-ACK-RECV] tsf_us=105139180822 recv_t=105139204 attempt=1
+s=5167 (~5.1s window)
+[T=105143483ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105143508ms] [WS-ACK-RECV] tsf_us=105143480818 recv_t=105143507 attempt=1
+[T=105145091ms] [CORE-LOAD] core0_idle_hits=5316 core1_idle_hits=5167 (~5.1s window)
+[T=105147783ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105147803ms] [WS-ACK-RECV] tsf_us=105147780803 recv_t=105147799 attempt=1
+[T=105150238ms] [CORE-LOAD] core0_idle_hits=5318 core1_idle_hits=5166 (~5.1s window)
+[T=105152083ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105152103ms] [WS-ACK-RECV] tsf_us=105152080802 recv_t=105152101 attempt=1
+[T=105155385ms] [CORE-LOAD] core0_idle_hits=5317 core1_idle_hits=5165 (~5.1s window)
+[T=105156383ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105156408ms] [WS-ACK-RECV] tsf_us=105156380798 recv_t=105156404 attempt=1
+=5161 (~5.1s window)
+[T=105160683ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105160718ms] [WS-ACK-RECV] tsf_us=105160680782 recv_t=105160716 attempt=1
+[T=105164983ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105165003ms] [WS-ACK-RECV] tsf_us=105164980767 recv_t=105164998 attempt=1
+[T=105165679ms] =5169 (~5.1s window)
+[T=105169283ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105169303ms] [WS-ACK-RECV] tsf_us=105169280765 recv_t=105169301 attempt=1
+[T=105170826ms] [CORE-LOAD] core0_idle_hits=5325 core1_idle_hits=5162 (~5.1s window)
+[T=105173583ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105173608ms] [WS-ACK-RECV] tsf_us=105173580782 recv_t=105173604 attempt=1
+[T=105175973ms] [CORE-LOAD] core=5161 (~5.1s window)
+[T=105177883ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105177908ms] [WS-ACK-RECV] tsf_us=105177880759 recv_t=105177905 attempt=1
+[T=105181120ms] [CORE-LOAD] core=5164 (~5.1s window)
+[T=105182183ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105182203ms] [WS-ACK-RECV] tsf_us=105182180751 recv_t=105182198 attempt=1
+[T=105186267ms=5166 (~5.1s window)
+[T=105186483ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105186513ms] [WS-ACK-RECV] tsf_us=105186480741 recv_t=105186510 attempt=1
+[T=105190783ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105190818ms] [WS-ACK-RECV] tsf_us=105190780721 recv_t=105190814 attempt=1
+[T=105191414ms] [CORE-LOAD] core0_idle_hits=5338 core1_idle_hits=5167 (~5.1s window)
+[T=105195083ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105195108ms] [WS-ACK-RECV] tsf_us=105195080718 recv_t=105195106 attempt=1
+[T=105196561ms] =5163 (~5.1s window)
+[T=105199383ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105199414ms] [WS-ACK-RECV] tsf_us=105199380706 recv_t=105199408 attempt=1
+[T=105201708ms=5161 (~5.1s window)
+[T=105203683ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105203703ms] [WS-ACK-RECV] tsf_us=105203680704 recv_t=105203702 attempt=1
+[T=105206855ms] =5166 (~5.1s window)
+[T=105207983ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105208008ms] [WS-ACK-RECV] tsf_us=105207980692 recv_t=105208004 attempt=1
+[T=105212002ms] [CORE-LOAD] core0_idle_hits=5326 core1_idle_hits=5162 (~5.1s window)
+[T=105212283ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105212308ms] [WS-ACK-RECV] tsf_us=105212280682 recv_t=105212306 attempt=1
+[T=105216583ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105216614ms] [WS-ACK-RECV] tsf_us=105216580677 recv_t=105216609 attempt=1
+[T=105217149ms] [CORE-LOAD] core=5171 (~5.1s window)
+[T=105220883ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105220914ms] [WS-ACK-RECV] tsf_us=105220880666 recv_t=105220911 attempt=1
+=5166 (~5.1s window)
+[T=105225183ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105225209ms] [WS-ACK-RECV] tsf_us=105225180662 recv_t=105225205 attempt=1
+[T=105227443ms] [CORE-LOAD] core0_idle_hits=5332 core1_idle_hits=5166 (~5.1s window)
+[T=105229483ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105229509ms] [WS-ACK-RECV] tsf_us=105229480651 recv_t=105229507 attempt=1
+[T=105232590ms] [CORE-LOAD] core0_idle_hits=5321 core1_idle_hits=5165 (~5.1s window)
+[T=105233783ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105233804ms] [WS-ACK-RECV] tsf_us=105233780645 recv_t=105233799 attempt=1
+[T=105237737ms] [CORE-LOAD] core=5168 (~5.1s window)
+[T=105238083ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105238104ms] [WS-ACK-RECV] tsf_us=105238080643 recv_t=105238100 attempt=1
+[T=105242383ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105242409ms] [WS-ACK-RECV] tsf_us=105242380630 recv_t=105242404 attempt=1
+[T=105242884ms] [CORE-LOAD] core=5166 (~5.1s window)
+[T=105246683ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105246708ms] [WS-ACK-RECV] tsf_us=105246680628 recv_t=105246706 attempt=1
+[T=105248031ms] [CORE-LOAD] core0_idle_hits=5323 core1_idle_hits=5165 (~5.1s window)
+[T=105250983ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105251013ms] [WS-ACK-RECV] tsf_us=105250980615 recv_t=105251009 attempt=1
+[T=105253178ms] [CORE-LOAD] core0_idle_hits=5321 core1_idle_hits=5162 (~5.1s window)
+[T=105255283ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105255303ms] [WS-ACK-RECV] tsf_us=105255280611 recv_t=105255301 attempt=1
+=5165 (~5.1s window)
+[T=105259583ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105259618ms] [WS-ACK-RECV] tsf_us=105259580601 recv_t=105259614 attempt=1
+[T=105263472ms] [CORE-LOAD] core0_idle_hits=5332 core1_idle_hits=5163 (~5.1s window)
+[T=105263883ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105263913ms] [WS-ACK-RECV] tsf_us=105263880595 recv_t=105263907 attempt=1
+[T=105268183ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105268213ms] [WS-ACK-RECV] tsf_us=105268180580 recv_t=105268208 attempt=1
+[T=105268619ms] [CORE-LOAD] core0_idle_hits=5350 core1_idle_hits=5172 (~5.1s window)
+[T=105272483ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105272513ms] [WS-ACK-RECV] tsf_us=105272480579 recv_t=105272510 attempt=1
+[T=105273766ms] [CORE-LOAD] core0_idle_hits=5307 core1_idle_hits=5166 (~5.1s window)
+[T=105276783ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105276818ms] [WS-ACK-RECV] tsf_us=105276780564 recv_t=105276813 attempt=1
+=5161 (~5.1s window)
+[T=105281083ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105281108ms] [WS-ACK-RECV] tsf_us=105281080559 recv_t=105281106 attempt=1
+[T=105284061ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5165 (~5.1s window)
+[T=105285383ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105285413ms] [WS-ACK-RECV] tsf_us=105285380552 recv_t=105285409 attempt=1
+[T=105289208ms] [CORE-LOAD] core0_idle_hits=5308 core1_idle_hits=5164 (~5.1s window)
+[T=105289683ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105289713ms] [WS-ACK-RECV] tsf_us=105289680538 recv_t=105289711 attempt=1
+[T=105293983ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105294008ms] [WS-ACK-RECV] tsf_us=105293980539 recv_t=105294004 attempt=1
+3 core1_idle_hits=5171 (~5.1s window)
+[T=105298283ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105298318ms] [WS-ACK-RECV] tsf_us=105298280527 recv_t=105298316 attempt=1
+[T=105299502ms] [CORE-LOAD] core=5162 (~5.1s window)
+[T=105302583ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105302613ms] [WS-ACK-RECV] tsf_us=105302580528 recv_t=105302608 attempt=1
+[T=105304649ms] [CORE-LOAD] core=5165 (~5.1s window)
+[T=105306883ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105306913ms] [WS-ACK-RECV] tsf_us=105306880513 recv_t=105306911 attempt=1
+[T=105309796ms] =5168 (~5.1s window)
+[T=105311182ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105311208ms] [WS-ACK-RECV] tsf_us=105311180506 recv_t=105311205 attempt=1
+[T=105314943ms] =5167 (~5.1s window)
+[T=105315483ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105315503ms] [WS-ACK-RECV] tsf_us=105315480493 recv_t=105315498 attempt=1
+[T=105319783ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105319803ms] [WS-ACK-RECV] tsf_us=105319780493 recv_t=105319800 attempt=1
+[T=105320090ms] [CORE-LOAD] core0_idle_hits=5308 core1_idle_hits=5172 (~5.1s window)
+[T=105324083ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105324108ms] [WS-ACK-RECV] tsf_us=105324080483 recv_t=105324104 attempt=1
+[T=105325237ms] [CORE-LOAD] core0_idle_hits=5307 core1_idle_hits=5163 (~5.1s window)
+[T=105328383ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105328408ms] [WS-ACK-RECV] tsf_us=105328380481 recv_t=105328405 attempt=1
+[T=105330384ms=5167 (~5.1s window)
+[T=105332683ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105332703ms] [WS-ACK-RECV] tsf_us=105332680466 recv_t=105332698 attempt=1
+[T=105335531ms] [=5166 (~5.1s window)
+[T=105336983ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105337003ms] [WS-ACK-RECV] tsf_us=105336980458 recv_t=105337001 attempt=1
+[T=105340678ms] =5160 (~5.1s window)
+[T=105341282ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105341308ms] [WS-ACK-RECV] tsf_us=105341280449 recv_t=105341304 attempt=1
+[T=105345582ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105345608ms] [WS-ACK-RECV] tsf_us=105345580440 recv_t=105345606 attempt=1
+=5169 (~5.1s window)
+[T=105349883ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105349913ms] [WS-ACK-RECV] tsf_us=105349880432 recv_t=105349908 attempt=1
+[T=105350972ms] [CORE-LOAD] core0_idle_hits=5316 core1_idle_hits=5162 (~5.1s window)
+[T=105354182ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105354213ms] [WS-ACK-RECV] tsf_us=105354180430 recv_t=105354210 attempt=1
+[T=105356119ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5166 (~5.1s window)
+[T=105358483ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105358503ms] [WS-ACK-RECV] tsf_us=105358480414 recv_t=105358501 attempt=1
+[T=105361266ms] [CORE-LOAD] core0_idle_hits=5318 core1_idle_hits=5161 (~5.1s window)
+[T=105362782ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105362818ms] [WS-ACK-RECV] tsf_us=105362780413 recv_t=105362814 attempt=1
+[T=105366413ms] [CORE-LOAD] core0_idle_hits=5324 core1_idle_hits=5162 (~5.1s window)
+[T=105367082ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105367108ms] [WS-ACK-RECV] tsf_us=105367080403 recv_t=105367106 attempt=1
+[T=105371382ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105371403ms] [WS-ACK-RECV] tsf_us=105371380390 recv_t=105371399 attempt=1
+[T=105371560ms] [CORE-LOAD] core0_idle_hits=5345 core1_idle_hits=5170 (~5.1s window)
+[T=105375683ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105375708ms] [WS-ACK-RECV] tsf_us=105375680387 recv_t=105375704 attempt=1
+[T=105376707ms] [CORE-LOAD] core0_idle_hits=5319 core1_idle_hits=5163 (~5.1s window)
+[T=105379982ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105380008ms] [WS-ACK-RECV] tsf_us=105379980376 recv_t=105380006 attempt=1
+=5169 (~5.1s window)
+[T=105384282ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105384312ms] [WS-ACK-RECV] tsf_us=105384280368 recv_t=105384308 attempt=1
+[T=105387001ms] [CORE-LOAD] core0_idle_hits=5323 core1_idle_hits=5167 (~5.1s window)
+[T=105388582ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105388602ms] [WS-ACK-RECV] tsf_us=105388580361 recv_t=105388599 attempt=1
+re1_idle_hits=5164 (~5.1s window)
+[T=105392882ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105392908ms] [WS-ACK-RECV] tsf_us=105392880356 recv_t=105392904 attempt=1
+[T=105397182ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105397197ms] [WS-ACK-RECV] tsf_us=105397180343 recv_t=105397196 attempt=1
+[T=105397295ms] [CORE-LOAD] core0_idle_hits=5319 core1_idle_hits=5170 (~5.1s window)
+[T=105401482ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105401502ms] [WS-ACK-RECV] tsf_us=105401480339 recv_t=105401499 attempt=1
+[T=105402442ms] [CORE-LOAD] core=5166 (~5.1s window)
+[T=105405782ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105405802ms] [WS-ACK-RECV] tsf_us=105405780340 recv_t=105405801 attempt=1
+[T=105407589ms]-LOAD] core0_idle_hits=5325 core1_idle_hits=5168 (~5.1s window)
+[T=105410082ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105410108ms] [WS-ACK-RECV] tsf_us=105410080321 recv_t=105410103 attempt=1
+[T=105412736ms] [CORE-LOAD] coredle_hits=5163 (~5.1s window)
+[T=105414382ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105414413ms] [WS-ACK-RECV] tsf_us=105414380314 recv_t=105414407 attempt=1
+[T=105417883ms] =5166 (~5.1s window)
+[T=105418682ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105418703ms] [WS-ACK-RECV] tsf_us=105418680314 recv_t=105418699 attempt=1
+[T=105422982ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105423003ms] [WS-ACK-RECV] tsf_us=105422980302 recv_t=105423000 attempt=1
+[T=105423030ms] [CORE-LOAD] core0_idle_hits=5336 core1_idle_hits=5176 (~5.1s window)
+[T=105427282ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105427308ms] [WS-ACK-RECV] tsf_us=105427280287 recv_t=105427303 attempt=1
+[T=105428177ms] [CORE-LOAD] core0_idle_hits=5320 core1_idle_hits=5169 (~5.1s window)
+[T=105431582ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105431608ms] [WS-ACK-RECV] tsf_us=105431580283 recv_t=105431605 attempt=1
+[T=105433324ms] [CORE-LOAD] core0_idle_hits=5305 core1_idle_hits=5165 (~5.1s window)
+[T=105435882ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105435903ms] [WS-ACK-RECV] tsf_us=105435880273 recv_t=105435898 attempt=1
+[T=105438471ms] [CORE-LOAD] core0_idle_hits=5310 core1_idle_hits=5166 (~5.1s window)
+[T=105440182ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105440203ms] [WS-ACK-RECV] tsf_us=105440180270 recv_t=105440200 attempt=1
+[T=105443618ms] [CORE-LOAD] core0_idle_hits=5324 core1_idle_hits=5167 (~5.1s window)
+[T=105444482ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105444508ms] [WS-ACK-RECV] tsf_us=105444480260 recv_t=105444503 attempt=1
+[T=105448765ms] [CORE-LOAD] core0_idle_hits=5337 core1_idle_hits=5165 (~5.1s window)
+[T=105448782ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105448808ms] [WS-ACK-RECV] tsf_us=105448780249 recv_t=105448806 attempt=1
+[T=105453082ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105453103ms] [WS-ACK-RECV] tsf_us=105453080247 recv_t=105453097 attempt=1
+[T=105453912ms] [=5170 (~5.1s window)
+[T=105457382ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105457403ms] [WS-ACK-RECV] tsf_us=105457380233 recv_t=105457400 attempt=1
+[T=105459059ms] [CORE-LOAD] core0_idle_hits=5315 core1_idle_hits=5165 (~5.1s window)
+[T=105461682ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105461708ms] [WS-ACK-RECV] tsf_us=105461680227 recv_t=105461703 attempt=1
+=5161 (~5.1s window)
+[T=105465982ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105466008ms] [WS-ACK-RECV] tsf_us=105465980223 recv_t=105466005 attempt=1
+[T=105469354ms] [CORE-LOAD] core0_idle_hits=5312 core1_idle_hits=5166 (~5.1s window)
+[T=105470282ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105470313ms] [WS-ACK-RECV] tsf_us=105470280220 recv_t=105470307 attempt=1
+[T=105474501ms] [=5163 (~5.1s window)
+[T=105474582ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105474603ms] [WS-ACK-RECV] tsf_us=105474580211 recv_t=105474599 attempt=1
+[T=105478882ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105478908ms] [WS-ACK-RECV] tsf_us=105478880189 recv_t=105478903 attempt=1
+[T=105479647ms] [CORE-LOAD] core0_idle_hits=5330 core1_idle_hits=5168 (~5.1s window)
+[T=105483182ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105483208ms] [WS-ACK-RECV] tsf_us=105483180188 recv_t=105483204 attempt=1
+[T=105484795ms] [CORE-LOAD] core0_idle_hits=5325 core1_idle_hits=5163 (~5.1s window)
+[T=105487482ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105487503ms] [WS-ACK-RECV] tsf_us=105487480180 recv_t=105487497 attempt=1
+[T=105489942ms] [CORE-LOAD] core0_idle_hits=5326 core1_idle_hits=5167 (~5.1s window)
+[T=105491782ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105491803ms] [WS-ACK-RECV] tsf_us=105491780174 recv_t=105491800 attempt=1
+[T==5165 (~5.1s window)
+[T=105496082ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105496108ms] [WS-ACK-RECV] tsf_us=105496080163 recv_t=105496104 attempt=1
+[T=105500236ms] [CORE-LOAD] core0_idle_hits=5317 core1_idle_hits=5165 (~5.1s window)
+[T=105500382ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105500408ms] [WS-ACK-RECV] tsf_us=105500380152 recv_t=105500406 attempt=1
+[T=105504682ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105504703ms] [WS-ACK-RECV] tsf_us=105504680148 recv_t=105504698 attempt=1
+[T=105505383ms] [CORE-LOAD] core0_idle_hits=5325 core1_idle_hits=5170 (~5.1s window)
+[T=105508982ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105509003ms] [WS-ACK-RECV] tsf_us=105508980135 recv_t=105509001 attempt=1
+[T=105510530ms] [CORE-LOAD] core=5166 (~5.1s window)
+[T=105513282ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105513308ms] [WS-ACK-RECV] tsf_us=105513280127 recv_t=105513304 attempt=1
+=5159 (~5.1s window)
+[T=105517582ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105517598ms] [WS-ACK-RECV] tsf_us=105517580122 recv_t=105517597 attempt=1
+[T=105520824ms] [CORE-LOAD] core0_idle_hits=5319 core1_idle_hits=5161 (~5.1s window)
+[T=105521882ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105521903ms] [WS-ACK-RECV] tsf_us=105521880117 recv_t=105521900 attempt=1
+[T=105525971ms] [CORE-LOAD] core0_idle_hits=5325 core1_idle_hits=5167 (~5.1s window)
+[T=105526182ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105526208ms] [WS-ACK-RECV] tsf_us=105526180109 recv_t=105526204 attempt=1
+[T=105530482ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105530508ms] [WS-ACK-RECV] tsf_us=105530480098 recv_t=105530507 attempt=1
+[T=105531118ms] [=5168 (~5.1s window)
+[T=105534782ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105534802ms] [WS-ACK-RECV] tsf_us=105534780094 recv_t=105534800 attempt=1
+[T=105536265ms] [CORE-LOAD] core0_idle_hits=5326 core1_idle_hits=5166 (~5.1s window)
+[T=105539082ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105539108ms] [WS-ACK-RECV] tsf_us=105539080079 recv_t=105539104 attempt=1
+=5163 (~5.1s window)
+[T=105543382ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105543407ms] [WS-ACK-RECV] tsf_us=105543380075 recv_t=105543405 attempt=1
+dle_hits=5325 core1_idle_hits=5165 (~5.1s window)
+[T=105547682ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105547712ms] [WS-ACK-RECV] tsf_us=105547680070 recv_t=105547707 attempt=1
+[T=105551706ms] [CORE-LOAD] core=5165 (~5.1s window)
+[T=105551982ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105552012ms] [WS-ACK-RECV] tsf_us=105551980061 recv_t=105552009 attempt=1
+[T=105556282ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105556302ms] [WS-ACK-RECV] tsf_us=105556280049 recv_t=105556301 attempt=1
+[T=105556853ms] [=5170 (~5.1s window)
+[T=105560582ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105560607ms] [WS-ACK-RECV] tsf_us=105560580045 recv_t=105560603 attempt=1
+[T=105562000ms] [CORE-LOAD] core0_idle_hits=5314 core1_idle_hits=5165 (~5.1s window)
+[T=105564882ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105564907ms] [WS-ACK-RECV] tsf_us=105564880032 recv_t=105564906 attempt=1
+[T=105567147ms] [CORE-LOAD] core0_idle_hits=5319 core1_idle_hits=5167 (~5.1s window)
+[T=105569182ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105569212ms] [WS-ACK-RECV] tsf_us=105569180024 recv_t=105569209 attempt=1
+[T=105572294ms] [CORE-LOAD] core=5165 (~5.1s window)
+[T=105573482ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105573512ms] [WS-ACK-RECV] tsf_us=105573480022 recv_t=105573510 attempt=1
+[T=105577441ms] [CORE-LOAD] core=5163 (~5.1s window)
+[T=105577782ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105577807ms] [WS-ACK-RECV] tsf_us=105577780006 recv_t=105577803 attempt=1
+[T=105582082ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105582097ms] [WS-ACK-RECV] tsf_us=105582080000 recv_t=105582095 attempt=1
+[T=105582588ms] [CORE-LOAD] core0_idle_hits=5306 core1_idle_hits=5166 (~5.1s window)
+[T=105586382ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105586412ms] [WS-ACK-RECV] tsf_us=105586379993 recv_t=105586408 attempt=1
+291 core1_idle_hits=5164 (~5.1s window)
+[T=105590682ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105590712ms] [WS-ACK-RECV] tsf_us=105590679987 recv_t=105590711 attempt=1
+[T=105592882ms] [=5164 (~5.1s window)
+[T=105594982ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105595007ms] [WS-ACK-RECV] tsf_us=105594979978 recv_t=105595004 attempt=1
+[T=105598029ms] [=5165 (~5.1s window)
+[T=105599282ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105599312ms] [WS-ACK-RECV] tsf_us=105599279978 recv_t=105599307 attempt=1
+[T=105603176ms] [CORE-LOAD] core0_idle_hits=5307 core1_idle_hits=5164 (~5.1s window)
+[T=105603582ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105603613ms] [WS-ACK-RECV] tsf_us=105603579968 recv_t=105603608 attempt=1
+[T=105607882ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105607903ms] [WS-ACK-RECV] tsf_us=105607879979 recv_t=105607900 attempt=1
+[T=105608323ms] [CORE-LOAD] core0_idle_hits=5318 core1_idle_hits=5168 (~5.1s window)
+[T=105612182ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105612208ms] [WS-ACK-RECV] tsf_us=105612179954 recv_t=105612203 attempt=1
+[T=105613470ms] [CORE-LOAD] core0_idle_hits=5311 core1_idle_hits=5161 (~5.1s window)
+[T=105616482ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105616508ms] [WS-ACK-RECV] tsf_us=105616479947 recv_t=105616506 attempt=1
+[T=105618617ms] [CORE-LOAD] core0_idle_hits=5305 core1_idle_hits=5160 (~5.1s window)
+[T=105620782ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105620803ms] [WS-ACK-RECV] tsf_us=105620779929 recv_t=105620799 attempt=1
+=5164 (~5.1s window)
+[T=105625082ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105625108ms] [WS-ACK-RECV] tsf_us=105625079923 recv_t=105625103 attempt=1
+[T=105628911ms] [CORE-LOAD] core=5165 (~5.1s window)
+[T=105629382ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105629398ms] [WS-ACK-RECV] tsf_us=105629379912 recv_t=105629395 attempt=1
+[T=105633682ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105633708ms] [WS-ACK-RECV] tsf_us=105633679906 recv_t=105633706 attempt=1
+[T=105634058ms=5176 (~5.1s window)
+[T=105637982ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105638003ms] [WS-ACK-RECV] tsf_us=105637979895 recv_t=105637999 attempt=1
+[T=105639205ms] [CORE-LOAD] core0_idle_hits=5322 core1_idle_hits=5167 (~5.1s window)
+[T=105642282ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105642308ms] [WS-ACK-RECV] tsf_us=105642279892 recv_t=105642303 attempt=1
+[T=105644352ms] [CORE-LOAD] core=5166 (~5.1s window)
+[T=105646582ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105646608ms] [WS-ACK-RECV] tsf_us=105646579889 recv_t=105646606 attempt=1
+[T=105649499ms] [CORE-LOAD] core0_idle_hits=5323 core1_idle_hits=5164 (~5.1s window)
+[T=105650882ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105650903ms] [WS-ACK-RECV] tsf_us=105650879872 recv_t=105650899 attempt=1
+[T=105654646ms] [CORE-LOAD] core0_idle_hits=5330 core1_idle_hits=5167 (~5.1s window)
+[T=105655182ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105655208ms] [WS-ACK-RECV] tsf_us=105655179864 recv_t=105655203 attempt=1
+[T=105659482ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105659508ms] [WS-ACK-RECV] tsf_us=105659479863 recv_t=105659506 attempt=1
+[T=105659793ms] [CORE-LOAD] core=5171 (~5.1s window)
+[T=105663782ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105663803ms] [WS-ACK-RECV] tsf_us=105663779851 recv_t=105663797 attempt=1
+[T=105664940ms] =5164 (~5.1s window)
+[T=105668082ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105668113ms] [WS-ACK-RECV] tsf_us=105668079848 recv_t=105668109 attempt=1
+[T=105670088ms] [CORE-LOAD] core0_idle_hits=5318 core1_idle_hits=5165 (~5.1s window)
+[T=105672382ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105672408ms] [WS-ACK-RECV] tsf_us=105672379838 recv_t=105672403 attempt=1
+=5164 (~5.1s window)
+[T=105676682ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105676707ms] [WS-ACK-RECV] tsf_us=105676679825 recv_t=105676705 attempt=1
+[T=105680382ms] [CORE-LOAD] core0_idle_hits=5326 core1_idle_hits=5165 (~5.1s window)
+[T=105680982ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105681002ms] [WS-ACK-RECV] tsf_us=105680979817 recv_t=105680998 attempt=1
+[T=105685282ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105685308ms] [WS-ACK-RECV] tsf_us=105685279813 recv_t=105685303 attempt=1
+[T=105685529ms] [=5167 (~5.1s window)
+[T=105689582ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105689607ms] [WS-ACK-RECV] tsf_us=105689579806 recv_t=105689606 attempt=1
+[T=105690676ms] [CORE-LOAD] core=5162 (~5.1s window)
+[T=105693882ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105693902ms] [WS-ACK-RECV] tsf_us=105693879804 recv_t=105693899 attempt=1
+[T=105695823ms] [CORE-LOAD] core0_idle_hits=5316 core1_idle_hits=5160 (~5.1s window)
+[T=105698182ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105698202ms] [WS-ACK-RECV] tsf_us=105698179787 recv_t=105698200 attempt=1
+RE-LOAD] core0_idle_hits=5315 core1_idle_hits=5164 (~5.1s window)
+[T=105702482ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105702507ms] [WS-ACK-RECV] tsf_us=105702479780 recv_t=105702503 attempt=1
+[T=105706117ms] [CORE-LOAD] core0_idle_hits=5301 core1_idle_hits=5164 (~5.1s window)
+[T=105706782ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105706797ms] [WS-ACK-RECV] tsf_us=105706779775 recv_t=105706796 attempt=1
+[T=105711082ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105711102ms] [WS-ACK-RECV] tsf_us=105711079763 recv_t=105711099 attempt=1
+=5172 (~5.1s window)
+[T=105715382ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105715407ms] [WS-ACK-RECV] tsf_us=105715379758 recv_t=105715403 attempt=1
+=5166 (~5.1s window)
+[T=105719682ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105719707ms] [WS-ACK-RECV] tsf_us=105719679745 recv_t=105719705 attempt=1
+AD] core0_idle_hits=5330 core1_idle_hits=5167 (~5.1s window)
+[T=105723982ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105724002ms] [WS-ACK-RECV] tsf_us=105723979733 recv_t=105723998 attempt=1
+_hits=5163 (~5.1s window)
+[T=105728282ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105728302ms] [WS-ACK-RECV] tsf_us=105728279735 recv_t=105728299 attempt=1
+[T=105731852ms] [CORE-LOAD] core0_idle_hits=5328 core1_idle_hits=5165 (~5.1s window)
+[T=105732582ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105732607ms] [WS-ACK-RECV] tsf_us=105732579724 recv_t=105732603 attempt=1
+[T=105736882ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105736907ms] [WS-ACK-RECV] tsf_us=105736879719 recv_t=105736906 attempt=1
+[T=105736999ms] [CORE-LOAD] core0_idle_hits=5312 core1_idle_hits=5171 (~5.1s window)
+[T=105741182ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105741202ms] [WS-ACK-RECV] tsf_us=105741179708 recv_t=105741199 attempt=1
+[T=105742146ms] [CORE-LOAD] core0_idle_hits=5307 core1_idle_hits=5167 (~5.1s window)
+[T=105745482ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105745507ms] [WS-ACK-RECV] tsf_us=105745479703 recv_t=105745503 attempt=1
+=5163 (~5.1s window)
+[T=105749782ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105749807ms] [WS-ACK-RECV] tsf_us=105749779696 recv_t=105749805 attempt=1
+[T=105752440ms] =5166 (~5.1s window)
+[T=105754082ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105754112ms] [WS-ACK-RECV] tsf_us=105754079686 recv_t=105754107 attempt=1
+=5165 (~5.1s window)
+[T=105758382ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105758412ms] [WS-ACK-RECV] tsf_us=105758379680 recv_t=105758408 attempt=1
+[T=105762682ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105762712ms] [WS-ACK-RECV] tsf_us=105762679663 recv_t=105762711 attempt=1
+[T=105762734ms] [CORE-LOAD] core0_idle_hits=5337 core1_idle_hits=5169 (~5.1s window)
+[T=105766982ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105767017ms] [WS-ACK-RECV] tsf_us=105766979664 recv_t=105767014 attempt=1
+[T=105767881ms=5172 (~5.1s window)
+[T=105771282ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105771307ms] [WS-ACK-RECV] tsf_us=105771279660 recv_t=105771306 attempt=1
+[T=105773028ms] [CORE-LOAD] core0_idle_hits=5333 core1_idle_hits=5165 (~5.1s window)
+[T=105775582ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105775612ms] [WS-ACK-RECV] tsf_us=105775579642 recv_t=105775608 attempt=1
+[T=105778175ms] [CORE-LOAD] core=5163 (~5.1s window)
+[T=105779882ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105779917ms] [WS-ACK-RECV] tsf_us=105779879636 recv_t=105779913 attempt=1
+[T=105783322ms] [CORE-LOAD] core0_idle_hits=5305 core1_idle_hits=5164 (~5.1s window)
+[T=105784182ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105784217ms] [WS-ACK-RECV] tsf_us=105784179625 recv_t=105784215 attempt=1
+[T=105788469ms] [CORE-LOAD] core0_idle_hits=5320 core1_idle_hits=5168 (~5.1s window)
+[T=105788481ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105788511ms] [WS-ACK-RECV] tsf_us=105788479617 recv_t=105788506 attempt=1
+[T=105792782ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105792802ms] [WS-ACK-RECV] tsf_us=105792779613 recv_t=105792799 attempt=1
+[T=105793616ms] [CORE-LOAD] core0_idle_hits=5325 core1_idle_hits=5171 (~5.1s window)
+[T=105797082ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105797107ms] [WS-ACK-RECV] tsf_us=105797079601 recv_t=105797103 attempt=1
+[T=105798763ms] [CORE-LOAD] core=5164 (~5.1s window)
+[T=105801382ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105801408ms] [WS-ACK-RECV] tsf_us=105801379596 recv_t=105801405 attempt=1
+=5166 (~5.1s window)
+[T=105805682ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105805703ms] [WS-ACK-RECV] tsf_us=105805679589 recv_t=105805697 attempt=1
+[T=105809057ms] [CORE-LOAD] core0_idle_hits=5318 core1_idle_hits=5166 (~5.1s window)
+[T=105809982ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105810013ms] [WS-ACK-RECV] tsf_us=105809979581 recv_t=105810009 attempt=1
+[T=105814204ms] [CORE-LOAD] core=5165 (~5.1s window)
+[T=105814282ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105814308ms] [WS-ACK-RECV] tsf_us=105814279579 recv_t=105814303 attempt=1
+[T=105818582ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105818607ms] [WS-ACK-RECV] tsf_us=105818579564 recv_t=105818604 attempt=1
+[T=105819351ms] =5171 (~5.1s window)
+[T=105822882ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105822908ms] [WS-ACK-RECV] tsf_us=105822879556 recv_t=105822906 attempt=1
+[T=105824498ms] [CORE-LOAD] core0_idle_hits=5307 core1_idle_hits=5162 (~5.1s window)
+[T=105827182ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105827212ms] [WS-ACK-RECV] tsf_us=105827179548 recv_t=105827208 attempt=1
+[T=105829645ms] [CORE-LOAD] core=5165 (~5.1s window)
+[T=105831482ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105831507ms] [WS-ACK-RECV] tsf_us=105831479549 recv_t=105831503 attempt=1
+[T=105834792ms] [=5166 (~5.1s window)
+[T=105835782ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105835812ms] [WS-ACK-RECV] tsf_us=105835779533 recv_t=105835806 attempt=1
+[T=105839939ms] [CORE-LOAD] core0_idle_hits=5324 core1_idle_hits=5164 (~5.1s window)
+[T=105840082ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105840112ms] [WS-ACK-RECV] tsf_us=105840079521 recv_t=105840108 attempt=1
+[T=105844382ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105844412ms] [WS-ACK-RECV] tsf_us=105844379527 recv_t=105844410 attempt=1
+[T=105845086ms] [CORE-LOAD] core0_idle_hits=5352 core1_idle_hits=5171 (~5.1s window)
+[T=105848682ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105848717ms] [WS-ACK-RECV] tsf_us=105848679513 recv_t=105848712 attempt=1
+=5163 (~5.1s window)
+[T=105852982ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105852997ms] [WS-ACK-RECV] tsf_us=105852979507 recv_t=105852995 attempt=1
+[T=105855380ms] [CORE-LOAD] core0_idle_hits=5304 core1_idle_hits=5162 (~5.1s window)
+[T=105857282ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105857302ms] [WS-ACK-RECV] tsf_us=105857279496 recv_t=105857298 attempt=1
+[T=105860528ms] [CORE-LOAD] core0_idle_hits=5298 core1_idle_hits=5165 (~5.1s window)
+[T=105861582ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105861607ms] [WS-ACK-RECV] tsf_us=105861579487 recv_t=105861602 attempt=1
+[T=105865675ms] =5164 (~5.1s window)
+[T=105865882ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105865897ms] [WS-ACK-RECV] tsf_us=105865879480 recv_t=105865895 attempt=1
+[T=105870182ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105870202ms] [WS-ACK-RECV] tsf_us=105870179471 recv_t=105870197 attempt=1
+[T=105870821ms] [CORE-LOAD] core0_idle_hits=5311 core1_idle_hits=5173 (~5.1s window)
+[T=105874482ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105874502ms] [WS-ACK-RECV] tsf_us=105874479462 recv_t=105874500 attempt=1
+[T=5969ms] [CORE-LOAD] core0_idle_hits=5307 core1_idle_hits=5164 (~5.1s window)
+[T=105878781ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105878807ms] [WS-ACK-RECV] tsf_us=105878779462 recv_t=105878803 attempt=1
+[T=105881116ms] =5304 core1_idle_hits=5162 (~5.1s window)
+[T=105883082ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105883112ms] [WS-ACK-RECV] tsf_us=105883079444 recv_t=105883107 attempt=1
+=5165 (~5.1s window)
+[T=105887381ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105887402ms] [WS-ACK-RECV] tsf_us=105887379435 recv_t=105887400 attempt=1
+[T=105891410ms] [CORE-LOAD] core0_idle_hits=5328 core1_idle_hits=5166 (~5.1s window)
+[T=105891682ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105891707ms] [WS-ACK-RECV] tsf_us=105891679428 recv_t=105891703 attempt=1
+[T=105895981ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105896007ms] [WS-ACK-RECV] tsf_us=105895979425 recv_t=105896005 attempt=1
+s] [CORE-LOAD] core0_idle_hits=5327 core1_idle_hits=5169 (~5.1s window)
+[T=105900281ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105900312ms] [WS-ACK-RECV] tsf_us=105900279417 recv_t=105900307 attempt=1
+[T=105901704ms] [CORE-LOAD] core core1_idle_hits=5165 (~5.1s window)
+[T=105904582ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105904612ms] [WS-ACK-RECV] tsf_us=105904579402 recv_t=105904609 attempt=1
+[T=105906851ms] [=5165 (~5.1s window)
+[T=105908882ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105908902ms] [WS-ACK-RECV] tsf_us=105908879407 recv_t=105908900 attempt=1
+[T=105911998ms] [CORE-LOAD] core0_idle_hits=5314 core1_idle_hits=5163 (~5.1s window)
+[T=105913181ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105913207ms] [WS-ACK-RECV] tsf_us=105913179388 recv_t=105913203 attempt=1
+[T=105917145ms] [CORE-LOAD] core0_idle_hits=5328 core1_idle_hits=5164 (~5.1s window)
+[T=105917481ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105917512ms] [WS-ACK-RECV] tsf_us=105917479383 recv_t=105917507 attempt=1
+[T=105921782ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105921802ms] [WS-ACK-RECV] tsf_us=105921779371 recv_t=105921800 attempt=1
+1_idle_hits=5171 (~5.1s window)
+[T=105926081ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105926107ms] [WS-ACK-RECV] tsf_us=105926079366 recv_t=105926103 attempt=1
+[T=105927439ms] [CORE-LOAD] core0_idle_hits=5325 core1_idle_hits=5165 (~5.1s window)
+[T=105930381ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105930407ms] [WS-ACK-RECV] tsf_us=105930379356 recv_t=105930406 attempt=1
+=5164 (~5.1s window)
+[T=105934681ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105934712ms] [WS-ACK-RECV] tsf_us=105934679346 recv_t=105934709 attempt=1
+[T=105937733ms] [=5163 (~5.1s window)
+[T=105938981ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105939007ms] [WS-ACK-RECV] tsf_us=105938979336 recv_t=105939004 attempt=1
+[T=105942880ms] [CORE-LOAD] core0_idle_hits=5312 core1_idle_hits=5164 (~5.1s window)
+[T=105943281ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105943307ms] [WS-ACK-RECV] tsf_us=105943279333 recv_t=105943305 attempt=1
+[T=105947581ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105947612ms] [WS-ACK-RECV] tsf_us=105947579323 recv_t=105947608 attempt=1
+[T=105948027ms] [CORE-LOAD] core0_idle_hits=5338 core1_idle_hits=5174 (~5.1s window)
+[T=105951881ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105951907ms] [WS-ACK-RECV] tsf_us=105951879316 recv_t=105951903 attempt=1
+[T=105953174ms] [CORE-LOAD] core0_idle_hits=5321 core1_idle_hits=5163 (~5.1s window)
+[T=105956181ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105956207ms] [WS-ACK-RECV] tsf_us=105956179308 recv_t=105956206 attempt=1
+[T=105958321ms] [CORE-LOAD] core=5165 (~5.1s window)
+[T=105960481ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105960501ms] [WS-ACK-RECV] tsf_us=105960479302 recv_t=105960499 attempt=1
+[T=105963468ms] [CORE-LOAD] core0_idle_hits=5322 core1_idle_hits=5163 (~5.1s window)
+[T=105964781ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105964807ms] [WS-ACK-RECV] tsf_us=105964779292 recv_t=105964802 attempt=1
+=5163 (~5.1s window)
+[T=105969081ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105969106ms] [WS-ACK-RECV] tsf_us=105969079281 recv_t=105969105 attempt=1
+[T=105973381ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105973401ms] [WS-ACK-RECV] tsf_us=105973379281 recv_t=105973396 attempt=1
+[T=105973762ms] [CORE-LOAD] core=5170 (~5.1s window)
+[T=105977681ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105977701ms] [WS-ACK-RECV] tsf_us=105977679272 recv_t=105977699 attempt=1
+[T=105978909ms] [CORE-LOAD] core0_idle_hits=5304 core1_idle_hits=5167 (~5.1s window)
+[T=105981981ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105982006ms] [WS-ACK-RECV] tsf_us=105981979255 recv_t=105982002 attempt=1
+=5162 (~5.1s window)
+[T=105986281ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105986306ms] [WS-ACK-RECV] tsf_us=105986279251 recv_t=105986305 attempt=1
+[T=105989203ms=5168 (~5.1s window)
+[T=105990581ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105990601ms] [WS-ACK-RECV] tsf_us=105990579243 recv_t=105990598 attempt=1
+[T=105994350ms] [CORE-LOAD] core0_idle_hits=5333 core1_idle_hits=5165 (~5.1s window)
+[T=105994881ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105994902ms] [WS-ACK-RECV] tsf_us=105994879238 recv_t=105994900 attempt=1
+[T=105999181ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=105999207ms] [WS-ACK-RECV] tsf_us=105999179230 recv_t=105999203 attempt=1
+[T=105999497ms] [CORE-LOAD] core=5173 (~5.1s window)
+[T=106003481ms] [WS Worker] Sent GOAL (TSF), attempt 1.
+[T=106003507ms] [WS-ACK-RECV] tsf_us=106003479223 recv_t=106003504 attempt=1
+=5164 (~5.1s window)
+[T=106009791ms] [CORE-LOAD] core0_idle_hits=5301 core1_idle_hits=5157 (~5.1s window)
+[T=106014938ms] [CORE-LOAD] core0_idle_hits=5294 core1_idle_hits=5161 (~5.1s window)
+[T=106020085ms] [CORE-LOAD] core0_idle_hits=5298 core1_idle_hits=5158 (~5.1s window)
+[T=106025232ms]=5160 (~5.1s window)
+[T=106030379ms] [idle_hits=5318 core1_idle_hits=5161 (~5.1s window)
+[T=106035526ms] [=5160 (~5.1s window)
+[T=106040673ms] [CORE-LOAD] core=5160 (~5.1s window)
+[T=106045820ms] [CORE-LOAD] core0_idle_hits=5305 core1_idle_hits=5160 (~5.1s window)
+[T=106050967ms] [CORE-LOAD] core0_idle_hits=5286 core1_idle_hits=5159 (~5.1s window)
+[T=106056115ms] [CORE-LOAD] core0_idle_hits=5294 core1_idle_hits=5159 (~5.1s window)
+[T=106061262ms] [CORE-LOAD] core0_idle_hits=5302 core1_idle_hits=5159 (~5.1s window)
+=5159 (~5.1s window)
+[T=106071556ms] [CORE-LOAD] core0_idle_hits=5317 core1_idle_hits=5159 (~5.1s window)
+[T=10607670core0_idle_hits=5320 core1_idle_hits=5160 (~5.1s window)
+[T=106081850ms] [CORE-LOAD] core0_idle_hits=5304 core1_idle_hits=5159 (~5.1s window)
+[T=106086997ms] [CORE-LOAD] core0_idle_hits=5303 core1_idle_hits=5156 (~5.1s window)
+[T=106092144ms] [CORE-LOAD] core0_idle_hits=5300 core1_idle_hits=5159 (~5.1s window)
+[T=106097291ms] [=5159 (~5.1s window)
+[T=106102438ms] [=5159 (~5.1s window)
+AD] core0_idle_hits=5314 core1_idle_hits=5159 (~5.1s window)
+[T=106112732ms] [CORE-LOAD] core=5159 (~5.1s window)
+[T=106117879ms] =5159 (~5.1s window)
+[T=106123026ms] [LOAD] core0_idle_hits=5306 core1_idle_hits=5159 (~5.1s window)
+[T=106128173ms] [CORE-LOAD] core0_idle_hits=5289 core1_idle_hits=5160 (~5.1s window)
+=5160 (~5.1s window)
+[T=106138467msE-LOAD] core0_idle_hits=5305 core1_idle_hits=5157 (~5.1s window)
+[T=106143614ms] [CORE-LOAD] core0_idle_hits=5310 core1_idle_hits=5159 (~5.1s window)
+=5160 (~5.1s window)
+[T=106153908ms] [CORE-LOAD] core0_idle_hits=5308 core1_idle_hits=5157 (~5.1s window)
+=5159 (~5.1s window)
+[T=106164202ms] [CORE-LOAD] core=5158 (~5.1s window)
+[T=106169349ms] [CORE-LOAD] core0_idle_hits=5300 core1_idle_hits=5160 (~5.1s window)
+[T=106174496ms] [CORE-LOAD] core=5159 (~5.1s window)
+=5159 (~5.1s window)
+[T=106184790ms] [CORE-LOAD] core0_idle_hits=5310 core1_idle_hits=5159 (~5.1s window)
+[T=106189937ms] [CORE-LOAD] core0_idle_hits=5315 core1_idle_hits=5156 (~5.1s window)
+[T=106195084ms] [CORE-LOAD] core0_idle_hits=5313 core1_idle_hits=5159 (~5.1s window)
+[T=106200231ms] [CORE-LOAD] core0_idle_hits=5309 core1_idle_hits=5159 (~5.1s window)
+[T=106205378ms] [CORE-LOAD] core0_idle_hits=5290 core1_idle_hits=5159 (~5.1s window)
+[T=106210525ms] [CORE-LOAD] core0_idle_hits=5301 core1_idle_hits=5160 (~5.1s window)
+[T=106215672ms] [CORE-LOAD] core0_idle_hits=5300 core1_idle_hits=5157 (~5.1s window)
+[T=106220819ms] [CORE-LOAD] core=5159 (~5.1s window)
+[T=106225966ms] [CORE-LOAD] core0_idle_hits=5315 core1_idle_hits=5160 (~5.1s window)
+[T=106231113ms] [CORE-LOAD] core0_idle_hits=5309 core1_idle_hits=5157 (~5.1s window)
+[T=106236260ms] =5160 (~5.1s window)
+[T=106241407ms] [CORE-LOAD] core0_idle_hits=5298 core1_idle_hits=5159 (~5.1s window)
+[T=106246555ms] [CORE-LOAD] core0_idle_hits=5287 core1_idle_hits=5159 (~5.1s window)
+=5159 (~5.1s window)
+[T=106256849ms] [CORE-LOAD] core0_idle_hits=5311 core1_idle_hits=5159 (~5.1s window)
+[T=106261996ms] [CORE-LOAD] core0_idle_hits=5298 core1_idle_hits=5160 (~5.1s window)
+[T=106267143ms] [CORE-LOAD] core=5158 (~5.1s window)
+[T=106272290ms] [CORE-LOAD] core=5160 (~5.1s window)
+[T=106277437ms] [CORE-LOAD] core0_idle_hits=5293 core1_idle_hits=5160 (~5.1s window)
+[T=106282584ms] [=5160 (~5.1s window)
+[T=106287731ms] =5160 (~5.1s window)
+[T=106292878ms] [=5160 (~5.1s window)
+[T=106298025ms] =5159 (~5.1s window)
+[T=106303172ms]=5159 (~5.1s window)
+[T=106308319ms=5160 (~5.1s window)
+[T=106313466ms] [CORE-LOAD] core0_idle_hits=5300 core1_idle_hits=5160 (~5.1s window)
+[T=106318613ms] [CORE-LOAD] core=5159 (~5.1s window)
+[T=106323760ms] [CORE-LOAD] core0_idle_hits=5286 core1_idle_hits=5160 (~5.1s window)
+=5157 (~5.1s window)
+[T=106334054ms] [CORE-LOAD] core0_idle_hits=5297 core1_idle_hits=5159 (~5.1s window)
+[T=106339201ms] [=5159 (~5.1s window)
+[T=106344348ms]=5158 (~5.1s window)
+[T=106349495ms] [CORE-LOAD] core0_idle_hits=5304 core1_idle_hits=5160 (~5.1s window)
+[T=106354642ms] [CORE-LOAD] core0_idle_hits=5294 core1_idle_hits=5159 (~5.1s window)
+[T=106359789ms] [CORE-LOAD] core=5159 (~5.1s window)
+[T=106364936ms] [CORE-LOAD] core0_idle_hits=5290 core1_idle_hits=5161 (~5.1s window)
+[T=106370083ms] [CORE-LOAD] core0_idle_hits=5295 core1_idle_hits=5158 (~5.1s window)
+[T=106375230ms] [CORE-LOAD] core0_idle_hits=5320 core1_idle_hits=5160 (~5.1s window)
+[T=106380377ms] [CORE-LOAD] core0_idle_hits=5303 core1_idle_hits=5160 (~5.1s window)
+=5156 (~5.1s window)
+=5159 (~5.1s window)
+=5160 (~5.1s window)
+[T=106400965ms] [CORE-LOAD] core0_idle_hits=5288 core1_idle_hits=5159 (~5.1s window)
+[T=106406112ms] =5161 (~5.1s window)
+[T=106411259ms] [CORE-LOAD] core0_idle_hits=5300 core1_idle_hits=5159 (~5.1s window)
+[T=106416406ms] [CORE-LOAD] core0_idle_hits=5302 core1_idle_hits=5157 (~5.1s window)
+[T=106421553ms] [CORE-LOAD] core0_idle_hits=5307 core1_idle_hits=5160 (~5.1s window)
+[T=106426700ms]=5159 (~5.1s window)
+[T=106431847ms] [CORE-LOAD] core=5158 (~5.1s window)
+[T=106436995ms] [CORE-LOAD] core=5159 (~5.1s window)
+=5161 (~5.1s window)
+[T=106447289ms] [=5156 (~5.1s window)
+[T=106452436ms] [CORE-LOAD] core0_idle_hits=5299 core1_idle_hits=5160 (~5.1s window)
+[T=106457583ms] [=5161 (~5.1s window)
+=5159 (~5.1s window)
+[T=106467877ms] [CORE-LOAD] core0_idle_hits=5297 core1_idle_hits=5159 (~5.1s window)
+[T=106473024ms] [CORE-LOAD] core0_idle_hits=5290 core1_idle_hits=5159 (~5.1s window)
+[T=106478171ms] [CORE-LOAD] core0_idle_hits=5288 core1_idle_hits=5156 (~5.1s window)
+[T=106483318ms] [=5159 (~5.1s window)
+[T=106488465ms] [CORE-LOAD] core0_idle_hits=5302 core1_idle_hits=5158 (~5.1s window)
+[T=106493612ms] [CORE-LOAD] core0_idle_hits=5299 core1_idle_hits=5160 (~5.1s window)
+=5159 (~5.1s window)
+[T=106503906ms] [CORE-LOAD] core0_idle_hits=5308 core1_idle_hits=5157 (~5.1s window)
+=5159 (~5.1s window)
+[T=106514200ms] [CORE-LOAD] core0_idle_hits=5286 core1_idle_hits=5157 (~5.1s window)
+dle_hits=5159 (~5.1s window)
+[T=106524494ms] [CORE-LOAD] core0_idle_hits=5296 core1_idle_hits=5159 (~5.1s window)
+[T=106529641ms] [=5159 (~5.1s window)
+_idle_hits=5159 (~5.1s window)
+[T=106539935ms] [CORE-LOAD] core0_idle_hits=5303 core1_idle_hits=5159 (~5.1s window)
+=5159 (~5.1s window)
+[T=106550229ms] [CORE-LOAD] core0_idle_hits=5291 core1_idle_hits=5159 (~5.1s window)
+[T=106555376ms] [CORE-LOAD] core0_idle_hits=5287 core1_idle_hits=5159 (~5.1s window)
+[T=106560523ms] [CORE-LOAD] core=5159 (~5.1s window)
+ore1_idle_hits=5159 (~5.1s window)
+[T=106570817ms] =5157 (~5.1s window)
+[T=106575964ms] [CORE-LOAD] core0_idle_hits=5302 core1_idle_hits=5159 (~5.1s window)
+ core1_idle_hits=5157 (~5.1s window)
+=5160 (~5.1s window)
+[T=106591405ms] [CORE-LOAD] core=5159 (~5.1s window)
+85 core1_idle_hits=5157 (~5.1s window)
+[T=106601699ms] [CORE-LOAD] core0_idle_hits=5300 core1_idle_hits=5161 (~5.1s window)
+=5160 (~5.1s window)
+[T=106611993ms] [5303 core1_idle_hits=5158 (~5.1s window)
+[T=106617140ms] [CORE-LOAD] core0_idle_hits=5300 core1_idle_hits=5159 (~5.1s window)
+[T=106622287ms] [CORE-LOAD] core0_idle_hits=5300 core1_idle_hits=5159 (~5.1s window)
+s=5293 core1_idle_hits=5160 (~5.1s window)
+[T=106632582ms] [CORE-LOAD] core0_idle_hits=5287 core1_idle_hits=5156 (~5.1s window)
+[T=106637729ms] =5159 (~5.1s window)
+its=5303 core1_idle_hits=5159 (~5.1s window)
+[T=106648023ms] [CORE-LOAD] core=5159 (~5.1s window)
+[T=106653170ms] [CORE-LOAD] core=5159 (~5.1s window)
+[T=106658317ms] [CORE-LOAD] core0_idle_hits=5301 core1_idle_hits=5159 (~5.1s window)
+[T=106663464ms] [CORE-LOAD] core=5159 (~5.1s window)
+[T=106668611ms] [CORE-LOAD] core0_idle_hits=5285 core1_idle_hits=5158 (~5.1s window)
+[T=106673758ms] [CORE-LOAD] core0_idle_hits=5299 core1_idle_hits=5159 (~5.1s window)
+=5159 (~5.1s window)
+[T=106684052ms] [CORE-LOAD] core0_idle_hits=5304 core1_idle_hits=5159 (~5.1s window)
+[T=106689199ms] [idle_hits=5303 core1_idle_hits=5156 (~5.1s window)
+[T=106694346ms] [CORE-LOAD] core0_idle_hits=5304 core1_idle_hits=5159 (~5.1s window)
+[T=106699493ms] [CORE-LOAD] core=5159 (~5.1s window)
+[T=106704640ms0_idle_hits=5286 core1_idle_hits=5159 (~5.1s window)
+[T=106709787ms] [CORE-LOAD] core=5159 (~5.1s window)
+[T=106714934ms] [CORE-LOAD] core0_idle_hits=5298 core1_idle_hits=5159 (~5.1s window)
+re0_idle_hits=5303 core1_idle_hits=5162 (~5.1s window)
