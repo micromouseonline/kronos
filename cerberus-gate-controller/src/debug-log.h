@@ -51,6 +51,21 @@
 // with verbose logging off.
 inline bool g_debug_verbose_enabled = false;
 
+// Compile-time gate for routine per-WS-event logging (the ack-path timing
+// line that fires on every single event even when nothing is wrong) -- off
+// by default to keep normal operation quiet. Flip to 1 (or pass
+// -D WS_EVENT_LOG_DETAIL=1 via platformio.ini build_flags) and rebuild for
+// a dedicated diagnostic trial; this is the exact instrumentation
+// NETWORK-TIMING-LOG.md's retry/latency investigations have relied on, kept
+// available rather than deleted. Deliberately separate from
+// g_debug_verbose_enabled above -- that's a runtime UI switch for a
+// different set of traces; this one needs a rebuild, by design, since it
+// covers the ack-path line that's deliberately unconditional at runtime
+// (see net/http-server.h) so stress tests don't require verbose mode.
+#ifndef WS_EVENT_LOG_DETAIL
+#define WS_EVENT_LOG_DETAIL 0
+#endif
+
 inline SemaphoreHandle_t serial_write_mutex = xSemaphoreCreateMutex();
 
 inline void serial_write_lock() {

@@ -393,8 +393,16 @@ inline void ws_event_handler(AsyncWebSocket *server, AsyncWebSocketClient *clien
         uint32_t t_ack_dispatch_ms = debug_timestamp_ms();
         client->text(ack);
         uint32_t t_ack_sent_ms = debug_timestamp_ms();
+#if WS_EVENT_LOG_DETAIL
         debug_log_enqueue("[WS-ACK] tsf_us=%llu recv=%u dispatch=%u sent=%u text_ms=%u pending=%d space=%u", (unsigned long long)tsf_us, t_data_recv_ms,
                           t_ack_dispatch_ms, t_ack_sent_ms, (unsigned)(t_ack_sent_ms - t_ack_dispatch_ms), (int)ack_path_pending, (unsigned)ack_path_space);
+#else
+        (void)t_data_recv_ms;
+        (void)t_ack_dispatch_ms;
+        (void)t_ack_sent_ms;
+        (void)ack_path_pending;
+        (void)ack_path_space;
+#endif
       }
     }
   }
