@@ -2732,7 +2732,62 @@ originally surfaced the bug produced zero Interrupt WDT panics on either
 board. See the acceptance-criteria section's "Results, session 8" for the
 full trial writeup.
 
-## Decision record: ESP-NOW alternative
+### Issue: cerberus debug-log blackout during 1000-run Core 0 load trial
+
+**[Characterized, 2026-08-09 — diagnostic-logging artifact, not a reliability
+fault]**
+*(new, found during the `gather-stats-core0` branch's 1000-simulated-run
+trial, `test-data/load-tests/`, run to measure Core 0 idle headroom for
+`hesperus-timing-gate/reflective-detection-feasibility.md`)*
+
+**Observation.** Cerberus's log recorded 994/994/992 ARM/START/GOAL against
+997/997/996 sent by the two gate boards — 10 events apparently missing.
+
+**Confirmation.** All 10 fall inside a single 25.6-second window
+(T=101863897 to T=101889493) — the only anomaly of its kind across the
+entire ~84-minute, 5044s trial; every other gap in cerberus's timestamped
+lines tops out around the normal ~3.0-3.1s `<13,3000>` heartbeat cadence.
+Both gate boards show completely normal operation throughout that exact
+window — every send got `WS-ACK-RECV` back on `attempt=1`, no retries —
+and cerberus's ack packets echo back the `tsf_us` they process, so those
+acks could only have come from cerberus actually having run
+`handle_gate_event_json()` and replied for real. **The events were not
+lost**; cerberus's serial log simply printed nothing for 25.6s while
+otherwise operating normally.
+
+**Root cause.** In `net/http-server.h`'s WS data handler, event handling
+and `client->text(ack)` happen unconditionally, before either debug line is
+enqueued (`handled` is computed and acted on regardless of logging). Both
+`[WS] DATA` and `[WS-ACK]` go through `debug_log_enqueue()`
+(`debug-log.h:102`), which is non-blocking and silently drops on a full
+16-deep queue rather than blocking the caller — deliberate, so logging
+never adds latency to the ack path. A single drop from a momentarily-full
+queue doesn't explain 25.6s of total silence, including the periodic
+`<4,2>`/`<13,3000>` markers that come from elsewhere — this points at
+`debug_log_drain_task` itself (or the `Serial`/UART write underneath it,
+guarded by `serial_write_mutex`) stalling for that stretch, not the queue
+overflowing. Not root-caused further than this — the trial wasn't
+instrumented to catch it (no diagnostic for the drain task's own
+health/backlog).
+
+**Resolution.** None needed for correctness — the timing-critical path
+(receive, process, ack) is fully decoupled from logging and was unaffected.
+Prompted a follow-up: a new `WS_EVENT_LOG_DETAIL` compile-time switch
+(`debug-log.h` on both boards, default 0) now gates the routine per-event
+lines that used to be unconditional — cerberus's `[WS-ACK]` ack-path timing
+line and hesperus's `[WS Worker] Sent`/`[WS-ACK-RECV]` lines — to reduce
+everyday logging volume now that the pattern above shows it can stall for
+multi-second stretches under whatever conditions triggered it. Deliberately
+separate from cerberus's existing runtime `g_debug_verbose_enabled` switch
+(UI-controlled, gates a different trace set): this one needs a rebuild by
+design, since the line it covers was unconditional at runtime specifically
+so stress tests didn't need verbose mode on. Anomaly lines
+(Resent/dropped/blocked/link-down/disconnect) stay unconditional — already
+low-frequency, and valuable whenever they do fire. The instrumentation
+itself is untouched, not deleted — every session in this document that
+needed `[WS-ACK]`/`[WS-ACK-RECV]` timing (items 1, 2, 3 above) required
+`WS_EVENT_LOG_DETAIL=1` (or `-D WS_EVENT_LOG_DETAIL=1` via `platformio.ini`
+build_flags) and a rebuild before running the next such trial.
 
 Worth recording explicitly, since it was raised and weighed rather than
 overlooked: an earlier, separate experiment used ESP-NOW as the message
