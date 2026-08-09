@@ -2732,62 +2732,160 @@ originally surfaced the bug produced zero Interrupt WDT panics on either
 board. See the acceptance-criteria section's "Results, session 8" for the
 full trial writeup.
 
-### Issue: cerberus debug-log blackout during 1000-run Core 0 load trial
+### Issue: missing runs and a cerberus debug-log blackout during 1000-run Core 0 load trial
 
-**[Characterized, 2026-08-09 — diagnostic-logging artifact, not a reliability
-fault]**
+**[OPEN, 2026-08-09 — leading theory: capture-PC power-saving lapse,
+unconfirmed]**
 *(new, found during the `gather-stats-core0` branch's 1000-simulated-run
 trial, `test-data/load-tests/`, run to measure Core 0 idle headroom for
 `hesperus-timing-gate/reflective-detection-feasibility.md`)*
 
 **Observation.** Cerberus's log recorded 994/994/992 ARM/START/GOAL against
-997/997/996 sent by the two gate boards — 10 events apparently missing.
+997/997/996 sent by the two gate boards. First read as "10 events missing at
+cerberus" and left at that; a closer, systematic pass (prompted by a sanity
+check on whether a 16-deep debug-log queue could plausibly explain it) found
+the true picture is two separate problems, not one — detailed as Findings 1
+and 2 below.
 
-**Confirmation.** All 10 fall inside a single 25.6-second window
-(T=101863897 to T=101889493) — the only anomaly of its kind across the
-entire ~84-minute, 5044s trial; every other gap in cerberus's timestamped
-lines tops out around the normal ~3.0-3.1s `<13,3000>` heartbeat cadence.
-Both gate boards show completely normal operation throughout that exact
-window — every send got `WS-ACK-RECV` back on `attempt=1`, no retries —
-and cerberus's ack packets echo back the `tsf_us` they process, so those
-acks could only have come from cerberus actually having run
-`handle_gate_event_json()` and replied for real. **The events were not
-lost**; cerberus's serial log simply printed nothing for 25.6s while
-otherwise operating normally.
+**Leading theory: the log-capture PC, not the firmware.** Every previous
+trial in this document had power-saving disabled on the PC doing the serial
+capture; this one, uniquely, didn't (forgotten, not deliberate). Both
+Finding 1's real anomalies land at **1.7-1.85 minutes and 3.2-3.4 minutes**
+into the captured log, and nothing else remotely similar occurs across the
+remaining ~80 minutes of the trial (the one later blip, at 71.7 min, is the
+already-explained TSF audit-correction event, unrelated). Two short gaps
+clustered in the first few minutes, then a long clean stretch, is a better
+match for **per-port USB selective suspend** (a device-level idle timer,
+often bundled under the same "power saving" umbrella but typically much
+shorter and independent of the system-wide sleep timer) than for the
+system's own inactivity-sleep setting — starting the trial would normally
+reset that timer, so a 30-minute system sleep firing 1-3 minutes later
+doesn't line up as cleanly, and a real sleep/wake cycle wouldn't usually
+produce two separate short blips 90 seconds apart. If a USB-serial
+connection gets suspended shortly after the capture starts and takes a
+moment to resume once sustained traffic re-establishes it, that fits both
+this timing and the fact that it never recurs once the connection is
+"warmed up." If this is right, it would mean cerberus and both gate boards
+may have run flawlessly throughout — the capture PC simply wasn't listening
+on one or more ports for two brief windows, on all three connections at
+once (all captured through the same machine) — and Findings 1 and 2 below
+would be capture artifacts, not real event loss or a firmware stall.
+**Not confirmed** — can't be settled after the fact from these logs alone;
+see "Next steps" below for the direct test.
 
-**Root cause.** In `net/http-server.h`'s WS data handler, event handling
-and `client->text(ack)` happen unconditionally, before either debug line is
-enqueued (`handled` is computed and acted on regardless of logging). Both
-`[WS] DATA` and `[WS-ACK]` go through `debug_log_enqueue()`
-(`debug-log.h:102`), which is non-blocking and silently drops on a full
-16-deep queue rather than blocking the caller — deliberate, so logging
-never adds latency to the ack path. A single drop from a momentarily-full
-queue doesn't explain 25.6s of total silence, including the periodic
-`<4,2>`/`<13,3000>` markers that come from elsewhere — this points at
-`debug_log_drain_task` itself (or the `Serial`/UART write underneath it,
-guarded by `serial_write_mutex`) stalling for that stretch, not the queue
-overflowing. Not root-caused further than this — the trial wasn't
-instrumented to catch it (no diagnostic for the drain task's own
-health/backlog).
+**Finding 1: ~3 runs' triggers were never generated at all, upstream of the
+network entirely.** Corruption-tolerant parsing (matching `Sent`/
+`WS-ACK-RECV` as substrings, so the garbled-prefix lines described below
+don't break the count) shows hesperus's own send/ack bookkeeping is
+internally clean: 997 ARM sent, 997 START sent, 996 GOAL sent, **every
+single one acknowledged**, zero drops, zero retries at that level — "not all
+sends turned into notifications" turned out to be the wrong framing. The
+real gap is in the ARM/GOAL *cadence* itself. Scanning every consecutive
+ARM-to-ARM and GOAL-to-GOAL interval in the entire trial (not just the one
+window originally noticed) for departures from the normal ~4.2s spacing
+finds exactly three:
 
-**Resolution.** None needed for correctness — the timing-critical path
-(receive, process, ack) is fully decoupled from logging and was unaffected.
-Prompted a follow-up: a new `WS_EVENT_LOG_DETAIL` compile-time switch
-(`debug-log.h` on both boards, default 0) now gates the routine per-event
-lines that used to be unconditional — cerberus's `[WS-ACK]` ack-path timing
-line and hesperus's `[WS Worker] Sent`/`[WS-ACK-RECV]` lines — to reduce
-everyday logging volume now that the pattern above shows it can stall for
-multi-second stretches under whatever conditions triggered it. Deliberately
-separate from cerberus's existing runtime `g_debug_verbose_enabled` switch
-(UI-controlled, gates a different trace set): this one needs a rebuild by
-design, since the line it covers was unconditional at runtime specifically
-so stress tests didn't need verbose mode on. Anomaly lines
-(Resent/dropped/blocked/link-down/disconnect) stay unconditional — already
-low-frequency, and valuable whenever they do fire. The instrumentation
-itself is untouched, not deleted — every session in this document that
-needed `[WS-ACK]`/`[WS-ACK-RECV]` timing (items 1, 2, 3 above) required
-`WS_EVENT_LOG_DETAIL=1` (or `-D WS_EVENT_LOG_DETAIL=1` via `platformio.ini`
-build_flags) and a rebuild before running the next such trial.
+| Window | Gap | Missing runs | Corroboration |
+|---|---|---|---|
+| T≈101773.4M→101782.0M | 8.6s | 1 | Goal board's own GOAL cadence gaps at the same timestamps (101772.3M→101780.9M); cerberus's received stream shows the same missing slot |
+| T≈101863.7M→101876.6M | 12.9s | 2 | Same — goal board gap 101862.6M→101875.5M; cerberus shows the same missing slots |
+| T≈105970.2M→105978.8M | 8.6s | 1 | Lands exactly on the trial's one logged `[AUDIT ALERT] Temporal Disruption!` event — plausibly a TSF-jump artifact in the interval math, not a genuinely skipped run |
+
+The first two are independently corroborated on **two boards that don't
+talk to each other** (start and goal), plus cerberus's own received-event
+count — ruling out a single board's local bug and pointing at something
+shared: most likely the trigger source (`ares-pulse-generator`) missing a
+beat, or an environmental event hitting the whole rig at once. Not
+root-caused — see "Next steps" below; `ares-pulse-generator` doesn't
+currently log its own pulses in any form that could confirm or rule this
+out (it isn't networked and keeps no useful record of what it fired).
+
+**Finding 2: a separate ~25.6s cerberus logging blackout, mechanism still
+unknown.** Of the events hesperus successfully sent+got acked (Finding 1's
+997/997/996, unrelated to the ~3 missing runs above), 10 don't appear in
+cerberus's captured text log — all 10 inside one 25.6-second window
+(T=101863897 to T=101889493, overlapping Finding 1's second window but
+outlasting it by ~13s). Every other gap in cerberus's timestamped lines
+tops out around the normal ~3.0-3.1s `<13,3000>` heartbeat cadence, so this
+one is a real outlier, not sampling noise. Both gate boards show completely
+normal operation throughout that exact window — every send got
+`WS-ACK-RECV` back on `attempt=1` — and cerberus's ack packets echo back the
+`tsf_us` they process, so those acks could only have come from cerberus
+actually having run `handle_gate_event_json()` and replied for real: **the
+events were received and processed**; cerberus's serial log simply didn't
+capture them.
+
+Two theories checked and ruled out:
+- **Not the 16-deep `debug_log_queue` being undersized for ordinary load.**
+  Only ~10-14 gate events happened cerberus-side during the 25.6s window
+  (under 1 enqueue/sec) — nowhere near enough to overflow a continuously
+  -drained 16-slot queue unless draining had already stopped, and every
+  other event pair in the entire 84-minute trial (2970 of them) is intact
+  with zero drops elsewhere. A chronically-undersized queue would show
+  scattered drops under bursts, not one clean isolated outage.
+- **Not fully silent, which rules out a dead Serial/UART.** Three
+  non-`debug_log_enqueue` lines (`<4,2>`, `<4,4>`, `<12,0>` — the legacy
+  `<type,value>` protocol, written directly by `net/messages.h`'s
+  `serial_send_message()`, bypassing `debug_log_queue` entirely) do appear
+  inside the gap, but bunched together right at the moment logging resumes
+  rather than spread through the window at their normal cadence. That's
+  more consistent with something shared by both code paths — most likely
+  `serial_write_mutex`, or the `Serial` write underneath it — being blocked
+  for the whole stretch, then releasing and flushing everything that had
+  backed up behind it, than with `debug_log_queue` dropping messages in
+  isolation.
+
+Not root-caused further than this. Whether Finding 1 and Finding 2 share a
+cause is unclear — the two ~101862-101889-region rows in each finding
+overlap in time, which is suspicious, but cerberus's blackout runs ~13s
+longer than the gate boards' own gap in the same region, so they aren't
+simply the same event measured twice.
+
+**Next steps (not yet done).**
+1. **Direct test of the leading theory**: rerun the same trial (or a
+   shorter version) with the capture PC's power-saving fully disabled, as in
+   every prior trial — if the early-minutes anomaly pattern doesn't
+   reproduce, that's strong support for the capture-PC explanation above and
+   would close both findings as tooling artifacts rather than firmware bugs.
+   Cheapest and most direct of these next steps; do this one first.
+2. Give `ares-pulse-generator` a way to record what it actually fired, to
+   settle Finding 1 independently of the gate/cerberus logs it's currently
+   invisible to — still useful even if step 1 supports the capture-PC
+   theory, since it would give positive confirmation rather than relying on
+   absence-of-recurrence. Two options raised, neither implemented: (a) log
+   its own elapsed-clock timestamp per pulse locally — cheap, no network
+   dependency, but drifts against the gates' TSF clock over a multi-hour
+   trial, so correlation would only be "close enough," not exact; (b) join
+   the Wi-Fi network purely to read the same shared TSF clock the gates and
+   cerberus already use (`esp_wifi_get_tsf_time()`), giving directly
+   comparable timestamps at the cost of adding Wi-Fi to a device that
+   doesn't currently need it for anything else.
+3. No diagnostic exists for `debug_log_drain_task`'s own health/backlog
+   (queue depth over time, last-drain timestamp) — would be needed to
+   confirm or rule out Finding 2's stall theory rather than inferring it
+   from indirect timing evidence. Lower priority if step 1 points at the
+   capture PC instead.
+4. A new `WS_EVENT_LOG_DETAIL` compile-time switch (`debug-log.h` on both
+   boards, default 0) now gates the routine per-event lines that used to be
+   unconditional — cerberus's `[WS-ACK]` ack-path timing line and hesperus's
+   `[WS Worker] Sent`/`[WS-ACK-RECV]` lines — to reduce everyday logging
+   volume, motivated by Finding 2 showing this path can stall for
+   multi-second stretches under whatever conditions triggered it.
+   Deliberately separate from cerberus's existing runtime
+   `g_debug_verbose_enabled` switch (UI-controlled, gates a different trace
+   set): this one needs a rebuild by design, since the line it covers was
+   unconditional at runtime specifically so stress tests didn't need
+   verbose mode on. Anomaly lines (Resent/dropped/blocked/link-down/
+   disconnect) stay unconditional — already low-frequency, and valuable
+   whenever they do fire. The instrumentation itself is untouched, not
+   deleted — every session in this document that needed `[WS-ACK]`/
+   `[WS-ACK-RECV]` timing (items 1, 2, 3 above) required
+   `WS_EVENT_LOG_DETAIL=1` (or `-D WS_EVENT_LOG_DETAIL=1` via
+   `platformio.ini` build_flags) and a rebuild before running the next such
+   trial — this switch makes future logging leaner but doesn't help
+   diagnose *this* blackout after the fact.
+
+## Decision record: ESP-NOW alternative
 
 Worth recording explicitly, since it was raised and weighed rather than
 overlooked: an earlier, separate experiment used ESP-NOW as the message
