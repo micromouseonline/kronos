@@ -742,7 +742,9 @@ void uploadWorkerTask(void *pvParameters) {
           if (wsTakeAckIfReceived(acked_tsf, acked_recv_t_ms)) {
             if (acked_tsf == expected_ack) {
               acked = true;
+#if WS_EVENT_LOG_DETAIL
               debug_printf("[WS-ACK-RECV] tsf_us=%llu recv_t=%llu attempt=%u\n", acked_tsf, acked_recv_t_ms, attempt);
+#endif
               break;
             }
             wsClearAck();  // stale/mismatched ack -- keep waiting for ours

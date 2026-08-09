@@ -31,6 +31,19 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+// Compile-time gate for routine per-WS-event logging (the "Sent"/
+// "WS-ACK-RECV" lines that fire on every single event even when nothing is
+// wrong) -- off by default to keep normal operation quiet. Flip to 1 (or
+// pass -D WS_EVENT_LOG_DETAIL=1 via platformio.ini build_flags) and rebuild
+// for a dedicated diagnostic trial; this is the exact instrumentation
+// NETWORK-TIMING-LOG.md's retry/latency investigations have relied on, kept
+// available rather than deleted. Anomaly lines (Resent/dropped/blocked/link
+// down) stay unconditional -- they're already low-frequency and valuable
+// whenever they do fire.
+#ifndef WS_EVENT_LOG_DETAIL
+#define WS_EVENT_LOG_DETAIL 0
+#endif
+
 inline SemaphoreHandle_t serial_write_mutex = xSemaphoreCreateMutex();
 
 inline void serial_write_lock() {
