@@ -50,15 +50,57 @@ enum MessageType : int {
   MSG_TIMER_TYPE = 96,
 };
 
-// Trailing annotation character sent after MSG_CURRENT_STATE's closing
-// bracket (legacy quirk, preserved for host compatibility -- see the
-// original protocol comment: "Any characters following the closing bracket
-// are ignored by the supervisor"). Nothing in this codebase sets it to
-// anything other than '#' yet; kept as a plain global (not `extern`, unlike
-// the original) so this file is self-contained.
-inline char last_char = '#';
+// Maps a wire type code back to a human-readable name, for the trailing
+// comment below. Takes int, not MessageType -- switching on the enum type
+// wouldn't help anyway, since MSG_CONTEST_NAME and MSG_TIMER_TYPE share the
+// same value (96, see the enum's comment above) and can't both be case
+// labels here regardless of the switch expression's type. MSG_CONTEST_NAME
+// is RX-only and never passed to serial_send_message, so labelling 96 as
+// TIMER_TYPE (the only value actually sent through this function) is always
+// correct in practice.
+inline const char *message_type_name(int type) {
+  switch (type) {
+    case MSG_WATCHDOG:
+      return "WATCHDOG";
+    case MSG_CURRENT_STATE:
+      return "CURRENT_STATE";
+    case MSG_C1_SPLIT_TIME:
+      return "C1_SPLIT_TIME";
+    case MSG_C1_RUN_TIME:
+      return "C1_RUN_TIME";
+    case MSG_COURSE_TIME_MS:
+      return "COURSE_TIME_MS";
+    case MSG_TOUCH_SHORT_PRESS:
+      return "TOUCH_SHORT_PRESS";
+    case MSG_EXTRA_RUN:
+      return "EXTRA_RUN";
+    case MSG_ENTRY_TIME_S:
+      return "ENTRY_TIME_S";
+    case MSG_ALLOWED_RUNS:
+      return "ALLOWED_RUNS";
+    case MSG_EVENT_NAME:
+      return "EVENT_NAME";
+    case MSG_TIMER_TYPE:
+      return "TIMER_TYPE";
+    case MSG_REQUEST_TYPE:
+      return "REQUEST_TYPE";
+    case MSG_NEW_MOUSE:
+      return "NEW_MOUSE";
+    case MSG_SET_MODE:
+      return "SET_MODE";
+    default:
+      return "UNKNOWN";
+  }
+}
 
-inline void serial_send_message(int type, unsigned long value) {
+// Every outbound line ends in " #" plus the message type's name, unconditionally
+// -- originally a legacy quirk limited to MSG_CURRENT_STATE (see the
+// original protocol comment: "Any characters following the closing bracket
+// are ignored by the supervisor"), now applied to every message so the wire
+// is self-describing for whoever's eyeballing it, without the host's parser
+// caring. An explicit comment (e.g. race_state_name() for MSG_CURRENT_STATE)
+// is appended after the type name rather than replacing it.
+inline void serial_send_message(int type, unsigned long value, const char *comment = nullptr) {
   // Locked for the whole line -- shares the UART with debug-log.h's ad-hoc
   // output (Core 0's Wi-Fi task, in particular) and an unguarded interleave
   // between the two would corrupt this line for the host's parser.
@@ -68,10 +110,11 @@ inline void serial_send_message(int type, unsigned long value) {
   Serial.print(',');
   Serial.print(value);
   Serial.print('>');
-  if (type == MSG_CURRENT_STATE) {
-    Serial.print(' ');
-    Serial.print(last_char);
-    last_char = '#';
+  Serial.print(" # ");
+  Serial.print(message_type_name(type));
+  if (comment != nullptr) {
+    Serial.print(':');
+    Serial.print(comment);
   }
   Serial.println();
   serial_write_unlock();
@@ -80,13 +123,19 @@ inline void serial_send_message(int type, unsigned long value) {
 // String-valued counterpart to serial_send_message() -- needed for replies
 // whose value is text rather than a number (currently just MSG_TIMER_TYPE's
 // "1CH"/"2CH", see race-command-source.h's reply to MSG_REQUEST_TYPE).
-inline void serial_send_message_str(int type, const char *value) {
+inline void serial_send_message_str(int type, const char *value, const char *comment = nullptr) {
   serial_write_lock();
   Serial.print('<');
   Serial.print(type);
   Serial.print(',');
   Serial.print(value);
   Serial.print('>');
+  Serial.print(" # ");
+  Serial.print(message_type_name(type));
+  if (comment != nullptr) {
+    Serial.print(':');
+    Serial.print(comment);
+  }
   Serial.println();
   serial_write_unlock();
 }
