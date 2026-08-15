@@ -145,8 +145,13 @@ void input_event_handler(const InputEvent &evt) {
   // re-entry below is gated on the menu screen, so this can't fire from the
   // menu. Also gated on RUNNING -- "touched" only means something while the
   // mouse is actually in the maze between START and GOAL, not while idle
-  // between runs.
-  if (evt.id == BTN_TOUCH && evt.type == InputEventType::PRESSED && lv_scr_act() == objects.main &&
+  // between runs. Triggered on RELEASED, not PRESSED -- PRESSED fires
+  // immediately on press-down, before it's known whether the hold will
+  // become a long press (-> main menu above), so acting on it would also
+  // register a touch on every long-press-to-menu gesture. RELEASED (posted
+  // by neokey-buttons.h) only fires when release happened before the long-
+  // press threshold, i.e. it's mutually exclusive with the HELD case above.
+  if (evt.id == BTN_TOUCH && evt.type == InputEventType::RELEASED && lv_scr_act() == objects.main &&
       race_state == RaceState::RUNNING) {
     mouse_touched = true;
     serial_send_message(MSG_TOUCH_SHORT_PRESS, 1);
