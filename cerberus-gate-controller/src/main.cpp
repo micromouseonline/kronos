@@ -138,12 +138,16 @@ void input_event_handler(const InputEvent &evt) {
     trigger_touch_lockout();
     loadScreen(SCREEN_ID_MENU);
   }
-  // TOUCH short press, main race screen only -- a host-facing notification
-  // to RATS, not a RaceCommand (BUTTON_COMMAND_MAP maps this press to NONE;
-  // see its comment in race-command-source.h for why). Gated on the main
-  // screen the same way BTN_START's calibration-wizard re-entry below is
-  // gated on the menu screen, so this can't fire from the menu.
-  if (evt.id == BTN_TOUCH && evt.type == InputEventType::PRESSED && lv_scr_act() == objects.main) {
+  // TOUCH short press, main race screen and RUNNING only -- a host-facing
+  // notification to RATS, not a RaceCommand (BUTTON_COMMAND_MAP maps this
+  // press to NONE; see its comment in race-command-source.h for why).
+  // Gated on the main screen the same way BTN_START's calibration-wizard
+  // re-entry below is gated on the menu screen, so this can't fire from the
+  // menu. Also gated on RUNNING -- "touched" only means something while the
+  // mouse is actually in the maze between START and GOAL, not while idle
+  // between runs.
+  if (evt.id == BTN_TOUCH && evt.type == InputEventType::PRESSED && lv_scr_act() == objects.main &&
+      race_state == RaceState::RUNNING) {
     mouse_touched = true;
     serial_send_message(MSG_TOUCH_SHORT_PRESS, 1);
   }
