@@ -5,7 +5,6 @@
 
 #include <esp_wifi.h>
 #include "debug-log.h"
-#include "neokey/neokey-pixels.h"
 #include "net/wifi-credentials.h"
 #include "secrets.h"
 
@@ -17,15 +16,6 @@ inline bool is_wifi_active() {
   }
   return false;
 }
-
-// NeoKey key 3 (the BTN_TOUCH position) is reserved for the Wi-Fi status
-// light, kept exclusively off by this file (main.cpp's
-// neokey_reflect_race_state() deliberately leaves key 3 alone). It no longer
-// blinks to signal "not connected" -- the controller is expected to run
-// indefinitely on local buttons alone with no WiFi, so a flashing key would
-// just be a permanent false alarm. The status bar's WIFI/dBm vs. red
-// "MANUAL" label (race-timer-display.h) carries that indication instead.
-constexpr uint8_t WIFI_STATUS_KEY = 3;
 
 // Manual-testing aid only -- toggle off to silence the repeating 5s "IP:
 // ... RSSI: ..." line while eyeballing a serial terminal by hand (see
@@ -147,7 +137,6 @@ inline void wifi_connect_task(void*) {
 
     if (connected && !was_connected) {
       esp_wifi_set_ps(WIFI_PS_NONE);
-      neokey_set_colour(WIFI_STATUS_KEY, NP_OFF);
       debug_log_enqueue("[SYSTEM] Wi-Fi Connected!");
       debug_log_enqueue("[SYSTEM] IP: %s  RSSI: %d dBm", WiFi.localIP().toString().c_str(), WiFi.RSSI());
       if (wifi_on_connected != nullptr) {

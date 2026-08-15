@@ -198,6 +198,12 @@ inline long g_entry_time_s_limit = 600;
 // race_timer_enter_new_mouse().
 inline bool entry_timer_started = false;
 
+// True once the current mouse has been touched (NeoKey BTN_TOUCH short
+// press, main.cpp's input_event_handler) -- drives the touch key's red
+// neopixel (main.cpp's neokey_reflect_race_state()). Reset on every
+// race_timer_enter_new_mouse(), same as entry_timer_started above.
+inline bool mouse_touched = false;
+
 // Current mouse's display name -- host-supplied (RATS V2 NewMouse) or the
 // canned mouse_names[] pick, decided once in race_timer_enter_new_mouse()
 // so every reader (on-screen label, RaceRun.name, leaderboard) just uses
@@ -351,6 +357,7 @@ inline void race_timer_enter_new_mouse(const char *name = nullptr) {
   // g_entry_time_s_limit's comment above).
   g_allowed_runs = -1;
   entry_timer_started = false;
+  mouse_touched = false;
 }
 
 //============================================================================
