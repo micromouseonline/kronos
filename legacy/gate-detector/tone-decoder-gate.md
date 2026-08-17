@@ -6,6 +6,20 @@ the existing dual-EMA-filter firmware on existing hardware (see
 tone-decoder front end would take, as a candidate for a future board
 revision.
 
+## Contents
+
+- [Concept](#concept)
+- [Why this sidesteps the amplitude-domain problems](#why-this-sidesteps-the-amplitude-domain-problems)
+- [System block diagram](#system-block-diagram)
+- [Emitter: oscillator and LED drive](#emitter-oscillator-and-led-drive)
+- [Receiver: AC front end and LMC567](#receiver-ac-front-end-and-lmc567)
+- [Frequency plan and channel separation](#frequency-plan-and-channel-separation)
+- [Component tolerance and calibration](#component-tolerance-and-calibration)
+- [Expected response time](#expected-response-time)
+- [Power budget (rough, needs datasheet confirmation)](#power-budget-rough-needs-datasheet-confirmation)
+- [What stays the same](#what-stays-the-same)
+- [Open questions](#open-questions)
+
 ## Concept
 
 Replace amplitude-threshold detection (compare a filtered ADC reading

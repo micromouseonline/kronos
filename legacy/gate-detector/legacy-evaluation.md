@@ -4,6 +4,24 @@ Scope: the occlusion-detection algorithm in `gate-detector/gate-detector.ino`
 (`ExpFilter`, `GateSensor`). Not covered here: RF protocol, packet format,
 transmission timing.
 
+## Contents
+
+- [Technique](#technique)
+- [Detection Latency (Full Occlusion)](#detection-latency-full-occlusion)
+- [Minimum Detectable Event (Emitter Blink Test)](#minimum-detectable-event-emitter-blink-test)
+- [What works well](#what-works-well)
+- [Issues and Analysis](#issues-and-analysis)
+  - [Long occlusion and the stuck-state recovery gap](#long-occlusion-and-the-stuck-state-recovery-gap)
+  - [Startup stabilization: filters seeded at zero, not ambient](#startup-stabilization-filters-seeded-at-zero-not-ambient)
+  - [No debounce on the detection edge](#no-debounce-on-the-detection-edge)
+  - [Fixed thresholds, not derived from measured signal](#fixed-thresholds-not-derived-from-measured-signal)
+  - [LED illumination margin: contrast and saturation](#led-illumination-margin-contrast-and-saturation)
+  - [Delay vs jitter across two gates](#delay-vs-jitter-across-two-gates)
+  - [Ambient interference: mains flicker and kHz-range LED PWM](#ambient-interference-mains-flicker-and-khz-range-led-pwm)
+  - [Anti-alias capacitor: sizing and expected benefit](#anti-alias-capacitor-sizing-and-expected-benefit)
+  - [Missed occlusion and false positive survey](#missed-occlusion-and-false-positive-survey)
+- [Suggested Improvements](#suggested-improvements)
+
 ## Technique
 
 Two exponential moving averages run on every ADC sample (1300 Hz, driven by
