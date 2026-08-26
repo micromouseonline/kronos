@@ -37,7 +37,12 @@ enum class InputSource {
 // PRESSED: a normal short press edge (existing behaviour). HELD: the button
 // has been down continuously for at least a producer-defined hold threshold
 // (e.g. NEOKEY_LONG_PRESS_MS) -- fired once per hold, not repeated per poll.
-enum class InputEventType { PRESSED, HELD };
+// RELEASED: the button was released before crossing that hold threshold --
+// currently only posted for BTN_TOUCH (neokey-buttons.h), to distinguish a
+// genuine short press from the press-down edge a long press shares with it
+// (PRESSED fires immediately on press-down, before it's known whether the
+// hold will become HELD).
+enum class InputEventType { PRESSED, HELD, RELEASED };
 
 struct InputEvent {
   ButtonID id;
@@ -60,7 +65,7 @@ struct InputEvent {
     // Lookup tables for names matching enum ordering
     static const char* button_names[] = {"ARM", "START", "GOAL", "TOUCH"};
     static const char* source_names[] = {"TOUCH", "GPIO_BUTTON", "NEOKEY_BUTTON"};
-    static const char* type_names[] = {"PRESSED", "HELD"};
+    static const char* type_names[] = {"PRESSED", "HELD", "RELEASED"};
 
     // Bounds checking to prevent undefined behavior if an invalid enum is passed
     const char* btn_str = (id >= 0 && id < NUM_BUTTONS) ? button_names[id] : "UNKNOWN_BTN";

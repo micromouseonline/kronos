@@ -47,6 +47,30 @@ inline int race_state_to_legacy_code(RaceState state) {
   return 4;
 }
 
+// RaceState's own name, for MSG_CURRENT_STATE's trailing comment (net/
+// messages.h) -- distinct from race_state_to_legacy_code() above, which maps
+// to the numeric wire value, not a human-readable one. No default: case on
+// purpose, same -Wswitch-exhaustiveness reasoning as that function.
+inline const char *race_state_name(RaceState state) {
+  switch (state) {
+    case RaceState::CALIBRATE:
+      return "CALIBRATE";
+    case RaceState::NEW_MOUSE:
+      return "NEW_MOUSE";
+    case RaceState::WAITING:
+      return "WAITING";
+    case RaceState::ARMED:
+      return "ARMED";
+    case RaceState::RUNNING:
+      return "RUNNING";
+    case RaceState::GOAL:
+      return "GOAL";
+    case RaceState::TIMED_OUT:
+      return "TIMED_OUT";
+  }
+  return "UNKNOWN";
+}
+
 inline void race_serial_telemetry_tick() {
   static RaceState last_state = race_state;  // matches boot value: no spurious first-tick fire
   static bool last_entry_timer_started = entry_timer_started;
@@ -69,7 +93,7 @@ inline void race_serial_telemetry_tick() {
 
   if (race_state != last_state) {
     last_state = race_state;
-    serial_send_message(MSG_CURRENT_STATE, race_state_to_legacy_code(race_state));
+    serial_send_message(MSG_CURRENT_STATE, race_state_to_legacy_code(race_state), race_state_name(race_state));
 
     if (previous_state == RaceState::ARMED && race_state == RaceState::RUNNING) {
       serial_send_message(MSG_C1_SPLIT_TIME, 0);

@@ -46,6 +46,20 @@ inline void poll_neokey_buttons() {
       input_queue_post(static_cast<ButtonID>(i), InputSource::NEOKEY_BUTTON, InputEventType::HELD);
     }
   }
+
+  // TOUCH's short-press action (main.cpp's input_event_handler) must fire
+  // only on a genuine short press, not on the press-down edge a long press
+  // (-> main menu) shares with it -- wasPressed() above fires immediately
+  // on press-down, before it's known whether the hold will cross
+  // NEOKEY_LONG_PRESS_MS. wasReleased() + !wasLongReleased() fires exactly
+  // when release happened before that threshold, i.e. exactly the presses
+  // that never triggered HELD above. TOUCH-only, not folded into the loop
+  // above: race_command_from_button()'s ternary treats anything that isn't
+  // HELD as on_press, so a RELEASED event on ARM/START/GOAL would fire
+  // that button's press command a second time on release.
+  if (neokey_device.wasReleased(BTN_TOUCH) && !neokey_device.wasLongReleased(BTN_TOUCH, NEOKEY_LONG_PRESS_MS)) {
+    input_queue_post(BTN_TOUCH, InputSource::NEOKEY_BUTTON, InputEventType::RELEASED);
+  }
 }
 
 #else

@@ -63,23 +63,17 @@ static void input_poll_task(void *) {
 // input_event_handler, so a remote command left the LEDs showing whatever
 // state a button had last set, even though race_state itself had moved on.
 //
-// Key 3 (BTN_TOUCH) is deliberately never touched here -- it's owned
-// exclusively by the Wi-Fi status indicator (net/wifi-manager.h's
-// WIFI_STATUS_KEY), since none of the target boards has a working onboard
-// status LED. The one exception is right below: leaving CALIBRATE has to
-// clear whatever the gate test (input_event_handler's CALIBRATE block)
-// last left key 3 showing, since that block only fires from a local
-// button press. A CALIBRATE exit triggered remotely (e.g. serial's
-// <98,xxx> NEW_MOUSE -> RESTART, routed through system_event_handler)
-// never runs that block, so without this, key 3 would stay stuck on
-// whatever gate-test colour it was last left at.
+// Key 3 (BTN_TOUCH) shows whether the current mouse has been touched
+// (mouse_touched, race/race-timer.h -- set by input_event_handler's TOUCH
+// short-press block below, cleared by race_timer_enter_new_mouse()), except
+// during CALIBRATE, where the gate test (input_event_handler's CALIBRATE
+// block) owns it instead as a 4th gate indicator; that's why the switch
+// below leaves key 3 alone in the CALIBRATE case and it's set separately
+// afterwards, only when not in CALIBRATE. Since that write happens
+// unconditionally on every non-CALIBRATE call, it also naturally clears
+// whatever gate-test colour CALIBRATE last left there, with no extra
+// state/edge-tracking needed.
 void neokey_reflect_race_state() {
-  static RaceState last_state = race_state;  // matches boot value: no spurious first-call fire
-  if (last_state == RaceState::CALIBRATE && race_state != RaceState::CALIBRATE) {
-    neokey_set_colour(BTN_TOUCH, NP_OFF);
-  }
-  last_state = race_state;
-
   switch (race_state) {
     case RaceState::CALIBRATE:
       neokey_set_colour(0, NP_OFF);
@@ -123,6 +117,10 @@ void neokey_reflect_race_state() {
       neokey_set_colour(2, NP_BLUE);
       break;
   }
+
+  if (race_state != RaceState::CALIBRATE) {
+    neokey_set_colour(BTN_TOUCH, mouse_touched ? NP_RED : NP_OFF);
+  }
 }
 
 // As the input event queue is drained, all events pass through here
@@ -140,12 +138,22 @@ void input_event_handler(const InputEvent &evt) {
     trigger_touch_lockout();
     loadScreen(SCREEN_ID_MENU);
   }
-  // TOUCH short press, main race screen only -- a host-facing notification
-  // to RATS, not a RaceCommand (BUTTON_COMMAND_MAP maps this press to NONE;
-  // see its comment in race-command-source.h for why). Gated on the main
-  // screen the same way BTN_START's calibration-wizard re-entry below is
-  // gated on the menu screen, so this can't fire from the menu.
-  if (evt.id == BTN_TOUCH && evt.type == InputEventType::PRESSED && lv_scr_act() == objects.main) {
+  // TOUCH short press, main race screen and RUNNING only -- a host-facing
+  // notification to RATS, not a RaceCommand (BUTTON_COMMAND_MAP maps this
+  // press to NONE; see its comment in race-command-source.h for why).
+  // Gated on the main screen the same way BTN_START's calibration-wizard
+  // re-entry below is gated on the menu screen, so this can't fire from the
+  // menu. Also gated on RUNNING -- "touched" only means something while the
+  // mouse is actually in the maze between START and GOAL, not while idle
+  // between runs. Triggered on RELEASED, not PRESSED -- PRESSED fires
+  // immediately on press-down, before it's known whether the hold will
+  // become a long press (-> main menu above), so acting on it would also
+  // register a touch on every long-press-to-menu gesture. RELEASED (posted
+  // by neokey-buttons.h) only fires when release happened before the long-
+  // press threshold, i.e. it's mutually exclusive with the HELD case above.
+  if (evt.id == BTN_TOUCH && evt.type == InputEventType::RELEASED && lv_scr_act() == objects.main &&
+      race_state == RaceState::RUNNING) {
+    mouse_touched = true;
     serial_send_message(MSG_TOUCH_SHORT_PRESS, 1);
   }
 #if HAS_TOUCH_INPUT && TOUCH_NEEDS_CALIBRATION

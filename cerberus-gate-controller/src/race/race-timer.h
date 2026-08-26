@@ -22,8 +22,8 @@
 #pragma once
 
 #include <Arduino.h>
-#include <cstring>
 #include <stdio.h>
+#include <cstring>
 
 #include "debug-log.h"
 #include "stopwatch.h"
@@ -198,6 +198,12 @@ inline long g_entry_time_s_limit = 600;
 // race_timer_enter_new_mouse().
 inline bool entry_timer_started = false;
 
+// True once the current mouse has been touched (NeoKey BTN_TOUCH short
+// press, main.cpp's input_event_handler) -- drives the touch key's red
+// neopixel (main.cpp's neokey_reflect_race_state()). Reset on every
+// race_timer_enter_new_mouse(), same as entry_timer_started above.
+inline bool mouse_touched = false;
+
 // Current mouse's display name -- host-supplied (RATS V2 NewMouse) or the
 // canned mouse_names[] pick, decided once in race_timer_enter_new_mouse()
 // so every reader (on-screen label, RaceRun.name, leaderboard) just uses
@@ -351,6 +357,7 @@ inline void race_timer_enter_new_mouse(const char *name = nullptr) {
   // g_entry_time_s_limit's comment above).
   g_allowed_runs = -1;
   entry_timer_started = false;
+  mouse_touched = false;
 }
 
 //============================================================================
@@ -418,8 +425,7 @@ inline void race_timer_try_arm() {
 // protocol never produce a real tsf_us (race_command_from_serial() never
 // returns START/GOAL, the only commands that read this parameter), so 0
 // unambiguously means "no tsf timestamp available, use plain millis()".
-inline void race_timer_handle_command(RaceCommand command, const char *mouse_name = nullptr,
-                                       uint64_t event_tsf_us = 0) {
+inline void race_timer_handle_command(RaceCommand command, const char *mouse_name = nullptr, uint64_t event_tsf_us = 0) {
   if (command == RaceCommand::NONE) {
     return;
   }
@@ -529,8 +535,8 @@ inline void race_timer_handle_command(RaceCommand command, const char *mouse_nam
         // (both non-zero) so locally-buttoned/serial-sourced runs, which
         // never carry a real tsf_us, are unaffected.
         if (event_tsf_us != 0 && g_run_start_tsf_us != 0 && event_tsf_us < g_run_start_tsf_us) {
-          debug_log_enqueue("[RACE] rejected stale GOAL: tsf_us=%llu < start_tsf_us=%llu",
-                             (unsigned long long)event_tsf_us, (unsigned long long)g_run_start_tsf_us);
+          debug_log_enqueue("[RACE] rejected stale GOAL: tsf_us=%llu < start_tsf_us=%llu", (unsigned long long)event_tsf_us,
+                            (unsigned long long)g_run_start_tsf_us);
         } else {
           run_sw.stop();
           // Prefer the exact GOAL.tsf_us - START.tsf_us when both ends of this
@@ -561,6 +567,7 @@ inline void race_timer_handle_command(RaceCommand command, const char *mouse_nam
       } else if (command == RaceCommand::RESTART) {
         race_timer_enter_new_mouse(mouse_name);
       }
+      mouse_touched = false;
       break;
 
     case RaceState::NEW_MOUSE:
@@ -573,5 +580,6 @@ inline void race_timer_handle_command(RaceCommand command, const char *mouse_nam
 inline void race_timer_init() {
   race_run_count = 0;
   mouse_run_count = 0;
+  mouse_touched = false;
   mouse_id = 0;
 }
