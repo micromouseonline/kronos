@@ -7,6 +7,9 @@
 			"path": "hesperus-timing-gate"
 		},
 		{
+			"path": "hesperus-emitter"
+		},
+		{
 			"path": "cerberus-gate-controller"
 		},
 		{
