@@ -29,7 +29,59 @@ Adafruit_NeoPixel led(1, STATUS_LED, NEOPIXEL_COLOR_ORDER + NEO_KHZ800);
 
 char gate_id[16];
 
-const int LED_PIN = 2;
+// Power/link status indicator LEDs, active-low. RED on at power-up, GREEN on
+// once Wi-Fi is connected (RED off); reverts to RED on disconnect. Sole
+// owner of these two pins is statusLedTask, below (see led_set()/
+// led_flash()) -- do not digitalWrite() them from anywhere else, or the two
+// writers will race on the same GPIOs.
+const int LED_RED_PIN = 10;
+const int LED_GREEN_PIN = 11;
+
+// --- RED/GREEN indicator LED control queue ---
+// LedTarget/LedCommand/LedControlMsg, statusLedQueue and statusLedTask
+// (defined further down, near ledDiagnosticTask) let any code turn either
+// LED on/off "at will" (led_set()) or force one on for a bounded number of
+// 100ms ticks then revert to its steady state (led_flash()) -- e.g. to
+// signal a one-off event without disturbing the ongoing connection-status
+// indication. Named distinctly from the unrelated NeoPixel
+// ledQueue/ledDiagnosticTask/ledTaskHandle below (different LEDs, different
+// subsystem).
+enum class LedTarget { RED, GREEN };
+enum class LedCommand { SET_ON, SET_OFF, FLASH };
+
+struct LedControlMsg {
+  LedTarget target;
+  LedCommand command;
+  uint8_t flash_ticks;  // only used when command == FLASH; ticks of 100ms each
+};
+
+QueueHandle_t statusLedQueue;
+TaskHandle_t statusLedTaskHandle = NULL;
+
+// Non-blocking; mirrors ledQueue's xQueueSend(...,0) + logged-overflow
+// convention used elsewhere in this file.
+bool led_set(LedTarget target, bool on) {
+  LedControlMsg msg{target, on ? LedCommand::SET_ON : LedCommand::SET_OFF, 0};
+  if (xQueueSend(statusLedQueue, &msg, 0) != pdTRUE) {
+    debug_println("[QUEUE OVERFLOW] statusLedQueue full; LED set dropped.");
+    return false;
+  }
+  return true;
+}
+
+// Forces `target` on for `ticks` * 100ms, then reverts to its current
+// steady state (whatever led_set() last set it to -- may have changed
+// during the flash, which is picked up correctly since steady state and
+// the flash countdown are tracked independently per LED in statusLedTask).
+bool led_flash(LedTarget target, uint8_t ticks) {
+  LedControlMsg msg{target, LedCommand::FLASH, ticks};
+  if (xQueueSend(statusLedQueue, &msg, 0) != pdTRUE) {
+    debug_println("[QUEUE OVERFLOW] statusLedQueue full; LED flash dropped.");
+    return false;
+  }
+  return true;
+}
+
 // Channel A / channel B -- see board-role.h for how these map to ARM/START/
 // GOAL depending on the board's provisioned role. Active-low. GATE_PIN_A/
 // GATE_PIN_B themselves come from the per-board build_flags in
@@ -388,6 +440,57 @@ void ledDiagnosticTask(void *pvParameters) {
       led.setPixelColor(0, base_color());
       led.show();
     }
+  }
+}
+
+// --- LOW-PRIORITY RED/GREEN STATUS LED TASK ---
+// Sole owner of LED_RED_PIN/LED_GREEN_PIN -- see led_set()/led_flash()
+// above for the queue producer side. Each 100ms tick, drains every pending
+// command (cheap, and lets a SET_ON immediately followed by a FLASH both
+// take effect within the same tick rather than one tick apart), then drives
+// each pin from its own steady state, forced on instead for as many ticks
+// as a flash still has remaining.
+void statusLedTask(void *pvParameters) {
+  // Indexed by LedTarget. Starts matching the power-up default (RED on,
+  // GREEN off) that setup()'s own digitalWrite() already applied directly
+  // before this task's first tick -- so there's no discontinuity, and no
+  // led_set() call is needed at boot just to reach this state.
+  bool steady_on[2] = {true, false};
+  uint8_t flash_remaining[2] = {0, 0};  // ticks left forced-on, 0 = not flashing
+
+  auto write_pin = [](LedTarget target, bool on) {
+    int pin = (target == LedTarget::RED) ? LED_RED_PIN : LED_GREEN_PIN;
+    digitalWrite(pin, on ? LOW : HIGH);  // active-low
+  };
+
+  while (1) {
+    LedControlMsg msg;
+    while (xQueueReceive(statusLedQueue, &msg, 0) == pdPASS) {
+      int i = static_cast<int>(msg.target);
+      switch (msg.command) {
+        case LedCommand::SET_ON:
+          steady_on[i] = true;
+          break;
+        case LedCommand::SET_OFF:
+          steady_on[i] = false;
+          break;
+        case LedCommand::FLASH:
+          flash_remaining[i] = msg.flash_ticks;
+          break;
+      }
+    }
+
+    for (int i = 0; i < 2; i++) {
+      LedTarget target = static_cast<LedTarget>(i);
+      if (flash_remaining[i] > 0) {
+        write_pin(target, true);
+        flash_remaining[i]--;
+      } else {
+        write_pin(target, steady_on[i]);
+      }
+    }
+
+    vTaskDelay(pdMS_TO_TICKS(100));
   }
 }
 
@@ -819,7 +922,14 @@ void setup() {
   delay(2000);
   Serial.begin(115200);
 
-  pinMode(LED_PIN, OUTPUT);
+  // Safe default for the brief window before statusLedTask's first 100ms
+  // tick (it isn't created until further down in setup()) -- statusLedTask
+  // itself starts with the same RED-on/GREEN-off state, so there's no
+  // discontinuity once it takes over as sole owner of these two pins.
+  pinMode(LED_RED_PIN, OUTPUT);
+  pinMode(LED_GREEN_PIN, OUTPUT);
+  digitalWrite(LED_RED_PIN, LOW);     // active-low -- RED on at power-up
+  digitalWrite(LED_GREEN_PIN, HIGH);  // GREEN off at power-up
 
 #ifdef NEOPIXEL_POWER_PIN
   // Only defined for boards where the onboard NeoPixel's power rail is
@@ -849,6 +959,7 @@ void setup() {
 
   networkQueue = xQueueCreate(10, sizeof(GateEvent));
   ledQueue = xQueueCreate(5, sizeof(LedPattern));
+  statusLedQueue = xQueueCreate(5, sizeof(LedControlMsg));  // depth mirrors ledQueue
   triggerCaptureQueue = xQueueCreate(10, sizeof(PendingCapture));
 
 #if HAS_HTTP
@@ -883,6 +994,7 @@ void setup() {
   }
 
   xTaskCreatePinnedToCore(ledDiagnosticTask, "LED_Task", 2048, NULL, 1, &ledTaskHandle, 1);
+  xTaskCreatePinnedToCore(statusLedTask, "StatusLed_Task", 2048, NULL, 1, &statusLedTaskHandle, 1);
   xTaskCreatePinnedToCore(wsPumpTask, "WsPump", 8192, NULL, 2, &wsPumpTaskHandle, 1);
   xTaskCreatePinnedToCore(uploadWorkerTask, "UploadWorker", 8192, NULL, 2, &uploadTaskHandle, 1);
   // Highest priority in the app -- see tsfCaptureTask()'s own comment for
@@ -938,6 +1050,8 @@ void loop() {
       cerberus_ip_valid = false;  // re-resolve on this connection
       last_cerberus_attempt = 0;  // force an immediate resolve attempt below
       was_connected = true;
+      led_set(LedTarget::RED, false);  // link up: RED off, GREEN on
+      led_set(LedTarget::GREEN, true);
     }
     last_connected_time = current_time;
 
@@ -979,6 +1093,10 @@ void loop() {
       }
     }
   } else {
+    if (was_connected) {
+      led_set(LedTarget::RED, true);  // link down: RED on, GREEN off
+      led_set(LedTarget::GREEN, false);
+    }
     was_connected = false;
     cerberus_ip_valid = false;
     led_base = LedBase::OFF;
@@ -1003,13 +1121,5 @@ void loop() {
 
   cli.poll();
 
-  static bool last_state = false;
-  if (networkQueue != NULL) {
-    UBaseType_t items = uxQueueMessagesWaiting(networkQueue);
-    if ((items > 0) != last_state) {
-      last_state = (items > 0);
-      digitalWrite(LED_PIN, last_state ? HIGH : LOW);
-    }
-  }
   delay(10);
 }
