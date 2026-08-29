@@ -7,17 +7,17 @@
 
 #include "esp_wifi.h"
 
-#include "board-role.h"             // BoardRole, role -> event-name mapping
-#include "boards.h"                 // contains the board MAC addresses to look up the identifiers
-#include "cli.h"                    // serial command line interface
-#include "debug-log.h"              // TSF-timestamped debug_println/debug_printf
-#include "network-health-stats.h"   // NVS-persisted stall/drop/disconnect counters
-#include "provisioning-commands.h"  // `wifi`/`role` serial commands
-#include "secrets.h"                // these are the network credentials neede to connect to the AP
-#include "wifi-credentials.h"       // NVS-persisted wifi creds from the `wifi` command
+#include "board-role.h" // BoardRole, role -> event-name mapping
+#include "boards.h" // contains the board MAC addresses to look up the identifiers
+#include "cli.h"    // serial command line interface
+#include "debug-log.h"            // TSF-timestamped debug_println/debug_printf
+#include "network-health-stats.h" // NVS-persisted stall/drop/disconnect counters
+#include "provisioning-commands.h" // `wifi`/`role` serial commands
+#include "secrets.h" // these are the network credentials neede to connect to the AP
+#include "wifi-credentials.h" // NVS-persisted wifi creds from the `wifi` command
 
 #if HAS_HTTP
-#include "net/debug-http-server.h"  // on-demand /logs, /status diagnostics endpoint
+#include "net/debug-http-server.h" // on-demand /logs, /status diagnostics endpoint
 #endif
 
 // --- Hardware Pin Configuration ---
@@ -52,7 +52,7 @@ enum class LedCommand { SET_ON, SET_OFF, FLASH };
 struct LedControlMsg {
   LedTarget target;
   LedCommand command;
-  uint8_t flash_ticks;  // only used when command == FLASH; ticks of 100ms each
+  uint8_t flash_ticks; // only used when command == FLASH; ticks of 100ms each
 };
 
 QueueHandle_t statusLedQueue;
@@ -69,10 +69,12 @@ bool led_set(LedTarget target, bool on) {
   return true;
 }
 
-// Forces `target` on for `ticks` * 100ms, then reverts to its current
-// steady state (whatever led_set() last set it to -- may have changed
-// during the flash, which is picked up correctly since steady state and
-// the flash countdown are tracked independently per LED in statusLedTask).
+// Forces `target` to the OPPOSITE of its current steady state for `ticks` *
+// 100ms, then reverts to its steady state (whatever led_set() last set it to
+// -- may change during the flash, which is picked up correctly since steady
+// state and the flash countdown/value are tracked independently per LED in
+// statusLedTask). E.g. calling this on RED (currently off) and GREEN
+// (currently on) back-to-back swaps them for the flash's duration.
 bool led_flash(LedTarget target, uint8_t ticks) {
   LedControlMsg msg{target, LedCommand::FLASH, ticks};
   if (xQueueSend(statusLedQueue, &msg, 0) != pdTRUE) {
@@ -98,8 +100,8 @@ enum EventType { TRIGGER_A, TRIGGER_B, HEARTBEAT };
 
 struct GateEvent {
   EventType type;
-  uint64_t tsf_observed;     // Volatile native Wi-Fi TSF timeline
-  uint64_t processor_clock;  // Monotonic internal 64-bit microsecond uptime
+  uint64_t tsf_observed;    // Volatile native Wi-Fi TSF timeline
+  uint64_t processor_clock; // Monotonic internal 64-bit microsecond uptime
 };
 
 /// ISR-to-task handoff for a trigger edge (NETWORK-TIMING-LOG.md "ISR
@@ -118,9 +120,9 @@ GateEvent last_good_state = {HEARTBEAT, 0, 0};
 bool has_initial_baseline = false;
 
 /** --- Dynamic Clock Disciplining Parameters --- */
-double clock_alpha = 1.00000000;  // Dynamic drift scaling factor
-bool alpha_calibrated = false;    // Explicit state flag
-const double EMA_ALPHA = 0.10;    // Weights 10% new sample, 90% history
+double clock_alpha = 1.00000000; // Dynamic drift scaling factor
+bool alpha_calibrated = false;   // Explicit state flag
+const double EMA_ALPHA = 0.10;   // Weights 10% new sample, 90% history
 uint64_t cal_prev_tsf = 0;
 uint64_t cal_prev_proc = 0;
 
@@ -134,53 +136,58 @@ const uint64_t MIN_PLAUSIBLE_TSF = 300000000;
 // table needed). WS_ACK_TIMEOUT_MS is comfortably above the ~5-15ms typical
 // WS round trip measured during rec. 1's bring-up, generous against the
 // occasional ~40ms single-event jitter spike also seen there.
-const uint32_t WS_ACK_TIMEOUT_MS = 500;            // per-attempt base: resend if no ack within this --
-                                                   // raised from 300, 2026-08-04 session 10: end-to-end
-                                                   // instrumentation on both boards (cerberus's
-                                                   // pending/space, hesperus's [WS-ACK-RECV]) traced every
-                                                   // retry in a two-spammer+BT trial and found none were
-                                                   // lost -- each was the original ack arriving fine on a
-                                                   // round trip (258-458ms) that simply outran the old
-                                                   // 240-360ms window under heavy channel congestion
-                                                   // (neither board's own processing was slow -- cerberus's
-                                                   // dispatch stayed <15ms and wsPumpTask's own
-                                                   // wsClient.loop() canary logged only one >50ms stall in
-                                                   // the whole trial, uncorrelated with these events -- so
-                                                   // the time is most likely spent on-air/at the WiFi MAC
-                                                   // layer itself, not in either board's software). 500ms
-                                                   // clears the observed 458ms worst case with margin.
-const uint32_t WS_ACK_TIMEOUT_JITTER_MS = 100;     // +/- randomised against the base above (see below) --
-                                                   // kept at the same ~20% of base as before (was 60/300)
-                                                   // -- 2026-08-03 beacon-spam stress testing (session 3)
-                                                   // found cerberus's own ack dispatch reliably fast
-                                                   // (<15ms) even under heavy congestion, yet acks still
-                                                   // failed to arrive back in time; a fixed retry schedule
-                                                   // means both gate boards' retries (or retries vs. ARES's
-                                                   // own periodic traffic) can lock-step and collide
-                                                   // repeatedly on an already-congested channel -- jitter
-                                                   // breaks that synchronisation. Deliberately widening the
-                                                   // interval under congestion (not shortening it) rather
-                                                   // than retrying faster into contention.
-const uint8_t WS_MAX_SEND_ATTEMPTS = 10;           // raised from 5, 2026-08-03 session 3 -- extra attempts
-                                                   // only ever fire on a timeout, so a healthy send (the
-                                                   // normal case) pays none of this cost; only the tail
-                                                   // under congestion gets more chances
-const uint32_t WS_ACK_WAIT_TICK_MS = 5;            // real vTaskDelay between poll iterations -- see below
-const uint32_t WS_ACK_OVERALL_DEADLINE_MS = 5200;  // hard wall-clock cap, applies even while disconnected
-                                                   // -- without this a real Wi-Fi outage would park
-                                                   // uploadWorkerTask on one stale event for the whole
-                                                   // outage while fresh events overflow-drop from
-                                                   // networkQueue behind it. Raised from 3200 to 5200,
-                                                   // 2026-08-04, alongside WS_ACK_TIMEOUT_MS's 300->500 --
-                                                   // scaled proportionally so WS_MAX_SEND_ATTEMPTS's 10
-                                                   // attempts still fit inside the deadline (10x500=5000,
-                                                   // +200ms margin, same margin the original 3200 left
-                                                   // over 10x300=3000) rather than quietly shrinking to
-                                                   // ~7 attempts' worth of real-loss recovery depth as a
-                                                   // side effect of the per-attempt timeout increase.
-                                                   // Real-race events are sparse (one every 20+ seconds)
-                                                   // and networkQueue is depth 10, so this remains
-                                                   // comfortably inside that budget.
+const uint32_t WS_ACK_TIMEOUT_MS =
+    500; // per-attempt base: resend if no ack within this --
+         // raised from 300, 2026-08-04 session 10: end-to-end
+         // instrumentation on both boards (cerberus's
+         // pending/space, hesperus's [WS-ACK-RECV]) traced every
+         // retry in a two-spammer+BT trial and found none were
+         // lost -- each was the original ack arriving fine on a
+         // round trip (258-458ms) that simply outran the old
+         // 240-360ms window under heavy channel congestion
+         // (neither board's own processing was slow -- cerberus's
+         // dispatch stayed <15ms and wsPumpTask's own
+         // wsClient.loop() canary logged only one >50ms stall in
+         // the whole trial, uncorrelated with these events -- so
+         // the time is most likely spent on-air/at the WiFi MAC
+         // layer itself, not in either board's software). 500ms
+         // clears the observed 458ms worst case with margin.
+const uint32_t WS_ACK_TIMEOUT_JITTER_MS =
+    100; // +/- randomised against the base above (see below) --
+         // kept at the same ~20% of base as before (was 60/300)
+         // -- 2026-08-03 beacon-spam stress testing (session 3)
+         // found cerberus's own ack dispatch reliably fast
+         // (<15ms) even under heavy congestion, yet acks still
+         // failed to arrive back in time; a fixed retry schedule
+         // means both gate boards' retries (or retries vs. ARES's
+         // own periodic traffic) can lock-step and collide
+         // repeatedly on an already-congested channel -- jitter
+         // breaks that synchronisation. Deliberately widening the
+         // interval under congestion (not shortening it) rather
+         // than retrying faster into contention.
+const uint8_t WS_MAX_SEND_ATTEMPTS =
+    10; // raised from 5, 2026-08-03 session 3 -- extra attempts
+        // only ever fire on a timeout, so a healthy send (the
+        // normal case) pays none of this cost; only the tail
+        // under congestion gets more chances
+const uint32_t WS_ACK_WAIT_TICK_MS =
+    5; // real vTaskDelay between poll iterations -- see below
+const uint32_t WS_ACK_OVERALL_DEADLINE_MS =
+    5200; // hard wall-clock cap, applies even while disconnected
+          // -- without this a real Wi-Fi outage would park
+          // uploadWorkerTask on one stale event for the whole
+          // outage while fresh events overflow-drop from
+          // networkQueue behind it. Raised from 3200 to 5200,
+          // 2026-08-04, alongside WS_ACK_TIMEOUT_MS's 300->500 --
+          // scaled proportionally so WS_MAX_SEND_ATTEMPTS's 10
+          // attempts still fit inside the deadline (10x500=5000,
+          // +200ms margin, same margin the original 3200 left
+          // over 10x300=3000) rather than quietly shrinking to
+          // ~7 attempts' worth of real-loss recovery depth as a
+          // side effect of the per-attempt timeout increase.
+          // Real-race events are sparse (one every 20+ seconds)
+          // and networkQueue is depth 10, so this remains
+          // comfortably inside that budget.
 
 // ISR debounce guard for both trigger pins -- one place to tune. 50ms
 // comfortably absorbs mechanical switch bounce (bench-testing with a
@@ -253,7 +260,8 @@ static int consecutive_audit_failures = 0;
 // wsTakeAckIfReceived()/wsClearAck() (below) rather than touching these
 // directly.
 bool g_ws_ack_received = false;
-uint64_t g_ws_ack_tsf_us = 0;  // last acked tsf_us, compared by value against the pending send
+uint64_t g_ws_ack_tsf_us =
+    0; // last acked tsf_us, compared by value against the pending send
 // TSF-timeline (debug_timestamp_ms(), same clock cerberus's own [WS-ACK]
 // recv/dispatch/sent timestamps use) capture time of the ack above --
 // NETWORK-TIMING-LOG.md "acks not arriving back at hesperus in time"
@@ -357,16 +365,19 @@ void wsClearAck() {
   xSemaphoreGive(ws_ack_state_mutex);
 }
 
-volatile uint32_t networkq_overflow_count = 0;         ///< Incremented by ISR/timer on dropped networkQueue send
-volatile uint32_t triggerCaptureq_overflow_count = 0;  ///< Incremented by ISR on dropped triggerCaptureQueue send
+volatile uint32_t networkq_overflow_count =
+    0; ///< Incremented by ISR/timer on dropped networkQueue send
+volatile uint32_t triggerCaptureq_overflow_count =
+    0; ///< Incremented by ISR on dropped triggerCaptureQueue send
 
 // --- WATCHDOG STATE SHARING VARIABLES ---
-volatile bool global_is_stuck_in_syn = false;  // Shared flag to notify main loop
+volatile bool global_is_stuck_in_syn = false; // Shared flag to notify main loop
 
 // --- FreeRTOS Queues ---
-QueueHandle_t networkQueue;         // stores network activities - sending notifications
-QueueHandle_t ledQueue;             // stored neopixel commands
-QueueHandle_t triggerCaptureQueue;  // ISR-to-tsfCaptureTask handoff, see PendingCapture
+QueueHandle_t networkQueue; // stores network activities - sending notifications
+QueueHandle_t ledQueue;     // stored neopixel commands
+QueueHandle_t
+    triggerCaptureQueue; // ISR-to-tsfCaptureTask handoff, see PendingCapture
 
 // --- FreeRTOS Task Handles (for stack instrumentation) ---
 TaskHandle_t ledTaskHandle = NULL;
@@ -393,7 +404,7 @@ volatile bool g_ready = false;
 // --- LOW-PRIORITY DIAGNOSTIC LED TASK ---
 void ledDiagnosticTask(void *pvParameters) {
   led.begin();
-  led.show();  // Initialize to OFF
+  led.show(); // Initialize to OFF
   LedPattern requested_pattern;
   bool blink_on = false;
   uint32_t last_blink_toggle = millis();
@@ -402,12 +413,13 @@ void ledDiagnosticTask(void *pvParameters) {
   // blue/off every ~300ms via blink_on), OFF/READY are steady.
   auto base_color = [&]() -> uint32_t {
     switch (led_base) {
-      case LedBase::READY:
-        return led.Color(0, 24, 0);  // solid green
-      case LedBase::SEARCHING:
-        return blink_on ? led.Color(0, 0, 32) : led.Color(0, 0, 0);  // blinking blue
-      default:
-        return led.Color(0, 0, 0);  // off
+    case LedBase::READY:
+      return led.Color(0, 24, 0); // solid green
+    case LedBase::SEARCHING:
+      return blink_on ? led.Color(0, 0, 32)
+                      : led.Color(0, 0, 0); // blinking blue
+    default:
+      return led.Color(0, 0, 0); // off
     }
   };
 
@@ -415,17 +427,18 @@ void ledDiagnosticTask(void *pvParameters) {
     // Bounded wait, not portMAX_DELAY -- SEARCHING's blink needs to keep
     // alternating even when no trigger/heartbeat flash ever arrives, so
     // this loop can't just block forever waiting for one.
-    if (xQueueReceive(ledQueue, &requested_pattern, pdMS_TO_TICKS(300)) == pdPASS) {
+    if (xQueueReceive(ledQueue, &requested_pattern, pdMS_TO_TICKS(300)) ==
+        pdPASS) {
       if (requested_pattern == FLASH_TRIGGER_1) {
-        led.setPixelColor(0, led.Color(0, 32, 0));  // Bright Green
+        led.setPixelColor(0, led.Color(0, 32, 0)); // Bright Green
         led.show();
         vTaskDelay(pdMS_TO_TICKS(50));
       } else if (requested_pattern == FLASH_TRIGGER_2) {
-        led.setPixelColor(0, led.Color(32, 0, 0));  // Bright Red
+        led.setPixelColor(0, led.Color(32, 0, 0)); // Bright Red
         led.show();
         vTaskDelay(pdMS_TO_TICKS(50));
       } else if (requested_pattern == SHOW_HEARTBEAT) {
-        led.setPixelColor(0, led.Color(16, 16, 16));  // Dim Cyan pulse
+        led.setPixelColor(0, led.Color(16, 16, 16)); // Dim Cyan pulse
         led.show();
         vTaskDelay(pdMS_TO_TICKS(30));
       }
@@ -448,19 +461,21 @@ void ledDiagnosticTask(void *pvParameters) {
 // above for the queue producer side. Each 100ms tick, drains every pending
 // command (cheap, and lets a SET_ON immediately followed by a FLASH both
 // take effect within the same tick rather than one tick apart), then drives
-// each pin from its own steady state, forced on instead for as many ticks
-// as a flash still has remaining.
+// each pin from its own steady state, forced to the opposite value instead
+// for as many ticks as a flash still has remaining.
 void statusLedTask(void *pvParameters) {
   // Indexed by LedTarget. Starts matching the power-up default (RED on,
   // GREEN off) that setup()'s own digitalWrite() already applied directly
   // before this task's first tick -- so there's no discontinuity, and no
   // led_set() call is needed at boot just to reach this state.
   bool steady_on[2] = {true, false};
-  uint8_t flash_remaining[2] = {0, 0};  // ticks left forced-on, 0 = not flashing
+  uint8_t flash_remaining[2] = {0, 0}; // ticks left forced, 0 = not flashing
+  bool flash_state[2] = {false,
+                         false}; // value forced while flash_remaining > 0
 
   auto write_pin = [](LedTarget target, bool on) {
     int pin = (target == LedTarget::RED) ? LED_RED_PIN : LED_GREEN_PIN;
-    digitalWrite(pin, on ? LOW : HIGH);  // active-low
+    digitalWrite(pin, on ? LOW : HIGH); // active-low
   };
 
   while (1) {
@@ -468,22 +483,27 @@ void statusLedTask(void *pvParameters) {
     while (xQueueReceive(statusLedQueue, &msg, 0) == pdPASS) {
       int i = static_cast<int>(msg.target);
       switch (msg.command) {
-        case LedCommand::SET_ON:
-          steady_on[i] = true;
-          break;
-        case LedCommand::SET_OFF:
-          steady_on[i] = false;
-          break;
-        case LedCommand::FLASH:
-          flash_remaining[i] = msg.flash_ticks;
-          break;
+      case LedCommand::SET_ON:
+        steady_on[i] = true;
+        break;
+      case LedCommand::SET_OFF:
+        steady_on[i] = false;
+        break;
+      case LedCommand::FLASH:
+        // Toggle, not force-on: an LED currently off flashes on, one
+        // currently on flashes off -- always visible either way, and
+        // flashing two LEDs with differing steady states (e.g. RED
+        // off/GREEN on) swaps them for the duration.
+        flash_state[i] = !steady_on[i];
+        flash_remaining[i] = msg.flash_ticks;
+        break;
       }
     }
 
     for (int i = 0; i < 2; i++) {
       LedTarget target = static_cast<LedTarget>(i);
       if (flash_remaining[i] > 0) {
-        write_pin(target, true);
+        write_pin(target, flash_state[i]);
         flash_remaining[i]--;
       } else {
         write_pin(target, steady_on[i]);
@@ -514,12 +534,12 @@ void IRAM_ATTR handleSensor1() {
 
   if (digitalRead(GATE_PIN_A) == HIGH) {
     if (quiet) {
-      armed = true;  // settled back high -- ready for the next press
+      armed = true; // settled back high -- ready for the next press
     }
     return;
   }
   if (!quiet || !armed) {
-    return;  // still bouncing, or this press was already reported
+    return; // still bouncing, or this press was already reported
   }
   armed = false;
 
@@ -534,7 +554,8 @@ void IRAM_ATTR handleSensor1() {
   PendingCapture pc;
   pc.type = TRIGGER_A;
   pc.processor_clock = current_time;
-  BaseType_t sent = xQueueSendFromISR(triggerCaptureQueue, &pc, &xHigherPriorityTaskWoken);
+  BaseType_t sent =
+      xQueueSendFromISR(triggerCaptureQueue, &pc, &xHigherPriorityTaskWoken);
   if (sent != pdTRUE) {
     triggerCaptureq_overflow_count++;
   }
@@ -553,12 +574,12 @@ void IRAM_ATTR handleSensor2() {
 
   if (digitalRead(GATE_PIN_B) == HIGH) {
     if (quiet) {
-      armed = true;  // settled back high -- ready for the next press
+      armed = true; // settled back high -- ready for the next press
     }
     return;
   }
   if (!quiet || !armed) {
-    return;  // still bouncing, or this press was already reported
+    return; // still bouncing, or this press was already reported
   }
   armed = false;
 
@@ -568,7 +589,8 @@ void IRAM_ATTR handleSensor2() {
   PendingCapture pc;
   pc.type = TRIGGER_B;
   pc.processor_clock = current_time;
-  BaseType_t sent = xQueueSendFromISR(triggerCaptureQueue, &pc, &xHigherPriorityTaskWoken);
+  BaseType_t sent =
+      xQueueSendFromISR(triggerCaptureQueue, &pc, &xHigherPriorityTaskWoken);
   if (sent != pdTRUE) {
     triggerCaptureq_overflow_count++;
   }
@@ -612,7 +634,8 @@ void heartbeatTimerCallback(TimerHandle_t xTimer) {
     networkq_overflow_count++;
   }
 
-  // Serial.printf("[STACK] LED min free: %u bytes | Upload min free: %u bytes\n",
+  // Serial.printf("[STACK] LED min free: %u bytes | Upload min free: %u
+  // bytes\n",
   //               uxTaskGetStackHighWaterMark(ledTaskHandle) * 4,
   //               uxTaskGetStackHighWaterMark(uploadTaskHandle) * 4);
 }
@@ -643,7 +666,9 @@ void wsPumpTask(void *pvParameters) {
         g_network_health.max_stall_ms = stall_ms;
       }
       g_network_health_dirty = true;
-      debug_printf("[WS Pump] wsClient.loop() blocked %llums (wifi_status=%d, ws_connected=%d)\n", loop_call_us / 1000, WiFi.status(), wsClient.isConnected());
+      debug_printf("[WS Pump] wsClient.loop() blocked %llums (wifi_status=%d, "
+                   "ws_connected=%d)\n",
+                   loop_call_us / 1000, WiFi.status(), wsClient.isConnected());
     }
     xSemaphoreGive(ws_client_mutex);
     vTaskDelay(pdMS_TO_TICKS(10));
@@ -661,17 +686,20 @@ void uploadWorkerTask(void *pvParameters) {
     // today, but there's no reason to widen this wait as a side effect of an
     // unrelated change.
     if (xQueueReceive(networkQueue, &current_ev, pdMS_TO_TICKS(10)) == pdPASS) {
-      // TODO: Serial logging is unavailable in field deployment. Future options:
+      // TODO: Serial logging is unavailable in field deployment. Future
+      // options:
       //   - RGB LED pattern to signal overflow (extend LedPattern enum)
       //   - Write overflow count to SPIFFS for post-session retrieval
       //   - Append &overflow=N to next HTTP GET to notify server
       uint32_t drops = networkq_overflow_count;
       if (drops > 0) {
         networkq_overflow_count = 0;
-        debug_printf("[QUEUE OVERFLOW] %lu networkQueue event(s) dropped.\n", drops);
+        debug_printf("[QUEUE OVERFLOW] %lu networkQueue event(s) dropped.\n",
+                     drops);
       }
 
-      LedPattern pattern = (current_ev.type == TRIGGER_A) ? FLASH_TRIGGER_1 : FLASH_TRIGGER_2;
+      LedPattern pattern =
+          (current_ev.type == TRIGGER_A) ? FLASH_TRIGGER_1 : FLASH_TRIGGER_2;
       if (current_ev.type == HEARTBEAT) {
         pattern = SHOW_HEARTBEAT;
       }
@@ -685,20 +713,28 @@ void uploadWorkerTask(void *pvParameters) {
 
       // --- TIMELINE SANITY AUDIT ENGINE ---
       if (current_ev.tsf_observed != 0 && has_initial_baseline) {
-        uint64_t elapsed_processor_time = current_ev.processor_clock - last_good_state.processor_clock;
-        uint64_t expected_tsf_delta = (uint64_t)(elapsed_processor_time * clock_alpha);
-        uint64_t expected_tsf = last_good_state.tsf_observed + expected_tsf_delta;
+        uint64_t elapsed_processor_time =
+            current_ev.processor_clock - last_good_state.processor_clock;
+        uint64_t expected_tsf_delta =
+            (uint64_t)(elapsed_processor_time * clock_alpha);
+        uint64_t expected_tsf =
+            last_good_state.tsf_observed + expected_tsf_delta;
 
         uint64_t drift_variance =
-            (current_ev.tsf_observed > expected_tsf) ? (current_ev.tsf_observed - expected_tsf) : (expected_tsf - current_ev.tsf_observed);
+            (current_ev.tsf_observed > expected_tsf)
+                ? (current_ev.tsf_observed - expected_tsf)
+                : (expected_tsf - current_ev.tsf_observed);
 
         if (drift_variance <= DRIFT_MARGIN_US) {
           trust_observed_tsf = true;
           consecutive_audit_failures = 0;
 
-          if (cal_prev_tsf != 0 && (current_ev.processor_clock - cal_prev_proc) > 4000000) {
-            double actual_tsf_delta = (double)(current_ev.tsf_observed - cal_prev_tsf);
-            double actual_proc_delta = (double)(current_ev.processor_clock - cal_prev_proc);
+          if (cal_prev_tsf != 0 &&
+              (current_ev.processor_clock - cal_prev_proc) > 4000000) {
+            double actual_tsf_delta =
+                (double)(current_ev.tsf_observed - cal_prev_tsf);
+            double actual_proc_delta =
+                (double)(current_ev.processor_clock - cal_prev_proc);
             double instant_alpha = actual_tsf_delta / actual_proc_delta;
             instant_alpha = constrain(instant_alpha, 0.9990, 1.0010);
 
@@ -706,18 +742,23 @@ void uploadWorkerTask(void *pvParameters) {
               clock_alpha = instant_alpha;
               alpha_calibrated = true;
             } else {
-              clock_alpha = (EMA_ALPHA * instant_alpha) + ((1.0 - EMA_ALPHA) * clock_alpha);
+              clock_alpha = (EMA_ALPHA * instant_alpha) +
+                            ((1.0 - EMA_ALPHA) * clock_alpha);
             }
-            // Serial.printf("[CALIBRATION] Dynamic Alpha Stabilized: %.8f\n", clock_alpha);
+            // Serial.printf("[CALIBRATION] Dynamic Alpha Stabilized: %.8f\n",
+            // clock_alpha);
           }
 
           cal_prev_tsf = current_ev.tsf_observed;
           cal_prev_proc = current_ev.processor_clock;
         } else {
-          debug_printf("[AUDIT ALERT] Temporal Disruption! Drift: %llu us. Rejecting stack value.\n", drift_variance);
+          debug_printf("[AUDIT ALERT] Temporal Disruption! Drift: %llu us. "
+                       "Rejecting stack value.\n",
+                       drift_variance);
           consecutive_audit_failures++;
           if (consecutive_audit_failures >= 5) {
-            debug_println("[AUDIT RECOVERY] Jitter is persistent. Accepting new router baseline shift.");
+            debug_println("[AUDIT RECOVERY] Jitter is persistent. Accepting "
+                          "new router baseline shift.");
             trust_observed_tsf = true;
             consecutive_audit_failures = 0;
             cal_prev_tsf = current_ev.tsf_observed;
@@ -739,9 +780,12 @@ void uploadWorkerTask(void *pvParameters) {
           has_initial_baseline = true;
           cal_prev_tsf = current_ev.tsf_observed;
           cal_prev_proc = current_ev.processor_clock;
-          debug_printf("[INITIALIZED] Valid Baseline Coordinates Locked: %llu\n", current_ev.tsf_observed);
+          debug_printf(
+              "[INITIALIZED] Valid Baseline Coordinates Locked: %llu\n",
+              current_ev.tsf_observed);
         } else {
-          debug_printf("[PLAUSIBILITY REJECT] Wi-Fi not connected. Baseline not established.\n");
+          debug_printf("[PLAUSIBILITY REJECT] Wi-Fi not connected. Baseline "
+                       "not established.\n");
         }
       }
 
@@ -749,21 +793,26 @@ void uploadWorkerTask(void *pvParameters) {
       if (trust_observed_tsf) {
         last_good_state = current_ev;
         clock_mode = "TSF";
-        global_is_stuck_in_syn = false;  // Clear state flag
+        global_is_stuck_in_syn = false; // Clear state flag
       } else if (has_initial_baseline) {
-        uint64_t elapsed_processor_time = current_ev.processor_clock - last_good_state.processor_clock;
-        uint64_t disciplined_delta = (uint64_t)(elapsed_processor_time * clock_alpha);
+        uint64_t elapsed_processor_time =
+            current_ev.processor_clock - last_good_state.processor_clock;
+        uint64_t disciplined_delta =
+            (uint64_t)(elapsed_processor_time * clock_alpha);
 
         tsf_to_transmit = last_good_state.tsf_observed + disciplined_delta;
         clock_mode = "SYN";
-        global_is_stuck_in_syn = true;  // Alert main loop that we are using fallback tracking
-        debug_printf("[DISCIPLINED SYN] Extrapolated TSF: %llu (Alpha: %.8f)\n", tsf_to_transmit, clock_alpha);
+        global_is_stuck_in_syn =
+            true; // Alert main loop that we are using fallback tracking
+        debug_printf("[DISCIPLINED SYN] Extrapolated TSF: %llu (Alpha: %.8f)\n",
+                     tsf_to_transmit, clock_alpha);
 
         last_good_state.type = current_ev.type;
         last_good_state.tsf_observed = tsf_to_transmit;
         last_good_state.processor_clock = current_ev.processor_clock;
       } else {
-        debug_println("[CRITICAL DROP] Baseline missing or un-synchronized. Packet dropped.");
+        debug_println("[CRITICAL DROP] Baseline missing or un-synchronized. "
+                      "Packet dropped.");
         continue;
       }
 
@@ -775,9 +824,11 @@ void uploadWorkerTask(void *pvParameters) {
         continue;
       }
 
-      const char *event_name = board_event_name(board_role, current_ev.type == TRIGGER_A);
+      const char *event_name =
+          board_event_name(board_role, current_ev.type == TRIGGER_A);
       if (event_name == nullptr) {
-        debug_println("[Async Worker] Role not set -- run `role start` or `role goal`. Event dropped.");
+        debug_println("[Async Worker] Role not set -- run `role start` or "
+                      "`role goal`. Event dropped.");
         continue;
       }
 
@@ -790,7 +841,8 @@ void uploadWorkerTask(void *pvParameters) {
         resolveCerberus();
       }
       if (!cerberus_ip_valid) {
-        debug_println("[WS Worker] cerberus.local not resolved yet. Event dropped.");
+        debug_println(
+            "[WS Worker] cerberus.local not resolved yet. Event dropped.");
         continue;
       }
 
@@ -821,16 +873,20 @@ void uploadWorkerTask(void *pvParameters) {
       if (sent) {
         wsClearAck();
         wsSendTxtBounded(payload, WS_MUTEX_SEND_TIMEOUT_MS);
-        debug_printf("[WS Worker] Sent %s (%s), attempt 1.\n", event_name, clock_mode.c_str());
+        debug_printf("[WS Worker] Sent %s (%s), attempt 1.\n", event_name,
+                     clock_mode.c_str());
 
         uint64_t expected_ack = tsf_to_transmit;
         uint8_t attempt = 1;
         uint32_t attempt_start = millis();
         uint32_t wait_start = attempt_start;
         bool acked = false;
-        // Jittered per-attempt timeout (WS_ACK_TIMEOUT_MS +/- WS_ACK_TIMEOUT_JITTER_MS)
+        // Jittered per-attempt timeout (WS_ACK_TIMEOUT_MS +/-
+        // WS_ACK_TIMEOUT_JITTER_MS)
         // -- re-rolled on every attempt, see WS_ACK_TIMEOUT_JITTER_MS above.
-        uint32_t attempt_timeout_ms = WS_ACK_TIMEOUT_MS + random(-(int32_t)WS_ACK_TIMEOUT_JITTER_MS, (int32_t)WS_ACK_TIMEOUT_JITTER_MS + 1);
+        uint32_t attempt_timeout_ms =
+            WS_ACK_TIMEOUT_MS + random(-(int32_t)WS_ACK_TIMEOUT_JITTER_MS,
+                                       (int32_t)WS_ACK_TIMEOUT_JITTER_MS + 1);
 
         // No wsClient.loop() call here -- wsPumpTask pumps the socket on its
         // own task now, so this loop's millis()-based deadline checks below
@@ -846,11 +902,12 @@ void uploadWorkerTask(void *pvParameters) {
             if (acked_tsf == expected_ack) {
               acked = true;
 #if WS_EVENT_LOG_DETAIL
-              debug_printf("[WS-ACK-RECV] tsf_us=%llu recv_t=%llu attempt=%u\n", acked_tsf, acked_recv_t_ms, attempt);
+              debug_printf("[WS-ACK-RECV] tsf_us=%llu recv_t=%llu attempt=%u\n",
+                           acked_tsf, acked_recv_t_ms, attempt);
 #endif
               break;
             }
-            wsClearAck();  // stale/mismatched ack -- keep waiting for ours
+            wsClearAck(); // stale/mismatched ack -- keep waiting for ours
           }
 
           uint32_t now = millis();
@@ -867,15 +924,19 @@ void uploadWorkerTask(void *pvParameters) {
               debug_println("[WS Worker] Event dropped after max retries.");
               break;
             }
-            if (wsIsConnectedBounded(WS_MUTEX_SEND_TIMEOUT_MS) && wsSendTxtBounded(payload, WS_MUTEX_SEND_TIMEOUT_MS)) {
+            if (wsIsConnectedBounded(WS_MUTEX_SEND_TIMEOUT_MS) &&
+                wsSendTxtBounded(payload, WS_MUTEX_SEND_TIMEOUT_MS)) {
               attempt++;
-              debug_printf("[WS Worker] Resent %s (%s), attempt %u.\n", event_name, clock_mode.c_str(), attempt);
+              debug_printf("[WS Worker] Resent %s (%s), attempt %u.\n",
+                           event_name, clock_mode.c_str(), attempt);
             }
             // else: ws_client_mutex busy (wsPumpTask mid-stall) or link
             // down -- this resend is skipped, but the deadline checks above
             // keep running on schedule regardless.
             attempt_start = now;
-            attempt_timeout_ms = WS_ACK_TIMEOUT_MS + random(-(int32_t)WS_ACK_TIMEOUT_JITTER_MS, (int32_t)WS_ACK_TIMEOUT_JITTER_MS + 1);
+            attempt_timeout_ms = WS_ACK_TIMEOUT_MS +
+                                 random(-(int32_t)WS_ACK_TIMEOUT_JITTER_MS,
+                                        (int32_t)WS_ACK_TIMEOUT_JITTER_MS + 1);
           }
           // Real block, not a spin -- uploadWorkerTask runs at a higher
           // FreeRTOS priority than ledDiagnosticTask/loop() on the same
@@ -899,7 +960,8 @@ void uploadWorkerTask(void *pvParameters) {
       if (sent && clock_mode == "SYN") {
         uint64_t raw_tsf_check = esp_wifi_get_tsf_time(WIFI_IF_STA);
         if (raw_tsf_check > MIN_PLAUSIBLE_TSF) {
-          debug_println("[ESCAPE HATCH] Server confirmed online. Attempting TSF re-entry.");
+          debug_println("[ESCAPE HATCH] Server confirmed online. Attempting "
+                        "TSF re-entry.");
           has_initial_baseline = false;
           cal_prev_tsf = 0;
           cal_prev_proc = 0;
@@ -928,8 +990,8 @@ void setup() {
   // discontinuity once it takes over as sole owner of these two pins.
   pinMode(LED_RED_PIN, OUTPUT);
   pinMode(LED_GREEN_PIN, OUTPUT);
-  digitalWrite(LED_RED_PIN, LOW);     // active-low -- RED on at power-up
-  digitalWrite(LED_GREEN_PIN, HIGH);  // GREEN off at power-up
+  digitalWrite(LED_RED_PIN, LOW);    // active-low -- RED on at power-up
+  digitalWrite(LED_GREEN_PIN, HIGH); // GREEN off at power-up
 
 #ifdef NEOPIXEL_POWER_PIN
   // Only defined for boards where the onboard NeoPixel's power rail is
@@ -940,7 +1002,8 @@ void setup() {
   digitalWrite(NEOPIXEL_POWER_PIN, HIGH);
 #endif
 
-  network_health_load();  // before wsPumpTask/uploadWorkerTask exist -- nothing can increment these yet
+  network_health_load(); // before wsPumpTask/uploadWorkerTask exist -- nothing
+                         // can increment these yet
 
   strlcpy(gate_id, identifyBoard(), sizeof(gate_id));
   pinMode(GATE_PIN_A, INPUT_PULLUP);
@@ -953,20 +1016,24 @@ void setup() {
   // cycle once the jumper says otherwise.
   board_role = board_role_from_jumper();
   board_role_save(board_role);
-  debug_printf("[SYSTEM] Board role (jumper): %s\n", board_role_name(board_role));
+  debug_printf("[SYSTEM] Board role (jumper): %s\n",
+               board_role_name(board_role));
 
   cli.begin(PROVISIONING_COMMANDS, PROVISIONING_COMMAND_COUNT);
 
   networkQueue = xQueueCreate(10, sizeof(GateEvent));
   ledQueue = xQueueCreate(5, sizeof(LedPattern));
-  statusLedQueue = xQueueCreate(5, sizeof(LedControlMsg));  // depth mirrors ledQueue
+  statusLedQueue =
+      xQueueCreate(5, sizeof(LedControlMsg)); // depth mirrors ledQueue
   triggerCaptureQueue = xQueueCreate(10, sizeof(PendingCapture));
 
 #if HAS_HTTP
-  debug_http_server_register_status_sources(gate_id, networkQueue, &networkq_overflow_count);
+  debug_http_server_register_status_sources(gate_id, networkQueue,
+                                            &networkq_overflow_count);
 #endif
 
-  if (wifi_credentials_load(stored_ssid, sizeof(stored_ssid), stored_pass, sizeof(stored_pass))) {
+  if (wifi_credentials_load(stored_ssid, sizeof(stored_ssid), stored_pass,
+                            sizeof(stored_pass))) {
     connect_ssid = stored_ssid;
     connect_pass = stored_pass;
     debug_println("[SYSTEM] Using saved Wi-Fi credentials from NVS");
@@ -988,20 +1055,26 @@ void setup() {
   // testing doesn't support keeping this.
   esp_wifi_set_ps(WIFI_PS_NONE);
 
-  TimerHandle_t hbTimer = xTimerCreate("HB_Timer", pdMS_TO_TICKS(5147), pdTRUE, (void *)0, heartbeatTimerCallback);
+  TimerHandle_t hbTimer = xTimerCreate("HB_Timer", pdMS_TO_TICKS(5147), pdTRUE,
+                                       (void *)0, heartbeatTimerCallback);
   if (hbTimer != NULL) {
     xTimerStart(hbTimer, 0);
   }
 
-  xTaskCreatePinnedToCore(ledDiagnosticTask, "LED_Task", 2048, NULL, 1, &ledTaskHandle, 1);
-  xTaskCreatePinnedToCore(statusLedTask, "StatusLed_Task", 2048, NULL, 1, &statusLedTaskHandle, 1);
-  xTaskCreatePinnedToCore(wsPumpTask, "WsPump", 8192, NULL, 2, &wsPumpTaskHandle, 1);
-  xTaskCreatePinnedToCore(uploadWorkerTask, "UploadWorker", 8192, NULL, 2, &uploadTaskHandle, 1);
+  xTaskCreatePinnedToCore(ledDiagnosticTask, "LED_Task", 2048, NULL, 1,
+                          &ledTaskHandle, 1);
+  xTaskCreatePinnedToCore(statusLedTask, "StatusLed_Task", 2048, NULL, 1,
+                          &statusLedTaskHandle, 1);
+  xTaskCreatePinnedToCore(wsPumpTask, "WsPump", 8192, NULL, 2,
+                          &wsPumpTaskHandle, 1);
+  xTaskCreatePinnedToCore(uploadWorkerTask, "UploadWorker", 8192, NULL, 2,
+                          &uploadTaskHandle, 1);
   // Highest priority in the app -- see tsfCaptureTask()'s own comment for
   // why: it needs to be scheduled immediately off the ISRs'
   // portYIELD_FROM_ISR() to keep the TSF read as close to the true trigger
   // instant as possible.
-  xTaskCreatePinnedToCore(tsfCaptureTask, "TsfCapture", 4096, NULL, 3, &tsfCaptureTaskHandle, 1);
+  xTaskCreatePinnedToCore(tsfCaptureTask, "TsfCapture", 4096, NULL, 3,
+                          &tsfCaptureTaskHandle, 1);
 }
 
 // --- MAIN LOOP EXECUTION TASK ---
@@ -1009,9 +1082,10 @@ void loop() {
   static uint32_t last_connected_time = millis();
   static uint32_t last_reconnect_attempt = millis();
   static uint32_t last_cerberus_attempt = 0;
-  static uint32_t syn_mode_start_time = 0;  // Tracks duration of fallback timing
+  static uint32_t syn_mode_start_time = 0; // Tracks duration of fallback timing
   static bool was_connected = false;
-  static bool ws_was_ready = false;  // g_ready edge-detection, opens wsClient once per readiness
+  static bool ws_was_ready =
+      false; // g_ready edge-detection, opens wsClient once per readiness
 
   uint32_t current_time = millis();
 
@@ -1024,16 +1098,18 @@ void loop() {
   // recovery mechanism has stalled. Reboot to force a clean restart.
   if (global_is_stuck_in_syn) {
     if (syn_mode_start_time == 0) {
-      syn_mode_start_time = current_time;  // Start the clock on the breakdown
+      syn_mode_start_time = current_time; // Start the clock on the breakdown
     } else if (current_time - syn_mode_start_time > 10000) {
-      // If the gate is stuck calculating synthetic time for more than 10 seconds,
-      // the hardware clock register has hit an overflow boundary. Clear stacks and reboot.
-      debug_println("[ROLLOVER FAULT] Trapped in synthetic time loop for 10s. Forcing hardware reboot...");
+      // If the gate is stuck calculating synthetic time for more than 10
+      // seconds, the hardware clock register has hit an overflow boundary.
+      // Clear stacks and reboot.
+      debug_println("[ROLLOVER FAULT] Trapped in synthetic time loop for 10s. "
+                    "Forcing hardware reboot...");
       delay(500);
       ESP.restart();
     }
   } else {
-    syn_mode_start_time = 0;  // Reset watchdog when operations are normal
+    syn_mode_start_time = 0; // Reset watchdog when operations are normal
   }
 
   if (WiFi.status() == WL_CONNECTED) {
@@ -1044,13 +1120,15 @@ void loop() {
       }
 #if HAS_HTTP
       MDNS.addService("http", "tcp", 80);
-      debug_http_server_init();  // idempotent route registration; .begin() re-issued every edge --
-                                 // see debug-http-server.h's AsyncServer::begin() note
+      debug_http_server_init(); // idempotent route registration; .begin()
+                                // re-issued every edge -- see
+                                // debug-http-server.h's AsyncServer::begin()
+                                // note
 #endif
-      cerberus_ip_valid = false;  // re-resolve on this connection
-      last_cerberus_attempt = 0;  // force an immediate resolve attempt below
+      cerberus_ip_valid = false; // re-resolve on this connection
+      last_cerberus_attempt = 0; // force an immediate resolve attempt below
       was_connected = true;
-      led_set(LedTarget::RED, false);  // link up: RED off, GREEN on
+      led_set(LedTarget::RED, false); // link up: RED off, GREEN on
       led_set(LedTarget::GREEN, true);
     }
     last_connected_time = current_time;
@@ -1080,13 +1158,18 @@ void loop() {
         // ws_client_mutex, ws_was_ready stays false and this is retried on
         // the next loop() tick (10ms later, below) rather than blocking
         // loop() itself for the stall's duration.
-        if (xSemaphoreTake(ws_client_mutex, pdMS_TO_TICKS(WS_MUTEX_SETUP_TIMEOUT_MS)) == pdTRUE) {
+        if (xSemaphoreTake(ws_client_mutex,
+                           pdMS_TO_TICKS(WS_MUTEX_SETUP_TIMEOUT_MS)) ==
+            pdTRUE) {
           wsClient.begin(cerberus_ip.toString(), 80, "/ws");
-          wsClient.enableHeartbeat(5000, 3000, 2);  // 5s ping, 3s pong timeout, disconnect after 2 misses
-                                                    // (widened to 5000,3 2026-08-05, reverted same day --
-                                                    // session 14 showed it makes the MIN_MODEM stall/disconnect
-                                                    // cascade dramatically worse, not better. NETWORK-TIMING-LOG.md)
-          wsClient.onEvent(wsClientEventHandler);   // receives cerberus's per-event ack
+          wsClient.enableHeartbeat(
+              5000, 3000, 2); // 5s ping, 3s pong timeout, disconnect after 2
+                              // misses (widened to 5000,3 2026-08-05, reverted
+                              // same day -- session 14 showed it makes the
+                              // MIN_MODEM stall/disconnect cascade dramatically
+                              // worse, not better. NETWORK-TIMING-LOG.md)
+          wsClient.onEvent(
+              wsClientEventHandler); // receives cerberus's per-event ack
           xSemaphoreGive(ws_client_mutex);
           ws_was_ready = true;
         }
@@ -1094,7 +1177,7 @@ void loop() {
     }
   } else {
     if (was_connected) {
-      led_set(LedTarget::RED, true);  // link down: RED on, GREEN off
+      led_set(LedTarget::RED, true); // link down: RED on, GREEN off
       led_set(LedTarget::GREEN, false);
     }
     was_connected = false;
@@ -1106,10 +1189,12 @@ void loop() {
     ws_was_ready = false;
 
     if (current_time - last_connected_time > 15000) {
-      debug_println("[WATCHDOG FAULT] Wi-Fi link dead for 15s. Smashing network stack...");
+      debug_println("[WATCHDOG FAULT] Wi-Fi link dead for 15s. Smashing "
+                    "network stack...");
       WiFi.disconnect(true, true);
       delay(500);
-      debug_println("[WATCHDOG RECOVERY] Re-initializing hardware radio interface...");
+      debug_println(
+          "[WATCHDOG RECOVERY] Re-initializing hardware radio interface...");
       WiFi.begin(connect_ssid, connect_pass);
       last_connected_time = current_time;
       last_reconnect_attempt = current_time;
