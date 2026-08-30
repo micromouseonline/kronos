@@ -59,6 +59,21 @@ constexpr uint8_t BEAM_CONFIRM_SAMPLES = 3;
 // Raw ADC samples averaged to seed each channel's filters at startup.
 constexpr uint32_t BEAM_SEED_SAMPLE_COUNT = 64;
 
+// Streams raw/fast/slow values for both channels to Serial for bench
+// tuning -- off by default, matching WS_EVENT_LOG_DETAIL's convention in
+// debug-log.h (pass -D BEAM_SENSOR_STREAM_DEBUG=1 via build_flags for a
+// bench-tuning session and rebuild).
+#ifndef BEAM_SENSOR_STREAM_DEBUG
+#define BEAM_SENSOR_STREAM_DEBUG 0
+#endif
+
+#if BEAM_SENSOR_STREAM_DEBUG
+// Rate-limited to this many samples between prints (50 samples @
+// BEAM_SAMPLE_RATE_HZ=1000 -> 20Hz) so the stream stays well under the
+// serial link's bandwidth instead of printing every single sample.
+constexpr uint32_t BEAM_DEBUG_STREAM_INTERVAL_SAMPLES = 50;
+#endif
+
 struct ExpFilter {
   float alpha = 1.0f;
   float value = 0.0f;
@@ -123,6 +138,31 @@ struct BeamSensor {
     return false;
   }
 };
+
+#if BEAM_SENSOR_STREAM_DEBUG
+// Prints one line of "label:value" pairs (Arduino IDE Serial Plotter
+// format) per BEAM_DEBUG_STREAM_INTERVAL_SAMPLES samples, e.g.
+// "armRaw:1820 armFast:1815.2 armSlow:1818.9 startRaw:1790 ...". Bypasses
+// debug_printf's "[T=...]" timestamp prefix (serial_write_lock/unlock is
+// reused directly instead) since that text breaks the plotter's per-line
+// numeric parsing.
+inline void beam_sensor_stream_debug(uint16_t arm_raw,
+                                      const BeamSensor &arm_sensor,
+                                      uint16_t start_raw,
+                                      const BeamSensor &start_sensor) {
+  static uint32_t sample_count = 0;
+  if (++sample_count % BEAM_DEBUG_STREAM_INTERVAL_SAMPLES != 0) {
+    return;
+  }
+  serial_write_lock();
+  Serial.printf(
+      "armRaw:%u armFast:%.1f armSlow:%.1f startRaw:%u startFast:%.1f "
+      "startSlow:%.1f\n",
+      arm_raw, arm_sensor.fast.value, arm_sensor.slow.value, start_raw,
+      start_sensor.fast.value, start_sensor.slow.value);
+  serial_write_unlock();
+}
+#endif
 
 // Startup seeding (fix #1, see header comment): takes BEAM_SEED_SAMPLE_COUNT
 // raw analogRead() samples on sensor.pin, averages them, and seeds both EMAs
