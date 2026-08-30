@@ -14,6 +14,12 @@ Multi-project workspace for a two-gate infrared timing system.
 Shared build/flashing/cataloguing utility scripts (not a sub-project) live
 in `tools/` at the workspace root.
 
+Each sub-project may contain its own `hardware/` folder for that target's
+PCB design (`hardware/pcb/`, a KiCad project) and mechanical CAD
+(`hardware/mechanical/`, enclosures/mounts as native CAD source plus
+STEP/STL exports). These are user-maintained design files edited via
+KiCad/CAD tools directly, not something to hand-edit as text.
+
 Outstanding work is tracked in `TODO.md` (root) — an index pointing at each
 sub-project's own planning docs plus the cross-project (interoperability,
 testing) items that don't belong to any single one.

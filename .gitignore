@@ -17,3 +17,13 @@ desktop.ini
 **/secrets.h
 **/*.key
 **/*.pem
+
+# KiCad cache/backup cruft (hardware/pcb/)
+**/*-backups/
+**/*.kicad_prl
+**/fp-info-cache
+**/_autosave-*
+
+# FreeCAD backup files (hardware/mechanical/)
+**/*.FCBak
+**/*.FCStd1
