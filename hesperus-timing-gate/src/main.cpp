@@ -1011,6 +1011,12 @@ void setup() {
   pinMode(GATE_PIN_B, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(GATE_PIN_B), handleSensor2, CHANGE);
 
+  // Analogue bring-up test for the planned reflective-detection scheme --
+  // full-range ADC1 read on both sensor pins, printed to serial in loop().
+  analogReadResolution(12);
+  analogSetPinAttenuation(START_SENSOR_PIN, ADC_11db);
+  analogSetPinAttenuation(ARM_SENSOR_PIN, ADC_11db);
+
   // Hardware jumper is authoritative -- re-read and re-save on every boot,
   // so a `role` command from a previous session never lingers past a power
   // cycle once the jumper says otherwise.
@@ -1088,6 +1094,17 @@ void loop() {
       false; // g_ready edge-detection, opens wsClient once per readiness
 
   uint32_t current_time = millis();
+
+  static uint32_t last_adc_print = 0;
+  if (current_time - last_adc_print > 250) {
+    int start_raw = analogRead(START_SENSOR_PIN);
+    int arm_raw = analogRead(ARM_SENSOR_PIN);
+    uint32_t start_mv = analogReadMilliVolts(START_SENSOR_PIN);
+    uint32_t arm_mv = analogReadMilliVolts(ARM_SENSOR_PIN);
+    Serial.printf("[ADC] start=%d (%umV)  arm=%d (%umV)\n", start_raw,
+                  start_mv, arm_raw, arm_mv);
+    last_adc_print = current_time;
+  }
 
   // Ahead of the reboot-capable watchdog below, so a dirty counter from a
   // stall/drop this same iteration is persisted before any possible restart.
