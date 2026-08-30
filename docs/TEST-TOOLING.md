@@ -175,7 +175,7 @@ compiles and runs on the host, no board needed.
 
 ## Not yet built: congested-airtime stress testing
 
-Sketched in `hesperus-timing-gate/review.md`'s "Possible stress tests"
+Sketched in `hesperus-timing-gate/docs/review.md`'s "Possible stress tests"
 section, referenced from `NETWORK-TIMING-LOG.md`'s outstanding-work list,
 but no script/tool exists for any of these yet — manual setup only:
 

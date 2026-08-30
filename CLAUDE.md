@@ -11,8 +11,14 @@ Multi-project workspace for a two-gate infrared timing system.
 | `ares-pulse-generator/` | ESP32-S3, PlatformIO | 1 Hz reference pulse generator for calibration |
 | `hesperus-emitter/` | ESP32-S3-Zero, PlatformIO | Minimal bench stub: drives pins 2 and 3 low as outputs, no other logic |
 
+`legacy/` (root) is a pre-ESP32 Arduino Uno gate-detector prototype and its
+KiCad project — kept for reference (see
+`legacy/gate-detector/legacy-evaluation.md`), not part of the active system.
+
 Shared build/flashing/cataloguing utility scripts (not a sub-project) live
-in `tools/` at the workspace root.
+in `tools/` at the workspace root, including `esp32_inventory.csv` (hardware
+asset inventory) and `tools/esp-catalogue.py` (its cataloguing tool, notes
+in `tools/esp-catalogue-reliability.md`).
 
 Each sub-project keeps its PlatformIO firmware (`src/`, `include/`, `lib/`,
 `test/`, `platformio.ini`, `boards.ini`, `dist/`) in its own `firmware/`

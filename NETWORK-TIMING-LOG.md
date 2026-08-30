@@ -395,7 +395,7 @@ run to completion (no crash cutoff this time):
 5. **Congested-airtime stress testing** (cross-cutting, not tied to one
    issue) — **[Judged sufficient, 2026-08-04 — deprioritized, not
    formally closed.]** The four stressor layers sketched in
-   `hesperus-timing-gate/review.md`: **airtime saturation** has extensive
+   `hesperus-timing-gate/docs/review.md`: **airtime saturation** has extensive
    coverage (beacon-spam sessions 2-10, up to two simultaneous spammers)
    and **channel interference** partial coverage (BT streaming co-tested
    alongside spammers, sessions 9-10); **bulk throughput contention** and
@@ -2738,7 +2738,7 @@ full trial writeup.
 unconfirmed]**
 *(new, found during the `gather-stats-core0` branch's 1000-simulated-run
 trial, `test-data/load-tests/`, run to measure Core 0 idle headroom for
-`hesperus-timing-gate/reflective-detection-feasibility.md`)*
+`hesperus-timing-gate/docs/reflective-detection-feasibility.md`)*
 
 **Observation.** Cerberus's log recorded 994/994/992 ARM/START/GOAL against
 997/997/996 sent by the two gate boards. First read as "10 events missing at

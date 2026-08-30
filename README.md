@@ -16,13 +16,13 @@
 ## Naming Conventions & System Layers
 
 * **KRONOS:** The overall distributed wireless network topology and codebase.
-* **HADES:** The central PC software hosting the database, event management and scoring system.
+* **HADES:** The central PC software hosting the database, event management and scoring system. *(planned, not in this repo)*
 * **ATLAS:** The standalone Wi-Fi Access Point acting as the authoritative field master clock, and providing a private WiFi BSSID.
 * **CERBERUS:** The multi-threaded gate edge hardware/software handling gate messages and clock audits.
 * **HESPERUS:** The physical maze/track gate sensor modules.
 * **HERMES:** The concise HTTP application-layer packet payload protocol.
 * **ARES:** The pulse generator that stimulates the gates during testing.
-* **ARGUS:** The hundred-eyed giant that collects and analyses gate data.
+* **ARGUS:** The hundred-eyed giant that collects and analyses gate data. *(planned, not in this repo)*
 
 ---
 
