@@ -66,6 +66,15 @@ table — Wi-Fi modem sleep, NVS config store, configurable debounce, OTA
 update, SSD1306 display, stack telemetry, NVS event buffering, multi-AP
 BSSID fallback, local standalone scoring.
 
+- The dual-EMA reflective/occlusion beam-break detector (`beam-sensor.h`,
+  2026-08-30) is only wired up for `base_s3_zero`/`base_s3_super_mini` (the
+  only boards with `START_SENSOR_PIN`/`ARM_SENSOR_PIN` assigned).
+  `base_c3_super_mini`, `base_c3_xiao`, and `base_qtpy_esp32_pico` still
+  need ADC-capable pins assigned for these two flags and will not build
+  until that's done, since `main.cpp` now references them
+  unconditionally — the old digital `GATE_PIN_A`/`GATE_PIN_B` path those
+  boards used before has been removed.
+
 ## ares-pulse-generator
 
 - **Note, not an open task** (removed from the priorities list 2026-08-07):
@@ -74,3 +83,9 @@ BSSID fallback, local standalone scoring.
   sure the board has fully reset before starting a trial or a new log —
   ARES is bench-test tooling only, this has no bearing on production use.
   (originally noted 2026-08-02)
+- Now that hesperus's `base_s3_zero`/`base_s3_super_mini` boards detect
+  beam-breaks via the analogue dual-EMA path (`beam-sensor.h`, 2026-08-30)
+  instead of the digital `GATE_PIN_A`/`GATE_PIN_B` interrupt path, ARES's
+  digital pulse output can no longer trigger those boards for bench
+  testing. Needs an analogue-equivalent test-signal path if bench
+  automation (vs. triggering by hand) is wanted for the new hardware.

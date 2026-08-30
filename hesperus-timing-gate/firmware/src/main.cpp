@@ -7,6 +7,7 @@
 
 #include "esp_wifi.h"
 
+#include "beam-sensor.h" // dual-EMA reflective/occlusion beam-break detector
 #include "board-role.h" // BoardRole, role -> event-name mapping
 #include "boards.h" // contains the board MAC addresses to look up the identifiers
 #include "cli.h"    // serial command line interface
@@ -85,11 +86,12 @@ bool led_flash(LedTarget target, uint8_t ticks) {
 }
 
 // Channel A / channel B -- see board-role.h for how these map to ARM/START/
-// GOAL depending on the board's provisioned role. Active-low. GATE_PIN_A/
-// GATE_PIN_B themselves come from the per-board build_flags in
-// platformio.ini/boards.ini (same convention as STATUS_LED above) -- they
-// vary per target, e.g. GPIO7/6 on most boards but GPIO33/32 on the QT Py
-// ESP32 Pico, which doesn't expose GPIO6/7 the same way.
+// GOAL depending on the board's provisioned role. Sourced from the
+// analogue dual-EMA detector (see beam-sensor.h and
+// ARM_SENSOR_PIN/START_SENSOR_PIN below) rather than a digital edge.
+// ARM_SENSOR_PIN/START_SENSOR_PIN themselves come from the per-board
+// build_flags in platformio.ini/boards.ini (same convention as STATUS_LED
+// above) -- they vary per target.
 
 BoardRole board_role = BoardRole::UNSET;
 Cli cli;
@@ -188,14 +190,6 @@ const uint32_t WS_ACK_OVERALL_DEADLINE_MS =
           // Real-race events are sparse (one every 20+ seconds)
           // and networkQueue is depth 10, so this remains
           // comfortably inside that budget.
-
-// ISR debounce guard for both trigger pins -- one place to tune. 50ms
-// comfortably absorbs mechanical switch bounce (bench-testing with a
-// pushbutton) without masking two genuinely separate IR-beam triggers close
-// together (e.g. a robot with transparent body sections producing more than
-// one real break) -- the race state machine, not this guard, is what's
-// responsible for deciding what multiple close triggers mean.
-const uint64_t DEBOUNCE_US = 50000;
 
 // --- CERBERUS DISCOVERY (mDNS) ---
 // Resolved once after Wi-Fi connects and cached for the rest of this boot --
@@ -514,93 +508,67 @@ void statusLedTask(void *pvParameters) {
   }
 }
 
-// --- HARDWARE INTERRUPT SERVICE ROUTINES (ISRs) WITH DEBOUNCE ---
-// CHANGE, not FALLING -- the debounce below needs to see both edges. A
-// mechanical switch (bench-testing with a pushbutton) bounces on release as
-// well as on press, so a FALLING-only interrupt debounced against the last
-// *accepted* edge would let release bounce through as a spurious trigger
-// once the button had been held longer than DEBOUNCE_US (the window had
-// long since expired by release time). Instead: track quiet time since the
-// last edge of EITHER polarity, and only trust the pin level once it's been
-// quiet for DEBOUNCE_US -- LOW after a quiet gap is a real press, HIGH after
-// a quiet gap re-arms for the next one, anything inside the gap is bounce.
-void IRAM_ATTR handleSensor1() {
-  static uint64_t last_edge_time = 0;
-  static bool armed = true;
+// --- REFLECTIVE BEAM-BREAK DETECTION (dual-EMA fast/slow ratio) ---
+// See beam-sensor.h for the ExpFilter/BeamSensor algorithm itself (ported
+// from legacy/gate-detector's dual-EMA occlusion detector). A hardware
+// timer fires at BEAM_SAMPLE_RATE_HZ and wakes beamSampleTask via a task
+// notification -- the timer ISR itself does no ADC reads or float math,
+// matching this file's existing ISR-minimalism convention (see
+// tsfCaptureTask()'s comment below on why esp_wifi_get_tsf_time() stays out
+// of ISR context; the same reasoning motivates keeping this timer ISR as
+// short as possible). beamSampleTask runs in ordinary task context (woken
+// by, not running inside, the timer ISR), so pushing to triggerCaptureQueue
+// uses the plain xQueueSend(), not the ISR-only xQueueSendFromISR() the old
+// GPIO-interrupt path needed.
+//
+// Channel mapping matches board-role.h's ARM/START split:
+// ARM_SENSOR_PIN -> TRIGGER_A, START_SENSOR_PIN -> TRIGGER_B.
+BeamSensor armSensor{"ARM", ARM_SENSOR_PIN};
+BeamSensor startSensor{"START", START_SENSOR_PIN};
 
-  uint64_t current_time = esp_timer_get_time();
-  bool quiet = (current_time - last_edge_time) >= DEBOUNCE_US;
-  last_edge_time = current_time;
+hw_timer_t *beamSampleTimer = NULL;
+TaskHandle_t beamSampleTaskHandle = NULL;
 
-  if (digitalRead(GATE_PIN_A) == HIGH) {
-    if (quiet) {
-      armed = true; // settled back high -- ready for the next press
-    }
-    return;
-  }
-  if (!quiet || !armed) {
-    return; // still bouncing, or this press was already reported
-  }
-  armed = false;
-
-  // esp_wifi_get_tsf_time() is NOT called here -- see PendingCapture and
-  // tsfCaptureTask(): it takes an internal WiFi-driver lock that can block,
-  // which is illegal (and, under heavy WiFi-stack load, fatal -- an
-  // Interrupt WDT panic, confirmed via crash backtrace 2026-08-03) from ISR
-  // context. Only the ISR-safe esp_timer_get_time() processor clock is
-  // captured here; the real TSF read happens one task-context hop later,
-  // as close to this instant as the scheduler allows.
+void IRAM_ATTR onBeamSampleTimer() {
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-  PendingCapture pc;
-  pc.type = TRIGGER_A;
-  pc.processor_clock = current_time;
-  BaseType_t sent =
-      xQueueSendFromISR(triggerCaptureQueue, &pc, &xHigherPriorityTaskWoken);
-  if (sent != pdTRUE) {
-    triggerCaptureq_overflow_count++;
-  }
+  vTaskNotifyGiveFromISR(beamSampleTaskHandle, &xHigherPriorityTaskWoken);
   if (xHigherPriorityTaskWoken) {
     portYIELD_FROM_ISR();
   }
 }
 
-void IRAM_ATTR handleSensor2() {
-  static uint64_t last_edge_time = 0;
-  static bool armed = true;
-
-  uint64_t current_time = esp_timer_get_time();
-  bool quiet = (current_time - last_edge_time) >= DEBOUNCE_US;
-  last_edge_time = current_time;
-
-  if (digitalRead(GATE_PIN_B) == HIGH) {
-    if (quiet) {
-      armed = true; // settled back high -- ready for the next press
-    }
-    return;
-  }
-  if (!quiet || !armed) {
-    return; // still bouncing, or this press was already reported
-  }
-  armed = false;
-
-  // esp_wifi_get_tsf_time() is NOT called here -- see handleSensor1()'s
-  // comment and tsfCaptureTask() below.
-  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+// esp_wifi_get_tsf_time() is NOT called here -- see PendingCapture and
+// tsfCaptureTask(): it takes an internal WiFi-driver lock that can block,
+// which is illegal (and, under heavy WiFi-stack load, fatal -- an
+// Interrupt WDT panic, confirmed via crash backtrace 2026-08-03) from ISR
+// context. That constraint is about blocking generally, not specifically
+// ISR context, so it applies here too even though beamSampleTask is a
+// normal task: only the esp_timer_get_time() processor clock is captured
+// here; the real TSF read happens one task-context hop later, in
+// tsfCaptureTask(), as close to this instant as the scheduler allows.
+void dispatchBeamTrigger(EventType type) {
   PendingCapture pc;
-  pc.type = TRIGGER_B;
-  pc.processor_clock = current_time;
-  BaseType_t sent =
-      xQueueSendFromISR(triggerCaptureQueue, &pc, &xHigherPriorityTaskWoken);
-  if (sent != pdTRUE) {
+  pc.type = type;
+  pc.processor_clock = esp_timer_get_time();
+  if (xQueueSend(triggerCaptureQueue, &pc, 0) != pdTRUE) {
     triggerCaptureq_overflow_count++;
   }
-  if (xHigherPriorityTaskWoken) {
-    portYIELD_FROM_ISR();
+}
+
+void beamSampleTask(void *parameter) {
+  for (;;) {
+    ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+    if (armSensor.update(analogRead(armSensor.pin))) {
+      dispatchBeamTrigger(TRIGGER_A);
+    }
+    if (startSensor.update(analogRead(startSensor.pin))) {
+      dispatchBeamTrigger(TRIGGER_B);
+    }
   }
 }
 
 /// @brief Sole task-context consumer of triggerCaptureQueue -- the other
-/// half of the ISR-safety fix described in handleSensor1()/handleSensor2().
+/// half of the ISR-safety fix described above.
 /// Performs the actual esp_wifi_get_tsf_time() read (safe here: blocking
 /// briefly on the WiFi driver's internal lock is legal in task context)
 /// as close to the original ISR instant as the scheduler allows, then hands
@@ -1006,13 +974,10 @@ void setup() {
                          // can increment these yet
 
   strlcpy(gate_id, identifyBoard(), sizeof(gate_id));
-  pinMode(GATE_PIN_A, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(GATE_PIN_A), handleSensor1, CHANGE);
-  pinMode(GATE_PIN_B, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(GATE_PIN_B), handleSensor2, CHANGE);
 
-  // Analogue bring-up test for the planned reflective-detection scheme --
-  // full-range ADC1 read on both sensor pins, printed to serial in loop().
+  // Analogue front-end for the dual-EMA reflective/occlusion detector (see
+  // beam-sensor.h) -- must be configured before beam_sensor_seed_from_adc()
+  // runs, below, once triggerCaptureQueue exists.
   analogReadResolution(12);
   analogSetPinAttenuation(START_SENSOR_PIN, ADC_11db);
   analogSetPinAttenuation(ARM_SENSOR_PIN, ADC_11db);
@@ -1081,6 +1046,33 @@ void setup() {
   // instant as possible.
   xTaskCreatePinnedToCore(tsfCaptureTask, "TsfCapture", 4096, NULL, 3,
                           &tsfCaptureTaskHandle, 1);
+
+  // Seed both dual-EMA channels from real ADC samples (see beam-sensor.h)
+  // now that triggerCaptureQueue exists -- beamSampleTask, started right
+  // after, pushes into it. A dark seed means the sensor is unlit/miswired/
+  // obstructed at boot; flash RED so a technician without a laptop at the
+  // gate still gets a signal (a normal seed logs quietly and flashes
+  // nothing, so it's never mistaken for a race-timing event).
+  bool arm_seed_ok = beam_sensor_seed_from_adc(armSensor);
+  bool start_seed_ok = beam_sensor_seed_from_adc(startSensor);
+  if (!arm_seed_ok || !start_seed_ok) {
+    led_flash(LedTarget::RED, 10); // 10 * 100ms = 1s
+  }
+
+  // beamSampleTaskHandle must exist before the timer ISR can notify it, so
+  // the task is created first; onBeamSampleTimer() only starts firing once
+  // timerAlarmEnable() runs below, by which point the task is already
+  // parked on ulTaskNotifyTake() waiting for it.
+  xTaskCreatePinnedToCore(beamSampleTask, "BeamSample", 4096, NULL, 2,
+                          &beamSampleTaskHandle, 0);
+
+  // Hardware timer 0, divider 80 against the 80MHz APB clock -> 1MHz tick
+  // (1us/tick), independent of the FreeRTOS 1000Hz tick (which can't
+  // express BEAM_SAMPLE_RATE_HZ if it isn't an integer divisor of 1000).
+  beamSampleTimer = timerBegin(0, 80, true);
+  timerAttachInterrupt(beamSampleTimer, &onBeamSampleTimer, true);
+  timerAlarmWrite(beamSampleTimer, 1000000 / BEAM_SAMPLE_RATE_HZ, true);
+  timerAlarmEnable(beamSampleTimer);
 }
 
 // --- MAIN LOOP EXECUTION TASK ---
@@ -1094,17 +1086,6 @@ void loop() {
       false; // g_ready edge-detection, opens wsClient once per readiness
 
   uint32_t current_time = millis();
-
-  static uint32_t last_adc_print = 0;
-  if (current_time - last_adc_print > 250) {
-    int start_raw = analogRead(START_SENSOR_PIN);
-    int arm_raw = analogRead(ARM_SENSOR_PIN);
-    uint32_t start_mv = analogReadMilliVolts(START_SENSOR_PIN);
-    uint32_t arm_mv = analogReadMilliVolts(ARM_SENSOR_PIN);
-    Serial.printf("[ADC] start=%d (%umV)  arm=%d (%umV)\n", start_raw,
-                  start_mv, arm_raw, arm_mv);
-    last_adc_print = current_time;
-  }
 
   // Ahead of the reboot-capable watchdog below, so a dirty counter from a
   // stall/drop this same iteration is persisted before any possible restart.
