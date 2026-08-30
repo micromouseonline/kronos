@@ -19,8 +19,5 @@
 			"name": "ares-pulse-generator",
 			"path": "ares-pulse-generator/firmware"
 		},
-		{
-			"path": "gate-controller-python-test-cerberus"
-		},
 	]
 }
