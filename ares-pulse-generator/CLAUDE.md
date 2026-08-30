@@ -2,7 +2,7 @@
 
 ## Off-limits directories
 
-- `.pio/`: generated build artefacts and vendored libraries - do not read or modify
+- `firmware/.pio/`: generated build artefacts and vendored libraries - do not read or modify
 
 ## Hardware design files
 

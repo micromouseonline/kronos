@@ -87,7 +87,7 @@ constexpr ButtonCommandMap BUTTON_COMMAND_MAP[NUM_BUTTONS] = {
 ### NeoKey 1x4 Keypad (Primary Local Input)
 
 * **Status:** Active.
-* **Driver:** `src/neokey-driver.h`, `neokey-buttons.h`, `neokey-pixels.h`
+* **Driver:** `firmware/src/neokey-driver.h`, `neokey-buttons.h`, `neokey-pixels.h`
 * **Bus Address:** I2C address `0x30` (Adafruit seesaw).
 * **Fault Tolerance:** Non-blocking initialization via a background FreeRTOS task. If missing or disconnected mid-run, `Neokey::isAvailable()` allows the system to degrade silently to no-ops without blocking other inputs.
 * **Supported Events:** Handles `PRESSED` and `HELD` events.

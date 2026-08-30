@@ -14,6 +14,11 @@ Multi-project workspace for a two-gate infrared timing system.
 Shared build/flashing/cataloguing utility scripts (not a sub-project) live
 in `tools/` at the workspace root.
 
+Each sub-project keeps its PlatformIO firmware (`src/`, `include/`, `lib/`,
+`test/`, `platformio.ini`, `boards.ini`, `dist/`) in its own `firmware/`
+subfolder, so that `README.md`/`CLAUDE.md`/`docs/`/`hardware/` at the
+sub-project root aren't mixed in with firmware source.
+
 Each sub-project may contain its own `hardware/` folder for that target's
 PCB design (`hardware/pcb/`, a KiCad project) and mechanical CAD
 (`hardware/mechanical/`, enclosures/mounts as native CAD source plus
@@ -26,14 +31,14 @@ testing) items that don't belong to any single one.
 
 ## Off-limits directories
 
-- `.pio/` in any sub-project: generated build artefacts and vendored libraries - do not read or modify
+- `.pio/` in any sub-project's `firmware/` folder: generated build artefacts and vendored libraries - do not read or modify
 - `references/`: hardware datasheets and reference documents only - do not modify
 - `docs/_resources/`: binary assets (images, ZIPs) - do not modify
 - `references`: in the root, this just contains datasheets and similar files - do not read.
 
 ## Build commands
 
-- Embedded: `pio run` (build), `pio run -t upload` (flash) - run inside the relevant sub-project folder
+- Embedded: `pio run` (build), `pio run -t upload` (flash) - run inside the relevant sub-project's `firmware/` folder
 
 ## Architecture notes
 

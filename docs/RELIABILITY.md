@@ -21,7 +21,7 @@ Gates hold one persistent WebSocket connection open to the controller (see `NETW
 A held-open connection doesn't eliminate the "lost ACK" problem: the server can receive and process an event, but the acknowledgement back to the sensor can still be lost, leaving the sensor believing the send failed.
 
 To handle this without risking duplicate records, each event is de-duplicated by content rather than by a dedicated transaction ID: cerberus keys on `(gate_id, event)` → last-seen `tsf_us` (each gate's disciplined Wi-Fi-TSF timestamp, already carried in every event payload for timing purposes) in a small fixed-size table
-(`cerberus-gate-controller/src/net/gate-event-dedup.h`). No separate sequential ID field was added to the event schema — `tsf_us` already uniquely identifies an event well enough for this purpose, and reusing it avoided a schema change.
+(`cerberus-gate-controller/firmware/src/net/gate-event-dedup.h`). No separate sequential ID field was added to the event schema — `tsf_us` already uniquely identifies an event well enough for this purpose, and reusing it avoided a schema change.
 
 ``` mermaid
 sequenceDiagram

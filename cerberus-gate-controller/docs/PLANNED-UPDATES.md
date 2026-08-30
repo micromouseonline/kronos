@@ -50,7 +50,7 @@ Not yet implemented. Currently, Core 1 (state machine) appends to `race_runs[]` 
 
 **Resolved, 2026-08-06.** If NVS holds a `"calibrated"=true` entry with bad
 calibration data (e.g. leftover from earlier testing), `calibrate()`
-(`src/display/touch-calibration.h`) used to load it and never re-launch
+(`firmware/src/display/touch-calibration.h`) used to load it and never re-launch
 the wizard — since menu/settings navigation is touch-driven, bad
 calibration locked the user out of the menu (race commands via NeoKey were
 unaffected).

@@ -1,6 +1,6 @@
 # Technical Review: KRONOS/CERBERUS Gate Firmware
 
-`hesperus-timing-gate/src/main.cpp`
+`hesperus-timing-gate/firmware/src/main.cpp`
 
 Reviewed by Claude
 
@@ -118,7 +118,7 @@ left as originally written for reference.
 Updated 2026-08-06: removed three rows that shipped since this table was
 written (mDNS server discovery, HTTP keep-alive/WebSocket, and a
 diagnostics HTTP server — see `docs/PROVISIONING.md`,
-`NETWORK-TIMING-LOG.md`, and `src/net/debug-http-server.h`/
+`NETWORK-TIMING-LOG.md`, and `firmware/src/net/debug-http-server.h`/
 `network-health-stats.h` respectively) and trimmed "server URL" from the
 NVS config store row for the same reason (cerberus's address is now
 resolved dynamically via mDNS, not a config-store override). The

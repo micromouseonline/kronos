@@ -19,7 +19,7 @@ standing in for one.
 
 ### `ares-pulse-generator` — GPIO trigger simulator
 
-A PlatformIO/Arduino firmware project (`ares-pulse-generator/src/main.cpp`)
+A PlatformIO/Arduino firmware project (`ares-pulse-generator/firmware/src/main.cpp`)
 that drives three active-low GPIO outputs (`TRG_ARM`=7, `TRG_START`=6,
 `TRG_GOAL`=5) to simulate photodiode/beam-break triggers, wired into a real
 `hesperus-timing-gate` board's trigger inputs — bench-tests the gate/

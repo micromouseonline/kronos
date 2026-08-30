@@ -4,16 +4,20 @@
 			"path": "."
 		},
 		{
-			"path": "hesperus-timing-gate"
+			"name": "hesperus-timing-gate",
+			"path": "hesperus-timing-gate/firmware"
 		},
 		{
-			"path": "hesperus-emitter"
+			"name": "hesperus-emitter",
+			"path": "hesperus-emitter/firmware"
 		},
 		{
-			"path": "cerberus-gate-controller"
+			"name": "cerberus-gate-controller",
+			"path": "cerberus-gate-controller/firmware"
 		},
 		{
-			"path": "ares-pulse-generator"
+			"name": "ares-pulse-generator",
+			"path": "ares-pulse-generator/firmware"
 		},
 		{
 			"path": "gate-controller-python-test-cerberus"

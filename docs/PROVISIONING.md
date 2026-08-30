@@ -15,7 +15,7 @@ identity validation exists on cerberus).
 When a device powers on and cannot connect to a saved or compiled-in Wi-Fi
 network within a timeout, it falls back to an Access Point (AP) mode so
 the user can input credentials. CERBERUS implements this directly (no
-WiFiManager library dependency) in `cerberus-gate-controller/src/net/
+WiFiManager library dependency) in `cerberus-gate-controller/firmware/src/net/
 wifi-provisioning.h` and `wifi-credentials.h`:
 
 ```
@@ -38,10 +38,10 @@ Holding the TOUCH key cancels and reboots back to normal operation.
 ### Sensor Connection to Network — Implemented (HESPERUS, different mechanism)
 
 hesperus has no captive-portal AP mode. Instead, credentials are set over
-its serial CLI (a `wifi` command, see `hesperus-timing-gate/src/cli.h`) and
+its serial CLI (a `wifi` command, see `hesperus-timing-gate/firmware/src/cli.h`) and
 persisted to NVS via `wifi-credentials.h`; on boot, `wifi_credentials_load()`
 is tried first and, if present, overrides the compiled-in default from
-`secrets.h` (`hesperus-timing-gate/src/main.cpp:517-553`). So it's not
+`secrets.h` (`hesperus-timing-gate/firmware/src/main.cpp:517-553`). So it's not
 "hardcoded credentials, no provisioning" — it's a serial-driven mechanism
 rather than a self-hosted AP + web form.
 
@@ -54,7 +54,7 @@ Unless we hard-code the server's address in the router, it is probably easiest t
 ### Server-Side Setup — Implemented (CERBERUS)
 
 CERBERUS advertises itself via mDNS exactly as originally proposed here,
-in `cerberus-gate-controller/src/net/mdns.h`:
+in `cerberus-gate-controller/firmware/src/net/mdns.h`:
 
 1. Start the mDNS responder: `MDNS.begin("cerberus")`.
 2. Advertise the HTTP service: `MDNS.addService("http", "tcp", 80)`.
@@ -74,7 +74,7 @@ IP (not at boot), to avoid racing mDNS init against an unconnected radio.
 ### Sensor-Side Discovery & Connection — Implemented (HESPERUS)
 
 hesperus resolves and connects to cerberus dynamically, no hardcoded
-server IP: `resolveCerberus()` (`hesperus-timing-gate/src/main.cpp:99-111`)
+server IP: `resolveCerberus()` (`hesperus-timing-gate/firmware/src/main.cpp:99-111`)
 calls `MDNS.queryHost("cerberus")` and caches the result in
 `cerberus_ip`/`cerberus_ip_valid`. It's re-triggered (throttled to once per
 second) whenever `cerberus_ip_valid` is false, and gets explicitly

@@ -1,7 +1,7 @@
 # Serial (RATS V2) Manual Test Plan
 
-Manual test script for the host-PC serial link (`src/net/serial-protocol.h`,
-`src/net/messages.h`, `src/race/race-command-source.h`), covering the
+Manual test script for the host-PC serial link (`firmware/src/net/serial-protocol.h`,
+`firmware/src/net/messages.h`, `firmware/src/race/race-command-source.h`), covering the
 legacy `<98,0>` NewMouse message plus the RATS V2 inbound messages added
 from `docs/preferredMessageSequencesV2.pdf`.
 

@@ -2,7 +2,7 @@
 
 Manual curl test scripts for the `POST /api/event` endpoint (see
 `docs/SYSTEM-DESCRIPTION.md`'s HTTP Server section,
-implemented in `src/net/http-server.h` / `src/race/race-command-source.h`).
+implemented in `firmware/src/net/http-server.h` / `firmware/src/race/race-command-source.h`).
 See the bottom of this file for `ws_send_event.py`, the equivalent tool for
 the persistent WebSocket endpoint (`/ws`, NETWORK-TIMING-LOG.md
 recommendation 1).

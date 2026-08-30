@@ -17,9 +17,9 @@ PlatformIO's `extends` mechanism.
 
 ## File layout
 
-- `cerberus-gate-controller/platformio.ini` - the actual build environments
+- `cerberus-gate-controller/firmware/platformio.ini` - the actual build environments
   (`[env:*]`). Pulls in `boards.ini` via `extra_configs`.
-- `cerberus-gate-controller/boards.ini` - reusable building blocks: global
+- `cerberus-gate-controller/firmware/boards.ini` - reusable building blocks: global
   settings, per-SoC blocks, per-feature blocks, and per-board "base" blocks.
   `platformio.ini` is the only file PlatformIO reads directly; `boards.ini`
   only exists to be `extend`-ed from it.
@@ -85,11 +85,11 @@ no-argument default looks for a `base-boards.ini` that doesn't exist in
 this repo):
 
 ```
-python3 tools/check_ini_composition.py cerberus-gate-controller/boards.ini
+python3 tools/check_ini_composition.py cerberus-gate-controller/firmware/boards.ini
 ```
 
-Substitute `hesperus-timing-gate/boards.ini` or
-`ares-pulse-generator/boards.ini` to check those projects instead (or
+Substitute `hesperus-timing-gate/firmware/boards.ini` or
+`ares-pulse-generator/firmware/boards.ini` to check those projects instead (or
 list more than one path — the script accepts multiple files at once).
 
 It statically flags sections that redefine `build_flags`/`lib_deps` but

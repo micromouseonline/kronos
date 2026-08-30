@@ -11,7 +11,7 @@ PlatformIO firmware for the ESP32-S3 timing gates (project codename: Hesperus).
 
 ## Off-limits directories
 
-- `.pio/`: generated build artefacts and vendored libraries - do not read or modify
+- `firmware/.pio/`: generated build artefacts and vendored libraries - do not read or modify
 
 ## Hardware design files
 
@@ -21,8 +21,11 @@ PlatformIO firmware for the ESP32-S3 timing gates (project codename: Hesperus).
 
 ## Source layout
 
+PlatformIO firmware lives under `firmware/` (`platformio.ini`, `boards.ini`,
+`src/`, `include/`, `lib/`, `test/`, `dist/`) - run `pio run` from there.
+
 ```
-src/
+firmware/src/
   main.cpp      - application entry point, FreeRTOS tasks
   boards.h      - MAC-to-gate-ID lookup table
   secrets.h     - WiFi credentials (not committed)
@@ -42,7 +45,7 @@ src/
   flag/tsf pair) — see `NETWORK-TIMING-LOG.md`'s "`wsClient.loop()`
   blocking under congestion" issue for why.
 - `feature_http` (`AsyncTCP`/`ESPAsyncWebServer`, `#if HAS_HTTP`) backs a
-  small on-demand diagnostics server only (`src/net/debug-http-server.h`,
+  small on-demand diagnostics server only (`firmware/src/net/debug-http-server.h`,
   `GET /logs` / `GET /status`) — it does not carry event-reporting traffic,
   which stays on `feature_ws_client`'s `WebSocketsClient`.
 
@@ -52,4 +55,4 @@ src/
 - Adafruit SSD1306 / SH1106 / GFX
 - JC_Button
 - WebSockets (Links2004) — persistent WS client to cerberus
-- AsyncTCP / ESPAsyncWebServer — diagnostics-only HTTP server (`src/net/debug-http-server.h`)
+- AsyncTCP / ESPAsyncWebServer — diagnostics-only HTTP server (`firmware/src/net/debug-http-server.h`)
