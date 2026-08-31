@@ -17,6 +17,12 @@ const gpio_num_t BTN_PIN = GPIO_NUM_0;
 const int ON = 0;
 const int OFF = 1;
 const uint32_t DEBOUNCE_MS = 30;
+// Held awake after a cold boot / manual reset so the USB CDC link stays up
+// long enough for a flash tool to trigger its normal reset-to-bootloader
+// handshake -- without this, setup() reaches goToSleep() before esptool
+// ever gets a port to open, and the board becomes unflashable without
+// forcing a POR with BOOT held.
+const uint32_t FLASH_WINDOW_MS = 5000;
 
 uint8_t pinState = 0;
 
@@ -50,6 +56,12 @@ void setup() {
   led.setPixelColor(0, led.Color(0, 32, 0)); // Bright Green
   led.show();
 
+  bool wokeFromButton = esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0;
+
+  if (!wokeFromButton) {
+    delay(FLASH_WINDOW_MS);
+  }
+
   // NVS namespace names are capped at 15 chars -- "hesperus-emitter" (16)
   // silently fails prefs.begin(), which made every getBool/putBool below a
   // no-op returning its default (false / always LOW after reset).
@@ -57,7 +69,7 @@ void setup() {
   uint8_t pinState = prefs.getChar("pinState", 0);
 
   // Only a press woke us -- a cold boot/power-on has nothing to debounce.
-  if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0) {
+  if (wokeFromButton) {
     delay(DEBOUNCE_MS);
     if (digitalRead(BTN_PIN) == LOW) {
       pinState = (pinState + 1) % 4;
