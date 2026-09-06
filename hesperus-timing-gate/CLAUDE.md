@@ -15,9 +15,13 @@ PlatformIO firmware for the ESP32-S3 timing gates (project codename: Hesperus).
 
 ## Hardware design files
 
-- `hardware/pcb/`: KiCad project. `hardware/mechanical/`: enclosure/mounting
-  CAD (native source + STEP/STL exports). Both are user-maintained via
-  KiCad/CAD tools directly - do not hand-edit as text.
+- `hardware/pcb/`: KiCad project for this board's own gate-side PCB
+  (sensor + ESP32-S3 + WiFi). User-maintained via KiCad directly - do not
+  hand-edit as text.
+- The enclosure/mounting CAD is shared with `hesperus-emitter` (same
+  physical gate housing, different PCB inside) and lives at the workspace
+  root in `hardware-shared/mechanical/` (native source + STEP/STL exports),
+  not under this project's own `hardware/`.
 
 ## Source layout
 
