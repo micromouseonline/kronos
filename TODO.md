@@ -62,9 +62,9 @@ MAINTENANCE mode, `race_runs[]` concurrency guard.
 ## hesperus-timing-gate
 
 Full list: **`hesperus-timing-gate/docs/review.md`**'s "Future Development Path"
-table — Wi-Fi modem sleep, NVS config store, configurable debounce, OTA
-update, SSD1306 display, stack telemetry, NVS event buffering, multi-AP
-BSSID fallback, local standalone scoring.
+table — Wi-Fi modem sleep, NVS config store, configurable confirm-sample
+count, OTA update, SSD1306 display, stack telemetry, NVS event buffering,
+multi-AP BSSID fallback, local standalone scoring.
 
 ## ares-pulse-generator
 

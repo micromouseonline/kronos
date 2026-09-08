@@ -47,9 +47,16 @@ periods and from periodic tasks on other stations, reducing collision probabilit
 AP — a detail that most implementors overlook.
 
 ### Correct FreeRTOS ISR practice
-`xQueueSendFromISR` with `xHigherPriorityTaskWoken` followed by `portYIELD_FROM_ISR()`
-is textbook correct. The ISR does the minimum possible work (capture timestamps, enqueue)
-and yields immediately.
+The beam-sample timer ISR (`onBeamSampleTimer`, `beam-sensor.h`'s dual-EMA
+detector) does the minimum possible work: `vTaskNotifyGiveFromISR` followed
+by `portYIELD_FROM_ISR()` when needed, nothing else. No ADC read, no float
+math, and no queue push happen in ISR context — those are deferred to
+`beamSampleTask`, woken by the notification, which does the `analogRead()`s,
+runs the detector, and only then calls the plain (non-ISR) `xQueueSend()` to
+hand a trigger off to `tsfCaptureTask`. Keeping the ISR to a bare notify is
+the right call here specifically because the actual detection work (two
+EMA updates plus a ratio compare) is too much to justify running inside an
+ISR at all, unlike a simple GPIO edge capture.
 
 ### Hard Wi-Fi watchdog
 `WiFi.disconnect(true, true)` + delay + `WiFi.begin()` completely tears down and
@@ -131,8 +138,8 @@ cable attached.
 | Phase | Feature | Notes |
 |-------|---------|-------|
 | Near | Wi-Fi Modem Sleep | Extensively investigated, not just "unblocked" — see `NETWORK-TIMING-LOG.md`'s "Wi-Fi power-save vs. battery budget" issue (sessions 11-15a). `WIFI_PS_NONE` (`main.cpp:869`) stays the shipped default (decided 2026-08-04, ~110mA); `WIFI_PS_MIN_MODEM` saves ~35-40% power but has a real, still-unexplained stall/reliability regression under heavy congestion that got worse after one attempted mitigation. Still the highest-priority open item in that doc |
-| Near | NVS config store | gate_id override, debounce, DRIFT_MARGIN_US |
-| Near | Configurable debounce | Per-pin, loaded from NVS |
+| Near | NVS config store | gate_id override, BEAM_CONFIRM_SAMPLES, DRIFT_MARGIN_US |
+| Near | Configurable confirm-sample count | Per-channel `BEAM_CONFIRM_SAMPLES` (`beam-sensor.h`), loaded from NVS |
 | Medium | OTA firmware update | ArduinoOTA or ESP-IDF OTA; critical for field deployment |
 | Medium | SSD1306 display task | Gate ID, clock mode, last gap, queue depth (lib already in platformio.ini) |
 | Medium | Stack telemetry in heartbeat | Append `&stack=NNN` to HB URL for remote diagnostics; scaffolding exists but is commented out (`main.cpp:510-512`) |
