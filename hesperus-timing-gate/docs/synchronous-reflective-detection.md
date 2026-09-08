@@ -1,3 +1,8 @@
+> **Superseded/unimplemented.** This spec was never built. The detector
+> actually running today is a dual-EMA fast/slow ratio detector over a
+> transmissive break-beam — see `detection-mechanism.md`. Kept here for
+> reference only.
+
 Here is a complete, structured system architecture specification designed specifically to serve as a precise prompt/context document for an agentic coding assistant (e.g., Cursor, Claude Dev, GitHub Copilot Workspace).
 
 ---

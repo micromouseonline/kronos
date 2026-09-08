@@ -1,5 +1,13 @@
 # Feasibility Assessment: Synchronous Reflective Detection for Hesperus
 
+> **Superseded.** This assessment was written against the firmware *before*
+> the dual-EMA analog detector existed — "what hesperus currently does"
+> below describes the old digital `attachInterrupt(CHANGE)` break-beam path,
+> since replaced by `beam-sensor.h`. See `detection-mechanism.md` for the
+> current implementation. Kept for its architectural analysis (FreeRTOS
+> core/task placement, latency modeling), which remains relevant if
+> reflective sensing is ever revisited.
+
 Assessment of `synchronous-reflective-detection.md` against the current firmware. This is a feasibility read, not an implementation plan.
 
 ## What hesperus currently does

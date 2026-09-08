@@ -6,9 +6,10 @@
 //  physical per-board decision, not a software setting. See
 //  board_role_from_jumper() below. JUMPER_DRIVE_PIN/JUMPER_SENSE_PIN
 //  themselves come from the per-board build_flags in
-//  platformio.ini/boards.ini (same convention as STATUS_LED/GATE_PIN_A/
-//  GATE_PIN_B) -- e.g. GPIO9/8 on most boards, GPIO7/14 on the QT Py ESP32
-//  Pico, which needs GPIO8 free for its NeoPixel power-enable pin instead.
+//  platformio.ini/boards.ini (same convention as STATUS_LED and the gate
+//  sensor pins below) -- e.g. GPIO9/8 on most boards, GPIO7/14 on the QT Py
+//  ESP32 Pico, which needs GPIO8 free for its NeoPixel power-enable pin
+//  instead.
 //
 //  `role <start|goal>` (provisioning-commands.h) and NVS still exist as a
 //  same-session manual override for testing without re-wiring the jumper --
@@ -24,8 +25,12 @@
 //  job: translate "channel A/B fired" into the right event name before
 //  sending it.
 //
-//  Wiring: channel A is GATE_PIN_A, channel B is GATE_PIN_B (both
-//  active-low, per-board build_flags -- see main.cpp).
+//  Wiring: channel A reads ARM_SENSOR_PIN, channel B reads START_SENSOR_PIN
+//  (per-board build_flags -- see main.cpp) via the analogue dual-EMA
+//  break-beam detector, not a digital edge -- see beam-sensor.h and
+//  detection-mechanism.md. (base_c3_super_mini/base_c3_xiao/
+//  base_qtpy_esp32_pico still carry the old digital GATE_PIN_A/GATE_PIN_B
+//  flags this replaced and don't currently build -- see TODO.md.)
 //  START boards: channel A -> ARM, channel B -> START.
 //  GOAL boards: both channels -> GOAL (single GOAL event, no per-lane
 //  distinction -- matches cerberus's RaceCommand::GOAL having no lane

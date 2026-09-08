@@ -1,38 +1,29 @@
 // ----------------------------------------------------------------------------
-//  beam-sensor.h — Dual-EMA reflective/occlusion beam-break detector.
+//  beam-sensor.h — Dual-EMA beam-break detector.
 //
-//  Ported from legacy/gate-detector/gate-detector/gate-detector.ino's
-//  ExpFilter/GateSensor classes (a fast/slow exponential-moving-average
-//  ratio detector, not the FIR/IIR/closed-loop-PWM scheme described in this
-//  project's own synchronous-reflective-detection.md, which is a different,
-//  unrelated, unimplemented design). Two EMAs of the same raw ADC signal:
-//  `fast` (tau ~2ms) tracks the instantaneous reading, `slow` (tau ~1s)
-//  tracks the ambient baseline. A beam-break/occlusion pulls `fast` down
-//  toward zero much faster than `slow` can follow, so the ratio
-//  fast/slow crossing 0.25 (falling) / 0.75 (rising) gives a
-//  self-normalizing trigger/re-arm pair with built-in hysteresis --
-//  see legacy-evaluation.md for the derivation and known weaknesses of
-//  this technique.
+//  Two EMAs of the same raw ADC signal: `fast` (tau ~2ms) tracks the
+//  instantaneous reading, `slow` (tau ~1s) tracks the ambient baseline. A
+//  beam-break/occlusion pulls `fast` down toward zero much faster than
+//  `slow` can follow, so the ratio fast/slow crossing 0.25 (falling) / 0.75
+//  (rising) gives a self-normalizing trigger/re-arm pair with built-in
+//  hysteresis. See detection-mechanism.md for the full writeup.
 //
-//  Three fixes are applied on top of the literal legacy algorithm, per
-//  legacy-evaluation.md's own suggested-improvements list:
-//   - Both EMAs are seeded from a burst of real ADC samples at startup
-//     (beam_sensor_seed_from_adc()) instead of legacy's implicit start at
-//     value=0, which caused a startup delay before readings were valid.
-//   - The recovery clamp (slow = max(slow, fast)) runs unconditionally on
-//     every update, not gated behind the dark-floor check -- legacy only
-//     ran it once already above the floor, so it never applied during a
-//     dark/occluded period and the detector could get stuck non-responsive
-//     after a long occlusion.
-//   - A confirm_count requires BEAM_CONFIRM_SAMPLES consecutive samples
-//     past the trigger ratio before latching an interrupt, instead of
-//     legacy's single-sample latch, to reject single-sample noise glitches.
+//  Both EMAs are seeded from a burst of real ADC samples at startup
+//  (beam_sensor_seed_from_adc()) so readings are valid immediately rather
+//  than ramping up from a zeroed start.
+//
+//  The recovery clamp (slow = max(slow, fast)) runs unconditionally on
+//  every update, not gated behind the dark-floor check below -- so it still
+//  applies during a dark/occluded period and the detector can't get stuck
+//  non-responsive after a long occlusion.
+//
+//  A confirm_count requires BEAM_CONFIRM_SAMPLES consecutive samples past
+//  the trigger ratio before latching an interrupt, to reject single-sample
+//  noise glitches.
 //
 //  alpha = 1/(F*tau) is derived from BEAM_SAMPLE_RATE_HZ rather than
-//  hardcoded, per legacy's own portability note: if the actual sample rate
-//  changes, alpha_fast/alpha_slow must be recalculated together to
-//  preserve the same time constants -- here that recalculation happens
-//  automatically.
+//  hardcoded, so if the sample rate changes, alpha_fast/alpha_slow are
+//  recalculated together automatically, preserving the same time constants.
 // ----------------------------------------------------------------------------
 #pragma once
 
@@ -46,9 +37,9 @@ constexpr float BEAM_TAU_SLOW_S = 1.0f;        // ~1s, tracks the ambient baseli
 constexpr float BEAM_ALPHA_FAST = 1.0f / (BEAM_SAMPLE_RATE_HZ * BEAM_TAU_FAST_S);
 constexpr float BEAM_ALPHA_SLOW = 1.0f / (BEAM_SAMPLE_RATE_HZ * BEAM_TAU_SLOW_S);
 
-// ~1% of 12-bit full scale (4095), rescaled from legacy's 10-count floor on
-// a 10-bit (1023) ADC -- below this the sensor isn't seeing usable light,
-// so the ratio logic is skipped rather than dividing by near-zero noise.
+// ~1% of 12-bit full scale (4095) -- below this the sensor isn't seeing
+// usable light, so the ratio logic is skipped rather than dividing by
+// near-zero noise.
 constexpr float BEAM_DARK_FLOOR_COUNTS = 40.0f;
 
 // Consecutive samples past the 0.25x trigger ratio required before latching
@@ -105,14 +96,16 @@ struct BeamSensor {
     fast.update(raw_adc);
     slow.update(raw_adc);
 
-    // Unconditional recovery clamp (fix #2, see header comment) -- must run
-    // before the dark-floor check below, not after/inside it.
+    // Recovery clamp -- must run unconditionally, before the dark-floor
+    // check below, not after/inside it, so it still applies during a
+    // dark/occluded period and the detector can't get stuck non-responsive
+    // after a long occlusion.
     slow.value = max(slow.value, fast.value);
 
     if (slow.value < BEAM_DARK_FLOOR_COUNTS) {
-      // No usable signal -- skip the ratio logic exactly as legacy did.
-      // Reset the confirmation counter so a stale near-miss from before the
-      // dark period can't complete once light returns.
+      // No usable signal -- skip the ratio logic. Reset the confirmation
+      // counter so a stale near-miss from before the dark period can't
+      // complete once light returns.
       confirm_count = 0;
       return false;
     }
@@ -127,9 +120,8 @@ struct BeamSensor {
       interrupted = false;
     }
 
-    // Confirmation counter (fix #3, see header comment) -- require
-    // BEAM_CONFIRM_SAMPLES consecutive samples past the trigger ratio
-    // before latching, instead of legacy's single-sample trigger.
+    // Require BEAM_CONFIRM_SAMPLES consecutive samples past the trigger
+    // ratio before latching, to reject single-sample noise glitches.
     if (!interrupted && armed && confirm_count >= BEAM_CONFIRM_SAMPLES) {
       interrupted = true;
       armed = false;
@@ -164,9 +156,9 @@ inline void beam_sensor_stream_debug(uint16_t arm_raw,
 }
 #endif
 
-// Startup seeding (fix #1, see header comment): takes BEAM_SEED_SAMPLE_COUNT
-// raw analogRead() samples on sensor.pin, averages them, and seeds both EMAs
-// from that mean. Returns false if the mean is below BEAM_DARK_FLOOR_COUNTS
+// Startup seeding: takes BEAM_SEED_SAMPLE_COUNT raw analogRead() samples on
+// sensor.pin, averages them, and seeds both EMAs from that mean. Returns
+// false if the mean is below BEAM_DARK_FLOOR_COUNTS
 // -- a real, technician-actionable fault (sensor unlit/miswired/obstructed)
 // the caller should surface, since a seed this dark means the ratio
 // detection logic will not function at all until it changes. Must be called

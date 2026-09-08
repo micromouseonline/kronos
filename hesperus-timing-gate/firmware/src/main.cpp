@@ -508,18 +508,16 @@ void statusLedTask(void *pvParameters) {
   }
 }
 
-// --- REFLECTIVE BEAM-BREAK DETECTION (dual-EMA fast/slow ratio) ---
-// See beam-sensor.h for the ExpFilter/BeamSensor algorithm itself (ported
-// from legacy/gate-detector's dual-EMA occlusion detector). A hardware
-// timer fires at BEAM_SAMPLE_RATE_HZ and wakes beamSampleTask via a task
-// notification -- the timer ISR itself does no ADC reads or float math,
-// matching this file's existing ISR-minimalism convention (see
+// --- BEAM-BREAK DETECTION (dual-EMA fast/slow ratio) ---
+// See beam-sensor.h for the ExpFilter/BeamSensor algorithm itself. A
+// hardware timer fires at BEAM_SAMPLE_RATE_HZ and wakes beamSampleTask via
+// a task notification -- the timer ISR itself does no ADC reads or float
+// math, matching this file's existing ISR-minimalism convention (see
 // tsfCaptureTask()'s comment below on why esp_wifi_get_tsf_time() stays out
 // of ISR context; the same reasoning motivates keeping this timer ISR as
 // short as possible). beamSampleTask runs in ordinary task context (woken
 // by, not running inside, the timer ISR), so pushing to triggerCaptureQueue
-// uses the plain xQueueSend(), not the ISR-only xQueueSendFromISR() the old
-// GPIO-interrupt path needed.
+// uses the plain xQueueSend(), not the ISR-only xQueueSendFromISR().
 //
 // Channel mapping matches board-role.h's ARM/START split:
 // ARM_SENSOR_PIN -> TRIGGER_A, START_SENSOR_PIN -> TRIGGER_B.

@@ -86,6 +86,8 @@ BSSID fallback, local standalone scoring.
 - Now that hesperus's `base_s3_zero`/`base_s3_super_mini` boards detect
   beam-breaks via the analogue dual-EMA path (`beam-sensor.h`, 2026-08-30)
   instead of the digital `GATE_PIN_A`/`GATE_PIN_B` interrupt path, ARES's
-  digital pulse output can no longer trigger those boards for bench
-  testing. Needs an analogue-equivalent test-signal path if bench
-  automation (vs. triggering by hand) is wanted for the new hardware.
+  digital pulse output can no longer trigger those boards directly. Design
+  for an analogue-equivalent test-signal path (pull-up + MOSFET tap, or
+  direct substitution with the phototransistor disconnected) is written up
+  in `hesperus-timing-gate/docs/detection-mechanism.md`'s "Bench stimulus
+  injection" section — not yet built on real hardware.
