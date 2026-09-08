@@ -45,7 +45,7 @@ when called from a time-critical path before. It's captured one task-context
 hop later, in `tsfCaptureTask()`, as close to this instant as the scheduler
 allows.
 
-## 3. Detection algorithm — dual-EMA fast/slow ratio
+## 3. Detection algorithm — dual-EMA fast/slow drop
 
 Implemented in `beam-sensor.h`, ported from the pre-ESP32 Arduino prototype's
 `ExpFilter`/`GateSensor` classes (`legacy/gate-detector/`).
@@ -56,35 +56,37 @@ signal:
 | EMA | Time constant | Tracks |
 |-----|---------------|--------|
 | `fast` | ~2 ms (`BEAM_TAU_FAST_S`) | the instantaneous reading |
-| `slow` | ~1 s (`BEAM_TAU_SLOW_S`) | the ambient/illuminated baseline |
+| `slow` | ~1 s (`BEAM_TAU_SLOW_S`) | the ambient+emitter baseline |
 
 ```
 value += alpha * (new_value - value)     // alpha = 1 / (sample_rate * tau)
 ```
 
-A beam-break pulls `fast` down toward zero much faster than `slow` can
-follow, so the ratio between them is a self-normalizing, illumination-
-independent trigger:
+A beam-break pulls `fast` down toward the ambient-only level much faster
+than `slow` can follow, so the absolute drop between them is the trigger:
 
-- **Trigger (falling):** `fast < 0.25 * slow`
-- **Re-arm (rising):** `fast > 0.75 * slow`
+- **Trigger (falling):** `slow - fast >= BEAM_TRIGGER_DROP_COUNTS` (300)
+- **Re-arm (rising):** `slow - fast <= BEAM_REARM_DROP_COUNTS` (100)
 
-The 0.25/0.75 gap is built-in hysteresis — it stops noise sitting near a
+This was originally a `fast/slow` *ratio* (0.25 falling / 0.75 rising,
+ported directly from legacy) rather than an absolute count drop — see
+"Ratio replaced with absolute drop" below for why that was changed.
+
+The 300/100 gap is built-in hysteresis — it stops noise sitting near a
 single threshold from chattering. Confirmation requires `BEAM_CONFIRM_SAMPLES`
-(3) consecutive samples past the trigger ratio before latching an interrupt
+(3) consecutive samples past the trigger drop before latching an interrupt
 (~3 ms added latency at 1 kHz), rejecting single-sample glitches that the
 literal legacy algorithm (single-sample latch) would have accepted.
 
 Below `BEAM_DARK_FLOOR_COUNTS` (40 counts, ~1% of 12-bit full scale) on
-`slow`, the sensor isn't seeing usable light at all — the ratio logic is
-skipped rather than dividing by near-zero noise, and the confirm counter is
-reset so a stale near-miss from before the dark period can't complete once
-light returns.
+`slow`, the sensor isn't seeing usable light at all — the trigger logic is
+skipped entirely, and the confirm counter is reset so a stale near-miss from
+before the dark period can't complete once light returns.
 
 ### Fixes applied over the literal legacy algorithm
 
 Per `legacy/gate-detector/legacy-evaluation.md`'s suggested-improvements
-list, three changes sit on top of the ported algorithm:
+list, plus one change beyond that list, sit on top of the ported algorithm:
 
 1. **Startup seeding** (`beam_sensor_seed_from_adc()`) — both EMAs are
    seeded from the mean of `BEAM_SEED_SAMPLE_COUNT` (64) real ADC samples at
@@ -92,13 +94,19 @@ list, three changes sit on top of the ported algorithm:
    startup delay before readings were valid. A seed mean below the dark
    floor is a real, technician-actionable fault (sensor unlit/miswired/
    obstructed) and is surfaced via `debug_printf`, not silently accepted.
-2. **Unconditional recovery clamp** — `slow = max(slow, fast)` runs on
-   *every* update, not gated behind the dark-floor check. Legacy only ran it
-   once already above the floor, so it never applied during a dark/occluded
-   period and the detector could get stuck non-responsive after a long
-   occlusion.
+2. **Recovery clamp, gated on `!armed`** — `slow = max(slow, fast)` lets
+   `slow` snap back up quickly once light returns after a long occlusion,
+   instead of crawling back over its own ~1 s time constant, so the
+   detector can't get stuck non-responsive. Originally ran unconditionally
+   on every update (matching legacy, which only skipped it below the dark
+   floor); refined to run only while `!armed` after a real false-trigger
+   bug was found — see "Recovery-clamp false trigger" below.
 3. **Confirm counter** (`BEAM_CONFIRM_SAMPLES`) — described above; legacy
    latched on a single sample.
+4. **Ratio replaced with absolute drop** — not in legacy's improvements
+   list at all, found after the fixes above still didn't stop false
+   triggers from external illumination; see "Ratio replaced with absolute
+   drop" below.
 
 `alpha_fast`/`alpha_slow` are derived from `BEAM_SAMPLE_RATE_HZ` rather than
 hardcoded, so changing the sample rate recalculates both time constants
@@ -127,29 +135,117 @@ Takeaways:
 - **`armSlow` runs consistently higher than `startSlow`** once the emitter
   is on (870 vs 450 in case C, 1160 vs 760 in case D) — a fixed asymmetry
   between the two channels (LED output, phototransistor sensitivity, or
-  beam alignment), not something that varies with ambient light. Not
-  necessarily a fault since the ratio detector is self-normalizing per
-  channel, but worth keeping in mind if the two channels are ever compared
-  directly.
+  beam alignment), not something that varies with ambient light. Mattered
+  less under the old self-normalizing ratio detector; matters more now that
+  `BEAM_TRIGGER_DROP_COUNTS` (see "Ratio replaced with absolute drop" below)
+  is a single absolute threshold shared across both channels — START's
+  smaller emitter contribution (~450 counts in case C) leaves noticeably
+  less margin above the 300-count trigger than ARM's (~870).
 - **Incandescent light does add a real, non-negligible offset on top of the
   emitter baseline** (case C → D, armSlow 870 → 1160) — incandescent sources
-  have much more IR content than LED/daylight. Not a problem for the ratio
-  detector itself, but something to keep in mind if `BEAM_DARK_FLOOR_COUNTS`
-  or absolute-count assumptions are ever revisited.
+  have much more IR content than LED/daylight. This is exactly the ambient
+  contribution that broke the old ratio detector on the START channel (see
+  "Ratio replaced with absolute drop" below) — worth keeping in mind if
+  `BEAM_DARK_FLOOR_COUNTS`, `BEAM_TRIGGER_DROP_COUNTS`, or
+  `BEAM_REARM_DROP_COUNTS` are ever revisited.
 
-**Open question — anomalous transient rise.** All four cases note the same
-behaviour: `slow` periodically rises to ~12 counts even during stretches
-where the raw ADC reading itself stays at 0, uncorrelated between the two
-channels. Not yet explained or root-caused. One plausible mechanism worth
-checking against a live trace: the unconditional recovery clamp
-(`slow = max(slow, fast)`, fix #2 above) means a single-sample noise spike on
-`fast` (tau ~2 ms, so it reacts almost immediately) gets latched into `slow`
-on that same sample, then only decays back over `slow`'s ~1 s time constant
-— so a single transient glitch in the raw signal could show up as a
-multi-hundred-millisecond bump in `slow` even though `raw` itself looks
-clean on a coarser view. Unverified — use `BEAM_SENSOR_STREAM_DEBUG` (below)
-to catch `raw`/`fast`/`slow` together across an occurrence before concluding
-anything.
+**Anomalous transient rise (explained).** All four cases noted the same
+behaviour: `slow` periodically rising to ~12 counts even during stretches
+where the raw ADC reading itself stayed at 0, uncorrelated between the two
+channels. This was originally logged as an unverified open question,
+guessing at a noise-spike cause. It's since been root-caused (see
+"Recovery-clamp false trigger" below): at the time this data was taken, the
+recovery clamp ran unconditionally, so *any* upward blip on `fast` — a
+single noisy ADC sample included — got latched into `slow` and only decayed
+back over `slow`'s ~1 s time constant. The fix below (gating the clamp on
+`!armed`) should eliminate this bench artifact entirely, since it's the
+same underlying mechanism, just triggered by sensor noise instead of an
+external light source. Worth re-running this bench characterization to
+confirm the artifact is gone.
+
+### Recovery-clamp false trigger (fixed)
+
+The recovery clamp's unconditional form had a real false-trigger bug, not
+just the cosmetic artifact above: if a **bright external light source**
+briefly floods the phototransistor — e.g. a passing robot's own
+reflected-light sensor, which works by measuring reflected light power the
+same way this gate does — `fast` spikes up, the clamp drags `slow` up to
+match on the same sample, and when the external source's pulse ends, `fast`
+drops back to the normal beam-intact level quickly (tau ~2 ms) while `slow`
+stays inflated for up to ~1 s. If the external source was bright enough,
+the normal return to baseline reads as `fast` dropping below 25% of the
+now-inflated `slow` — a false ARM/START/GOAL trigger, with no actual
+occlusion having occurred.
+
+Checked whether `legacy/gate-detector/gate-detector.ino`'s original
+algorithm avoided this: it doesn't — its clamp is equally unconditional,
+and it's arguably more exposed in practice since it latches a trigger on a
+single sample with no confirm-count at all (`BEAM_CONFIRM_SAMPLES` is
+something this port added on top).
+
+**Fix:** gate the clamp on `!armed`, so it only fires while genuinely
+recovering from a latched trigger, not during ordinary armed operation. A
+real occlusion is unaffected (`fast` is low there, so the clamp was already
+a no-op in that direction); recovery right after a real occlusion ends is
+unaffected (still `!armed` at that instant); a bright external pulse during
+normal armed operation no longer inflates `slow` at all, since it now only
+follows its own ~1 s EMA (a full-scale spike lasting ~100 ms only nudges
+`slow` by roughly 9–10% of the excursion — nowhere near enough to trigger).
+See `beam-sensor.h`'s header comment and inline comment on the clamp.
+
+Fixed and bench-tested; false triggers from external illumination persisted
+after this fix, root-caused separately below.
+
+### Ratio replaced with absolute drop (fixed)
+
+Even with the recovery-clamp fix above flashed and tested, external
+illumination pulses kept producing false triggers. The clamp only closes
+one path (the *unarmed* recovery path getting dragged up by a stale
+external spike); it does nothing for a pulse arriving while the gate is
+genuinely armed.
+
+The deeper problem was the `fast/slow` *ratio* trigger itself
+(`fast < 0.25 * slow`), which implicitly assumes ambient is negligible next
+to the emitter's own contribution. Write `slow ≈ ambient + emitter` before
+an occlusion and `fast → ambient` once one starts (the emitter's
+contribution is cut off; ambient doesn't change on `fast`'s ~2 ms
+timescale). The ratio only crosses 0.25 when `ambient < emitter / 3`. Bench
+data (`test-data.md`) puts this in perspective: case B's LED-only ambient is
+negligible (~0 counts), but case D's added incandescent ambient contributes
+roughly 290 counts (arm) / 310 counts (start) on top of case C — on the
+weaker START channel (~450-count emitter contribution in case C), that's
+~69% of the emitter signal, well past the 33% line. Two distinct failure
+modes follow from the same root cause:
+
+- **Missed real triggers under strong ambient** — if ambient exceeds 1/3 of
+  the emitter's contribution, a genuine full occlusion never drops the
+  ratio far enough to fire at all.
+- **False triggers when the baseline is ambient-dominated** — if `slow` is
+  low in the first place (weak/misaligned emitter, one LED not lit,
+  recovering from a prior occlusion), `0.25 * slow` is a small absolute
+  gap, so ordinary illumination noise — an external light pulse included —
+  can cross it without any real occlusion.
+
+**Fix:** replace the ratio with an absolute count drop: trigger on
+`slow - fast >= BEAM_TRIGGER_DROP_COUNTS` (300), re-arm on
+`slow - fast <= BEAM_REARM_DROP_COUNTS` (100). This directly measures the
+emitter's own light being lost, independent of the ambient level — a real
+occlusion always produces a drop close to the full emitter contribution
+(≥400-500 counts per the bench data), comfortably clearing 300 regardless
+of how bright ambient is, while an ambient-only fluctuation would need an
+absolute swing of 300+ counts within `fast`'s ~2 ms time constant to false-
+trigger, not just a fraction of a possibly-small baseline.
+**Bench-confirmed on real hardware:** flashed and tested, operation is more
+reliable, particularly against *high-frequency* interference (e.g. a
+flickering/modulated external light source) — plausibly because each
+interference cycle's low phase now has to sustain a ≥300-count drop for
+`BEAM_CONFIRM_SAMPLES` (3) consecutive 1 ms samples to latch, a much harder
+bar than crossing a ratio that a depressed baseline made cheap; `fast`'s own
+~2 ms tau also averages down the peak-to-trough excursion of anything
+faster than that. `BEAM_TRIGGER_DROP_COUNTS`/`BEAM_REARM_DROP_COUNTS` (300/
+100) are starting points consistent with the bench data on hand — still
+worth further tuning against a real bench trace if edge cases turn up, same
+as `BEAM_CONFIRM_SAMPLES`.
 
 ## 5. Bench tuning / debugging
 
@@ -159,6 +255,22 @@ Build with `-D BEAM_SENSOR_STREAM_DEBUG=1` (already on for
 limited to 20 Hz. Feed it to a live plotter — see `tools/serial-plotter.md`
 at the workspace root for the recommended tool and why the Arduino IDE's
 built-in plotter isn't used instead.
+
+**Bench check for the recovery-clamp fix above.** Not yet run on real
+hardware — worth doing before trusting this for a real event:
+
+1. **False-trigger check.** With the gate armed and the beam intact, briefly
+   flash a bright light across the phototransistor (phone flashlight, or a
+   second IR source) without ever fully blocking the beam, then let it go
+   dark again. Watch `armSlow`/`startSlow` on the plotter — before the fix
+   this should show `slow` snapping up to track the flash and a possible
+   false trigger on release; after the fix, `slow` should barely move and
+   no trigger should fire.
+2. **Real-occlusion regression check.** Confirm a genuine occlusion (hand
+   or object fully blocking the beam) still triggers after
+   `BEAM_CONFIRM_SAMPLES`, and that `slow` still snaps back up promptly
+   (not a slow ~1 s crawl) once the object clears, so re-arm timing is
+   unchanged from before the fix.
 
 ## 6. Bench stimulus injection (ARES)
 
