@@ -194,12 +194,10 @@ is effectively instantaneous relative to that.
 
 ## 7. Current status
 
-Only `base_s3_zero`/`base_s3_super_mini` have `ARM_SENSOR_PIN`/
-`START_SENSOR_PIN` assigned and build correctly against this detector.
-`base_c3_super_mini`, `base_c3_xiao`, and `base_qtpy_esp32_pico` still
-reference the old digital `GATE_PIN_A`/`GATE_PIN_B` flags this detector
-replaced and will not currently build — tracked in the root `TODO.md` under
-"hesperus-timing-gate", not repeated here.
+Two board targets: `hesperus-gate-s3-zero`/`hesperus-gate-s3-super-mini`
+(`base_s3_zero`/`base_s3_super_mini` in `boards.ini`), both with
+`ARM_SENSOR_PIN`/`START_SENSOR_PIN` assigned and building correctly against
+this detector.
 
 ## Related/superseded documents
 

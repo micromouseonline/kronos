@@ -14,9 +14,6 @@ See [CLAUDE.md](CLAUDE.md) for firmware design details and
 |------------------------------------|-----------------------------------------|
 | hesperus-gate-s3-zero              | Waveshare/generic ESP32-S3-Zero         |
 | hesperus-gate-s3-super-mini        | ESP32-S3 Super Mini                     |
-| hesperus-gate-c3-super-mini        | ESP32-C3 Super Mini                     |
-| hesperus-gate-c3-xiao               | Seeed XIAO ESP32-C3                     |
-| hesperus-gate-qtpy-esp32-pico       | Adafruit QT Py ESP32 Pico (alternate-silicon trial board) |
 
 ## Build
 
@@ -40,7 +37,4 @@ build_flags =
 ```
 
 If the port doesn't come back after flashing, a manual reset or power
-cycle gets it to a known state. The C3 and QT Py ESP32 Pico envs don't set
-`ARDUINO_TINYUSB` and aren't affected by this native-USB-CDC quirk (the QT
-Py Pico's USB-serial goes through an onboard CP2102N bridge chip instead —
-see `boards.ini`'s `base_qtpy_esp32_pico` comments).
+cycle gets it to a known state.
