@@ -2738,7 +2738,7 @@ full trial writeup.
 unconfirmed]**
 *(new, found during the `gather-stats-core0` branch's 1000-simulated-run
 trial, `test-data/load-tests/`, run to measure Core 0 idle headroom for
-`hesperus-timing-gate/docs/reflective-detection-feasibility.md`)*
+`hesperus-timing-gate/docs/reflective-detection-proposal.md`)*
 
 **Observation.** Cerberus's log recorded 994/994/992 ARM/START/GOAL against
 997/997/996 sent by the two gate boards. First read as "10 events missing at

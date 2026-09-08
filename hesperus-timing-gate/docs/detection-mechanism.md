@@ -201,13 +201,10 @@ this detector.
 
 ## Related/superseded documents
 
-- `synchronous-reflective-detection.md` — a closed-loop MCPWM/FIR/IIR
-  reflective-sensing spec. Never implemented; unrelated to the algorithm
-  actually running (see `beam-sensor.h`'s own header comment). Kept for
-  reference only.
-- `reflective-detection-feasibility.md` — a feasibility read of that spec
-  against the firmware *as it stood before this detector existed* (a purely
-  digital `attachInterrupt(CHANGE)` break-beam). Superseded by this
-  document; kept for its architectural analysis (FreeRTOS core/task
-  placement, latency modeling) which remains relevant if reflective sensing
-  is ever revisited.
+- `reflective-detection-proposal.md` — a closed-loop MCPWM/FIR/IIR
+  reflective-sensing scheme (spec + feasibility assessment), unrelated to
+  the algorithm actually running (see `beam-sensor.h`'s own header
+  comment). Never implemented; kept for its architectural analysis
+  (Core 0/Core 1 placement, a secondary-processor alternative, real
+  profiling data) which remains relevant if reflective sensing is ever
+  revisited.
