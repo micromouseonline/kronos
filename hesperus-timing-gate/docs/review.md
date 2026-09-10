@@ -146,3 +146,4 @@ cable attached.
 | Long | NVS event buffering | Survive power cycle with unsent events preserved in flash |
 | Long | Multi-AP BSSID fallback | Secondary AP list with explicit TSF-resync on AP switch |
 | Long | Local standalone scoring | Compute lap/split locally if server unreachable; display on SSD1306 |
+| Long | Beam-sensor oversampling (DMA + decimate) | Raise ADC sample rate above 1kHz to reject 500-2000Hz pulsed-light aliasing; deferred 2026-09-09 after a bench trial at >4000lux ambient + heavy 1kHz pulsed interference showed reliable operation with the current 1kHz scheme. Revisit only if field trials later show it's still needed. Investigation notes (oversample-then-decimate via DMA, batched EMA catch-up design) captured for reuse if resumed |

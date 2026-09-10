@@ -2885,6 +2885,176 @@ simply the same event measured twice.
    trial — this switch makes future logging leaner but doesn't help
    diagnose *this* blackout after the fact.
 
+### Issue: beamSampleTask can go unscheduled for hundreds of ms, sharing Core 0 with the Wi-Fi driver task
+
+**[Largely characterized, 2026-09-08 — three independent trials now agree
+`beam_tick_max_us` (~410-509ms each time) is a one-time boot/Wi-Fi-
+association-window transient, not a recurring steady-state stall; the exact
+root cause inside that window and the other 6-12 overruns' distribution are
+still not individually confirmed, kept OPEN for that, but the practical
+question this issue was raised for — "is there an ongoing risk of missing a
+real trigger during normal operation" — now has a reassuring answer: no,
+not observed across three trials totalling several minutes of continuous
+real trigger load]**
+*(new, found via `cpu-profile-stats.h`, added this session to investigate
+headroom for raising `BEAM_SAMPLE_RATE_HZ` above 1kHz — see
+`hesperus-timing-gate/docs/detection-mechanism.md`'s "Ratio replaced with
+absolute drop" section for why a higher rate is wanted at all: 500-2000Hz
+pulsed interference aliases below 1kHz sampling's 500Hz Nyquist limit)*
+
+**Observation.** `beamSampleTask` (Core 0, 1kHz nominal via a hardware
+timer notify) now self-times its own wake-to-wake interval
+(`cpu_profile_record_beam_tick()`) and both cores run a
+`esp_register_freertos_idle_hook_for_cpu()` idle-hit counter, both exposed
+via `GET /status`. Two bench trials on the START gate board (`CC99C4`, both
+ARM+START channels), Wi-Fi/WS connected to cerberus throughout, mechanically
+driven ARM/START occlusion pairs firing continuously:
+
+| | Trial 1 | Trial 2 |
+|---|---:|---:|
+| Window | 179.3s | 73.5s |
+| `ws_disconnect_count` | 30 | 0 |
+| `ws_stall_count` (>50ms) | 52 | 1 |
+| `ws_max_stall_ms` | 5002 | 392 |
+| `event_drop_link_down` | 39 | 0 |
+| `beam_tick_max_us` | 509,462 | 410,270 |
+| `beam_tick_overrun_count` (>2500us) | 7 | 13 |
+| `core0_idle_hits` | 66,035,764 | 26,985,750 |
+| `core1_idle_hits` | 258,556,183 | 105,769,782 |
+| Core1/Core0 idle-hit ratio | ~3.92x | ~3.92x |
+
+Trial 1 was run first and looked like a straightforward story: a Wi-Fi
+disconnect storm (one every ~6s) plausibly starving Core 0 long enough to
+blank the sampler for up to 509ms. Trial 2 was a clean re-run specifically
+to get a disconnect-free baseline — and instead complicates that story: with
+**zero** disconnects and only one >50ms stall the whole run,
+`beam_tick_max_us` is still 410ms, and the overrun count is *higher* (13 vs
+7) than the disconnect-storm trial. Whatever blocks `beamSampleTask` for
+hundreds of ms is evidently not primarily the disconnect/reconnect path —
+it's present, and if anything more frequent, under an otherwise-healthy
+connection.
+
+**Two things this rules toward, not yet confirmed:**
+1. **RSSI was weak and volatile in both trials** (-71 dBm at the `/status`
+   snapshot; the cerberus log's per-event `rssi` field ranges -71 to -80
+   across trial 2's excerpt, changing line to line). A marginal/noisy RF
+   link can force 802.11 MAC-layer retries or TCP retransmission backoff
+   inside the Wi-Fi/lwIP driver task without ever tearing down the
+   connection or tripping `WStype_DISCONNECTED` — which would explain
+   multi-hundred-ms Core 0 blocking with zero visible disconnects. Not
+   confirmed: would need a trial on a strong, quiet link (RSSI ~-40 to -50)
+   to see whether `beam_tick_max_us` drops accordingly.
+2. **The Core1/Core0 idle-hit ratio is essentially identical across both
+   trials (~3.92x) despite wildly different disconnect/stall activity.**
+   That consistency suggests it mostly reflects steady-state background
+   load (the Wi-Fi driver's continuous housekeeping + the 1kHz sampler
+   sharing Core 0 against everything else on Core 1), not the occasional
+   extreme events — those are too rare relative to the trial windows to
+   move an aggregate hit-rate this much. Read as a relative indicator only
+   (see `cpu-profile-stats.h`'s header comment on why this isn't converted
+   to a CPU% figure).
+
+**Why this matters more than the sample-rate question that motivated it.**
+This is a pre-existing gap at the *current* 1kHz rate, not something a
+higher rate would introduce — a ~500ms sampler blackout today, on real
+(non-adversarial) hardware, is long enough to miss a real beam-break
+entirely. It also reframes the original question: raising
+`BEAM_SAMPLE_RATE_HZ` with the existing per-tick `analogRead()`-in-a-woken-
+task mechanism wouldn't fix this at all, since a faster sampler sharing the
+same core with the same contention pattern is exposed to the exact same
+multi-hundred-ms gaps. This is the strongest argument yet for the
+continuous ADC-via-DMA mechanism sketched (never validated) in
+`reflective-detection-proposal.md`: a DMA engine keeps filling its buffer in
+hardware regardless of whether the CPU gets scheduled promptly, so a ~500ms
+CPU stall would delay *processing* a batch, not silently lose samples
+outright, provided the buffer is sized to survive the worst observed stall
+(≥500 samples at 1kHz, proportionally more at a higher target rate).
+
+**Addendum, 2026-09-08 — the 410ms max is a boot artifact, not a runtime
+one.** Caught by inspection, not instrumentation: a `/status` snapshot taken
+immediately after a reset (well before any occlusion trial started) already
+showed `beam_tick_max_us: 410270` — identical to trial 2's final reading 74
+seconds later. So whatever produced it happened once, early in boot, and
+was never exceeded again during ~74s of continuous real trigger load.
+Re-checked `beamSampleTask`'s timing code for an initialization bug first
+(a plausible alternative explanation) and ruled it out: `last_tick_us`
+starts at 0 and the very first (necessarily bogus, task-creation-to-first-
+timer-fire) interval is explicitly skipped before any recording happens —
+so this is a real measured delay, not an artifact of the counter's own
+start-up state. Most likely explanation: `WiFi.begin()` is called in
+`setup()` *before* `beamSampleTask`/its timer are created, so Wi-Fi
+association (scanning, associating, DHCP) is plausibly still running on
+Core 0 — the same core `beamSampleTask` shares with the Wi-Fi driver task —
+during the sampler's very first several real ticks. Not yet confirmed
+directly (would need to correlate against a Wi-Fi-connected-event log
+timestamp).
+
+Added `beam_tick_max_at_ms` (ms since the profiling window started when the
+current max was set) to `cpu-profile-stats.h`/`GET /status`, and wired
+`cpu_profile_reset()` into the existing `POST /status/reset` route
+alongside `network_health_clear()` — lets a bench trial reset the profile
+stats once the gate has fully connected and settled, excluding this boot
+transient from a subsequent steady-state-only reading, rather than having
+to infer it after the fact. This doesn't yet resolve whether the *other*
+6-12 overruns per trial (only known as ">2500us", not further sized or
+timestamped) are also concentrated in the same boot burst or genuinely
+recur through the run — see next step 1, still open.
+
+**Trial 3, 2026-09-08 — direct confirmation, both quantitative and
+qualitative.** A third trial (reset via `POST /status/reset`, not a power
+cycle — device uptime was actually ~10h, unrelated) gave both kinds of
+evidence at once:
+
+- **Qualitative** (raw `BEAM_SENSOR_STREAM_DEBUG` + `debug_printf` log):
+  `[WS Pump] wsClient.loop() blocked 385ms (wifi_status=3, ws_connected=0)`
+  fires exactly once, immediately after `[NETWORK] Link Active!` — i.e.
+  during the initial WS handshake, before any connection exists yet
+  (`ws_connected=0`). Every `[WS Worker] Sent ARM/START` line after that —
+  15+ consecutive cycles, evenly spaced ~800-900ms apart matching the
+  mechanical rig's cadence — lines up 1:1 with cerberus's received events,
+  no gaps.
+- **Quantitative** (`GET /status` at the end of the same run):
+  `beam_tick_max_us: 410631`, `beam_tick_max_at_ms: 578`. The worst tick
+  landed 578ms into a 141-second window and was never approached again —
+  direct proof the ~410ms spike is confined to the same early
+  connection-establishment period the log shows, not spread through the
+  rest of the trial.
+
+Three independent trials now agree on both the magnitude (~410-509ms) and,
+for the two that measured it, the boot-window timing. Combined with
+`hesperus`'s existing TSF-baseline gate not locking until ~4.5s after
+`Link Active` in the same trial, this window is already inside the settling
+time a technician has to wait through before the gate is usable for a real
+race — so while the underlying mechanism (presumed Wi-Fi association
+contending with `beamSampleTask` on Core 0) isn't proven down to the exact
+driver call, the practical question this issue exists to answer is settled:
+**no evidence of an ongoing risk to a real race**, across three trials
+totalling several minutes of continuous real trigger load.
+
+**Next steps (not yet done, lower urgency than before).**
+1. Add a rate-limited `debug_printf` (mirroring `wsPumpTask`'s existing
+   >50ms canary) whenever a beam tick exceeds a much larger threshold (e.g.
+   10ms), to individually timestamp the *other* 6-12 overruns each trial
+   recorded (only known as ">2500us", never individually sized/timestamped)
+   and confirm they're boot-clustered too rather than spread through the
+   run. Nice-to-have for full closure, not needed for the practical
+   conclusion above.
+2. Repeat trial 2's clean-connection setup on a strong/quiet link (RSSI
+   ~-40 to -50), resetting via `POST /status/reset` once connected and
+   settled, to see whether a stronger link shrinks the boot-window transient
+   itself — lower priority now that it's understood to be bounded and
+   already contained within existing settling time.
+3. Cross-check a trial's cerberus log against however many occlusions were
+   actually driven mechanically, for a fully independent zero-loss count —
+   every trial's log evidence so far is consistent with zero loss, but
+   none has an independent ground-truth occlusion count to check against.
+4. Revisit whether `beamSampleTask`'s Core 0 placement is fixable by moving
+   it, or whether that just relocates the same problem — Core 1 already
+   carries `tsfCaptureTask` (priority 3, itself calling the WiFi-driver-
+   locking `esp_wifi_get_tsf_time()`), so there's no obviously-safe core to
+   move to under the current per-tick-
+   task sampling model.
+
 ## Decision record: ESP-NOW alternative
 
 Worth recording explicitly, since it was raised and weighed rather than

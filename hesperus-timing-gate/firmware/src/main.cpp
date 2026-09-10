@@ -508,7 +508,7 @@ void statusLedTask(void *pvParameters) {
   }
 }
 
-// --- BEAM-BREAK DETECTION (dual-EMA fast/slow ratio) ---
+// --- BEAM-BREAK DETECTION (dual-EMA fast/slow drop) ---
 // See beam-sensor.h for the ExpFilter/BeamSensor algorithm itself. A
 // hardware timer fires at BEAM_SAMPLE_RATE_HZ and wakes beamSampleTask via
 // a task notification -- the timer ISR itself does no ADC reads or float
