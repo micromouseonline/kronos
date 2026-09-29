@@ -9,6 +9,7 @@
 
 #include <Arduino.h>
 
+#include "beam-sensor.h"
 #include "board-role.h"
 #include "cli.h"
 #include "network-health-stats.h"
@@ -60,9 +61,27 @@ inline void cmd_netstats(int argc, char **argv) {
                 g_network_health.drop_link_down);
 }
 
+// Bare `stream` toggles rather than just reporting state, so it can be driven
+// from terminals that can't send a space (SerialPlotster 0.3.0's send box
+// swallows the space bar).
+inline void cmd_stream(int argc, char **argv) {
+  if (argc == 1) {
+    g_beam_stream_enabled = !g_beam_stream_enabled;
+  } else if (argc == 2 && strcmp(argv[1], "on") == 0) {
+    g_beam_stream_enabled = true;
+  } else if (argc == 2 && strcmp(argv[1], "off") == 0) {
+    g_beam_stream_enabled = false;
+  } else {
+    Serial.println("usage: stream [on|off]  (no argument toggles)");
+    return;
+  }
+  Serial.printf("sensor stream %s\n", g_beam_stream_enabled ? "on" : "off");
+}
+
 constexpr CliCommand PROVISIONING_COMMANDS[] = {
     {"wifi", cmd_wifi},
     {"role", cmd_role},
     {"netstats", cmd_netstats},
+    {"stream", cmd_stream},
 };
 constexpr size_t PROVISIONING_COMMAND_COUNT = sizeof(PROVISIONING_COMMANDS) / sizeof(PROVISIONING_COMMANDS[0]);

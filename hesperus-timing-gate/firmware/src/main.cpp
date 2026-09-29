@@ -560,9 +560,7 @@ void beamSampleTask(void *parameter) {
     uint16_t start_raw = analogRead(startSensor.pin);
     bool arm_triggered = armSensor.update(arm_raw);
     bool start_triggered = startSensor.update(start_raw);
-#if BEAM_SENSOR_STREAM_DEBUG
     beam_sensor_stream_debug(arm_raw, armSensor, start_raw, startSensor);
-#endif
     if (arm_triggered) {
       dispatchBeamTrigger(TRIGGER_A);
     }
