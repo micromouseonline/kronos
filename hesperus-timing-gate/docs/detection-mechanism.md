@@ -249,10 +249,12 @@ as `BEAM_CONFIRM_SAMPLES`.
 
 ## 5. Bench tuning / debugging
 
-Build with `-D BEAM_SENSOR_STREAM_DEBUG=1` (already on for
-`hesperus-gate-s3-super-mini`) to stream `armRaw`/`armFast`/`armSlow`/
+Type `stream on` / `stream off` at the serial CLI (bare `stream` toggles and
+reports the new state -- handy from SerialPlotster, whose send box can't send
+a space) to stream `armRaw`/`armFast`/`armSlow`/
 `startRaw`/`startFast`/`startSlow` over serial as `label:value` pairs, rate-
-limited to 20 Hz. Feed it to a live plotter — see `tools/serial-plotter.md`
+limited to 20 Hz. `-D BEAM_SENSOR_STREAM_DEBUG=1` only makes it start on at
+boot (set for `hesperus-gate-s3-super-mini`). Feed it to a live plotter — see `tools/serial-plotter.md`
 at the workspace root for the recommended tool and why the Arduino IDE's
 built-in plotter isn't used instead.
 
