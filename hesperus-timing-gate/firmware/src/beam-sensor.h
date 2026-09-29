@@ -39,6 +39,8 @@
 
 #include <Arduino.h>
 
+#include <atomic>
+
 #include "debug-log.h" // debug_printf
 
 constexpr uint32_t BEAM_SAMPLE_RATE_HZ = 1000; // see main.cpp's timer setup
@@ -61,8 +63,8 @@ constexpr float BEAM_DARK_FLOOR_COUNTS = 40.0f;
 // the old 0.25x ratio had: under strong ambient (test-data.md case D, where
 // incandescent ambient reached ~69% of the START channel's own emitter
 // contribution), the ratio could fail to cross 0.25 on a *real* occlusion
-// at all -- a missed trigger, not just a false one.
-constexpr float BEAM_TRIGGER_DROP_COUNTS = 300.0f;
+// at all -- a missed trigger, not just a false one. 
+constexpr float BEAM_TRIGGER_DROP_COUNTS = 100.0f;
 
 // Re-arm once the drop has recovered back below this -- well under
 // BEAM_TRIGGER_DROP_COUNTS so the gap gives the same kind of hysteresis the
@@ -79,19 +81,23 @@ constexpr uint8_t BEAM_CONFIRM_SAMPLES = 3;
 constexpr uint32_t BEAM_SEED_SAMPLE_COUNT = 64;
 
 // Streams raw/fast/slow values for both channels to Serial for bench
-// tuning -- off by default, matching WS_EVENT_LOG_DETAIL's convention in
-// debug-log.h (pass -D BEAM_SENSOR_STREAM_DEBUG=1 via build_flags for a
-// bench-tuning session and rebuild).
+// tuning. Switched at runtime by the serial `stream [on|off]` command
+// (provisioning-commands.h); BEAM_SENSOR_STREAM_DEBUG only sets its state
+// at boot -- off by default, matching WS_EVENT_LOG_DETAIL's convention in
+// debug-log.h (pass -D BEAM_SENSOR_STREAM_DEBUG=1 via build_flags to have
+// it start on).
 #ifndef BEAM_SENSOR_STREAM_DEBUG
 #define BEAM_SENSOR_STREAM_DEBUG 0
 #endif
 
-#if BEAM_SENSOR_STREAM_DEBUG
+// Written by the CLI (loop task), read by beamSampleTask -- a plain bool
+// flag, so std::atomic is enough; no ordering with other data is needed.
+inline std::atomic<bool> g_beam_stream_enabled{BEAM_SENSOR_STREAM_DEBUG != 0};
+
 // Rate-limited to this many samples between prints (50 samples @
 // BEAM_SAMPLE_RATE_HZ=1000 -> 20Hz) so the stream stays well under the
 // serial link's bandwidth instead of printing every single sample.
 constexpr uint32_t BEAM_DEBUG_STREAM_INTERVAL_SAMPLES = 50;
-#endif
 
 struct ExpFilter {
   float alpha = 1.0f;
@@ -166,7 +172,6 @@ struct BeamSensor {
   }
 };
 
-#if BEAM_SENSOR_STREAM_DEBUG
 // Prints one line of "label:value" pairs (Arduino IDE Serial Plotter
 // format) per BEAM_DEBUG_STREAM_INTERVAL_SAMPLES samples, e.g.
 // "armRaw:1820 armFast:1815.2 armSlow:1818.9 startRaw:1790 ...". Bypasses
@@ -178,6 +183,9 @@ inline void beam_sensor_stream_debug(uint16_t arm_raw,
                                       uint16_t start_raw,
                                       const BeamSensor &start_sensor) {
   static uint32_t sample_count = 0;
+  if (!g_beam_stream_enabled.load(std::memory_order_relaxed)) {
+    return;
+  }
   if (++sample_count % BEAM_DEBUG_STREAM_INTERVAL_SAMPLES != 0) {
     return;
   }
@@ -189,7 +197,6 @@ inline void beam_sensor_stream_debug(uint16_t arm_raw,
       start_sensor.fast.value, start_sensor.slow.value);
   serial_write_unlock();
 }
-#endif
 
 // Startup seeding: takes BEAM_SEED_SAMPLE_COUNT raw analogRead() samples on
 // sensor.pin, averages them, and seeds both EMAs from that mean. Returns
