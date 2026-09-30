@@ -41,20 +41,23 @@ const int LED_GREEN_PIN = 11;
 // --- RED/GREEN indicator LED control queue ---
 // LedTarget/LedCommand/LedControlMsg, statusLedQueue and statusLedTask
 // (defined further down, near ledDiagnosticTask) let any code turn either
-// LED on/off "at will" (led_set()) or force one on for a bounded number of
-// 100ms ticks then revert to its steady state (led_flash()) -- e.g. to
-// signal a one-off event without disturbing the ongoing connection-status
-// indication. Named distinctly from the unrelated NeoPixel
+// LED on/off "at will" (led_set()) or override one for a bounded number of
+// milliseconds then revert to its steady state (led_flash()/led_pulse()) --
+// e.g. to signal a one-off event without disturbing the ongoing
+// connection-status indication. Named distinctly from the unrelated NeoPixel
 // ledQueue/ledDiagnosticTask/ledTaskHandle below (different LEDs, different
 // subsystem).
 enum class LedTarget { RED, GREEN };
-enum class LedCommand { SET_ON, SET_OFF, FLASH };
+enum class LedCommand { SET_ON, SET_OFF, FLASH, PULSE };
 
 struct LedControlMsg {
   LedTarget target;
   LedCommand command;
-  uint8_t flash_ticks; // only used when command == FLASH; ticks of 100ms each
+  uint16_t duration_ms; // only used when command == FLASH/PULSE
 };
+
+// RED pulse length on every beam trigger (see dispatchBeamTrigger()).
+constexpr uint16_t TRIGGER_LED_PULSE_MS = 150;
 
 QueueHandle_t statusLedQueue;
 TaskHandle_t statusLedTaskHandle = NULL;
@@ -70,19 +73,29 @@ bool led_set(LedTarget target, bool on) {
   return true;
 }
 
-// Forces `target` to the OPPOSITE of its current steady state for `ticks` *
-// 100ms, then reverts to its steady state (whatever led_set() last set it to
-// -- may change during the flash, which is picked up correctly since steady
-// state and the flash countdown/value are tracked independently per LED in
-// statusLedTask). E.g. calling this on RED (currently off) and GREEN
-// (currently on) back-to-back swaps them for the flash's duration.
-bool led_flash(LedTarget target, uint8_t ticks) {
-  LedControlMsg msg{target, LedCommand::FLASH, ticks};
+// Forces `target` to the OPPOSITE of its current steady state for
+// `duration_ms`, then reverts to its steady state (whatever led_set() last
+// set it to -- may change during the flash, which is picked up correctly
+// since steady state and the flash deadline/value are tracked independently
+// per LED in statusLedTask). E.g. calling this on RED (currently off) and
+// GREEN (currently on) back-to-back swaps them for the flash's duration.
+bool led_flash(LedTarget target, uint16_t duration_ms) {
+  LedControlMsg msg{target, LedCommand::FLASH, duration_ms};
   if (xQueueSend(statusLedQueue, &msg, 0) != pdTRUE) {
     debug_println("[QUEUE OVERFLOW] statusLedQueue full; LED flash dropped.");
     return false;
   }
   return true;
+}
+
+// Like led_flash(), but forces `target` ON (not toggled) for `duration_ms`
+// before reverting to its steady state -- so it's only visible while the
+// steady state is off. Deliberately doesn't log on overflow: it's called from
+// beamSampleTask's 1kHz path, which must not block on a Serial write; a
+// dropped pulse is purely cosmetic.
+bool led_pulse(LedTarget target, uint16_t duration_ms) {
+  LedControlMsg msg{target, LedCommand::PULSE, duration_ms};
+  return xQueueSend(statusLedQueue, &msg, 0) == pdTRUE;
 }
 
 // Channel A / channel B -- see board-role.h for how these map to ARM/START/
@@ -452,20 +465,21 @@ void ledDiagnosticTask(void *pvParameters) {
 
 // --- LOW-PRIORITY RED/GREEN STATUS LED TASK ---
 // Sole owner of LED_RED_PIN/LED_GREEN_PIN -- see led_set()/led_flash()
-// above for the queue producer side. Each 100ms tick, drains every pending
-// command (cheap, and lets a SET_ON immediately followed by a FLASH both
-// take effect within the same tick rather than one tick apart), then drives
-// each pin from its own steady state, forced to the opposite value instead
-// for as many ticks as a flash still has remaining.
+// above for the queue producer side. Blocks on the queue until either a
+// command arrives (so a trigger pulse lights immediately, not on the next
+// poll) or the earliest active flash deadline passes, drains every pending
+// command (so a SET_ON immediately followed by a FLASH both take effect
+// together), then drives each pin from its own steady state, forced to the
+// override value instead while that LED's flash deadline hasn't passed.
 void statusLedTask(void *pvParameters) {
   // Indexed by LedTarget. Starts matching the power-up default (RED on,
   // GREEN off) that setup()'s own digitalWrite() already applied directly
-  // before this task's first tick -- so there's no discontinuity, and no
+  // before this task first runs -- so there's no discontinuity, and no
   // led_set() call is needed at boot just to reach this state.
   bool steady_on[2] = {true, false};
-  uint8_t flash_remaining[2] = {0, 0}; // ticks left forced, 0 = not flashing
-  bool flash_state[2] = {false,
-                         false}; // value forced while flash_remaining > 0
+  bool flashing[2] = {false, false};
+  TickType_t flash_until[2] = {0, 0}; // valid while flashing[i]
+  bool flash_state[2] = {false, false}; // value forced while flashing[i]
 
   auto write_pin = [](LedTarget target, bool on) {
     int pin = (target == LedTarget::RED) ? LED_RED_PIN : LED_GREEN_PIN;
@@ -473,8 +487,28 @@ void statusLedTask(void *pvParameters) {
   };
 
   while (1) {
+    // Expire finished flashes (signed difference handles tick wraparound),
+    // then drive the pins and work out how long we can sleep.
+    TickType_t now = xTaskGetTickCount();
+    TickType_t wait = portMAX_DELAY;
+    for (int i = 0; i < 2; i++) {
+      if (flashing[i]) {
+        int32_t remaining = static_cast<int32_t>(flash_until[i] - now);
+        if (remaining <= 0) {
+          flashing[i] = false;
+        } else if (static_cast<TickType_t>(remaining) < wait) {
+          wait = remaining;
+        }
+      }
+      write_pin(static_cast<LedTarget>(i),
+                flashing[i] ? flash_state[i] : steady_on[i]);
+    }
+
     LedControlMsg msg;
-    while (xQueueReceive(statusLedQueue, &msg, 0) == pdPASS) {
+    if (xQueueReceive(statusLedQueue, &msg, wait) != pdPASS) {
+      continue; // timed out: a flash deadline passed
+    }
+    do {
       int i = static_cast<int>(msg.target);
       switch (msg.command) {
       case LedCommand::SET_ON:
@@ -489,22 +523,16 @@ void statusLedTask(void *pvParameters) {
         // flashing two LEDs with differing steady states (e.g. RED
         // off/GREEN on) swaps them for the duration.
         flash_state[i] = !steady_on[i];
-        flash_remaining[i] = msg.flash_ticks;
+        flashing[i] = true;
+        flash_until[i] = xTaskGetTickCount() + pdMS_TO_TICKS(msg.duration_ms);
+        break;
+      case LedCommand::PULSE:
+        flash_state[i] = true;
+        flashing[i] = true;
+        flash_until[i] = xTaskGetTickCount() + pdMS_TO_TICKS(msg.duration_ms);
         break;
       }
-    }
-
-    for (int i = 0; i < 2; i++) {
-      LedTarget target = static_cast<LedTarget>(i);
-      if (flash_remaining[i] > 0) {
-        write_pin(target, flash_state[i]);
-        flash_remaining[i]--;
-      } else {
-        write_pin(target, steady_on[i]);
-      }
-    }
-
-    vTaskDelay(pdMS_TO_TICKS(100));
+    } while (xQueueReceive(statusLedQueue, &msg, 0) == pdPASS);
   }
 }
 
@@ -551,6 +579,8 @@ void dispatchBeamTrigger(EventType type) {
   if (xQueueSend(triggerCaptureQueue, &pc, 0) != pdTRUE) {
     triggerCaptureq_overflow_count++;
   }
+  // After the timestamp capture, so the LED queue send adds nothing to it.
+  led_pulse(LedTarget::RED, TRIGGER_LED_PULSE_MS);
 }
 
 void beamSampleTask(void *parameter) {
@@ -955,8 +985,8 @@ void setup() {
   delay(2000);
   Serial.begin(115200);
 
-  // Safe default for the brief window before statusLedTask's first 100ms
-  // tick (it isn't created until further down in setup()) -- statusLedTask
+  // Safe default for the brief window before statusLedTask first runs (it
+  // isn't created until further down in setup()) -- statusLedTask
   // itself starts with the same RED-on/GREEN-off state, so there's no
   // discontinuity once it takes over as sole owner of these two pins.
   pinMode(LED_RED_PIN, OUTPUT);
@@ -1059,7 +1089,7 @@ void setup() {
   bool arm_seed_ok = beam_sensor_seed_from_adc(armSensor);
   bool start_seed_ok = beam_sensor_seed_from_adc(startSensor);
   if (!arm_seed_ok || !start_seed_ok) {
-    led_flash(LedTarget::RED, 10); // 10 * 100ms = 1s
+    led_flash(LedTarget::RED, 1000);
   }
 
   // beamSampleTaskHandle must exist before the timer ISR can notify it, so

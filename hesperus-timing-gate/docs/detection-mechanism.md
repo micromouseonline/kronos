@@ -58,6 +58,11 @@ signal:
 | `fast` | ~2 ms (`BEAM_TAU_FAST_S`) | the instantaneous reading |
 | `slow` | ~1 s (`BEAM_TAU_SLOW_S`) | the ambient+emitter baseline |
 
+`fast` is fed raw samples; `slow` is fed `sustained`, a running median of
+raw over `BEAM_SUSTAIN_WINDOW_SAMPLES` (15 ≈ 15 ms), so interference spikes
+shorter than ~7 ms can't move the baseline — see "Interference spike
+latched by post-trigger clamp" below.
+
 ```
 value += alpha * (new_value - value)     // alpha = 1 / (sample_rate * tau)
 ```
@@ -65,14 +70,18 @@ value += alpha * (new_value - value)     // alpha = 1 / (sample_rate * tau)
 A beam-break pulls `fast` down toward the ambient-only level much faster
 than `slow` can follow, so the absolute drop between them is the trigger:
 
-- **Trigger (falling):** `slow - fast >= BEAM_TRIGGER_DROP_COUNTS` (300)
-- **Re-arm (rising):** `slow - fast <= BEAM_REARM_DROP_COUNTS` (100)
+- **Trigger (falling):** `slow - fast >= BEAM_TRIGGER_DROP_COUNTS` (70)
+- **Re-arm (rising):** `slow - fast <= BEAM_REARM_DROP_COUNTS` (25) *and*
+  `slow - sustained <= BEAM_REARM_DROP_COUNTS`
 
 This was originally a `fast/slow` *ratio* (0.25 falling / 0.75 rising,
 ported directly from legacy) rather than an absolute count drop — see
 "Ratio replaced with absolute drop" below for why that was changed.
 
-The 300/100 gap is built-in hysteresis — it stops noise sitting near a
+The trigger started at 300 and has been lowered to 70 because some sensor
+assemblies only deliver ~100 counts of stable emitter signal; raise it again
+if assembly sensitivity improves. The 70/25 gap is built-in hysteresis
+(a `static_assert` keeps re-arm below trigger) — it stops noise sitting near a
 single threshold from chattering. Confirmation requires `BEAM_CONFIRM_SAMPLES`
 (3) consecutive samples past the trigger drop before latching an interrupt
 (~3 ms added latency at 1 kHz), rejecting single-sample glitches that the
@@ -94,9 +103,11 @@ list, plus one change beyond that list, sit on top of the ported algorithm:
    startup delay before readings were valid. A seed mean below the dark
    floor is a real, technician-actionable fault (sensor unlit/miswired/
    obstructed) and is surfaced via `debug_printf`, not silently accepted.
-2. **Recovery clamp, gated on `!armed`** — `slow = max(slow, fast)` lets
-   `slow` snap back up quickly once light returns after a long occlusion,
-   instead of crawling back over its own ~1 s time constant, so the
+2. **Recovery clamp, gated on `!armed`** — lets `slow` snap back up
+   quickly once light returns after a long occlusion (originally
+   `slow = max(slow, fast)`, now
+   `slow = max(slow, min(sustained, slow_at_trigger))` — see "Interference
+   spike latched by post-trigger clamp" below), instead of crawling back over its own ~1 s time constant, so the
    detector can't get stuck non-responsive. Originally ran unconditionally
    on every update (matching legacy, which only skipped it below the dark
    floor); refined to run only while `!armed` after a real false-trigger
@@ -243,16 +254,68 @@ interference cycle's low phase now has to sustain a ≥300-count drop for
 bar than crossing a ratio that a depressed baseline made cheap; `fast`'s own
 ~2 ms tau also averages down the peak-to-trough excursion of anything
 faster than that. `BEAM_TRIGGER_DROP_COUNTS`/`BEAM_REARM_DROP_COUNTS` (300/
-100) are starting points consistent with the bench data on hand — still
-worth further tuning against a real bench trace if edge cases turn up, same
-as `BEAM_CONFIRM_SAMPLES`.
+100) were starting points consistent with the bench data on hand; they
+have since been lowered to 70/25 for insensitive sensor assemblies (see §3).
+
+### Interference spike latched by post-trigger clamp (fixed)
+
+Seen on the plotter (`test-data/Screenshot_20260930_141044.png`, START
+channel): under very large external interference pulses (raw 800+ against a
+low baseline), `startSlow` first crept up to ~100 as its EMA averaged the
+pulses. Then it suddenly snapped up to ~800, stayed pinned there, and a
+storm of false triggers followed. The mechanism was:
+
+1. The pulses lifted `slow`. Between pulses, `fast` fell back to the true
+   baseline, so the gap read as a ≥70-count drop and a trigger latched
+   (`!armed`).
+2. While `!armed`, the recovery clamp `slow = max(slow, fast)` copied the
+   next pulse's full height straight into `slow`. The `!armed` gating from
+   "Recovery-clamp false trigger" above closed this path only while armed,
+   not in the window just after a trigger.
+3. With `slow` inflated, each pulse briefly brought `fast` close enough to
+   re-arm, and each gap after it re-triggered. The next pulse was then
+   clamped in again, so the cycle sustained itself.
+4. The storm was made worse by re-arm (100) sitting *above* the lowered
+   trigger (70). Any drop between the two re-armed and re-triggered every
+   3 samples.
+
+**Fix** (`beam-sensor.h`):
+
+- `slow` is fed the running median `sustained`, not raw, so spikes shorter
+  than half the window can't lift the baseline.
+- The clamp pulls toward `sustained`, not `fast`, and never above
+  `slow_at_trigger`. Its only job is to restore the pre-occlusion baseline.
+- Re-arm also requires `slow - sustained <= BEAM_REARM_DROP_COUNTS`, so a
+  spike during a real occlusion can't re-arm it and cause a double trigger.
+- Re-arm was lowered to 25, and a `static_assert` keeps it below the trigger.
+
+**Offline replay** (Python model of `update()`: 20 s synthetic trace,
+800–1500-count spikes 1–6 ms wide at ~3% start probability per ms, plus one
+real 50 ms occlusion; baselines of 100 and 450 counts; 10 seeds each):
+
+- Old logic: ~300–430 false triggers per run, with `slow` peaking at
+  1200–1650.
+- New logic: zero false triggers outside the occlusion, and `slow` never
+  above baseline + spike-overlap noise.
+- The real occlusion is caught in every run. It double-triggered in 2 of 20
+  runs, both times when overlapping spikes covered more than half the median
+  window during the occlusion.
+
+Clean recovery re-arms ~7 ms after the beam is restored.
+
+**Bench check still to do:** reproduce the interference with `stream on`,
+check that `startSlow` stays flat, and confirm that a real occlusion still
+triggers once per pass. The 20 Hz stream can't resolve pulse widths, so if
+the real spikes turn out wider than ~7 ms, widen
+`BEAM_SUSTAIN_WINDOW_SAMPLES`. Keep it well under the shortest real
+occlusion the gate needs to catch.
 
 ## 5. Bench tuning / debugging
 
 Type `stream on` / `stream off` at the serial CLI (bare `stream` toggles and
 reports the new state -- handy from SerialPlotster, whose send box can't send
-a space) to stream `armRaw`/`armFast`/`armSlow`/
-`startRaw`/`startFast`/`startSlow` over serial as `label:value` pairs, rate-
+a space) to stream `armRaw`/`armFast`/`armSlow`/`armSust`/
+`startRaw`/`startFast`/`startSlow`/`startSust` over serial as `label:value` pairs, rate-
 limited to 20 Hz. `-D BEAM_SENSOR_STREAM_DEBUG=1` only makes it start on at
 boot (set for `hesperus-gate-s3-super-mini`). Feed it to a live plotter — see `tools/serial-plotter.md`
 at the workspace root for the recommended tool and why the Arduino IDE's
