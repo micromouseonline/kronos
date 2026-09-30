@@ -1,5 +1,6 @@
 // ----------------------------------------------------------------------------
-//  mdns.h — Advertises this device as http://cerberus.local/ via mDNS, so
+//  mdns.h — Advertises this device as http://<name>.local/ via mDNS, where
+//  <name> is get_board_name() from net/board-id.h (MAC-based), so
 //  spectators/gates don't need to know its DHCP-assigned IP. mdns_start()
 //  must only be called once Wi-Fi actually has an IP (wired into main.cpp's
 //  combined wifi_on_connected handler, alongside net/http-server.h's
@@ -14,12 +15,14 @@
 #include <ESPmDNS.h>
 
 #include "debug-log.h"
+#include "net/board-id.h"
 
 inline void mdns_start() {
-  if (!MDNS.begin("cerberus")) {
+  const char *name = get_board_name();
+  if (!MDNS.begin(name)) {
     debug_log_enqueue("[SYSTEM] mDNS failed to start");
   } else {
     MDNS.addService("http", "tcp", 80);
-    debug_log_enqueue("[SYSTEM] mDNS started: http://cerberus.local/");
+    debug_log_enqueue("[SYSTEM] mDNS started: http://%s.local/", name);
   }
 }

@@ -1,9 +1,17 @@
+// ----------------------------------------------------------------------------
+//  board-id.h — Identifies which physical controller this is from its
+//  factory eFuse MAC, and names it. get_board_name() is used as both the
+//  mDNS hostname (net/mdns.h, so the board is http://<name>.local/) and the
+//  Wi-Fi/DHCP hostname (set in main.cpp's setup()). Hesperus gates look up
+//  "cerberus" -- mDNS names are case-insensitive, so only the board named
+//  CERBERUS below is reachable by the gates without changing their firmware.
+// ----------------------------------------------------------------------------
 #pragma once
 
-#include <WiFi.h>
 #include <esp_mac.h>
 
-#include "status-led.h"
+#include <cstdint>
+#include <cstdio>
 
 struct BoardInfo {
   uint32_t id32;
@@ -11,12 +19,10 @@ struct BoardInfo {
 };
 
 // Board IDs derived from the last 4 bytes of the MAC address
-BoardInfo boards[] = {
-    {0x0E22B6A4, "GATE_01"},  // 18:8B:0E:22:B6:A4 -> 192.168.0.80
-    {0x0E209D7C, "GATE_02"},  // 18:8B:0E:20:9D:7C -> 192.168.0.81
-    {0x9037CC98, "GATE_03"},  //
-    {0x45B077E0, "GATE_04"},  //
-    {0xE6FFFE1E, "GATE_05"},  // AC:EB:E6:FF:FE:1E
+inline constexpr BoardInfo boards[] = {
+    {0xD8E7240C, "CERBERUS"},      // B0:CB:D8:E7:24:0C
+    {0x5C0AAF9C, "CERBERUS-GREY"}, // 14:33:5C:0A:AF:9C
+    {0x3C2C6100, "CERBERUS-RED"},  // 78:1C:3C:2C:61:00
 };
 
 inline uint32_t get_chip_id() {
@@ -24,10 +30,10 @@ inline uint32_t get_chip_id() {
   esp_efuse_mac_get_default(mac);
 
   // Cast to uint32_t before shifting to prevent signed int promotion issues
-  return ((uint32_t)mac[2] << 24) |  //
-         ((uint32_t)mac[3] << 16) |  //
-         ((uint32_t)mac[4] << 8) |   //
-         (uint32_t)mac[5];           //
+  return ((uint32_t)mac[2] << 24) | //
+         ((uint32_t)mac[3] << 16) | //
+         ((uint32_t)mac[4] << 8) |  //
+         (uint32_t)mac[5];          //
 }
 
 inline const char *get_board_name() {
@@ -40,10 +46,10 @@ inline const char *get_board_name() {
     }
   }
 
-  // 2. Fallback: If not found, format the required hex string.
+  // 2. Fallback: CERBERUS-XXXX from the last two MAC octets.
   // 'static' keeps this buffer alive in memory after the function returns.
-  static char fallback_name[12];
-  snprintf(fallback_name, sizeof(fallback_name), "0x%08X", id32);
+  static char fallback_name[16];
+  snprintf(fallback_name, sizeof(fallback_name), "CERBERUS-%04X", (unsigned)(id32 & 0xFFFF));
 
   return fallback_name;
 }
