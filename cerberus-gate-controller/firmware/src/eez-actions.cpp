@@ -15,6 +15,7 @@
 
 #include "debug-log.h"
 #include "display/display.h"  // LGFX
+#include "net/board-id.h"                // get_board_name
 #include "net/wifi-credentials.h"
 #include "net/wifi-manager.h"            // wifi_request_provisioning, g_wifi_rssi_report_enabled
 #include "race/race-serial-telemetry.h"  // g_watchdog_tx_enabled
@@ -168,16 +169,21 @@ void action_on_menu_setup(lv_event_t *e) {
   info_text += connected ? WiFi.SSID() : "Not connected";
   info_text += "\nIP: ";
   info_text += connected ? WiFi.localIP().toString() : "-";
+  info_text += "\nHost: ";
+  info_text += get_board_name();
+  info_text += ".local";
   lv_label_set_text(objects.lbl_wifi_ssid, info_text.c_str());
   // LV_SIZE_CONTENT auto-fits the label's width to its widest line (the
-  // SSID and IP lines are rarely the same length), so text_align also has
+  // SSID, IP and Host lines are rarely the same length), so text_align also has
   // to be CENTER -- otherwise the shorter line just sits flush-left inside
   // that box instead of centering under the other one.
   lv_obj_set_style_text_align(objects.lbl_wifi_ssid, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
   // Re-centre the box itself now that its width is known, since SSIDs vary
   // in length (up to 32 chars) and a fixed x position would run long ones
   // off-screen.
-  lv_obj_align(objects.lbl_wifi_ssid, LV_ALIGN_TOP_MID, 0, 37);
+  // y=20 rather than lower: three 16px lines have to clear the first button
+  // at y=84.
+  lv_obj_align(objects.lbl_wifi_ssid, LV_ALIGN_TOP_MID, 0, 20);
   // Get currently active screen object directly from LVGL engine
   g_previous_screen = lv_scr_act();
   lv_scr_load(objects.wifi_setup);

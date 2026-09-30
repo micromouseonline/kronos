@@ -23,6 +23,7 @@
 #include "race/race-timer.h"
 #include "race/system-event-queue.h"
 
+#include "net/board-id.h"
 #include "net/http-server.h"
 #include "net/mdns.h"
 #include "net/messages.h"
@@ -257,6 +258,8 @@ void setup() {
   Serial.begin(9600);
   debug_log_init();
   statusIndicator.begin();
+  // Must precede WiFi.mode() to take effect on the station interface.
+  WiFi.setHostname(get_board_name());
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
 
@@ -324,6 +327,7 @@ void setup() {
   lv_scr_load(objects.menu);
   debug_log_enqueue("CERBERUS: gate controller");
   debug_log_enqueue("version: %s", FIRMWARE_VERSION_STRING);
+  debug_log_enqueue("hostname: %s", get_board_name());
 }
 
 //////////////////////////////////////////////////////////////////////
