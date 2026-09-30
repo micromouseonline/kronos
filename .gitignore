@@ -27,3 +27,4 @@ desktop.ini
 # FreeCAD backup files (hardware/mechanical/)
 **/*.FCBak
 **/*.FCStd1
+hesperus-emitter/firmware/.vscode/extensions.json
