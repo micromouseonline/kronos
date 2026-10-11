@@ -7,6 +7,7 @@
 # VSCode workspace settings (keep .code-workspace, ignore local overrides)
 **/.vscode/settings.json
 **/.vscode/*.log
+**/.vscode/extensions.json
 
 # OS noise
 .DS_Store
@@ -23,8 +24,14 @@ desktop.ini
 **/*.kicad_prl
 **/fp-info-cache
 **/_autosave-*
+# KiCad local history snapshots (a nested git repo KiCad manages itself)
+**/.history/
+# KiCad "file is open" lock files
+**/~*.lck
 
 # FreeCAD backup files (hardware/mechanical/)
 **/*.FCBak
 **/*.FCStd1
-hesperus-emitter/firmware/.vscode/extensions.json
+
+# EEZ Studio per-user editor layout state
+**/*.eez-project-ui-state
