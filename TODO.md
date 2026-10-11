@@ -57,7 +57,8 @@ only, no bearing on production use.
 
 Full list: **`cerberus-gate-controller/docs/PLANNED-UPDATES.md`** —
 supervisor state machine, SD-card CSV logging, HTTP log streaming/
-MAINTENANCE mode, `race_runs[]` concurrency guard.
+MAINTENANCE mode, `race_runs[]` concurrency guard, open interface
+questions for RATS (run-count/entry-time ownership, practice mode).
 
 ## hesperus-timing-gate
 

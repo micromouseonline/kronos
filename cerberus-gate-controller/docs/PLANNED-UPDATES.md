@@ -65,3 +65,52 @@ in-race meaning. Chosen over a full flash erase (still works as a
 fallback) and over reusing the on-screen "unused" main-menu button slot,
 which would have made the escape hatch depend on the very thing it's meant
 to recover from.
+
+---
+
+## Open interface questions for RATS
+
+RATS was written independently and predates this project, and its V2 spec
+(`preferredMessageSequencesV2.pdf`) defines messages, not which side owns
+each responsibility. Until the questions below are answered, CERBERUS
+treats run and entry-time limits as advisory -- see "Run and entry-time
+limits are advisory" in `RACE-STATE-MACHINE.md`.
+
+**The dual-role problem.** Attached to RATS, CERBERUS is a timing
+instrument and should hold no policy. Standalone (local buttons, its own
+leaderboard page) it is the only place policy could live. The protocol
+gives it no way to tell which role it is in.
+
+**Questions for the RATS author:**
+
+1. **Who owns the run count?** RATS increments its own count when the
+   gate reports State 4 and checks it against the runs allowed (spec 3.3).
+   The gate may also count ("not required to", spec 4), and `ExtraRun`
+   asks the gate to decrement its count. No message carries the count in
+   either direction, so the two can drift. Which is authoritative, and
+   should the gate count at all?
+2. **Who owns the entry time?** RATS "implements the entry time
+   constraints" (spec 5, `CourseTimeMs`), but the gate starts that clock
+   with `<30,0>` and gate values take precedence over RATS's own (spec
+   3.2). Who declares that time has expired, and should the gate react?
+3. **Practice mode.** RATS can let robots cycle freely with no run or
+   time exhaustion, but only RATS knows it is doing so: `SetMode`
+   (`<99,...>`) accepts only `TIMER` and `CALIBRATION`. Does RATS send
+   anything different in practice mode (no `AllowedRuns`, a large value)?
+   Could `SetMode` gain a `PRACTICE` value?
+4. **Outcomes never come back.** No message tells the gate that a run was
+   disallowed, a touch penalty applied, or an entry ended. Should one
+   exist?
+5. **Spec looseness.** Section 2 says the value is an integer, while
+   Annex A carries names and keywords (`NewMouse`, `ContestName`,
+   `EventName`, `SetMode`). Annex A's descriptions for 95 and 96 are
+   misaligned (96 `ContestName` carries the event-name text).
+
+**Known consequence today.** The CERBERUS leaderboard takes each mouse's
+best time over every run CERBERUS timed
+(`race_timer_compute_leaderboard()`, `firmware/src/race/race-timer.h`), so
+it can disagree with RATS's scores: runs RATS disallowed, touch penalties
+and practice runs are all invisible to it.
+
+**Possible direction, not decided.** Distinguish "RATS attached" from
+"standalone", and apply local run/time rules only when standalone.
