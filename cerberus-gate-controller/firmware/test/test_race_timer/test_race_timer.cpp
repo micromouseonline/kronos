@@ -268,7 +268,7 @@ void test_ev_none_is_always_a_noop(void) {
   ASSERT_STATE_EQ(before);
 }
 
-void test_mouse_exhausted_after_max_runs_drops_to_waiting(void) {
+void test_runs_past_allowed_count_still_arm_and_commit(void) {
   race_timer_handle_command(RaceCommand::RESTART);  // -> WAITING
 
   for (size_t i = 0; i < MAX_RUNS_PER_MOUSE; i++) {
@@ -280,12 +280,18 @@ void test_mouse_exhausted_after_max_runs_drops_to_waiting(void) {
     ASSERT_STATE_EQ(RaceState::GOAL);
   }
 
-  TEST_ASSERT_TRUE(race_timer_mouse_exhausted());
+  // The allowed count is no longer an ARM gate (see race_timer_try_arm()'s
+  // comment) -- it only bounds the on-screen run list, so it still reports
+  // the default cap while one more run arms and commits as normal.
+  TEST_ASSERT_EQUAL_INT32((int32_t)MAX_RUNS_PER_MOUSE, (int32_t)race_timer_allowed_runs());
 
-  // One more ARM must not arm -- an exhausted mouse drops back to WAITING.
   race_timer_handle_command(RaceCommand::ARM);
-  ASSERT_STATE_EQ(RaceState::WAITING);
-  TEST_ASSERT_EQUAL_UINT32((uint32_t)MAX_RUNS_PER_MOUSE, (uint32_t)race_run_count);
+  ASSERT_STATE_EQ(RaceState::ARMED);
+  race_timer_handle_command(RaceCommand::START);
+  g_mock_millis += 100;
+  race_timer_handle_command(RaceCommand::GOAL);
+  ASSERT_STATE_EQ(RaceState::GOAL);
+  TEST_ASSERT_EQUAL_UINT32((uint32_t)MAX_RUNS_PER_MOUSE + 1, (uint32_t)race_run_count);
 }
 
 int main(int argc, char **argv) {
@@ -317,7 +323,7 @@ int main(int argc, char **argv) {
   RUN_TEST(test_running_restart_abandons_and_reenters_new_mouse);
   RUN_TEST(test_goal_restart_reenters_new_mouse);
   RUN_TEST(test_ev_none_is_always_a_noop);
-  RUN_TEST(test_mouse_exhausted_after_max_runs_drops_to_waiting);
+  RUN_TEST(test_runs_past_allowed_count_still_arm_and_commit);
 
   return UNITY_END();
 }

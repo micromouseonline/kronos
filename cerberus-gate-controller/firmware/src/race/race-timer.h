@@ -165,7 +165,7 @@ inline uint32_t time_left = RACE_TIME_LIMIT;
 
 // Host-configurable overrides from the RATS V2 serial messages AllowedRuns/
 // EntryTimeS (net/serial-protocol.h, race-command-source.h). -1 = not set
-// by the host -- race_timer_mouse_exhausted() falls back to
+// by the host -- race_timer_allowed_runs() falls back to
 // MAX_RUNS_PER_MOUSE, and the display (race-timer-display.h) falls back to
 // its original raw-elapsed behaviour. Plain globals, not routed through the
 // Main Event Queue -- benign stale reads only (same tolerance already
