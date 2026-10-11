@@ -79,13 +79,17 @@ inline bool serial_protocol_parse_line(const char *line, SerialLine *out) {
 // that function can focus purely on framing complete lines out of the RX
 // buffer.
 inline void serial_protocol_process_line(const char *line_str) {
+  SerialLine line;
+  bool parsed = serial_protocol_parse_line(line_str, &line);
   if (g_debug_verbose_enabled) {
     // Confirms to whoever's typing exactly what bytes were seen,
-    // independent of terminal echo settings.
-    debug_log_enqueue("[serial] rx: \"%s\"", line_str);
+    // independent of terminal echo settings, and whether they framed a
+    // message. Goes out with its brackets and comma substituted
+    // ("<98,HERCULES>" as "[98;HERCULES]", see debug_log_sanitize()) --
+    // echoed verbatim, RATS parses it as a second copy of the command.
+    debug_log_enqueue("[serial] rx: \"%s\" %s", line_str, parsed ? "ok" : "ignored");
   }
-  SerialLine line;
-  if (serial_protocol_parse_line(line_str, &line)) {
+  if (parsed) {
     uint64_t timestamp_us = static_cast<uint64_t>(esp_timer_get_time());
     RaceCommand cmd = race_command_from_serial(line);
     if (cmd != RaceCommand::NONE) {

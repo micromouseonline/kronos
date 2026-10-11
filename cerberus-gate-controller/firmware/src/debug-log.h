@@ -2,10 +2,11 @@
 //  debug-log.h — Ad-hoc debug output, shared with the legacy host protocol's
 //  UART (net/messages.h's `<type,value>\r\n` lines, see
 //  net/serial-protocol.h). Every call here writes a single '#'-prefixed
-//  comment line: the host supervisor only parses text between '<' and '>',
-//  and treats a line starting with '#' as a comment to display and skip --
-//  so debug output is safe to send at any time, including while the legacy
-//  protocol is live, as long as each call is one complete line.
+//  comment line. The '#' is for human readers only -- the host supervisor
+//  (RATS) ignores it and parses any text it finds between '<' and '>', so
+//  debug output is only safe to send while the legacy protocol is live
+//  because debug_log_sanitize() strips those characters from every line
+//  (see its own comment), and as long as each call is one complete line.
 //
 //  All debug text funnels through debug_log_enqueue() onto the single
 //  debug_log_queue, drained in order by debug_log_drain_task -- this is
@@ -105,6 +106,34 @@ struct LogMessage {
 
 inline QueueHandle_t debug_log_queue = xQueueCreate(16, sizeof(LogMessage));
 
+// RATS does not treat a '#' line as a comment, nor does it parse whole
+// lines: it scans the incoming stream for '<', ',' and '>' wherever they
+// occur and parses whatever lies between (found in field trials, where the
+// RX echo of a host command was parsed by RATS a second time). So no debug
+// line may carry any of those three characters -- each is swapped for a
+// harmless look-alike, in place: "<98,HERCULES>" goes out as
+// "[98;HERCULES]". Applied to every debug line, not just the RX echo, since
+// any of them can carry host- or gate-supplied text (mouse names, JSON
+// bodies). Anything reading these logs back (tools/cerberus_log_stats.py)
+// has to reverse the mapping.
+inline void debug_log_sanitize(char *text) {
+  for (; *text != '\0'; text++) {
+    switch (*text) {
+      case '<':
+        *text = '[';
+        break;
+      case '>':
+        *text = ']';
+        break;
+      case ',':
+        *text = ';';
+        break;
+      default:
+        break;
+    }
+  }
+}
+
 /// @brief Formats into a fixed buffer and enqueues for debug_log_drain_task
 /// to print later -- never blocks on Serial. Silently drops the message if
 /// the queue is full (16 deep) rather than blocking the caller or evicting
@@ -121,6 +150,7 @@ inline void debug_log_enqueue(const char *fmt, ...) {
   va_start(args, fmt);
   vsnprintf(body, sizeof(body), fmt, args);
   va_end(args);
+  debug_log_sanitize(body);
 
   LogMessage msg;
   snprintf(msg.text, sizeof(msg.text), "[%lu] %s", ts_ms, body);

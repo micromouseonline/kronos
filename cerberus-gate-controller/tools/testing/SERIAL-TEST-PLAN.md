@@ -14,13 +14,17 @@ from `docs/preferredMessageSequencesV2.pdf`.
   5s Wi-Fi RSSI line makes a manual terminal session hard to read -- just
   remember to set both back to `true` afterward. RATS expects a watchdog
   at least every 2s and flags a fault if it stops.
-- Connect the board over USB, open a serial terminal at **9600 baud**,
+- Connect the board over USB, open a serial terminal at **115200 baud**,
   line ending **CR+LF** (or plain LF/CR -- all three are accepted, see
   Section 5).
-- `g_serial_protocol_rx_echo` is on by default, so every line the RX task
-  receives is echoed back as `#[serial-protocol] rx: "<line>"` -- use this
-  to confirm the exact bytes the device saw, independent of local terminal
-  echo settings.
+- With the Settings screen's "Verbose Debug" switch on, every line the RX
+  task receives is echoed back as `#[<ms>] [serial] rx: "<line>" ok` (or
+  `ignored` if it didn't frame a message) -- use this to confirm the exact
+  bytes the device saw, independent of local terminal echo settings.
+- The echo, like every other `#` debug line, has `<`, `>` and `,` swapped
+  for `[`, `]` and `;`, so `<98,HERCULES>` is echoed as `[98;HERCULES]`.
+  RATS parses anything it finds between angle brackets, `#` or not, so a
+  verbatim echo would be acted on as a second copy of the command.
 - All ordinary telemetry lines (`#`-prefixed lines are comments/debug;
   bare `<type,value>` lines are the protocol) will keep streaming in the
   background (`MSG_WATCHDOG` every second, `MSG_CURRENT_STATE` on state
@@ -35,7 +39,7 @@ from `docs/preferredMessageSequencesV2.pdf`.
 - [x] **1.1** Power on. Confirm `<0,N>` (`MSG_WATCHDOG`) appears roughly
       once a second with an incrementing value.
 - [x] **1.2** Send `<98,0>` (legacy zero-value NewMouse). Confirm:
-      - RX echo shows `rx: "<98,0>"`.
+      - RX echo shows `rx: "[98;0]" ok`.
       - Device transitions to a fresh mouse / `WAITING` state regardless
         of whatever state it was in before (screen + NeoKey LEDs reflect
         this).
@@ -48,7 +52,7 @@ from `docs/preferredMessageSequencesV2.pdf`.
 ## 2. NewMouse with a name (RATS V2)
 
 - [x] **2.1** From any state, send `<98,MightyMouse Might>`. Confirm:
-      - RX echo shows the full name, unmodified: `rx: "<98,MightyMouse>"`.
+      - RX echo shows the full name, brackets/comma substituted: `rx: "[98;MightyMouse]" ok`.
       - Same RESTART/new-mouse transition as 1.2 happens (name doesn't
         block the transition).
       - **Changed:** the on-screen mouse-name label now shows
@@ -119,7 +123,7 @@ transition, no telemetry burst beyond what step 2 already caused).
 ## 7. Malformed / edge-case input
 
 - [x] **7.1** Send garbage with no angle brackets, e.g. `hello world`.
-      Confirm it's echoed (`rx: "hello world"`) but produces no command,
+      Confirm it's echoed (`rx: "hello world" ignored`) but produces no command,
       no reply, no crash.
 - [x] **7.2** Send an unknown message type, e.g. `<250,1>`. Confirm it's
       echoed and silently ignored (no reply, no crash).

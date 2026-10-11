@@ -76,47 +76,47 @@ static void input_poll_task(void *) {
 // state/edge-tracking needed.
 void neokey_reflect_race_state() {
   switch (race_state) {
-    case RaceState::CALIBRATE:
-      neokey_set_colour(0, NP_OFF);
-      neokey_set_colour(1, NP_OFF);
-      neokey_set_colour(2, NP_OFF);
-      break;
+  case RaceState::CALIBRATE:
+    neokey_set_colour(0, NP_OFF);
+    neokey_set_colour(1, NP_OFF);
+    neokey_set_colour(2, NP_OFF);
+    break;
 
-    case RaceState::NEW_MOUSE:
-      neokey_set_colour(0, NP_MAGENTA);
-      neokey_set_colour(1, NP_MAGENTA);
-      neokey_set_colour(2, NP_MAGENTA);
-      break;
+  case RaceState::NEW_MOUSE:
+    neokey_set_colour(0, NP_MAGENTA);
+    neokey_set_colour(1, NP_MAGENTA);
+    neokey_set_colour(2, NP_MAGENTA);
+    break;
 
-    case RaceState::WAITING:
-      neokey_set_colour(0, NP_GREEN);
-      neokey_set_colour(1, NP_GREEN);
-      neokey_set_colour(2, NP_GREEN);
-      break;
+  case RaceState::WAITING:
+    neokey_set_colour(0, NP_GREEN);
+    neokey_set_colour(1, NP_GREEN);
+    neokey_set_colour(2, NP_GREEN);
+    break;
 
-    case RaceState::ARMED:
-      neokey_set_colour(0, NP_GREEN);
-      neokey_set_colour(1, NP_OFF);
-      neokey_set_colour(2, NP_OFF);
-      break;
+  case RaceState::ARMED:
+    neokey_set_colour(0, NP_GREEN);
+    neokey_set_colour(1, NP_OFF);
+    neokey_set_colour(2, NP_OFF);
+    break;
 
-    case RaceState::RUNNING:
-      neokey_set_colour(0, NP_OFF);
-      neokey_set_colour(1, NP_GREEN);
-      neokey_set_colour(2, NP_OFF);
-      break;
+  case RaceState::RUNNING:
+    neokey_set_colour(0, NP_OFF);
+    neokey_set_colour(1, NP_GREEN);
+    neokey_set_colour(2, NP_OFF);
+    break;
 
-    case RaceState::GOAL:
-      neokey_set_colour(0, NP_OFF);
-      neokey_set_colour(1, NP_OFF);
-      neokey_set_colour(2, NP_GREEN);
-      break;
+  case RaceState::GOAL:
+    neokey_set_colour(0, NP_OFF);
+    neokey_set_colour(1, NP_OFF);
+    neokey_set_colour(2, NP_GREEN);
+    break;
 
-    default:
-      neokey_set_colour(0, NP_BLUE);
-      neokey_set_colour(1, NP_BLUE);
-      neokey_set_colour(2, NP_BLUE);
-      break;
+  default:
+    neokey_set_colour(0, NP_BLUE);
+    neokey_set_colour(1, NP_BLUE);
+    neokey_set_colour(2, NP_BLUE);
+    break;
   }
 
   if (race_state != RaceState::CALIBRATE) {
@@ -152,8 +152,8 @@ void input_event_handler(const InputEvent &evt) {
   // register a touch on every long-press-to-menu gesture. RELEASED (posted
   // by neokey-buttons.h) only fires when release happened before the long-
   // press threshold, i.e. it's mutually exclusive with the HELD case above.
-  if (evt.id == BTN_TOUCH && evt.type == InputEventType::RELEASED && lv_scr_act() == objects.main &&
-      race_state == RaceState::RUNNING) {
+  if (evt.id == BTN_TOUCH && evt.type == InputEventType::RELEASED &&
+      lv_scr_act() == objects.main && race_state == RaceState::RUNNING) {
     mouse_touched = true;
     serial_send_message(MSG_TOUCH_SHORT_PRESS, 1);
   }
@@ -167,7 +167,8 @@ void input_event_handler(const InputEvent &evt) {
   // miscalibrated. START's long-press is otherwise unused
   // (BUTTON_COMMAND_MAP maps it to RaceCommand::NONE), and gating on the
   // menu screen keeps this from ever competing with its meaning elsewhere.
-  if (evt.id == BTN_START && evt.type == InputEventType::HELD && lv_scr_act() == objects.menu) {
+  if (evt.id == BTN_START && evt.type == InputEventType::HELD &&
+      lv_scr_act() == objects.menu) {
     re_calibrate(lcd);
     // re_calibrate() draws its wizard/"Calibration Saved!" message straight
     // to the LCD, bypassing LVGL (same as wifi-provisioning.h's portal
@@ -207,8 +208,9 @@ void system_event_handler(const SystemEvent &evt) {
   // race_timer_handle_command() uses it to backdate run_sw's start/stop so
   // the displayed/committed run time isn't skewed by network latency (see
   // NETWORK-TIMING-LOG.md #6/recommendation 4).
-  race_timer_handle_command(evt.type, evt.payload_is_mouse_name ? evt.payload : nullptr,
-                             evt.timestamp_us);
+  race_timer_handle_command(evt.type,
+                            evt.payload_is_mouse_name ? evt.payload : nullptr,
+                            evt.timestamp_us);
   neokey_reflect_race_state();
   if (race_state == RaceState::CALIBRATE) {
     // Mirrors input_event_handler's CALIBRATE block above -- gate-sourced
@@ -218,7 +220,7 @@ void system_event_handler(const SystemEvent &evt) {
     ButtonID id = evt.type == RaceCommand::ARM     ? BTN_ARM
                   : evt.type == RaceCommand::START ? BTN_START
                   : evt.type == RaceCommand::GOAL  ? BTN_GOAL
-                                                    : NUM_BUTTONS;
+                                                   : NUM_BUTTONS;
     if (id != NUM_BUTTONS) {
       neokey_set_colour(BTN_TOUCH, NP_OFF);
       neokey_set_colour(id, NP_YELLOW);
@@ -255,7 +257,7 @@ void wifi_provisioning_check_cancel(const InputEvent &evt) {
 
 void setup() {
   // get the serial connection kicked off.
-  Serial.begin(9600);
+  Serial.begin(115200);
   debug_log_init();
   statusIndicator.begin();
   // Must precede WiFi.mode() to take effect on the station interface.
@@ -266,15 +268,17 @@ void setup() {
   // Settings-screen toggles -- must run before anything reads either flag
   // (race_serial_telemetry_tick()'s watchdog check, wifi_connect_task's
   // RSSI report), so as early in setup() as possible.
-  settings_load(g_watchdog_tx_enabled, g_wifi_rssi_report_enabled, g_debug_verbose_enabled);
+  settings_load(g_watchdog_tx_enabled, g_wifi_rssi_report_enabled,
+                g_debug_verbose_enabled);
 
   input_queue_init();
   system_event_queue_init();
   gpio_buttons_init();
   neokey_buttons_init();
-  lcd.init();                     // setting up the display takes about 500ms
-  lcd.setRotation(LCD_ROTATION);  // USB port on left
-  lvgl_display_init(lcd);         // calls lv_init() -- must run before any lv_obj_* call
+  lcd.init();                    // setting up the display takes about 500ms
+  lcd.setRotation(LCD_ROTATION); // USB port on left
+  lvgl_display_init(
+      lcd); // calls lv_init() -- must run before any lv_obj_* call
   lvgl_touch_init(lcd);
   // Put this in your setup/init function after LVGL initialization
   // LVGL v8.4 Runtime Long-Press Modification
@@ -282,15 +286,16 @@ void setup() {
   while (indev) {
     // In V8, type is accessed via the driver structure attached to the indev
     if (indev->driver->type == LV_INDEV_TYPE_POINTER) {
-      indev->driver->long_press_time = 1500;  // Time in milliseconds (e.g., 1 second)
+      indev->driver->long_press_time =
+          1500; // Time in milliseconds (e.g., 1 second)
     }
     indev = lv_indev_get_next(indev);
   }
 
-  ui_init();  // defaults to loadScreen(SCREEN_ID_MENU)
+  ui_init(); // defaults to loadScreen(SCREEN_ID_MENU)
   lv_label_set_text(objects.lbl_version, FIRMWARE_VERSION_STRING);
   race_timer_display_init();
-  lv_scr_load(objects.splash);  // instant, no animation, no wrapper needed
+  lv_scr_load(objects.splash); // instant, no animation, no wrapper needed
   // loadScreen() only marks the screen dirty -- nothing reaches the panel
   // until lv_timer_handler() actually flushes it. A blind delay() here
   // never calls that, so the splash never gets drawn before
@@ -318,8 +323,10 @@ void setup() {
   calibrate(lcd);
 #endif
 
-  // Now it is finally safe to fire off the button polling task and run the main loop
-  xTaskCreatePinnedToCore(input_poll_task, "input_poll", 4096, nullptr, 1, nullptr, 1);
+  // Now it is finally safe to fire off the button polling task and run the main
+  // loop
+  xTaskCreatePinnedToCore(input_poll_task, "input_poll", 4096, nullptr, 1,
+                          nullptr, 1);
   // Starts owning the UART for the legacy <type,value> host protocol -- see
   // net/serial-protocol.h. Last, so nothing above needed to worry about
   // sharing Serial with it yet.
@@ -358,5 +365,5 @@ void loop() {
   race_serial_telemetry_tick();
   lvgl_task_handler();
   ui_tick();
-  delay(50);  // calls freeRTOS yield so it is safe to use
+  delay(50); // calls freeRTOS yield so it is safe to use
 }

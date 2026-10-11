@@ -9,7 +9,7 @@ machine, serial (RATS V2) + WebSocket/HTTP event ingestion, leaderboard.
   XPT2046 touch, five shipping board environments (see `../PLATFORMIO.md`)
 - Framework: Arduino + FreeRTOS + LVGL
 - Build tool: PlatformIO (`pio run -e <env>`, `pio run -e <env> -t upload`)
-- Serial monitor: 9600 baud (host link, RATS V2 protocol)
+- Serial monitor: 115200 baud (host link, RATS V2 protocol)
 
 ## Off-limits directories
 
@@ -55,8 +55,9 @@ firmware/src/
   `preferredMessageSequencesV2.pdf`) to a host PC - see
   `firmware/src/net/serial-protocol.h`.
 - Debug output always goes to the same UART as the RATS V2 protocol, `#`-
-  prefixed so the host parser treats it as a comment line - see
-  `firmware/src/debug-log.h`.
+  prefixed for human readers. RATS ignores the `#` and parses anything
+  between `<` and `>`, so every debug line has `<`, `>`, `,` swapped for
+  `[`, `]`, `;` - see `debug_log_sanitize()` in `firmware/src/debug-log.h`.
 
 ## Docs
 

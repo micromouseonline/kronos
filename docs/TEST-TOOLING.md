@@ -107,7 +107,7 @@ own `README.md`.
     own debug log for a `[WS] DATA ... body=...` line to confirm receipt.
 - **`SERIAL-TEST-PLAN.md`** (same directory) — a manual, checklist-style
   test plan for the host-PC serial link (RATS V2 protocol), not an
-  executable tool. Requires a serial terminal at 9600 baud, CR+LF line
+  executable tool. Requires a serial terminal at 115200 baud, CR+LF line
   ending, and a physical board.
 
 ### `tools/cerberus_log_stats.py` — latency/gap analysis

@@ -2,7 +2,10 @@
 one-way trigger-to-receipt latency (see NETWORK-TIMING-LOG.md).
 
 Each cerberus log line looks like:
-  #[224255534] [HTTP] POST /api/event from 192.168.0.189 body={"gate_id":"UNKNOWN","event":"GOAL","tsf_us":224254712237,"gate_us":584216857}
+  #[224255534] [HTTP] POST /api/event from 192.168.0.189 body={"gate_id":"UNKNOWN";"event":"GOAL";"tsf_us":224254712237;"gate_us":584216857}
+
+(';' where JSON would have ',' -- cerberus substitutes it on the wire, see
+parse_lines(); older logs with real commas are accepted too.)
 
 `#[recv_ms]` and the JSON body's `tsf_us` are both on the shared Wi-Fi TSF
 timeline (cerberus and hesperus are stations on the same AP), so
@@ -30,10 +33,18 @@ def parse_lines(lines):
         m = LINE_RE.search(line)
         if not m:
             continue
+        # cerberus swaps ',' for ';' (and '<'/'>' for '['/']') in every debug
+        # line so RATS can't mistake one for a protocol message (see
+        # debug_log_sanitize() in cerberus's debug-log.h). Logs captured
+        # before that change still have real commas and parse as-is.
+        raw = m.group("body")
         try:
-            body = json.loads(m.group("body"))
+            body = json.loads(raw)
         except json.JSONDecodeError:
-            continue
+            try:
+                body = json.loads(raw.replace(";", ","))
+            except json.JSONDecodeError:
+                continue
         tsf_us = body.get("tsf_us")
         if tsf_us is None:
             continue
