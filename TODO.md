@@ -60,6 +60,11 @@ supervisor state machine, SD-card CSV logging, HTTP log streaming/
 MAINTENANCE mode, `race_runs[]` concurrency guard, open interface
 questions for RATS (run-count/entry-time ownership, practice mode).
 
+- [ ] **Separation of concerns: "events, not verdicts".** Adopt as the
+      stated design rule and audit the firmware against it -- action list
+      in `PLANNED-UPDATES.md` under that heading. Leaderboard reset and
+      labelling (not a priority) is noted in the same file.
+
 ## hesperus-timing-gate
 
 Full list: **`hesperus-timing-gate/docs/review.md`**'s "Future Development Path"

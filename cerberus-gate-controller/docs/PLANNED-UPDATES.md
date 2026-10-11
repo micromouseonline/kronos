@@ -112,5 +112,87 @@ best time over every run CERBERUS timed
 it can disagree with RATS's scores: runs RATS disallowed, touch penalties
 and practice runs are all invisible to it.
 
-**Possible direction, not decided.** Distinguish "RATS attached" from
-"standalone", and apply local run/time rules only when standalone.
+**Working position.** These questions do not have to be answered for
+CERBERUS to behave sensibly -- see "Separation of concerns: events, not
+verdicts" below, which is the position to build on in the meantime. An
+earlier idea, distinguishing "RATS attached" from "standalone" and
+applying local run/time rules only when standalone, is not being pursued:
+a standalone contest keeps its policy with the operator (see "Manual
+contests" in that section).
+
+---
+
+## Separation of concerns: events, not verdicts
+
+**TODO -- adopt as the stated design rule and audit the firmware against it.**
+
+**The rule.** CERBERUS reports events and never issues verdicts. It says
+what happened (state changes, run times, "touch requested") and displays
+what the host tells it (allowed runs, entry time), but it decides nothing
+that changes what gets timed or reported. Policy -- whether a run counts,
+penalties, retirements, re-runs, when an entry is over -- belongs to
+whoever is running the contest: RATS when it is attached, the operator
+when it is not.
+
+This is the alternative to stripping CERBERUS down to a "dumb" timer. The
+firmware is already close to it since run and entry-time limits became
+advisory (`RACE-STATE-MACHINE.md`, "Run and entry-time limits are
+advisory").
+
+**Manual contests.** CERBERUS can be used for a scored contest without
+RATS: the operator records the run times on paper and applies the rules
+themselves. Policy is then in the operator's hands, not the firmware's,
+so no local rule set is needed for this case. Standalone use that is
+really practice wants no limits at all, which non-blocking already gives.
+
+**Judge inputs.** Touch, retire and re-run are judge decisions and stay
+with the judge's console (RATS can apply touch penalties directly; the
+gate's `RequestTouch`, the `T` key, is an optional convenience). Policy in
+RATS therefore does not require more buttons on CERBERUS. More inputs
+would only be needed if CERBERUS were to become the judge's sole console,
+which is not the intent. There are spare UI options if that changes.
+
+**Actions:**
+
+- [ ] State the rule in `SYSTEM-DESCRIPTION.md` as a design principle,
+      with the manual-contest and judge-input points above.
+- [ ] Audit the firmware for remaining policy and decide each one:
+  - [ ] Leaderboard "best time per mouse" is a scoring rule -- see
+        "Leaderboard reset and labelling" below.
+  - [ ] The on-screen run list hides runs numbered past the allowed count
+        (`race_timer_render_run_times()`, `race-timer-display.h`). Hiding
+        a run is arguably a verdict; consider listing every run.
+  - [ ] Run numbering and the `ExtraRun` decrement: confirm these are
+        display-only and say so where they are documented.
+  - [ ] `RaceState::TIMED_OUT` is declared but never entered. Remove it,
+        or keep it purely as a display state with no effect on timing.
+- [ ] Check that the event stream sent to the host is complete enough to
+      be replayed later for RATS to interpret (ties in with "Logging
+      Infrastructure" above). Known gaps: decisions entered on the RATS
+      console are never seen by CERBERUS, and RATS interpolates course
+      time from its own clock, so a replay would need course-time values
+      in the log.
+- [ ] Once the audit is done, re-test `tools/testing/SERIAL-TEST-PLAN.md`
+      items 3.3, 3.5 and 9.5-9.7, which were rewritten for the advisory
+      behaviour and are currently unticked.
+
+---
+
+## Leaderboard reset and labelling
+
+Not a priority. The leaderboard is never definitive and is frequently
+misleading: it takes each mouse's best time over every run since boot,
+and the only way to clear it today is a reboot (`race_timer_init()`,
+`firmware/src/race/race-timer.h`, is the only place the run history is
+zeroed). Results from practice, testing or an earlier class therefore
+carry over into whatever follows.
+
+Options, roughly in order of value:
+
+- **A clear action.** An operator gesture or menu item that empties the
+  run history without rebooting. There are spare UI options for this.
+- **A host trigger.** Clear automatically when RATS sends a new
+  `ContestName` or `EventName`, since that marks a real boundary between
+  contests.
+- **A label.** Mark the page as raw or unofficial times so nobody reads it
+  as the result.
