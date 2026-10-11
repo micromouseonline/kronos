@@ -331,8 +331,10 @@ inline uint32_t race_timer_last_run_time_ms() {
 // entry -- same observable behaviour, simpler state.
 // name is the RATS V2 NewMouse-supplied name (see race-command-source.h/
 // system-event-queue.h's payload_is_mouse_name) -- nullptr or empty for
-// every other producer (local button, HTTP, or a bare legacy <98,0>),
-// which falls back to the canned mouse_names[] pick as before.
+// every other producer (local button, HTTP), which falls back to the
+// canned mouse_names[] pick as before. A serial NewMouse never arrives
+// here empty: serial_protocol_process_line() substitutes
+// SERIAL_UNNAMED_MOUSE_NAME for a missing name.
 inline void race_timer_enter_new_mouse(const char *name = nullptr) {
   mouse_id++;
   mouse_id %= NUM_MICE;

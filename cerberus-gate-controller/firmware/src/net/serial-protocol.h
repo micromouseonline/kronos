@@ -31,25 +31,45 @@ inline bool serial_protocol_parse_line(const char *line, SerialLine *out) {
     line++;
   }
   int type;
-  // Captures everything between the comma and the closing '>' as text --
-  // some RATS V2 messages carry a name/keyword (NewMouse, ContestName,
+  // sscanf only reads the type and locates the start of the value field --
+  // %n is left untouched (-1) unless the literal ',' was actually reached.
+  // The value itself is NOT scanned with %[^>]: a scanset must match at
+  // least one character, so an empty field ("<98,>") would fail the whole
+  // parse and the line would be silently dropped.
+  int consumed = -1;
+  if (sscanf(line, "<%d,%n", &type, &consumed) != 1 || consumed < 0) {
+    return false;
+  }
+  // Everything between the comma and the closing '>' is the value, as text
+  // -- some RATS V2 messages carry a name/keyword (NewMouse, ContestName,
   // EventName, SetMode), not just a number. Numeric messages still parse
   // fine out of the same text field via serial_line_value_as_long().
   // Legacy protocol's own doc: "Any characters following the closing
-  // bracket are ignored by the supervisor" -- %[^>] naturally stops at
-  // '>' the same way the old %ld stopped at the first non-digit.
-  if (sscanf(line, "<%d,%31[^>]>", &type, out->value) != 2) {
+  // bracket are ignored by the supervisor".
+  const char *value_start = line + consumed;
+  // Require an actual '>' -- an unterminated "<98,0" is not a message.
+  // Found via manual testing (tools/testing/SERIAL-TEST-PLAN.md 7.1)
+  // accepting "<98,0" as valid.
+  const char *value_end = strchr(value_start, '>');
+  if (value_end == nullptr) {
     return false;
   }
-  // sscanf's return count only reflects %d/%s-style conversions -- a
-  // literal '>' in the format that never matched (e.g. an unterminated
-  // "<98,0" with no closing bracket at all) still leaves the count at 2,
-  // since %[^>] happily stops at end-of-string too. Found via manual
-  // testing (tools/testing/SERIAL-TEST-PLAN.md 7.1) accepting "<98,0" as valid.
-  // Require an actual '>' to exist somewhere in the line.
-  if (strchr(line, '>') == nullptr) {
-    return false;
+  // Trim surrounding spaces/tabs, so "<98, >" is the same empty value as
+  // "<98,>" and "<99, TIMER>" still matches its keyword. Interior spaces
+  // (a name like "Name With Spaces") are kept. An empty value is valid --
+  // each message handler decides what that means for its own type.
+  while (value_start < value_end && (*value_start == ' ' || *value_start == '\t')) {
+    value_start++;
   }
+  while (value_end > value_start && (value_end[-1] == ' ' || value_end[-1] == '\t')) {
+    value_end--;
+  }
+  size_t value_len = static_cast<size_t>(value_end - value_start);
+  if (value_len >= sizeof(out->value)) {
+    value_len = sizeof(out->value) - 1;  // truncate an over-long value
+  }
+  memcpy(out->value, value_start, value_len);
+  out->value[value_len] = '\0';
   out->type = type;
   return true;
 }
@@ -73,8 +93,12 @@ inline void serial_protocol_process_line(const char *line_str) {
       // forwarded into SystemEvent.payload with payload_is_mouse_name set,
       // so main.cpp's system_event_handler() can tell it apart from
       // HTTP's gate_id (same field, different meaning) and thread it into
-      // race_timer_enter_new_mouse().
-      system_event_post(cmd, timestamp_us, line.value, /*payload_is_mouse_name=*/true);
+      // race_timer_enter_new_mouse(). A host NewMouse with no name
+      // ("<98,>" or "<98, >") gets a fixed placeholder rather than an
+      // empty payload, which would otherwise fall through to a canned
+      // mouse_names[] pick.
+      const char *mouse_name = (line.value[0] != '\0') ? line.value : SERIAL_UNNAMED_MOUSE_NAME;
+      system_event_post(cmd, timestamp_us, mouse_name, /*payload_is_mouse_name=*/true);
     } else {
       // Every other RATS V2 inbound message (ContestName, EventName,
       // AllowedRuns, EntryTimeS, ExtraRun, SetMode, RequestType) --

@@ -58,9 +58,11 @@ from `docs/preferredMessageSequencesV2.pdf`.
       Confirm the echo captures the whole thing up to `>` and the
       transition still fires -- the parser must not stop at the first
       space.
-- [x] **2.3** Send `<98,>` (empty name). Confirm this is handled gracefully
-      -- either treated as a valid (nameless) NewMouse, or silently
-      ignored; **must not crash or hang**.
+- [ ] **2.3** Send `<98,>` (empty name), then `<98, >` (whitespace-only
+      name). Confirm each is treated as a valid NewMouse -- the
+      transition fires and the on-screen mouse-name label shows the fixed
+      placeholder `QQQQQQQQ`. **Changed:** `<98,>` used to be silently
+      ignored and `<98, >` gave a blank (single-space) name.
 
 ## 3. Session metadata messages (informational, no expected state change)
 
@@ -174,8 +176,9 @@ section).
       only falls back to a canned `mouse_names[]` pick when the value is
       genuinely empty (`name[0] == '\0'`), and `"0"` is a non-empty
       string like any other. True fallback-to-canned-name only happens
-      via `<98,>` (empty value, see 2.3) or a producer that supplies no
-      name at all (local button, HTTP without a name).
+      for a producer that supplies no name at all (local button, HTTP
+      without a name); a serial `<98,>` gets the fixed placeholder
+      `QQQQQQQQ` instead (see 2.3).
 - [x] **9.5 AllowedRuns enforcement.** Send `<98,LimitTestMouse>` then
       `<94,2>` (`AllowedRuns=2`). Complete 2 runs (ARM -> START -> GOAL
       twice). On the 3rd ARM attempt, confirm the mouse is treated as

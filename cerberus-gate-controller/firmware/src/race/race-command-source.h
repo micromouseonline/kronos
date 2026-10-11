@@ -74,6 +74,10 @@ struct SerialLine {
   char value[32];
 };
 
+// Name given to a mouse whose serial NewMouse arrived with an empty value
+// field -- see serial_protocol_process_line() (net/serial-protocol.h).
+constexpr char SERIAL_UNNAMED_MOUSE_NAME[] = "QQQQQQQQ";
+
 inline long serial_line_value_as_long(const SerialLine &line) {
   return strtol(line.value, nullptr, 10);
 }
@@ -129,12 +133,18 @@ inline void serial_protocol_handle_info_message(const SerialLine &line, uint64_t
       }
       break;
     case MSG_ALLOWED_RUNS:
-      if (race_state == RaceState::WAITING) {
+      // An empty value is ignored rather than passed to strtol(), which
+      // would read it as 0 and leave the mouse with no runs at all.
+      if (line.value[0] == '\0') {
+        debug_log_enqueue("[serial] AllowedRuns with no value, ignored");
+      } else if (race_state == RaceState::WAITING) {
         g_allowed_runs = serial_line_value_as_long(line);
       }
       break;
     case MSG_ENTRY_TIME_S:
-      if (race_state == RaceState::WAITING) {
+      if (line.value[0] == '\0') {
+        debug_log_enqueue("[serial] EntryTimeS with no value, ignored");
+      } else if (race_state == RaceState::WAITING) {
         g_entry_time_s_limit = serial_line_value_as_long(line);
       }
       break;
