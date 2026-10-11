@@ -140,17 +140,22 @@ starts in **Calibrating**. This is a self-test screen, not a race state:
      restarted), press **ARM** instead of GOAL — this abandons the current
      attempt and returns to Armed for another try, without recording a
      run.
-5. **Press ARM again to continue.** From Goal, ARM re-arms for the next
-   run if the mouse hasn't used up its allowed run count, or drops back to
-   **Waiting** if it has. There is no automatic advance out of Goal —
-   it always waits for an explicit ARM.
+5. **Press ARM again to continue.** From Goal, ARM always re-arms for the
+   next run. The allowed run count is not enforced here — the run counter
+   can go past it (e.g. `3/2`), and those later runs are still timed and
+   reported to the host, though the on-screen run list only shows runs up
+   to the allowed count. Whether a run counts is the host's decision.
+   There is no automatic advance out of Goal — it always waits for an
+   explicit ARM.
 6. **Long-press ARM at any point** to abandon the current mouse entirely
    and start a fresh entry (back to step 1). This is also how you recover
    if something has gone wrong mid-run.
 
 A false start can be undone remotely: the host can send an ExtraRun
 message (`<92,...>`) to give back a run that shouldn't have counted,
-without a local button for it.
+without a local button for it. This lowers the run counter by one, so
+the next run reuses that run number; it is not needed to allow another
+run, since ARM is never refused.
 
 ## Remote control
 

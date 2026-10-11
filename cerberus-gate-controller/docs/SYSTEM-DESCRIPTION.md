@@ -86,7 +86,7 @@ See `INPUT-SYSTEM.md` for complete details on local button hardware, debouncing,
 * **Resource Ownership:** The main application task holds exclusive ownership of the display (LovyanGFX) and the race state machine.
 * **Operation:** Loops using a bounded-timeout queue receive so it wakes on a short tick (~30–50ms) even with no event pending — required for live timer redraw. On timeout with no event, redraws active timers; on a real message, advances the state machine and updates the display.
 * **Race State Machine:** Manages the sequence of states for a single mouse run. See `docs/RACE-STATE-MACHINE.md` for the authoritative state diagram and transition rules.
-  * **States** (from `firmware/src/race/race-timer.h:88–96`): `CALIBRATE` (boot), `NEW_MOUSE` (the reset-for-a-new-entry step — name/run-count/timers — but never actually stored in `race_state`: `race_timer_enter_new_mouse()` runs that reset and writes `WAITING` directly, since nothing can observe `race_state` mid-call anyway; kept as an enum value for switch-exhaustiveness), `WAITING` (idle, waiting for start), `ARMED` (mouse in start cell), `RUNNING` (active race), `GOAL` (run finished), `TIMED_OUT` (run exceeded entry time).
+  * **States** (from `firmware/src/race/race-timer.h:88–96`): `CALIBRATE` (boot), `NEW_MOUSE` (the reset-for-a-new-entry step — name/run-count/timers — but never actually stored in `race_state`: `race_timer_enter_new_mouse()` runs that reset and writes `WAITING` directly, since nothing can observe `race_state` mid-call anyway; kept as an enum value for switch-exhaustiveness), `WAITING` (idle, waiting for start), `ARMED` (mouse in start cell), `RUNNING` (active race), `GOAL` (run finished), `TIMED_OUT` (declared for a run that exceeds the entry time, but never entered -- nothing is forced when the entry time runs out).
   * **Entry Time Countdown:** A per-mouse countdown starting at first ARM, configured via host `MSG_ENTRY_TIME_S` (default 600s). Stored in `g_entry_time_s_limit` (`firmware/src/race/race-timer.h:163`), displayed on screen, clamped to zero. Behaviour on expiry is already decided (freeze timer, do not auto-advance state).
 * **Leaderboard:** Computes top finishers from completed runs, displayed on-screen (top 5 only due to space) and served via HTTP `GET /leaderboard` for full standings in a browser.
 
@@ -117,7 +117,7 @@ Implemented in `firmware/src/net/serial-protocol.h`, `firmware/src/net/messages.
 * **Inbound:** Legacy bracket-CSV format (`<type,value>\r\n` or `<type,name>\r\n`). Parses all 8 RATS V2 message types from `preferredMessageSequencesV2.pdf` (dated 24 July 2026):
   * `MSG_NEW_MOUSE=98` — Maps to `RaceCommand::RESTART` (works from any state).
   * `MSG_ENTRY_TIME_S=93` — Sets `g_entry_time_s_limit`.
-  * `MSG_ALLOWED_RUNS=94` — Sets `g_allowed_runs`, enforced by `race_timer_allowed_runs()` (`race-timer.h:310–319`) as the run-count cap.
+  * `MSG_ALLOWED_RUNS=94` — Sets `g_allowed_runs`, read back through `race_timer_allowed_runs()` (`race-timer.h`). Display-only: it sets the run counter's denominator and caps the on-screen run list. ARM is never refused because of it (see `RACE-STATE-MACHINE.md`, "Run and entry-time limits are advisory").
   * `MSG_EVENT_NAME=95` — Stores event name (metadata, not used).
   * `MSG_CONTEST_NAME=96` — Stores contest name (metadata, not used).
   * `MSG_REQUEST_TYPE=97` — Replied to with fixed `MSG_TIMER_TYPE=96` response (`"1CH"`).

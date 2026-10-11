@@ -75,16 +75,16 @@ transition, no telemetry burst beyond what step 2 already caused).
 - [x] **3.2** `<95,Minos 2026>` (`MSG_EVENT_NAME`) -- received, no state
       change.
 - [ ] **3.3** `<94,3>` (`MSG_ALLOWED_RUNS`) -- received, no *immediate*
-      state change. **Changed:** this value is no longer inert -- it now
-      overrides the run-count limit for the current mouse (see Section 9).
+      state change. The run-number label's denominator becomes `/3`.
+      This is display-only, not a limit: ARM is never refused because of
+      it (see Section 9).
 - [x] **3.4** `<93,300>` (`MSG_ENTRY_TIME_S`) -- received, no immediate
       state change. **Changed:** now drives the on-screen countdown once
       ARMED (see Section 9) -- still no forced state change at zero.
-- [x] **3.5** `<92,1>` (`MSG_EXTRA_RUN`) -- **Changed:** this now actually
-      decrements `mouse_run_count` by 1 (floor 0) via the Main Event
-      Queue, instead of just being logged. See Section 9 for the
-      grant-one-more-attempt check. No standalone visible effect if the
-      mouse isn't currently exhausted.
+- [ ] **3.5** `<92,1>` (`MSG_EXTRA_RUN`) -- decrements `mouse_run_count`
+      by 1 (floor 0) via the Main Event Queue. Confirm the run-number
+      label's count drops by one (e.g. "2/5" -> "1/5") and never goes
+      below 0. No state change. See 9.6 for the run-number reuse check.
 
 ## 4. SetMode
 
@@ -156,6 +156,11 @@ Covers the four items implemented after the initial parsing-only
 round (see `docs/PLANNED-UPDATES.md`'s "Protocol Behaviors — Resolved"
 section).
 
+Run and entry-time limits are advisory: CERBERUS displays them but never
+refuses an ARM because of them (see "Run and entry-time limits are
+advisory" in `docs/RACE-STATE-MACHINE.md` for why). 9.5-9.7 below check
+that display behaviour, not enforcement.
+
 - [x] **9.1 SetMode round-trip.** Send `<99,CALIBRATION>` from `WAITING`
       (or any state). Confirm the screen and NeoKeys show `CALIBRATE`
       (NeoKeys dark). Send `<99,TIMER>`. Confirm it returns to `WAITING`
@@ -179,19 +184,24 @@ section).
       for a producer that supplies no name at all (local button, HTTP
       without a name); a serial `<98,>` gets the fixed placeholder
       `QQQQQQQQ` instead (see 2.3).
-- [x] **9.5 AllowedRuns enforcement.** Send `<98,LimitTestMouse>` then
+- [ ] **9.5 AllowedRuns is advisory.** Send `<98,LimitTestMouse>` then
       `<94,2>` (`AllowedRuns=2`). Complete 2 runs (ARM -> START -> GOAL
-      twice). On the 3rd ARM attempt, confirm the mouse is treated as
-      exhausted (drops back to `WAITING`, same behaviour as hitting the
-      default `MAX_RUNS_PER_MOUSE=5` today) -- i.e. it now stops at 2, not
-      5.
-- [x] **9.6 ExtraRun grants one more.** Immediately after 9.5 (mouse
-      still exhausted at 2/2), send `<92,1>` (`ExtraRun`). Confirm ARM now
-      succeeds and a 3rd run can be completed.
-- [x] **9.7 AllowedRuns resets per mouse.** After 9.5/9.6, send a fresh
-      `<98,NextMouse>` with no `AllowedRuns` follow-up. Confirm this new
-      mouse is limited by the default `MAX_RUNS_PER_MOUSE=5`, not the
-      previous mouse's limit of 2 (confirms the reset-on-NewMouse logic).
+      twice); the label reads "2/2". ARM a 3rd time and confirm it
+      **succeeds** (`ARMED`, not `WAITING`). START and GOAL the 3rd run.
+      Confirm:
+      - the run-number label reads "3/2" once the 3rd run starts;
+      - the on-screen run list still shows only runs 1 and 2;
+      - the 3rd run is still reported as `<13,...>` telemetry and still
+        counts on the leaderboard.
+- [ ] **9.6 ExtraRun reuses a run number.** Send `<98,ExtraTestMouse>`
+      then `<94,2>` and complete 2 runs (label "2/2"). Send `<92,1>`
+      (`ExtraRun`). Confirm the label drops to "1/2". Complete another
+      run and confirm it is numbered 2 (label back to "2/2") and **is**
+      shown in the on-screen run list, alongside the earlier run 2.
+- [ ] **9.7 AllowedRuns resets per mouse.** After 9.5/9.6, send a fresh
+      `<98,NextMouse>` with no `AllowedRuns` follow-up. Confirm the label
+      shows "0/5" -- the default `MAX_RUNS_PER_MOUSE=5`, not the previous
+      mouse's 2 (confirms the reset-on-NewMouse logic).
 - [x] **9.8 EntryTimeS starts on first ARM, not NewMouse.** Send
       `<93,60>` (`EntryTimeS=60`) then `<98,TimerTestMouse>`. Confirm
       `lbl_time_remaining` shows a static "01:00" in `WAITING` -- **not**
