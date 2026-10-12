@@ -52,6 +52,9 @@ only, no bearing on production use.
 ## ALL boards
 
  - Add non volatile run logs. Cerberus can use an SD card. Hesperus can easily store perhaps 8000 runs at full logging
+ - **Next session (to be tagged `v0.5.0-pre3`): version stamp on every target.** Noted 2026-10-12 after `v0.5.0-pre2`.
+   - Only cerberus builds a `version-generated.h` (`FIRMWARE_VERSION_STRING`, e.g. `0.5.0-289-g2662451`, from `tools/generate_version_header.py`). `hesperus-timing-gate` has no version string in its source or binaries, so a gate can't report which build it runs; `hesperus-emitter` and `ares-pulse-generator` still need checking. Give every target the same stamp and a way to read it back (boot banner, CLI, and for gates ideally something cerberus can log).
+   - A bare `pio run` fails in `hesperus-timing-gate/firmware` with "Please specify platform for 'version_metadata' environment" -- the `[env:version_metadata]` section that only holds `release_version` is treated as a build target, so targets have to be named with `-e`. Fix it, and check the other three projects, which use the same section.
 
 ## cerberus-gate-controller
 
