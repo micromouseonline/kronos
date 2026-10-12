@@ -137,6 +137,18 @@ struct ExpFilter {
   }
 };
 
+// Snapshot taken on the sample that latches a trigger and sent to cerberus
+// with the event, so an unexplained trigger can be classified afterwards
+// from the host's log (see detection-mechanism.md, "Trigger diagnostics").
+struct BeamTriggerDiag {
+  // The median window at the trigger, oldest first: the last
+  // BEAM_CONFIRM_SAMPLES entries are the low samples that confirmed it,
+  // the rest are the lead-in.
+  uint16_t raw[BEAM_SUSTAIN_WINDOW_SAMPLES];
+  uint16_t slow;      // this channel's baseline at the trigger
+  int16_t other_drop; // the other channel's slow - raw on the same sample
+};
+
 struct BeamSensor {
   const char *name; // for logging, e.g. "ARM" / "START"
   int pin;
@@ -175,6 +187,19 @@ struct BeamSensor {
     }
     sustained = sorted[BEAM_SUSTAIN_WINDOW_SAMPLES / 2];
     return sustained;
+  }
+
+  // Fills `diag` from this channel's current state; call on the sample
+  // update() returned true for. `other`/`other_raw` are the other channel
+  // and its raw reading from the same sample tick.
+  void snapshot(BeamTriggerDiag &diag, const BeamSensor &other,
+                uint16_t other_raw) const {
+    for (uint8_t i = 0; i < BEAM_SUSTAIN_WINDOW_SAMPLES; i++) {
+      // history_pos is the next slot to overwrite, i.e. the oldest sample.
+      diag.raw[i] = history[(history_pos + i) % BEAM_SUSTAIN_WINDOW_SAMPLES];
+    }
+    diag.slow = static_cast<uint16_t>(slow.value);
+    diag.other_drop = static_cast<int16_t>(other.slow.value - other_raw);
   }
 
   // One call per sample. Returns true exactly on the sample that latches a

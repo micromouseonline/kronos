@@ -117,6 +117,7 @@ struct GateEvent {
   EventType type;
   uint64_t tsf_observed;    // Volatile native Wi-Fi TSF timeline
   uint64_t processor_clock; // Monotonic internal 64-bit microsecond uptime
+  BeamTriggerDiag diag;     // TRIGGER_A/B only -- unset on HEARTBEAT
 };
 
 /// ISR-to-task handoff for a trigger edge (NETWORK-TIMING-LOG.md "ISR
@@ -128,6 +129,7 @@ struct GateEvent {
 struct PendingCapture {
   EventType type;
   uint64_t processor_clock;
+  BeamTriggerDiag diag;
 };
 
 // Tracking Memory Management
@@ -572,10 +574,13 @@ void IRAM_ATTR onBeamSampleTimer() {
 // normal task: only the esp_timer_get_time() processor clock is captured
 // here; the real TSF read happens one task-context hop later, in
 // tsfCaptureTask(), as close to this instant as the scheduler allows.
-void dispatchBeamTrigger(EventType type) {
+void dispatchBeamTrigger(EventType type, const BeamSensor &sensor,
+                         const BeamSensor &other, uint16_t other_raw) {
   PendingCapture pc;
   pc.type = type;
   pc.processor_clock = esp_timer_get_time();
+  // After the timestamp capture too -- a short fixed-size copy, no I/O.
+  sensor.snapshot(pc.diag, other, other_raw);
   if (xQueueSend(triggerCaptureQueue, &pc, 0) != pdTRUE) {
     triggerCaptureq_overflow_count++;
   }
@@ -592,10 +597,10 @@ void beamSampleTask(void *parameter) {
     bool start_triggered = startSensor.update(start_raw);
     beam_sensor_stream_debug(arm_raw, armSensor, start_raw, startSensor);
     if (arm_triggered) {
-      dispatchBeamTrigger(TRIGGER_A);
+      dispatchBeamTrigger(TRIGGER_A, armSensor, startSensor, start_raw);
     }
     if (start_triggered) {
-      dispatchBeamTrigger(TRIGGER_B);
+      dispatchBeamTrigger(TRIGGER_B, startSensor, armSensor, arm_raw);
     }
   }
 }
@@ -618,6 +623,7 @@ void tsfCaptureTask(void *pvParameters) {
       ev.type = pc.type;
       ev.tsf_observed = esp_wifi_get_tsf_time(WIFI_IF_STA);
       ev.processor_clock = pc.processor_clock;
+      ev.diag = pc.diag;
       if (xQueueSend(networkQueue, &ev, 0) != pdTRUE) {
         networkq_overflow_count++;
       }
@@ -853,6 +859,15 @@ void uploadWorkerTask(void *pvParameters) {
       doc["tsf_us"] = tsf_to_transmit;
       doc["gate_us"] = current_ev.processor_clock;
       doc["rssi"] = WiFi.RSSI();
+      // Beam-trigger diagnostics, logged by cerberus (its net/http-server.h
+      // gate_event_log_beam_diag()) and otherwise ignored there.
+      JsonObject diag = doc["diag"].to<JsonObject>();
+      diag["slow"] = current_ev.diag.slow;
+      diag["other"] = current_ev.diag.other_drop;
+      JsonArray diag_raw = diag["raw"].to<JsonArray>();
+      for (uint16_t raw : current_ev.diag.raw) {
+        diag_raw.add(raw);
+      }
       String payload;
       serializeJson(doc, payload);
 

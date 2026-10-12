@@ -253,6 +253,32 @@ inline void http_handle_leaderboard(AsyncWebServerRequest *request) {
   request->send(200, "text/html", html);
 }
 
+// Logs a gate's beam-trigger diagnostics (hesperus-timing-gate's
+// BeamTriggerDiag, see its docs/detection-mechanism.md "Trigger
+// diagnostics") as one "[BEAM]" line, then removes them from `body` so the
+// verbose body= lines below stay short enough for debug_log_enqueue() and
+// keep the shape tools/cerberus_log_stats.py parses. Always logged, not
+// just in verbose mode. Space-separated, since debug_log_sanitize() rewrites
+// commas. A retried event logs again -- same tsf, so it's recognisable.
+inline void gate_event_log_beam_diag(JsonObject &body) {
+  JsonObject diag = body["diag"];
+  if (diag.isNull()) {
+    return;
+  }
+  char raw[80] = "";
+  size_t used = 0;
+  for (JsonVariant v : diag["raw"].as<JsonArray>()) {
+    int n = snprintf(raw + used, sizeof(raw) - used, " %u", (unsigned)(v | 0U));
+    if (n < 0 || (size_t)n >= sizeof(raw) - used) {
+      break;
+    }
+    used += n;
+  }
+  debug_log_enqueue("[BEAM] %s %s tsf=%llu slow=%d other=%d raw=%s", (const char *)(body["gate_id"] | ""), (const char *)(body["event"] | ""),
+                    (unsigned long long)(body["tsf_us"] | 0ULL), (int)(diag["slow"] | 0), (int)(diag["other"] | 0), raw + (used > 0 ? 1 : 0));
+  body.remove("diag");
+}
+
 // Shared transport-agnostic core for HTTP POSTs and WS frames.
 // Parses the 4-field schema (or RATS V2 info messages) and dispatches to the
 // race state machine.
@@ -299,6 +325,7 @@ inline bool handle_gate_event_json(JsonObject &body, String &response_json, int 
 
 inline void http_handle_event(AsyncWebServerRequest *request, JsonVariant &json) {
   JsonObject body = json.as<JsonObject>();
+  gate_event_log_beam_diag(body);
   String body_str;
   serializeJson(body, body_str);
   http_log_request(request, body_str);
@@ -365,6 +392,7 @@ inline void ws_event_handler(AsyncWebSocket *server, AsyncWebSocketClient *clien
         gate_liveness_mark_role_connected(static_cast<GateRole>(gate_role), client->id(), (const char *)(body["gate_id"] | ""), client->remoteIP(),
                                           debug_timestamp_ms());
       }
+      gate_event_log_beam_diag(body);
       // Matches http_log_request() formatting so tools/cerberus_log_stats.py
       // parses `body={...}` without modifications.
       if (g_debug_verbose_enabled) {

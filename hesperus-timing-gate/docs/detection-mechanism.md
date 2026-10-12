@@ -346,8 +346,39 @@ over `BEAM_CONFIRM_SAMPLES` consecutive raw samples, raised from 3 to 4.
 blocked sample is a fixed 4 samples.
 
 **Still to do:** bench-check that a real pass triggers once at the fastest
-expected speed, and log the raw history on each trigger so the next
-unexplained event can be classified.
+expected speed.
+
+### Trigger diagnostics
+
+Every trigger message to cerberus carries a `diag` object
+(`BeamTriggerDiag` in `beam-sensor.h`), captured on the sample that latched
+the trigger:
+
+- `raw` — the 15-sample median window, oldest first. The last
+  `BEAM_CONFIRM_SAMPLES` (4) entries are the low samples that confirmed the
+  trigger; the 11 before them are the lead-in.
+- `slow` — this channel's baseline.
+- `other` — the other channel's `slow - raw` on the same sample.
+
+Cerberus ignores `diag` for race purposes and writes it to its serial debug
+log, which the host records, as one line per message:
+
+```
+#[224255534] [BEAM] GATE_02 GOAL tsf=224254712237 slow=868 other=-2 raw=870 866 869 871 867 870 868 869 866 870 871 4 2 3 2
+```
+
+Reading it:
+
+- A steady lead-in near `slow` followed by a step to the ambient floor is
+  what a real occlusion looks like.
+- A large `other` (near the other channel's own emitter contribution) means
+  both channels lost light together — the emitter or a supply rail, not an
+  object in one beam.
+- A noisy or sagging lead-in points at the signal itself rather than a
+  clean break.
+
+It does not record how long the dip lasted, which is only known at re-arm
+and so can't travel with the timing message.
 
 ## 5. Bench tuning / debugging
 
