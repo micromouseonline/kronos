@@ -70,7 +70,8 @@ value += alpha * (new_value - value)     // alpha = 1 / (sample_rate * tau)
 A beam-break pulls `fast` down toward the ambient-only level much faster
 than `slow` can follow, so the absolute drop between them is the trigger:
 
-- **Trigger (falling):** `slow - fast >= BEAM_TRIGGER_DROP_COUNTS` (70)
+- **Trigger (falling):** `slow - raw >= BEAM_TRIGGER_DROP_COUNTS` (70) for
+  `BEAM_CONFIRM_SAMPLES` (4) consecutive samples
 - **Re-arm (rising):** `slow - fast <= BEAM_REARM_DROP_COUNTS` (25) *and*
   `slow - sustained <= BEAM_REARM_DROP_COUNTS`
 
@@ -83,9 +84,13 @@ assemblies only deliver ~100 counts of stable emitter signal; raise it again
 if assembly sensitivity improves. The 70/25 gap is built-in hysteresis
 (a `static_assert` keeps re-arm below trigger) — it stops noise sitting near a
 single threshold from chattering. Confirmation requires `BEAM_CONFIRM_SAMPLES`
-(3) consecutive samples past the trigger drop before latching an interrupt
-(~3 ms added latency at 1 kHz), rejecting single-sample glitches that the
-literal legacy algorithm (single-sample latch) would have accepted.
+(4) consecutive *raw* samples past the trigger drop before latching an
+interrupt (~4 ms added latency at 1 kHz), so a dip shorter than 4 ms can't
+trigger however deep it is — see "Short dip latched via `fast`'s recovery
+tail" below. The count is sized against the shortest real occlusion: a 12 mm
+object at 2 m/s blocks the beam for 6 ms, which is at most 6 samples and
+fewer once partially-blocked edge samples and any late sample tick are taken
+off, so it must stay well under 6.
 
 Below `BEAM_DARK_FLOOR_COUNTS` (40 counts, ~1% of 12-bit full scale) on
 `slow`, the sensor isn't seeing usable light at all — the trigger logic is
@@ -310,6 +315,40 @@ the real spikes turn out wider than ~7 ms, widen
 `BEAM_SUSTAIN_WINDOW_SAMPLES`. Keep it well under the shortest real
 occlusion the gate needs to catch.
 
+### Short dip latched via `fast`'s recovery tail (fixed)
+
+Found after a field trial where a GOAL gate sent one spurious trigger with
+steady, very low ambient (1–20 counts), good battery and no robot nearby.
+No logs were kept, so the cause of that event is not known; this is a
+weakness found by inspection that fits it.
+
+The confirm counter used to count samples of `slow - fast`, not of raw.
+`fast` has alpha 0.5 at 1 kHz, so after a short dip it needs several samples
+to recover, and that recovery tail alone satisfied a 3-sample count. From an
+offline model of `update()` at the 70-count threshold, the shortest dip that
+latched was:
+
+| Dip length | Depth needed | At the original 300 threshold |
+|---|---|---|
+| 1 sample | 560 counts | 2400 |
+| 2 samples | 187 counts | 800 |
+| 3 samples | 140 counts | 600 |
+
+So on a strong channel one bad ADC sample was enough, and lowering the
+threshold from 300 to 70 is what exposed it. Candidate sources of such a dip
+(none confirmed): a low `analogRead()` or a sensor-rail sag during a WiFi
+transmit burst, a brief emitter dropout, or a real 2–3 ms occlusion such as
+an insect.
+
+**Fix** (`beam-sensor.h`): the trigger condition is `slow - raw`, counted
+over `BEAM_CONFIRM_SAMPLES` consecutive raw samples, raised from 3 to 4.
+`fast` now only serves re-arm and the debug stream. Latency from the first
+blocked sample is a fixed 4 samples.
+
+**Still to do:** bench-check that a real pass triggers once at the fastest
+expected speed, and log the raw history on each trigger so the next
+unexplained event can be classified.
+
 ## 5. Bench tuning / debugging
 
 Type `stream on` / `stream off` at the serial CLI (bare `stream` toggles and
@@ -363,8 +402,8 @@ re-establish a bench stimulus:
   `ARM_SENSOR_PIN`/`START_SENSOR_PIN`: idle 3.3V reads as a healthy high
   baseline, a pulse to 0V reads as a hard occlusion.
 
-Either way, timing already works out: `BEAM_CONFIRM_SAMPLES` (3) at 1 kHz
-needs the low level held ≥3 ms, and ARES's existing `BURST_PULSE_MS` (10 ms)
+Either way, timing already works out: `BEAM_CONFIRM_SAMPLES` (4) at 1 kHz
+needs the low level held ≥4 ms, and ARES's existing `BURST_PULSE_MS` (10 ms)
 clears that comfortably. No RC-settling concern either — `analogRead()` is
 polled once per 1 ms tick, not continuously sampled, so a clean digital edge
 is effectively instantaneous relative to that.

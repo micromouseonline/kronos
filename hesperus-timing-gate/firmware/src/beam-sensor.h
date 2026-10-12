@@ -4,9 +4,10 @@
 //  Two EMAs of the same raw ADC signal: `fast` (tau ~2ms) tracks the
 //  instantaneous reading, `slow` (tau ~1s) tracks the ambient+emitter
 //  baseline. A beam-break/occlusion pulls `fast` down toward the ambient-
-//  only level much faster than `slow` can follow, so `slow - fast` crossing
-//  BEAM_TRIGGER_DROP_COUNTS (falling) / BEAM_REARM_DROP_COUNTS (rising)
-//  gives a trigger/re-arm pair with built-in hysteresis. This is an
+//  only level much faster than `slow` can follow, so the drop below `slow`
+//  crossing BEAM_TRIGGER_DROP_COUNTS (falling, judged on raw) /
+//  BEAM_REARM_DROP_COUNTS (rising, judged on `fast`) gives a trigger/re-arm
+//  pair with built-in hysteresis. This is an
 //  absolute count drop, not a ratio -- it specifically measures the
 //  emitter's own contribution being lost, which stays meaningful regardless
 //  of the ambient level (a fast/slow *ratio* doesn't: strong ambient can
@@ -32,9 +33,11 @@
 //  after a trigger. It's a no-op during a real occlusion either way, since
 //  the median is low there and doesn't pull slow down.
 //
-//  A confirm_count requires BEAM_CONFIRM_SAMPLES consecutive samples past
-//  the trigger ratio before latching an interrupt, to reject single-sample
-//  noise glitches.
+//  A confirm_count requires BEAM_CONFIRM_SAMPLES consecutive *raw* samples
+//  past the trigger drop before latching an interrupt, so a dip shorter
+//  than that can't trigger however deep it is. It counts raw, not `fast`:
+//  `fast` takes several samples to recover from a short dip, and that
+//  recovery tail alone used to satisfy the count.
 //
 //  alpha = 1/(F*tau) is derived from BEAM_SAMPLE_RATE_HZ rather than
 //  hardcoded, so if the sample rate changes, alpha_fast/alpha_slow are
@@ -94,10 +97,13 @@ constexpr uint8_t BEAM_SUSTAIN_WINDOW_SAMPLES = 15;
 static_assert(BEAM_SUSTAIN_WINDOW_SAMPLES % 2 == 1,
               "median window must be odd");
 
-// Consecutive samples past the trigger drop required before latching an
-// interrupt (~3ms of added latency at BEAM_SAMPLE_RATE_HZ=1000) -- tune
-// against real sensor noise on the bench.
-constexpr uint8_t BEAM_CONFIRM_SAMPLES = 3;
+// Consecutive raw samples past the trigger drop required before latching an
+// interrupt (~4ms of added latency at BEAM_SAMPLE_RATE_HZ=1000). A count,
+// not a time -- rescale it if the sample rate changes. Sized against the
+// shortest real occlusion: a 12mm object at 2m/s blocks the beam for 6ms,
+// i.e. at most 6 samples, fewer once the partially-blocked edge samples and
+// any late sample tick are taken off -- so this must stay well under 6.
+constexpr uint8_t BEAM_CONFIRM_SAMPLES = 4;
 
 // Raw ADC samples averaged to seed each channel's filters at startup.
 constexpr uint32_t BEAM_SEED_SAMPLE_COUNT = 64;
@@ -207,7 +213,9 @@ struct BeamSensor {
     }
 
     float drop = slow.value - fast.value;
-    bool trigger_condition = drop >= BEAM_TRIGGER_DROP_COUNTS;
+    // Judged on raw, not `fast` -- see BEAM_CONFIRM_SAMPLES. `fast` is
+    // still what re-arm watches, below.
+    bool trigger_condition = slow.value - raw_adc >= BEAM_TRIGGER_DROP_COUNTS;
     // Re-arm needs the median to have recovered as well as `fast`: an
     // interference spike during a real occlusion can briefly lift `fast`
     // back near `slow`, and re-arming on that alone would let the occlusion
@@ -223,8 +231,8 @@ struct BeamSensor {
       interrupted = false;
     }
 
-    // Require BEAM_CONFIRM_SAMPLES consecutive samples past the trigger
-    // drop before latching, to reject single-sample noise glitches.
+    // Require BEAM_CONFIRM_SAMPLES consecutive raw samples past the trigger
+    // drop before latching, to reject dips shorter than that.
     if (!interrupted && armed && confirm_count >= BEAM_CONFIRM_SAMPLES) {
       interrupted = true;
       armed = false;
